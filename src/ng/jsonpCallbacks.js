@@ -10,8 +10,8 @@
  * how they vary compared to the requested url.
  */
 var $jsonpCallbacksProvider = /** @this */ function() {
-  this.$get = ['$window', function($window) {
-    var callbacks = $window.angular.callbacks;
+  this.$get = function() {
+    var callbacks = angular.callbacks;
     var callbackMap = {};
 
     function createCallback(callbackId) {
@@ -78,5 +78,5 @@ var $jsonpCallbacksProvider = /** @this */ function() {
         delete callbackMap[callbackPath];
       }
     };
-  }];
+  };
 };

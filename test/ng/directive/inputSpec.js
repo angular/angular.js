@@ -135,6 +135,7 @@ describe('input', function() {
 
 
   describe('IE placeholder input events', function() {
+    // Support: IE 9-11 only
     //IE fires an input event whenever a placeholder visually changes, essentially treating it as a value
     //Events:
     //  placeholder attribute change: *input*
@@ -2082,7 +2083,7 @@ describe('input', function() {
       var dates = [
         // Validate date
         ['00:00:00.0000+01:01', false],             // date must be specified
-        ['2010.06.15T00:00:00.0000+01:01', false],  // date must use dash seperator
+        ['2010.06.15T00:00:00.0000+01:01', false],  // date must use dash separator
         ['x2010-06-15T00:00:00.0000+01:01', false], // invalid leading characters
 
         // Validate year
@@ -2110,9 +2111,9 @@ describe('input', function() {
 
         // Validate time
         ['2010-01-01', false],                      // time must be specified
-        ['2010-01-0101:00:00.0000+01:01', false],   // missing date time seperator
-        ['2010-01-01V01:00:00.0000+01:01', false],  // invalid date time seperator
-        ['2010-01-01T01-00-00.0000+01:01', false],  // time must use colon seperator
+        ['2010-01-0101:00:00.0000+01:01', false],   // missing date time separator
+        ['2010-01-01V01:00:00.0000+01:01', false],  // invalid date time separator
+        ['2010-01-01T01-00-00.0000+01:01', false],  // time must use colon separator
 
         // Validate hour
         ['2010-01-01T01:00:00.0000+01:01', true],   // hour has two digits
@@ -2141,7 +2142,7 @@ describe('input', function() {
         // Validate milliseconds
         ['2010-01-01T01:00:00+01:01', false],       // millisecond must be specified
         ['2010-01-01T01:00:00.-0000+01:01', false], // millisecond must be positive
-        ['2010-01-01T01:00:00:0000+01:01', false],  // millisecond must use period seperator
+        ['2010-01-01T01:00:00:0000+01:01', false],  // millisecond must use period separator
         ['2010-01-01T01:00:00.+01:01', false],      // millisecond has too few digits
 
         // Validate timezone
@@ -2163,9 +2164,9 @@ describe('input', function() {
 
         // Validate timezone minute offset
         ['2010-06-15T00:00:00.0000+00:-01', false], // timezone minute offset must be positive
-        ['2010-06-15T00:00:00.0000+00.01', false],  // timezone minute offset must use colon seperator
-        ['2010-06-15T00:00:00.0000+0101', false],   // timezone minute offset must use colon seperator
-        ['2010-06-15T00:00:00.0000+010', false],    // timezone minute offset must use colon seperator
+        ['2010-06-15T00:00:00.0000+00.01', false],  // timezone minute offset must use colon separator
+        ['2010-06-15T00:00:00.0000+0101', false],   // timezone minute offset must use colon separator
+        ['2010-06-15T00:00:00.0000+010', false],    // timezone minute offset must use colon separator
         ['2010-06-15T00:00:00.0000+00', false],     // timezone minute offset has too few digits
         ['2010-06-15T00:00:00.0000+00:', false],    // timezone minute offset has too few digits
         ['2010-06-15T00:00:00.0000+00:0', false],   // timezone minute offset has too few digits
@@ -2621,154 +2622,180 @@ describe('input', function() {
       });
     });
 
-    describe('step', function() {
-      it('should validate', function() {
-        $rootScope.step = 10;
-        $rootScope.value = 20;
-        var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" step="{{step}}" />');
 
-        expect(inputElm.val()).toBe('20');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(20);
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
+    forEach({
+      step: 'step="{{step}}"',
+      ngStep: 'ng-step="step"'
+    }, function(attrHtml, attrName) {
 
-        helper.changeInputValueTo('18');
-        expect(inputElm).toBeInvalid();
-        expect(inputElm.val()).toBe('18');
-        expect($rootScope.value).toBeUndefined();
-        expect($rootScope.form.alias.$error.step).toBeTruthy();
+      describe(attrName, function() {
 
-        helper.changeInputValueTo('10');
-        expect(inputElm).toBeValid();
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.value).toBe(10);
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
+        it('should validate', function() {
+          $rootScope.step = 10;
+          $rootScope.value = 20;
+          var inputElm = helper.compileInput(
+              '<input type="number" ng-model="value" name="alias" ' + attrHtml + ' />');
 
-        $rootScope.$apply('value = 12');
-        expect(inputElm).toBeInvalid();
-        expect(inputElm.val()).toBe('12');
-        expect($rootScope.value).toBe(12);
-        expect($rootScope.form.alias.$error.step).toBeTruthy();
-      });
+          expect(inputElm.val()).toBe('20');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(20);
+          expect($rootScope.form.alias.$error.step).toBeFalsy();
 
-      it('should validate even if the step value changes on-the-fly', function() {
-        $rootScope.step = 10;
-        var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" step="{{step}}" />');
+          helper.changeInputValueTo('18');
+          expect(inputElm).toBeInvalid();
+          expect(inputElm.val()).toBe('18');
+          expect($rootScope.value).toBeUndefined();
+          expect($rootScope.form.alias.$error.step).toBeTruthy();
 
-        helper.changeInputValueTo('10');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(10);
+          helper.changeInputValueTo('10');
+          expect(inputElm).toBeValid();
+          expect(inputElm.val()).toBe('10');
+          expect($rootScope.value).toBe(10);
+          expect($rootScope.form.alias.$error.step).toBeFalsy();
 
-        // Step changes, but value matches
-        $rootScope.$apply('step = 5');
-        expect(inputElm.val()).toBe('10');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(10);
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
+          $rootScope.$apply('value = 12');
+          expect(inputElm).toBeInvalid();
+          expect(inputElm.val()).toBe('12');
+          expect($rootScope.value).toBe(12);
+          expect($rootScope.form.alias.$error.step).toBeTruthy();
+        });
 
-        // Step changes, value does not match
-        $rootScope.$apply('step = 6');
-        expect(inputElm).toBeInvalid();
-        expect($rootScope.value).toBeUndefined();
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.form.alias.$error.step).toBeTruthy();
+        it('should validate even if the step value changes on-the-fly', function() {
+          $rootScope.step = 10;
+          var inputElm = helper.compileInput(
+              '<input type="number" ng-model="value" name="alias" ' + attrHtml + ' />');
 
-        // null = valid
-        $rootScope.$apply('step = null');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(10);
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
+          helper.changeInputValueTo('10');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(10);
 
-        // Step val as string
-        $rootScope.$apply('step = "7"');
-        expect(inputElm).toBeInvalid();
-        expect($rootScope.value).toBeUndefined();
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.form.alias.$error.step).toBeTruthy();
+          // Step changes, but value matches
+          $rootScope.$apply('step = 5');
+          expect(inputElm.val()).toBe('10');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(10);
+          expect($rootScope.form.alias.$error.step).toBeFalsy();
 
-        // unparsable string is ignored
-        $rootScope.$apply('step = "abc"');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(10);
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
-      });
-    });
+          // Step changes, value does not match
+          $rootScope.$apply('step = 6');
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.value).toBeUndefined();
+          expect(inputElm.val()).toBe('10');
+          expect($rootScope.form.alias.$error.step).toBeTruthy();
 
+          // null = valid
+          $rootScope.$apply('step = null');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(10);
+          expect(inputElm.val()).toBe('10');
+          expect($rootScope.form.alias.$error.step).toBeFalsy();
 
-    describe('ngStep', function() {
-      it('should validate', function() {
-        $rootScope.step = 10;
-        $rootScope.value = 20;
-        var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" ng-step="step" />');
+          // Step val as string
+          $rootScope.$apply('step = "7"');
+          expect(inputElm).toBeInvalid();
+          expect($rootScope.value).toBeUndefined();
+          expect(inputElm.val()).toBe('10');
+          expect($rootScope.form.alias.$error.step).toBeTruthy();
 
-        expect(inputElm.val()).toBe('20');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(20);
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
+          // unparsable string is ignored
+          $rootScope.$apply('step = "abc"');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(10);
+          expect(inputElm.val()).toBe('10');
+          expect($rootScope.form.alias.$error.step).toBeFalsy();
+        });
 
-        helper.changeInputValueTo('18');
-        expect(inputElm).toBeInvalid();
-        expect(inputElm.val()).toBe('18');
-        expect($rootScope.value).toBeUndefined();
-        expect($rootScope.form.alias.$error.step).toBeTruthy();
+        it('should use the correct "step base" when `[min]` is specified', function() {
+          $rootScope.min = 5;
+          $rootScope.step = 10;
+          $rootScope.value = 10;
+          var inputElm = helper.compileInput(
+              '<input type="number" ng-model="value" min="{{min}}" ' + attrHtml + ' />');
+          var ngModel = inputElm.controller('ngModel');
 
-        helper.changeInputValueTo('10');
-        expect(inputElm).toBeValid();
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.value).toBe(10);
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
+          expect(inputElm.val()).toBe('10');
+          expect(inputElm).toBeInvalid();
+          expect(ngModel.$error.step).toBe(true);
+          expect($rootScope.value).toBeUndefined();
 
-        $rootScope.$apply('value = 12');
-        expect(inputElm).toBeInvalid();
-        expect(inputElm.val()).toBe('12');
-        expect($rootScope.value).toBe(12);
-        expect($rootScope.form.alias.$error.step).toBeTruthy();
-      });
+          helper.changeInputValueTo('15');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(15);
 
-      it('should validate even if the step value changes on-the-fly', function() {
-        $rootScope.step = 10;
-        var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" ng-step="step" />');
+          $rootScope.$apply('step = 3');
+          expect(inputElm.val()).toBe('15');
+          expect(inputElm).toBeInvalid();
+          expect(ngModel.$error.step).toBe(true);
+          expect($rootScope.value).toBeUndefined();
 
-        helper.changeInputValueTo('10');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(10);
+          helper.changeInputValueTo('8');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(8);
 
-        // Step changes, but value matches
-        $rootScope.$apply('step = 5');
-        expect(inputElm.val()).toBe('10');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(10);
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
+          $rootScope.$apply('min = 10; step = 20');
+          helper.changeInputValueTo('30');
+          expect(inputElm.val()).toBe('30');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(30);
 
-        // Step changes, value does not match
-        $rootScope.$apply('step = 6');
-        expect(inputElm).toBeInvalid();
-        expect($rootScope.value).toBeUndefined();
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.form.alias.$error.step).toBeTruthy();
+          $rootScope.$apply('min = 5');
+          expect(inputElm.val()).toBe('30');
+          expect(inputElm).toBeInvalid();
+          expect(ngModel.$error.step).toBe(true);
+          expect($rootScope.value).toBeUndefined();
 
-        // null = valid
-        $rootScope.$apply('step = null');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(10);
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
+          $rootScope.$apply('step = 0.00000001');
+          expect(inputElm.val()).toBe('30');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(30);
 
-        // Step val as string
-        $rootScope.$apply('step = "7"');
-        expect(inputElm).toBeInvalid();
-        expect($rootScope.value).toBeUndefined();
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.form.alias.$error.step).toBeTruthy();
+          // 0.3 - 0.2 === 0.09999999999999998
+          $rootScope.$apply('min = 0.2; step = (0.3 - 0.2)');
+          helper.changeInputValueTo('0.3');
+          expect(inputElm.val()).toBe('0.3');
+          expect(inputElm).toBeInvalid();
+          expect(ngModel.$error.step).toBe(true);
+          expect($rootScope.value).toBeUndefined();
+        });
 
-        // unparsable string is ignored
-        $rootScope.$apply('step = "abc"');
-        expect(inputElm).toBeValid();
-        expect($rootScope.value).toBe(10);
-        expect(inputElm.val()).toBe('10');
-        expect($rootScope.form.alias.$error.step).toBeFalsy();
+        it('should correctly validate even in cases where the JS floating point arithmetic fails',
+          function() {
+            $rootScope.step = 0.1;
+            var inputElm = helper.compileInput(
+                '<input type="number" ng-model="value" ' + attrHtml + ' />');
+            var ngModel = inputElm.controller('ngModel');
+
+            expect(inputElm.val()).toBe('');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBeUndefined();
+
+            helper.changeInputValueTo('0.3');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(0.3);
+
+            helper.changeInputValueTo('2.9999999999999996');
+            expect(inputElm).toBeInvalid();
+            expect(ngModel.$error.step).toBe(true);
+            expect($rootScope.value).toBeUndefined();
+
+            // 0.5 % 0.1 === 0.09999999999999998
+            helper.changeInputValueTo('0.5');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(0.5);
+
+            // 3.5 % 0.1 === 0.09999999999999981
+            helper.changeInputValueTo('3.5');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(3.5);
+
+            // 1.16 % 0.01 === 0.009999999999999896
+            // 1.16 * 100  === 115.99999999999999
+            $rootScope.step = 0.01;
+            helper.changeInputValueTo('1.16');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(1.16);
+          }
+        );
       });
     });
 
@@ -3001,7 +3028,6 @@ describe('input', function() {
   });
 
   describe('range', function() {
-
     var scope;
 
     var rangeTestEl = angular.element('<input type="range">');
@@ -3048,7 +3074,6 @@ describe('input', function() {
         expect(scope.age).toBe(50);
         expect(inputElm).toBeValid();
       });
-
     } else {
 
       it('should reset the model if view is invalid', function() {
@@ -3438,7 +3463,6 @@ describe('input', function() {
           expect(scope.value).toBe(40);
         });
       });
-
     }
 
 
@@ -3448,6 +3472,7 @@ describe('input', function() {
         // Browsers that implement range will never allow you to set a value that doesn't match the step value
         // However, currently only Firefox fully implements the spec when setting the value after the step value changes.
         // Other browsers fail in various edge cases, which is why they are not tested here.
+
         it('should round the input value to the nearest step on user input', function() {
           var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" step="5" />');
 
@@ -3510,8 +3535,8 @@ describe('input', function() {
           expect(scope.value).toBe(10);
           expect(scope.form.alias.$error.step).toBeFalsy();
         });
-
       } else {
+
         it('should validate if "range" is not implemented', function() {
           scope.step = 10;
           scope.value = 20;
@@ -3584,6 +3609,96 @@ describe('input', function() {
           expect(inputElm.val()).toBe('10');
           expect(scope.form.alias.$error.step).toBeFalsy();
         });
+
+        it('should use the correct "step base" when `[min]` is specified', function() {
+          $rootScope.min = 5;
+          $rootScope.step = 10;
+          $rootScope.value = 10;
+          var inputElm = helper.compileInput(
+              '<input type="range" ng-model="value" min="{{min}}" step="{{step}}" />');
+          var ngModel = inputElm.controller('ngModel');
+
+          expect(inputElm.val()).toBe('10');
+          expect(inputElm).toBeInvalid();
+          expect(ngModel.$error.step).toBe(true);
+          expect($rootScope.value).toBeUndefined();
+
+          helper.changeInputValueTo('15');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(15);
+
+          $rootScope.$apply('step = 3');
+          expect(inputElm.val()).toBe('15');
+          expect(inputElm).toBeInvalid();
+          expect(ngModel.$error.step).toBe(true);
+          expect($rootScope.value).toBeUndefined();
+
+          helper.changeInputValueTo('8');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(8);
+
+          $rootScope.$apply('min = 10; step = 20; value = 30');
+          expect(inputElm.val()).toBe('30');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(30);
+
+          $rootScope.$apply('min = 5');
+          expect(inputElm.val()).toBe('30');
+          expect(inputElm).toBeInvalid();
+          expect(ngModel.$error.step).toBe(true);
+          expect($rootScope.value).toBeUndefined();
+
+          $rootScope.$apply('step = 0.00000001');
+          expect(inputElm.val()).toBe('30');
+          expect(inputElm).toBeValid();
+          expect($rootScope.value).toBe(30);
+
+          // 0.3 - 0.2 === 0.09999999999999998
+          $rootScope.$apply('min = 0.2; step = 0.09999999999999998; value = 0.3');
+          expect(inputElm.val()).toBe('0.3');
+          expect(inputElm).toBeInvalid();
+          expect(ngModel.$error.step).toBe(true);
+          expect($rootScope.value).toBeUndefined();
+        });
+
+        it('should correctly validate even in cases where the JS floating point arithmetic fails',
+          function() {
+            $rootScope.step = 0.1;
+            var inputElm = helper.compileInput(
+                '<input type="range" ng-model="value" step="{{step}}" />');
+            var ngModel = inputElm.controller('ngModel');
+
+            expect(inputElm.val()).toBe('');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBeUndefined();
+
+            helper.changeInputValueTo('0.3');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(0.3);
+
+            helper.changeInputValueTo('2.9999999999999996');
+            expect(inputElm).toBeInvalid();
+            expect(ngModel.$error.step).toBe(true);
+            expect($rootScope.value).toBeUndefined();
+
+            // 0.5 % 0.1 === 0.09999999999999998
+            helper.changeInputValueTo('0.5');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(0.5);
+
+            // 3.5 % 0.1 === 0.09999999999999981
+            helper.changeInputValueTo('3.5');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(3.5);
+
+            // 1.16 % 0.01 === 0.009999999999999896
+            // 1.16 * 100  === 115.99999999999999
+            $rootScope.step = 0.01;
+            helper.changeInputValueTo('1.16');
+            expect(inputElm).toBeValid();
+            expect($rootScope.value).toBe(1.16);
+          }
+        );
       }
     });
   });
@@ -3867,9 +3982,7 @@ describe('input', function() {
       expect($rootScope.color).toBe('blue');
     });
 
-
-    // We generally use strict comparison. This tests behavior we cannot change without a BC
-    it('should use non-strict comparison the evaluate checked-ness', function() {
+    it('should treat the value as a string when evaluating checked-ness', function() {
       var inputElm = helper.compileInput(
           '<input type="radio" ng-model="model" value="0" />');
 
@@ -3877,7 +3990,7 @@ describe('input', function() {
       expect(inputElm[0].checked).toBe(true);
 
       $rootScope.$apply('model = 0');
-      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[0].checked).toBe(false);
     });
 
 
@@ -4098,6 +4211,26 @@ describe('input', function() {
       expect(inputElm[0].getAttribute('value')).toBe('something');
     });
 
+    it('should clear the "dom" value property and attribute when the value is undefined', function() {
+      var inputElm = helper.compileInput('<input type="text" ng-value="value">');
+
+      $rootScope.$apply('value = "something"');
+
+      expect(inputElm[0].value).toBe('something');
+      expect(inputElm[0].getAttribute('value')).toBe('something');
+
+      $rootScope.$apply(function() {
+        delete $rootScope.value;
+      });
+
+      expect(inputElm[0].value).toBe('');
+      // Support: IE 9-11
+      // In IE it is not possible to remove the `value` attribute from an input element.
+      if (!msie) {
+        expect(inputElm[0].getAttribute('value')).toBeNull();
+      }
+    });
+
     they('should update the $prop "value" property and attribute after the bound expression changes', {
       input: '<input type="text" ng-value="value">',
       textarea: '<textarea ng-value="value"></textarea>'
@@ -4128,6 +4261,18 @@ describe('input', function() {
 
       browserTrigger(inputElm[2], 'click');
       expect($rootScope.selected).toBe(1);
+    });
+
+
+    it('should use strict comparison between model and value', function() {
+      $rootScope.selected = false;
+      var inputElm = helper.compileInput('<input type="radio" ng-model="selected" ng-value="false">' +
+                   '<input type="radio" ng-model="selected" ng-value="\'\'">' +
+                   '<input type="radio" ng-model="selected" ng-value="0">');
+
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm[1].checked).toBe(false);
+      expect(inputElm[2].checked).toBe(false);
     });
 
 

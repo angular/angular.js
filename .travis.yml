@@ -1,11 +1,11 @@
 language: node_js
 sudo: false
 node_js:
-  - '4.4'
+  - '6'
 
 cache:
+  yarn: true
   directories:
-    - node_modules
     - bower_components
     - docs/bower_components
 
@@ -36,19 +36,8 @@ addons:
     packages:
       - g++-4.8
 
-install:
-  # Check the size of caches
-  - du -sh ./node_modules ./bower_components/ ./docs/bower_components/ || true
-  # - npm config set registry http://23.251.144.68
-  # Disable the spinner, it looks bad on Travis
-  - npm config set spin false
-  # Log HTTP requests
-  - npm config set loglevel http
-  #- npm install -g npm@2.5
-  # Install npm dependencies and ensure that npm cache is not stale
-  - npm install
-
 before_script:
+  - du -sh ./node_modules ./bower_components/ ./docs/bower_components/ || true
   - ./scripts/travis/before_build.sh
 
 script:

@@ -58,7 +58,7 @@ describe('$http', function() {
             return {
               requestError: function(error) {
                 savedConfig.url += error;
-                return $q.when(savedConfig);
+                return $q.resolve(savedConfig);
               }
             };
           });
@@ -269,7 +269,7 @@ describe('$http', function() {
           $provide.factory('myInterceptor', function($q, $rootScope) {
             return {
               request: function(config) {
-                return $q.when('/intercepted').then(function(intercepted) {
+                return $q.resolve('/intercepted').then(function(intercepted) {
                   config.url = intercepted;
                   return config;
                 });
@@ -949,7 +949,7 @@ describe('$http', function() {
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path')});
       });
 
-      it('jsonp() should accept explictly trusted urls', function() {
+      it('jsonp() should accept explicitly trusted urls', function() {
         $httpBackend.expect('JSONP', '/url?callback=JSON_CALLBACK').respond('');
         $http({method: 'JSONP', url: $sce.trustAsResourceUrl('/url')});
 
@@ -1368,6 +1368,18 @@ describe('$http', function() {
               expect(callback.calls.argsFor(1)[0].data).toEqual('{"is": "not"} ["json"]');
             }
           );
+
+          it('should return JSON data with error message if JSON is invalid', function() {
+            var errCallback = jasmine.createSpy('error');
+            $httpBackend.expect('GET', '/url').respond('{abcd}', {'Content-Type': 'application/json'});
+            $http.get('/url').then(callback).catch(errCallback);
+            $httpBackend.flush();
+
+            expect(callback).not.toHaveBeenCalled();
+            expect(errCallback).toHaveBeenCalledOnce();
+            expect(errCallback.calls.mostRecent().args[0]).toEqualMinErr('$http', 'baddata');
+          });
+
         });
 
 

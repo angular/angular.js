@@ -96,7 +96,6 @@ function Browser(window, document, $log, $sniffer) {
       };
 
   cacheState();
-  lastHistoryState = cachedState;
 
   /**
    * @name $browser#url
@@ -150,8 +149,6 @@ function Browser(window, document, $log, $sniffer) {
       if ($sniffer.history && (!sameBase || !sameState)) {
         history[replace ? 'replaceState' : 'pushState'](state, '', url);
         cacheState();
-        // Do the assignment again so that those two variables are referentially identical.
-        lastHistoryState = cachedState;
       } else {
         if (!sameBase) {
           pendingLocation = url;
@@ -200,8 +197,7 @@ function Browser(window, document, $log, $sniffer) {
 
   function cacheStateAndFireUrlChange() {
     pendingLocation = null;
-    cacheState();
-    fireUrlChange();
+    fireStateOrUrlChange();
   }
 
   // This variable should be used *only* inside the cacheState function.
@@ -215,11 +211,16 @@ function Browser(window, document, $log, $sniffer) {
     if (equals(cachedState, lastCachedState)) {
       cachedState = lastCachedState;
     }
+
     lastCachedState = cachedState;
+    lastHistoryState = cachedState;
   }
 
-  function fireUrlChange() {
-    if (lastBrowserUrl === self.url() && lastHistoryState === cachedState) {
+  function fireStateOrUrlChange() {
+    var prevLastHistoryState = lastHistoryState;
+    cacheState();
+
+    if (lastBrowserUrl === self.url() && prevLastHistoryState === cachedState) {
       return;
     }
 
@@ -254,8 +255,8 @@ function Browser(window, document, $log, $sniffer) {
   self.onUrlChange = function(callback) {
     // TODO(vojta): refactor to use node's syntax for events
     if (!urlChangeInit) {
-      // We listen on both (hashchange/popstate) when available, as some browsers (e.g. Opera)
-      // don't fire popstate when user change the address bar and don't fire hashchange when url
+      // We listen on both (hashchange/popstate) when available, as some browsers don't
+      // fire popstate when user changes the address bar and don't fire hashchange when url
       // changed by push/replaceState
 
       // html5 history api - popstate event
@@ -285,7 +286,7 @@ function Browser(window, document, $log, $sniffer) {
    * Needs to be exported to be able to check for changes that have been done in sync,
    * as hashchange/popstate events fire in async.
    */
-  self.$$checkUrlChange = fireUrlChange;
+  self.$$checkUrlChange = fireStateOrUrlChange;
 
   //////////////////////////////////////////////////////////////
   // Misc API
@@ -302,7 +303,7 @@ function Browser(window, document, $log, $sniffer) {
    */
   self.baseHref = function() {
     var href = baseElement.attr('href');
-    return href ? href.replace(/^(https?:)?\/\/[^\/]*/, '') : '';
+    return href ? href.replace(/^(https?:)?\/\/[^/]*/, '') : '';
   };
 
   /**

@@ -7,7 +7,7 @@ describe('select', function() {
     formElement = jqLite('<form name="form">' + html + '</form>');
     element = formElement.find('select');
     $compile(formElement)(scope);
-    scope.$apply();
+    scope.$digest();
   }
 
   function compileRepeatedOptions() {
@@ -383,7 +383,7 @@ describe('select', function() {
         scope.robot = '';
         compile('<select ng-model="robot">' +
                   '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
-                '</selec>');
+                '</select>');
         expect(element).toEqualSelect(['? string: ?']);
 
 
@@ -420,7 +420,7 @@ describe('select', function() {
         compile('<select ng-model="robot">' +
                  '<option value="">--static-select--</option>' +
                  '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
-               '</selec>');
+               '</select>');
         scope.$digest();
         expect(element).toEqualSelect([unknownValue('x')], '');
 
@@ -767,6 +767,20 @@ describe('select', function() {
         expect(element).toEqualSelect([unknownValue()], '1', '2', '3');
       }
     );
+
+
+    it('should not throw when removing the element and all its children', function() {
+      var template =
+        '<select ng-model="mySelect" ng-if="visible">' +
+          '<option value="">--- Select ---</option>' +
+        '</select>';
+      scope.visible = true;
+
+      compile(template);
+
+      // It should not throw when removing the element
+      scope.$apply('visible = false');
+    });
   });
 
 
@@ -1084,13 +1098,21 @@ describe('select', function() {
         scope.selection = ['A'];
       });
 
+      var optionElements = element.find('option');
+
       expect(element).toEqualSelect(['A'], 'B');
+      expect(optionElements[0]).toBeMarkedAsSelected();
+      expect(optionElements[1]).not.toBeMarkedAsSelected();
 
       scope.$apply(function() {
         scope.selection.push('B');
       });
 
+      optionElements = element.find('option');
+
       expect(element).toEqualSelect(['A'], ['B']);
+      expect(optionElements[0]).toBeMarkedAsSelected();
+      expect(optionElements[1]).toBeMarkedAsSelected();
     });
 
     it('should work with optgroups', function() {
@@ -1515,8 +1537,8 @@ describe('select', function() {
               'number:1',
               'boolean:true',
               'object:null',
+              'object:3',
               'object:4',
-              'object:5',
               'number:NaN'
             );
 
@@ -1541,7 +1563,7 @@ describe('select', function() {
             browserTrigger(element, 'change');
 
             var arrayVal = ['a'];
-            arrayVal.$$hashKey = 'object:5';
+            arrayVal.$$hashKey = 'object:4';
 
             expect(scope.selected).toEqual([
               'string',
@@ -1549,7 +1571,7 @@ describe('select', function() {
               1,
               true,
               null,
-              {prop: 'value', $$hashKey: 'object:4'},
+              {prop: 'value', $$hashKey: 'object:3'},
               arrayVal,
               NaN
             ]);
@@ -1862,10 +1884,10 @@ describe('select', function() {
           scope.$digest();
 
           optionElements = element.find('option');
-          expect(element.val()).toBe(prop === 'ngValue' ? 'object:4' : 'C');
+          expect(element.val()).toBe(prop === 'ngValue' ? 'object:3' : 'C');
           expect(optionElements.length).toEqual(3);
           expect(optionElements[2].selected).toBe(true);
-          expect(scope.obj.value).toEqual(prop === 'ngValue' ? {name: 'C', $$hashKey: 'object:4'} : 'C');
+          expect(scope.obj.value).toEqual(prop === 'ngValue' ? {name: 'C', $$hashKey: 'object:3'} : 'C');
       });
 
 
@@ -2174,9 +2196,9 @@ describe('select', function() {
             expect(optionElements.length).toEqual(4);
             expect(scope.obj.value).toEqual(prop === 'ngValue' ?
               [
-                {name: 'A', $$hashKey: 'object:4', disabled: true},
-                {name: 'C', $$hashKey: 'object:6'},
-                {name: 'D', $$hashKey: 'object:7', disabled: true}
+                {name: 'A', $$hashKey: 'object:3', disabled: true},
+                {name: 'C', $$hashKey: 'object:5'},
+                {name: 'D', $$hashKey: 'object:6', disabled: true}
               ] :
               ['A', 'C', 'D']
             );
@@ -2228,13 +2250,13 @@ describe('select', function() {
             scope.$digest();
 
             optionElements = element.find('option');
-            expect(element.val()).toEqual(prop === 'ngValue' ? ['object:4', 'object:5'] : ['B', 'C']);
+            expect(element.val()).toEqual(prop === 'ngValue' ? ['object:4', 'object:7'] : ['B', 'C']);
             expect(optionElements.length).toEqual(3);
             expect(optionElements[1].selected).toBe(true);
             expect(optionElements[2].selected).toBe(true);
             expect(scope.obj.value).toEqual(prop === 'ngValue' ?
               [{ name: 'B', $$hashKey: 'object:4'},
-                {name: 'C', $$hashKey: 'object:5'}] :
+                {name: 'C', $$hashKey: 'object:7'}] :
               ['B', 'C']);
         });
 
@@ -2300,6 +2322,40 @@ describe('select', function() {
             expect(scope.obj.value).toEqual(['B', 'C']);
         });
 
+      });
+
+      it('should keep the ngModel value when the selected option is recreated by ngRepeat', function() {
+          scope.options = [{ name: 'A'}, { name: 'B'}, { name: 'C'}];
+          scope.obj = {
+            value: 'B'
+          };
+
+          compile(
+            '<select ng-model="obj.value">' +
+              '<option ng-repeat="option in options" value="{{option.name}}">{{option.name}}</option>' +
+            '</select>'
+          );
+
+          var optionElements = element.find('option');
+          expect(optionElements.length).toEqual(3);
+          expect(optionElements[0].value).toBe('A');
+          expect(optionElements[1]).toBeMarkedAsSelected();
+          expect(scope.obj.value).toBe('B');
+
+          scope.$apply(function() {
+            // Only when new objects are used, ngRepeat re-creates the element from scratch
+            scope.options = [{ name: 'B'}, { name: 'C'}, { name: 'D'}];
+          });
+
+          var previouslySelectedOptionElement = optionElements[1];
+          optionElements = element.find('option');
+
+          expect(optionElements.length).toEqual(3);
+          expect(optionElements[0].value).toBe('B');
+          expect(optionElements[0]).toBeMarkedAsSelected();
+          expect(scope.obj.value).toBe('B');
+          // Ensure the assumption that the element is re-created is true
+          expect(previouslySelectedOptionElement).not.toBe(optionElements[0]);
       });
 
     });

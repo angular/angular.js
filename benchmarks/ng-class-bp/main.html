@@ -1,0 +1,177 @@
+<style>
+  .gold {
+    background: gold;
+  }
+  .silver {
+    background: silver;
+  }
+  .table tbody tr > td.success {
+    background-color: #dff0d8;
+  }
+
+  .table tbody tr > td.error {
+    background-color: #f2dede;
+  }
+
+  .table tbody tr > td.warning {
+    background-color: #fcf8e3;
+  }
+
+  .table tbody tr > td.info {
+    background-color: #d9edf7;
+  }
+  .completed {
+    text-decoration: line-through;
+  }
+  .important {
+    font-weight: bold;
+  }
+  .urgent {
+      color: red;
+  }
+</style>
+<div ng-app="ngClassBenchmark" ng-cloak class="container-fluid">
+  <div ng-controller="DataController as benchmark" class="row">
+    <div class="col-lg-12">
+
+      <div class="well">
+        <h3>Parameters</h3>
+
+        <br>
+        <p>
+          <label>Number of todos</label><br>
+          <input type="number" ng-model="benchmark.numberOfTodos">
+        </p>
+
+        <br>
+        <p>
+          <label>Implementation</label><br>
+          <div class="radio">
+            <label>
+              <input ng-model="benchmark.implementation" value="tableOptimized"
+                type="radio" name="implementation">
+              Table optimized <br>
+              <code>ng-class="todo.completed && 'success'"</code>
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input ng-model="benchmark.implementation" value="table"
+                type="radio" name="implementation">
+              Table <br>
+              <code>ng-class="{success: todo.completed}"</code>
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input ng-model="benchmark.implementation" value="list"
+                type="radio" name="implementation">
+              List <br>
+              <code>ng-class="{completed: todo.completed, urgent: todo.urgent, important: todo.important"}</code>
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input ng-model="benchmark.implementation" value="singleOptimized"
+                type="radio" name="implementation">
+              Single ngClass optimized <br>
+              <code>
+                ng-class="{'panel-success': !!benchmark.todos, 'panel-danger': !benchmark.todos}"
+              </code>
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input ng-model="benchmark.implementation" value="single"
+                type="radio" name="implementation">
+              Single ngClass <br>
+              <code>
+                ng-class="{'panel-success': benchmark.todos, 'panel-danger': !benchmark.todos}"
+              </code>
+            </label>
+          </div>
+        </p>
+      </div>
+
+      <br>
+      <h3>Example</h3>
+      <div ng-switch="benchmark.implementation">
+
+        <table ng-switch-when="tableOptimized" class="table">
+          <thead>
+            <tr>
+              <th>todo #id</th>
+              <th>completed?</th>
+              <th>urgent?</th>
+              <th>important?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="todo in benchmark.todos track by todo.id"
+              ng-class="todo.completed && 'active'"
+              ng-class-even="todo.completed && todo.important && 'gold'"
+              ng-class-odd="todo.completed && todo.important && 'silver'"
+              >
+                <td>#{{todo.id}}</td>
+                <td>{{todo.completed}}</td>
+                <td ng-class="todo.urgent && 'danger'">{{todo.urgent}}</td>
+                <td ng-class="todo.important && 'success'">{{todo.important}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table ng-switch-when="table" class="table">
+          <thead>
+            <tr>
+              <th>todo #id</th>
+              <th>completed?</th>
+              <th>urgent?</th>
+              <th>important?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="todo in benchmark.todos track by todo.id"
+              ng-class="{active: todo.completed}"
+              ng-class-even="{gold: todo.completed && todo.important}"
+              ng-class-odd="{silver: todo.completed && todo.important}"
+              >
+                <td>#{{todo.id}}</td>
+                <td>{{todo.completed}}</td>
+                <td ng-class="{danger: todo.urgent}">{{todo.urgent}}</td>
+                <td ng-class="{success: todo.important}">{{todo.important}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <ul ng-switch-when="list">
+          <li ng-repeat="todo in benchmark.todos track by todo.id"
+            ng-class="{
+              completed: todo.completed,
+              urgent: todo.urgent,
+              important: todo.important
+            }">#{{todo.id}}</li>
+        </ul>
+
+        <div ng-switch-when="singleOptimized"
+          class="panel"
+          ng-class="{'panel-success': !!benchmark.todos, 'panel-danger': !benchmark.todos}">
+            <div class="panel-heading">
+              <h3 class="panel-title">Information</h3>
+            </div>
+            <div class="panel-body"> The title is green because there are todos... </div>
+        </div>
+
+        <div ng-switch-when="single"
+          class="panel"
+          ng-class="{'panel-success': benchmark.todos, 'panel-danger': !benchmark.todos}">
+            <div class="panel-heading">
+              <h3 class="panel-title">Information</h3>
+            </div>
+            <div class="panel-body"> The title is green because there are todos... </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<br><br><br>

@@ -7,7 +7,10 @@ describe('$log', function() {
 
 
   beforeEach(module(function($provide) {
-    $window = {navigator: {}, document: {}};
+    $window = {
+      navigator: {userAgent: window.navigator.userAgent},
+      document: {}
+    };
     logger = '';
     log = function() { logger += 'log;'; };
     warn = function() { logger += 'warn;'; };
@@ -62,6 +65,13 @@ describe('$log', function() {
       $log.error();
       $log.debug();
     }
+  ));
+
+  it('should work if $window.navigator not defined', inject(
+    function() {
+      delete $window.navigator;
+    },
+    function($log) {}
   ));
 
   describe('IE logging behavior', function() {
@@ -131,12 +141,12 @@ describe('$log', function() {
         $log.debug();
         expect(logger).toEqual('log;warn;info;error;');
       }
-  ));
+    ));
 
   });
 
   describe('$log.error', function() {
-    var e, $log, errorArgs;
+    var e, $log;
 
     function TestError() {
       Error.prototype.constructor.apply(this, arguments);
@@ -148,38 +158,44 @@ describe('$log', function() {
     TestError.prototype = Object.create(Error.prototype);
     TestError.prototype.constructor = TestError;
 
-    beforeEach(function() {
-      e = new TestError('');
-      var mockWindow = {
-        console: {
-          error: function() {
-            errorArgs = [].slice.call(arguments, 0);
-          }
-        }
-      };
-      $log = new $LogProvider().$get[1](mockWindow);
-    });
+    beforeEach(inject(
+      function() {
+        e = new TestError('');
+        $window.console = {
+          error: jasmine.createSpy('error')
+        };
+      },
 
+      function(_$log_) {
+        $log = _$log_;
+      }
+    ));
 
     it('should pass error if does not have trace', function() {
       $log.error('abc', e);
-      expect(errorArgs).toEqual(['abc', e]);
+      expect($window.console.error).toHaveBeenCalledWith('abc', e);
     });
 
-
-    it('should print stack', function() {
-      e.stack = 'stack';
-      $log.error('abc', e);
-      expect(errorArgs).toEqual(['abc', 'stack']);
-    });
-
+    if (msie || /\bEdge\//.test(window.navigator.userAgent)) {
+      it('should print stack', function() {
+        e.stack = 'stack';
+        $log.error('abc', e);
+        expect($window.console.error).toHaveBeenCalledWith('abc', 'stack');
+      });
+    } else {
+      it('should print a raw error', function() {
+        e.stack = 'stack';
+        $log.error('abc', e);
+        expect($window.console.error).toHaveBeenCalledWith('abc', e);
+      });
+    }
 
     it('should print line', function() {
       e.message = 'message';
       e.sourceURL = 'sourceURL';
       e.line = '123';
       $log.error('abc', e);
-      expect(errorArgs).toEqual(['abc', 'message\nsourceURL:123']);
+      expect($window.console.error).toHaveBeenCalledWith('abc', 'message\nsourceURL:123');
     });
   });
 

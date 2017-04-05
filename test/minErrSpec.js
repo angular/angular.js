@@ -9,6 +9,11 @@ describe('minErr', function() {
   var emptyTestError = minErr(),
     testError = minErr('test');
 
+  var originalObjectMaxDepthInErrorMessage = minErrConfig.objectMaxDepth;
+  afterEach(function() {
+    minErrConfig.objectMaxDepth = originalObjectMaxDepthInErrorMessage;
+  });
+
   it('should return an Error factory', function() {
     var myError = testError('test', 'Oops');
     expect(myError instanceof Error).toBe(true);
@@ -34,7 +39,7 @@ describe('minErr', function() {
 
   it('should interpolate string arguments without quotes', function() {
     var myError = testError('1', 'This {0} is "{1}"', 'foo', 'bar');
-    expect(myError.message).toMatch(/^\[test:1\] This foo is "bar"/);
+    expect(myError.message).toMatch(/^\[test:1] This foo is "bar"/);
   });
 
   it('should interpolate non-string arguments', function() {
@@ -57,7 +62,7 @@ describe('minErr', function() {
     var myError = testError('26', 'false: {0}; zero: {1}; null: {2}; undefined: {3}; emptyStr: {4}',
                                    false,      0,         null,      undefined,      '');
     expect(myError.message).
-        toMatch(/^\[test:26\] false: false; zero: 0; null: null; undefined: undefined; emptyStr: /);
+        toMatch(/^\[test:26] false: false; zero: 0; null: null; undefined: undefined; emptyStr: /);
   });
 
   it('should handle arguments that are objects with cyclic references', function() {
@@ -68,26 +73,55 @@ describe('minErr', function() {
     expect(myError.message).toMatch(/a is {"b":{"a":"..."}}/);
   });
 
+  it('should handle arguments that are objects with max depth', function() {
+    var a = {b: {c: {d: {e: {f: {g: 1}}}}}};
+
+    var myError = testError('26', 'a when objectMaxDepth is default=5 is {0}', a);
+    expect(myError.message).toMatch(/a when objectMaxDepth is default=5 is {"b":{"c":{"d":{"e":{"f":"..."}}}}}/);
+
+    errorHandlingConfig({objectMaxDepth: 1});
+    myError = testError('26', 'a when objectMaxDepth is set to 1 is {0}', a);
+    expect(myError.message).toMatch(/a when objectMaxDepth is set to 1 is {"b":"..."}/);
+
+    errorHandlingConfig({objectMaxDepth: 2});
+    myError = testError('26', 'a when objectMaxDepth is set to 2 is {0}', a);
+    expect(myError.message).toMatch(/a when objectMaxDepth is set to 2 is {"b":{"c":"..."}}/);
+
+    errorHandlingConfig({objectMaxDepth: undefined});
+    myError = testError('26', 'a when objectMaxDepth is set to undefined is {0}', a);
+    expect(myError.message).toMatch(/a when objectMaxDepth is set to undefined is {"b":{"c":"..."}}/);
+  });
+
+  they('should handle arguments that are objects and ignore max depth when objectMaxDepth = $prop',
+    [NaN, null, true, false, -1, 0], function(maxDepth) {
+      var a = {b: {c: {d: {e: {f: {g: 1}}}}}};
+
+      errorHandlingConfig({objectMaxDepth: maxDepth});
+      var myError = testError('26', 'a is {0}', a);
+      expect(myError.message).toMatch(/a is {"b":{"c":{"d":{"e":{"f":{"g":1}}}}}}/);
+    }
+  );
+
   it('should preserve interpolation markers when fewer arguments than needed are provided', function() {
     // this way we can easily see if we are passing fewer args than needed
 
     var foo = 'Fooooo',
         myError = testError('26', 'This {0} is {1} on {2}', foo);
 
-    expect(myError.message).toMatch(/^\[test:26\] This Fooooo is \{1\} on \{2\}/);
+    expect(myError.message).toMatch(/^\[test:26] This Fooooo is \{1\} on \{2\}/);
   });
 
 
   it('should pass through the message if no interpolation is needed', function() {
     var myError = testError('26', 'Something horrible happened!');
-    expect(myError.message).toMatch(/^\[test:26\] Something horrible happened!/);
+    expect(myError.message).toMatch(/^\[test:26] Something horrible happened!/);
   });
 
   it('should include a namespace in the message only if it is namespaced', function() {
     var myError = emptyTestError('26', 'This is a {0}', 'Foo');
     var myNamespacedError = testError('26', 'That is a {0}', 'Bar');
-    expect(myError.message).toMatch(/^\[26\] This is a Foo/);
-    expect(myNamespacedError.message).toMatch(/^\[test:26\] That is a Bar/);
+    expect(myError.message).toMatch(/^\[26] This is a Foo/);
+    expect(myNamespacedError.message).toMatch(/^\[test:26] That is a Bar/);
   });
 
 

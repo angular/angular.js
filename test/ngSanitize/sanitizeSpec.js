@@ -246,6 +246,26 @@ describe('HTML', function() {
       .toEqual('<p>text1text2</p>');
   });
 
+  it('should throw on clobbered elements', function() {
+    inject(function($sanitize) {
+      expect(function() {
+        $sanitize('<form><input name="parentNode" /></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+
+      expect(function() {
+        $sanitize('<form><div><div><input name="parentNode" /></div></div></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+
+      expect(function() {
+        $sanitize('<form><input name="nextSibling" /></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+
+      expect(function() {
+        $sanitize('<form><div><div><input name="nextSibling" /></div></div></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+    });
+  });
+
 
   describe('SVG support', function() {
 
@@ -352,7 +372,7 @@ describe('HTML', function() {
       expect(html).toEqual('<div rel="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#10;&#0;&#13;&#295;">');
     });
 
-    it('should ignore missformed elements', function() {
+    it('should ignore misformed elements', function() {
       writer.start('d>i&v', {});
       expect(html).toEqual('');
     });
@@ -508,7 +528,7 @@ describe('HTML', function() {
         expect('&#106 &#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;').not.toBeValidUrl();
       });
 
-      it('should ignore decimal with leading 0 encodede javascript:', function() {
+      it('should ignore decimal with leading 0 encoded javascript:', function() {
         expect('&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058').not.toBeValidUrl();
         expect('&#0000106 &#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058').not.toBeValidUrl();
         expect('&#0000106; &#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058').not.toBeValidUrl();

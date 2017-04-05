@@ -39,8 +39,11 @@ describe('$location', function() {
     /* global urlParsingNode: true */
     var urlParsingNodePlaceholder;
 
-    beforeEach(inject(function($sniffer) {
-      if (msie) return;
+    beforeEach(function() {
+      // Support: non-Windows browsers
+      // These tests expect a Windows environment which we can only guarantee
+      // on IE & Edge.
+      if (msie || /\bEdge\/[\d.]+\b/.test(window.navigator.userAgent)) return;
 
       urlParsingNodePlaceholder = urlParsingNode;
 
@@ -57,13 +60,14 @@ describe('$location', function() {
         search: '',
         setAttribute: angular.noop
       };
-    }));
+    });
 
-    afterEach(inject(function($sniffer) {
-      if (msie) return;
+    afterEach(function() {
+      // Support: non-Windows browsers
+      if (msie || /\bEdge\/[\d.]+\b/.test(window.navigator.userAgent)) return;
       //reset urlParsingNode
       urlParsingNode = urlParsingNodePlaceholder;
-    }));
+    });
 
 
     it('should not include the drive name in path() on WIN', function() {
@@ -389,7 +393,7 @@ describe('$location', function() {
 
 
     it('should throw error when invalid server url given', function() {
-      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/', '/base');
+      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/');
 
       expect(function() {
         locationUrl.$$parse('http://other.server.org/path#/path');
@@ -398,7 +402,7 @@ describe('$location', function() {
 
 
     it('should throw error when invalid base url given', function() {
-      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/', '/base');
+      var locationUrl = new LocationHtml5Url('http://server.org/base/abc', 'http://server.org/base/');
 
       expect(function() {
         locationUrl.$$parse('http://server.org/path#/path');
@@ -650,7 +654,7 @@ describe('$location', function() {
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=1%2F2%203&q=4%2F5%206');
       });
 
-      it('should rewrite params when specifing a single param in search', function() {
+      it('should rewrite params when specifying a single param in search', function() {
         var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
         locationUrl.$$parse('http://host.com');
         locationUrl.search({'q': '1/2 3'});
@@ -706,6 +710,7 @@ describe('$location', function() {
       );
     });
 
+
     it('should not infinitely digest when using a semicolon in initial path', function() {
       initService({html5Mode:true,supportHistory:true});
       mockUpBrowser({initialUrl:'http://localhost:9876/;jsessionid=foo', baseHref:'/'});
@@ -714,6 +719,63 @@ describe('$location', function() {
           $rootScope.$digest();
         }).not.toThrow();
       });
+    });
+
+
+    describe('when changing the browser URL/history directly during a `$digest`', function() {
+
+      beforeEach(function() {
+        initService({supportHistory: true});
+        mockUpBrowser({initialUrl: 'http://foo.bar/', baseHref: '/'});
+      });
+
+
+      it('should correctly update `$location` from history and not digest infinitely', inject(
+        function($browser, $location, $rootScope, $window) {
+          $location.url('baz');
+          $rootScope.$digest();
+
+          var originalUrl = $window.location.href;
+
+          $rootScope.$apply(function() {
+            $rootScope.$evalAsync(function() {
+              $window.history.pushState({}, null, originalUrl + '/qux');
+            });
+          });
+
+          expect($browser.url()).toBe('http://foo.bar/#!/baz/qux');
+          expect($location.absUrl()).toBe('http://foo.bar/#!/baz/qux');
+
+          $rootScope.$apply(function() {
+            $rootScope.$evalAsync(function() {
+              $window.history.replaceState({}, null, originalUrl + '/quux');
+            });
+          });
+
+          expect($browser.url()).toBe('http://foo.bar/#!/baz/quux');
+          expect($location.absUrl()).toBe('http://foo.bar/#!/baz/quux');
+        })
+      );
+
+
+      it('should correctly update `$location` from URL and not digest infinitely', inject(
+        function($browser, $location, $rootScope, $window) {
+          $location.url('baz');
+          $rootScope.$digest();
+
+          $rootScope.$apply(function() {
+            $rootScope.$evalAsync(function() {
+              $window.location.href += '/qux';
+            });
+          });
+
+          jqLite($window).triggerHandler('hashchange');
+
+          expect($browser.url()).toBe('http://foo.bar/#!/baz/qux');
+          expect($location.absUrl()).toBe('http://foo.bar/#!/baz/qux');
+        })
+      );
+
     });
 
 
@@ -1035,11 +1097,21 @@ describe('$location', function() {
     });
 
     it('should update $location when browser state changes', function() {
-      initService({html5Mode:true, supportHistory: true});
-      mockUpBrowser({initialUrl:'http://new.com/a/b/', baseHref:'/a/b/'});
-      inject(function($location, $window) {
+      initService({html5Mode: true, supportHistory: true});
+      mockUpBrowser({initialUrl: 'http://new.com/a/b/', baseHref: '/a/b/'});
+      inject(function($location, $rootScope, $window) {
         $window.history.pushState({b: 3});
+        $rootScope.$digest();
+
         expect($location.state()).toEqual({b: 3});
+
+        $window.history.pushState({b: 4}, null, $window.location.href + 'c?d=e#f');
+        $rootScope.$digest();
+
+        expect($location.path()).toBe('/c');
+        expect($location.search()).toEqual({d: 'e'});
+        expect($location.hash()).toBe('f');
+        expect($location.state()).toEqual({b: 4});
       });
     });
 
@@ -2453,9 +2525,9 @@ describe('$location', function() {
     var locationUrl, locationUmlautUrl, locationIndexUrl;
 
     beforeEach(function() {
-      locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/', 'http://server/pre/path');
-      locationUmlautUrl = new LocationHtml5Url('http://särver/pre/', 'http://särver/pre/', 'http://särver/pre/path');
-      locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/', 'http://server/pre/path');
+      locationUrl = new LocationHtml5Url('http://server/pre/', 'http://server/pre/');
+      locationUmlautUrl = new LocationHtml5Url('http://särver/pre/', 'http://särver/pre/');
+      locationIndexUrl = new LocationHtml5Url('http://server/pre/index.html', 'http://server/pre/');
     });
 
     it('should rewrite URL', function() {
@@ -2480,6 +2552,19 @@ describe('$location', function() {
       expect(parseLinkAndReturn(locationUrl, 'someIgnoredAbsoluteHref', '#test')).toEqual('http://server/pre/otherPath#test');
     });
 
+    it('should complain if the path starts with double slashes', function() {
+      expect(function() {
+        parseLinkAndReturn(locationUrl, 'http://server/pre///other/path');
+      }).toThrowMinErr('$location', 'badpath');
+
+      expect(function() {
+        parseLinkAndReturn(locationUrl, 'http://server/pre/\\\\other/path');
+      }).toThrowMinErr('$location', 'badpath');
+
+      expect(function() {
+        parseLinkAndReturn(locationUrl, 'http://server/pre//\\//other/path');
+      }).toThrowMinErr('$location', 'badpath');
+    });
 
     it('should complain if no base tag present', function() {
       module(function($locationProvider) {
@@ -2649,12 +2734,10 @@ describe('$location', function() {
           replaceState: function(state, title, url) {
             win.history.state = copy(state);
             if (url) win.location.href = url;
-            jqLite(win).triggerHandler('popstate');
           },
           pushState: function(state, title, url) {
             win.history.state = copy(state);
             if (url) win.location.href = url;
-            jqLite(win).triggerHandler('popstate');
           }
         };
         win.addEventListener = angular.noop;

@@ -6,7 +6,6 @@ angular.module('docsApp', [
   'ngSanitize',
   'ngAnimate',
   'DocsController',
-  'versionsData',
   'pagesData',
   'navData',
   'directives',

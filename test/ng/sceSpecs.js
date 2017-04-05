@@ -322,7 +322,7 @@ describe('SCE', function() {
         runTest({whiteList: [{}]}, null)();
       }).toThrowMinErr('$injector', 'modulerr', new RegExp(
           /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
-          /[^[]*\[\$sce:imatcher\] Matchers may only be "self", string patterns or RegExp objects/.source));
+          /[^[]*\[\$sce:imatcher] Matchers may only be "self", string patterns or RegExp objects/.source));
     });
 
     describe('adjustMatcher', function() {
@@ -333,6 +333,10 @@ describe('SCE', function() {
         // Adding ^ & $ onto a regex that already had them should also work.
         expect(adjustMatcher(/^a.*b$/).exec('a.b')).not.toBeNull();
         expect(adjustMatcher(/^a.*b$/).exec('-a.b-')).toBeNull();
+      });
+
+      it('should should match * and **', function() {
+        expect(adjustMatcher('*://*.example.com/**').exec('http://www.example.com/path')).not.toBeNull();
       });
     });
 
@@ -437,7 +441,7 @@ describe('SCE', function() {
           runTest({whiteList: ['http://***']}, null)();
         }).toThrowMinErr('$injector', 'modulerr', new RegExp(
              /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
-             /[^[]*\[\$sce:iwcard\] Illegal sequence \*\*\* in string matcher\. {2}String: http:\/\/\*\*\*/.source));
+             /[^[]*\[\$sce:iwcard] Illegal sequence \*\*\* in string matcher\. {2}String: http:\/\/\*\*\*/.source));
       });
     });
 

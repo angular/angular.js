@@ -33,14 +33,15 @@ function $IntervalProvider() {
       * appropriate moment.  See the example below for more details on how and when to do this.
       * </div>
       *
-      * @param {function()} fn A function that should be called repeatedly.
+      * @param {function()} fn A function that should be called repeatedly. If no additional arguments
+      *   are passed (see below), the function is called with the current iteration count.
       * @param {number} delay Number of milliseconds between each function call.
       * @param {number=} [count=0] Number of times to repeat. If not set, or 0, will repeat
       *   indefinitely.
       * @param {boolean=} [invokeApply=true] If set to `false` skips model dirty checking, otherwise
       *   will invoke `fn` within the {@link ng.$rootScope.Scope#$apply $apply} block.
       * @param {...*=} Pass additional parameters to the executed function.
-      * @returns {promise} A promise which will be notified on each iteration.
+      * @returns {promise} A promise which will be notified on each iteration. It will resolve once all iterations of the interval complete.
       *
       * @example
       * <example module="intervalExample" name="interval-service">

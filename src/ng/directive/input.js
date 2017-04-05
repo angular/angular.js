@@ -21,11 +21,11 @@ var ISO_DATE_REGEXP = /^\d{4,}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+(?:[+-
 //   7. Path
 //   8. Query
 //   9. Fragment
-//                 1111111111111111 222   333333    44444        555555555555555555555555    666     77777777     8888888     999
-var URL_REGEXP = /^[a-z][a-z\d.+-]*:\/*(?:[^:@]+(?::[^@]+)?@)?(?:[^\s:/?#]+|\[[a-f\d:]+\])(?::\d+)?(?:\/[^?#]*)?(?:\?[^#]*)?(?:#.*)?$/i;
+//                 1111111111111111 222   333333    44444        55555555555555555555555     666     77777777     8888888     999
+var URL_REGEXP = /^[a-z][a-z\d.+-]*:\/*(?:[^:@]+(?::[^@]+)?@)?(?:[^\s:/?#]+|\[[a-f\d:]+])(?::\d+)?(?:\/[^?#]*)?(?:\?[^#]*)?(?:#.*)?$/i;
 // eslint-disable-next-line max-len
-var EMAIL_REGEXP = /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+\/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+\/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
-var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))([eE][+-]?\d+)?\s*$/;
+var EMAIL_REGEXP = /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
+var NUMBER_REGEXP = /^\s*(-|\+)?(\d+|(\d*(\.\d*)))([eE][+-]?\d+)?\s*$/;
 var DATE_REGEXP = /^(\d{4,})-(\d{2})-(\d{2})$/;
 var DATETIMELOCAL_REGEXP = /^(\d{4,})-(\d\d)-(\d\d)T(\d\d):(\d\d)(?::(\d\d)(\.\d{1,3})?)?$/;
 var WEEK_REGEXP = /^(\d{4,})-W(\d\d)$/;
@@ -688,7 +688,7 @@ var inputType = {
    *    but does not trigger HTML5 native validation. Takes an expression.
    * @param {string=} step Sets the `step` validation error key if the value entered does not fit the `step` constraint.
    *    Can be interpolated.
-   * @param {string=} ngStep Like `step`, sets the `max` validation error key if the value entered does not fit the `ngStep` constraint,
+   * @param {string=} ngStep Like `step`, sets the `step` validation error key if the value entered does not fit the `ngStep` constraint,
    *    but does not trigger HTML5 native validation. Takes an expression.
    * @param {string=} required Sets `required` validation error key if the value is not entered.
    * @param {string=} ngRequired Adds `required` attribute and `required` validation constraint to
@@ -1234,7 +1234,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 function baseInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   var type = lowercase(element[0].type);
 
-  // In composition mode, users are still inputing intermediate text buffer,
+  // In composition mode, users are still inputting intermediate text buffer,
   // hold the listener until composition is done.
   // More about composition events: https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent
   if (!$sniffer.android) {
@@ -1532,13 +1532,74 @@ function parseNumberAttrVal(val) {
   return !isNumberNaN(val) ? val : undefined;
 }
 
+function isNumberInteger(num) {
+  // See http://stackoverflow.com/questions/14636536/how-to-check-if-a-variable-is-an-integer-in-javascript#14794066
+  // (minus the assumption that `num` is a number)
+
+  // eslint-disable-next-line no-bitwise
+  return (num | 0) === num;
+}
+
+function countDecimals(num) {
+  var numString = num.toString();
+  var decimalSymbolIndex = numString.indexOf('.');
+
+  if (decimalSymbolIndex === -1) {
+    if (-1 < num && num < 1) {
+      // It may be in the exponential notation format (`1e-X`)
+      var match = /e-(\d+)$/.exec(numString);
+
+      if (match) {
+        return Number(match[1]);
+      }
+    }
+
+    return 0;
+  }
+
+  return numString.length - decimalSymbolIndex - 1;
+}
+
+function isValidForStep(viewValue, stepBase, step) {
+  // At this point `stepBase` and `step` are expected to be non-NaN values
+  // and `viewValue` is expected to be a valid stringified number.
+  var value = Number(viewValue);
+
+  var isNonIntegerValue = !isNumberInteger(value);
+  var isNonIntegerStepBase = !isNumberInteger(stepBase);
+  var isNonIntegerStep = !isNumberInteger(step);
+
+  // Due to limitations in Floating Point Arithmetic (e.g. `0.3 - 0.2 !== 0.1` or
+  // `0.5 % 0.1 !== 0`), we need to convert all numbers to integers.
+  if (isNonIntegerValue || isNonIntegerStepBase || isNonIntegerStep) {
+    var valueDecimals = isNonIntegerValue ? countDecimals(value) : 0;
+    var stepBaseDecimals = isNonIntegerStepBase ? countDecimals(stepBase) : 0;
+    var stepDecimals = isNonIntegerStep ? countDecimals(step) : 0;
+
+    var decimalCount = Math.max(valueDecimals, stepBaseDecimals, stepDecimals);
+    var multiplier = Math.pow(10, decimalCount);
+
+    value = value * multiplier;
+    stepBase = stepBase * multiplier;
+    step = step * multiplier;
+
+    if (isNonIntegerValue) value = Math.round(value);
+    if (isNonIntegerStepBase) stepBase = Math.round(stepBase);
+    if (isNonIntegerStep) step = Math.round(step);
+  }
+
+  return (value - stepBase) % step === 0;
+}
+
 function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   badInputChecker(scope, element, attr, ctrl);
   numberFormatterParser(ctrl);
   baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
 
+  var minVal;
+  var maxVal;
+
   if (isDefined(attr.min) || attr.ngMin) {
-    var minVal;
     ctrl.$validators.min = function(value) {
       return ctrl.$isEmpty(value) || isUndefined(minVal) || value >= minVal;
     };
@@ -1551,7 +1612,6 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   }
 
   if (isDefined(attr.max) || attr.ngMax) {
-    var maxVal;
     ctrl.$validators.max = function(value) {
       return ctrl.$isEmpty(value) || isUndefined(maxVal) || value <= maxVal;
     };
@@ -1566,7 +1626,8 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
   if (isDefined(attr.step) || attr.ngStep) {
     var stepVal;
     ctrl.$validators.step = function(modelValue, viewValue) {
-      return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) || viewValue % stepVal === 0;
+      return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) ||
+             isValidForStep(viewValue, minVal || 0, stepVal);
     };
 
     attr.$observe('step', function(val) {
@@ -1636,7 +1697,8 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
       } :
       // ngStep doesn't set the setp attr, so the browser doesn't adjust the input value as setting step would
       function stepValidator(modelValue, viewValue) {
-        return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) || viewValue % stepVal === 0;
+        return ctrl.$isEmpty(viewValue) || isUndefined(stepVal) ||
+               isValidForStep(viewValue, minVal || 0, stepVal);
       };
 
     setInitialValueAndObserver('step', stepChange);
@@ -1761,9 +1823,7 @@ function radioInputType(scope, element, attr, ctrl) {
     if (doTrim) {
       value = trim(value);
     }
-    // Strict comparison would cause a BC
-    // eslint-disable-next-line eqeqeq
-    element[0].checked = (value == ctrl.$viewValue);
+    element[0].checked = (value === ctrl.$viewValue);
   };
 
   attr.$observe('value', ctrl.$render);
@@ -2082,7 +2142,10 @@ var ngValueDirective = function() {
    *  makes it possible to use ngValue as a sort of one-way bind.
    */
   function updateElementValue(element, attr, value) {
-    element.prop('value', value);
+    // Support: IE9 only
+    // In IE9 values are converted to string (e.g. `input.value = null` results in `input.value === 'null'`).
+    var propValue = isDefined(value) ? value : (msie === 9) ? '' : null;
+    element.prop('value', propValue);
     attr.$set('value', value);
   }
 

@@ -357,7 +357,7 @@ describe('Binder', function() {
     });
   });
 
-  it('ShoulIgnoreVbNonBindable', inject(function($rootScope, $compile) {
+  it('ShouldIgnoreVbNonBindable', inject(function($rootScope, $compile) {
     element = $compile(
       '<div>{{a}}' +
         '<div ng-non-bindable>{{a}}</div>' +

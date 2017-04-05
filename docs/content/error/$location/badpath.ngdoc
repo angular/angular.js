@@ -1,0 +1,9 @@
+@ngdoc error
+@name $location:badpath
+@fullName Invalid Path
+@description
+
+This error occurs when the path of a location contains invalid characters.
+The most common fault is when the path starts with double slashes (`//`) or backslashes ('\\').
+For example if the base path of an application is `https://a.b.c/` then the following path is
+invalid `https://a.b.c///d/e/f`.

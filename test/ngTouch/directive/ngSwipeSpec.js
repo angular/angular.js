@@ -232,6 +232,6 @@ var swipeTests = function(description, restrictBrowsers, startEvent, moveEvent, 
   });
 };
 
-swipeTests('touch', /* restrictBrowers */ true, 'touchstart', 'touchmove', 'touchend');
-swipeTests('mouse', /* restrictBrowers */ false, 'mousedown', 'mousemove', 'mouseup');
+swipeTests('touch', /* restrictBrowsers */ true, 'touchstart', 'touchmove', 'touchend');
+swipeTests('mouse', /* restrictBrowsers */ false, 'mousedown', 'mousemove', 'mouseup');
 

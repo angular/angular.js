@@ -15,6 +15,9 @@
     "splice": false,
     "push": false,
     "toString": false,
+    "minErrConfig": false,
+    "errorHandlingConfig": false,
+    "isValidObjectMaxDepth": false,
     "ngMinErr": false,
     "_angular": false,
     "angularModule": false,
@@ -66,6 +69,7 @@
     "arrayRemove": false,
     "copy": false,
     "shallowCopy": false,
+    "simpleCompare": false,
     "equals": false,
     "csp": false,
     "concat": false,
@@ -150,7 +154,7 @@
 
     /* apis.js */
     "hashKey": false,
-    "HashMap": false,
+    "NgMap": false,
 
     /* urlUtils.js */
     "urlResolve": false,

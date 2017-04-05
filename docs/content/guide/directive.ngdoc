@@ -8,7 +8,8 @@
 <div class="alert alert-warning">
 **Note:** this guide is targeted towards developers who are already familiar with AngularJS basics.
 If you're just getting started, we recommend the {@link tutorial/ tutorial} first.
-If you're looking for the **directives API**, we recently moved it to {@link ng.$compile `$compile`}.
+If you're looking for the **directives API**, you can find it in the
+{@link ng.$compile `$compile` API docs}.
 </div>
 
 
@@ -58,7 +59,7 @@ The following `<input>` element also **matches** `ngModel`:
 <input data-ng-model="foo">
 ```
 
-And the following <person> element **matches** the `person` directive:
+And the following `<person>` element **matches** the `person` directive:
 
 ```html
 <person>{{name}}</person>
@@ -119,11 +120,13 @@ The other forms shown above are accepted for legacy reasons but we advise you to
 
 ### Directive types
 
-`$compile` can match directives based on element names, attributes, class names, as well as comments.
+`$compile` can match directives based on element names (E), attributes (A), class names (C),
+and comments (M).
 
-All of the Angular-provided directives match attribute name, tag name, comments, or class name.
-The following demonstrates the various ways a directive (`myDir` in this case) can be referenced
-from within a template:
+The built-in the AngularJS directives show in their documentation page which type of matching they support.
+
+The following demonstrates the various ways a directive that matches all 4 types
+(`myDir` in this case) can be referenced from within a template.
 
 ```html
 <my-dir></my-dir>
@@ -131,6 +134,10 @@ from within a template:
 <!-- directive: my-dir exp -->
 <span class="my-dir: exp;"></span>
 ```
+
+A directive can specify which of the 4 matching types it supports in the
+{@link ng.$compile#-restrict- `restrict`} property of the directive definition object.
+The default is `EA`.
 
 <div class="alert alert-success">
 **Best Practice:** Prefer using directives via tag name and attributes over comment and class names.
@@ -335,9 +342,7 @@ Let's change our directive to use `restrict: 'E'`:
   </file>
 </example>
 
-For more on the
-{@link ng.$compile#directive-definition-object `restrict`}
-property, see the
+For more on the `restrict` property, see the
 {@link ng.$compile#directive-definition-object API docs}.
 
 <div class="alert alert-info">
@@ -450,8 +455,8 @@ scope: {
 The **scope option** is an object that contains a property for each isolate scope binding.  In this
 case it has just one property:
 
-- Its name (`customerInfo`) corresponds to the
-directive's **isolate scope** property `customerInfo`.
+- Its name (`customerInfo`) corresponds to the directive's **isolate scope** property,
+  `customerInfo`.
 - Its value (`=info`) tells `$compile` to bind to the `info` attribute.
 
 <div class="alert alert-warning">
@@ -517,8 +522,8 @@ that you explicitly pass in.
 
 <div class="alert alert-warning">
 **Note:** Normally, a scope prototypically inherits from its parent. An isolated scope does not.
-See the {@link $compile#directive-definition-object
-"Directive Definition Object - scope"} section for more information about isolate scopes.
+See the {@link $compile#directive-definition-object "Directive Definition Object - scope"} section
+for more information about isolate scopes.
 </div>
 
 <div class="alert alert-success">

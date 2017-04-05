@@ -54,6 +54,7 @@
  * {@link guide/accessibility Developer Guide}.
  */
 var ngAriaModule = angular.module('ngAria', ['ng']).
+                        info({ angularVersion: '"NG_VERSION_FULL"' }).
                         provider('$aria', $AriaProvider);
 
 /**
@@ -355,7 +356,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
   return {
     restrict: 'A',
     compile: function(elem, attr) {
-      var fn = $parse(attr.ngClick, /* interceptorFn */ null, /* expensiveChecks */ true);
+      var fn = $parse(attr.ngClick);
       return function(scope, elem, attr) {
 
         if (!isNodeOneOf(elem, nodeBlackList)) {

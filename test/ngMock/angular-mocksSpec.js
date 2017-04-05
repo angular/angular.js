@@ -795,23 +795,6 @@ describe('ngMock', function() {
           });
         });
 
-        describe('module cleanup', function() {
-          function testFn() {
-
-          }
-
-          it('should add hashKey to module function', function() {
-            module(testFn);
-            inject(function() {
-              expect(testFn.$$hashKey).toBeDefined();
-            });
-          });
-
-          it('should cleanup hashKey after previous test', function() {
-            expect(testFn.$$hashKey).toBeUndefined();
-          });
-        });
-
         describe('$inject cleanup', function() {
           function testFn() {
 
@@ -940,7 +923,7 @@ describe('ngMock', function() {
       }));
 
       describe('error stack trace when called outside of spec context', function() {
-        // - Chrome, Firefox, Edge, Opera give us the stack trace as soon as an Error is created
+        // - Chrome, Firefox, Edge give us the stack trace as soon as an Error is created
         // - IE10+, PhantomJS give us the stack trace only once the error is thrown
         // - IE9 does not provide stack traces
         var stackTraceSupported = (function() {
@@ -1781,7 +1764,7 @@ describe('ngMock', function() {
             expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
           }
         );
-        they('should match colon deliminated parameters in ' + routeShortcut + ' $prop method', methods,
+        they('should match colon delimited parameters in ' + routeShortcut + ' $prop method', methods,
           function() {
             hb[routeShortcut](this, '/route/:id/path/:s_id').respond('path');
             hb(this, '/route/123/path/456', undefined, callback);
@@ -2055,27 +2038,15 @@ describe('ngMock', function() {
 
 
   describe('$controllerDecorator', function() {
-    it('should support creating controller with bindings', function() {
-      var called = false;
-      var data = [
-        { name: 'derp1', id: 0 },
-        { name: 'testname', id: 1 },
-        { name: 'flurp', id: 2 }
-      ];
-      module(function($controllerProvider) {
-        $controllerProvider.register('testCtrl', function() {
-          called = true;
-          expect(this.data).toBe(data);
-        });
-      });
-      inject(function($controller, $rootScope) {
-        $controller('testCtrl', { scope: $rootScope }, { data: data });
-        expect(called).toBe(true);
-      });
-    });
 
-    it('should support assigning bindings when a value is returned from the constructor',
-      function() {
+    describe('with `preAssignBindingsEnabled(true)`', function() {
+
+      beforeEach(module(function($compileProvider) {
+        $compileProvider.preAssignBindingsEnabled(true);
+      }));
+
+
+      it('should support creating controller with bindings', function() {
         var called = false;
         var data = [
           { name: 'derp1', id: 0 },
@@ -2084,10 +2055,8 @@ describe('ngMock', function() {
         ];
         module(function($controllerProvider) {
           $controllerProvider.register('testCtrl', function() {
-            called = true;
             expect(this.data).toBe(data);
-
-            return {};
+            called = true;
           });
         });
         inject(function($controller, $rootScope) {
@@ -2095,11 +2064,64 @@ describe('ngMock', function() {
           expect(ctrl.data).toBe(data);
           expect(called).toBe(true);
         });
-      }
-    );
+      });
 
-    if (/chrome/.test(window.navigator.userAgent)) {
-      it('should support assigning bindings to class-based controller', function() {
+
+      it('should support assigning bindings when a value is returned from the constructor',
+        function() {
+          var called = false;
+          var data = [
+            { name: 'derp1', id: 0 },
+            { name: 'testname', id: 1 },
+            { name: 'flurp', id: 2 }
+          ];
+          module(function($controllerProvider) {
+            $controllerProvider.register('testCtrl', function() {
+              expect(this.data).toBe(data);
+              called = true;
+              return {};
+            });
+          });
+          inject(function($controller, $rootScope) {
+            var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+            expect(ctrl.data).toBe(data);
+            expect(called).toBe(true);
+          });
+        }
+      );
+
+
+      if (/chrome/.test(window.navigator.userAgent)) {
+        it('should support assigning bindings to class-based controller', function() {
+          var called = false;
+          var data = [
+            { name: 'derp1', id: 0 },
+            { name: 'testname', id: 1 },
+            { name: 'flurp', id: 2 }
+          ];
+          module(function($controllerProvider) {
+            // eslint-disable-next-line no-eval
+            var TestCtrl = eval('(class { constructor() { called = true; } })');
+            $controllerProvider.register('testCtrl', TestCtrl);
+          });
+          inject(function($controller, $rootScope) {
+            var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+            expect(ctrl.data).toBe(data);
+            expect(called).toBe(true);
+          });
+        });
+      }
+    });
+
+
+    describe('with `preAssignBindingsEnabled(false)`', function() {
+
+      beforeEach(module(function($compileProvider) {
+        $compileProvider.preAssignBindingsEnabled(false);
+      }));
+
+
+      it('should support creating controller with bindings', function() {
         var called = false;
         var data = [
           { name: 'derp1', id: 0 },
@@ -2107,9 +2129,10 @@ describe('ngMock', function() {
           { name: 'flurp', id: 2 }
         ];
         module(function($controllerProvider) {
-          // eslint-disable-next-line no-eval
-          var TestCtrl = eval('(class { constructor() { called = true; } })');
-          $controllerProvider.register('testCtrl', TestCtrl);
+          $controllerProvider.register('testCtrl', function() {
+            expect(this.data).toBeUndefined();
+            called = true;
+          });
         });
         inject(function($controller, $rootScope) {
           var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
@@ -2117,7 +2140,53 @@ describe('ngMock', function() {
           expect(called).toBe(true);
         });
       });
-    }
+
+
+      it('should support assigning bindings when a value is returned from the constructor',
+        function() {
+          var called = false;
+          var data = [
+            { name: 'derp1', id: 0 },
+            { name: 'testname', id: 1 },
+            { name: 'flurp', id: 2 }
+          ];
+          module(function($controllerProvider) {
+            $controllerProvider.register('testCtrl', function() {
+              expect(this.data).toBeUndefined();
+              called = true;
+              return {};
+            });
+          });
+          inject(function($controller, $rootScope) {
+            var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+            expect(ctrl.data).toBe(data);
+            expect(called).toBe(true);
+          });
+        }
+      );
+
+
+      if (/chrome/.test(window.navigator.userAgent)) {
+        it('should support assigning bindings to class-based controller', function() {
+          var called = false;
+          var data = [
+            { name: 'derp1', id: 0 },
+            { name: 'testname', id: 1 },
+            { name: 'flurp', id: 2 }
+          ];
+          module(function($controllerProvider) {
+            // eslint-disable-next-line no-eval
+            var TestCtrl = eval('(class { constructor() { called = true; } })');
+            $controllerProvider.register('testCtrl', TestCtrl);
+          });
+          inject(function($controller, $rootScope) {
+            var ctrl = $controller('testCtrl', { scope: $rootScope }, { data: data });
+            expect(ctrl.data).toBe(data);
+            expect(called).toBe(true);
+          });
+        });
+      }
+    });
   });
 
 
@@ -2346,13 +2415,15 @@ describe('ngMock', function() {
 
 describe('ngMockE2E', function() {
   describe('$httpBackend', function() {
-    var hb, realHttpBackend, callback;
+    var hb, realHttpBackend, realHttpBackendBrowser, callback;
 
     beforeEach(function() {
       callback = jasmine.createSpy('callback');
       angular.module('ng').config(function($provide) {
         realHttpBackend = jasmine.createSpy('real $httpBackend');
-        $provide.value('$httpBackend', realHttpBackend);
+        $provide.factory('$httpBackend', ['$browser', function($browser) {
+          return realHttpBackend.and.callFake(function() { realHttpBackendBrowser = $browser; });
+        }]);
       });
       module('ngMockE2E');
       inject(function($injector) {
@@ -2390,6 +2461,14 @@ describe('ngMockE2E', function() {
 
         expect(realHttpBackend).not.toHaveBeenCalled();
         expect(callback).toHaveBeenCalledOnceWith(200, 'passThrough override', '', '');
+      }));
+
+      it('should pass through to an httpBackend that uses the same $browser service', inject(function($browser) {
+        hb.when('GET', /\/passThrough\/.*/).passThrough();
+        hb('GET', '/passThrough/23');
+
+        expect(realHttpBackend).toHaveBeenCalledOnce();
+        expect(realHttpBackendBrowser).toBe($browser);
       }));
     });
 
@@ -2856,7 +2935,7 @@ describe('sharedInjector', function() {
 
   // we use the 'module' and 'inject' globals from ngMock
 
-  it('allowes me to mutate a single instace of a module (proving it has been shared)', ngMockTest(function() {
+  it('allows me to mutate a single instance of a module (proving it has been shared)', ngMockTest(function() {
     sdescribe('test state is shared', function() {
       angular.module('sharedInjectorTestModuleA', [])
         .factory('testService', function() {

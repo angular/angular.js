@@ -44,30 +44,31 @@ describe('docs.angularjs.org', function() {
       var ngBindLink = element(by.css('.definition-table td a[href="api/ng/directive/ngClick"]'));
       ngBindLink.click();
 
-      var pageBody = element(by.css('h1'));
-      expect(pageBody.getText()).toEqual('ngClick');
+      var mainHeader = element(by.css('.main-body h1 '));
+      expect(mainHeader.getText()).toEqual('ngClick');
     });
 
 
 
     it('should be resilient to trailing slashes', function() {
       browser.get('build/docs/index-production.html#!/api/ng/function/angular.noop/');
-      var pageBody = element(by.css('h1'));
-      expect(pageBody.getText()).toEqual('angular.noop');
+
+      var mainHeader = element(by.css('.main-body h1 '));
+      expect(mainHeader.getText()).toEqual('angular.noop');
     });
 
 
     it('should be resilient to trailing "index"', function() {
       browser.get('build/docs/index-production.html#!/api/ng/function/angular.noop/index');
-      var pageBody = element(by.css('h1'));
-      expect(pageBody.getText()).toEqual('angular.noop');
+      var mainHeader = element(by.css('.main-body h1 '));
+      expect(mainHeader.getText()).toEqual('angular.noop');
     });
 
 
     it('should be resilient to trailing "index/"', function() {
       browser.get('build/docs/index-production.html#!/api/ng/function/angular.noop/index/');
-      var pageBody = element(by.css('h1'));
-      expect(pageBody.getText()).toEqual('angular.noop');
+      var mainHeader = element(by.css('.main-body h1 '));
+      expect(mainHeader.getText()).toEqual('angular.noop');
     });
 
 
@@ -78,7 +79,8 @@ describe('docs.angularjs.org', function() {
 
     it('should display an error if the page does not exist', function() {
       browser.get('build/docs/index-production.html#!/api/does/not/exist');
-      expect(element(by.css('h1')).getText()).toBe('Oops!');
+      var mainHeader = element(by.css('.main-body h1 '));
+      expect(mainHeader.getText()).toEqual('Oops!');
     });
 
   });

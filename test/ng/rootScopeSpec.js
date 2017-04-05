@@ -13,9 +13,7 @@ describe('Scope', function() {
 
 
     it('should expose the constructor', inject(function($rootScope) {
-      if (msie < 11) return;
-      // eslint-disable-next-line no-proto
-      expect($rootScope.__proto__).toBe($rootScope.constructor.prototype);
+      expect(Object.getPrototypeOf($rootScope)).toBe($rootScope.constructor.prototype);
     }));
 
 
@@ -125,7 +123,9 @@ describe('Scope', function() {
       function Listener() {
         expect(this).toBeUndefined();
       }
-      if (msie < 10) return;
+      // Support: IE 9 only
+      // IE 9 doesn't support strict mode so its `this` will always be defined.
+      if (msie === 9) return;
       $rootScope.$watch(Getter, Listener);
       $rootScope.$digest();
     }));
@@ -498,6 +498,78 @@ describe('Scope', function() {
       expect(watch2).toHaveBeenCalled();
     }));
 
+
+    it('should not skip watchers when adding new watchers during digest',
+      inject(function($rootScope) {
+        var log = [];
+
+        var watchFn1 = function() { log.push(1); };
+        var watchFn2 = function() { log.push(2); };
+        var watchFn3 = function() { log.push(3); };
+        var addWatcherOnce = function(newValue, oldValue) {
+          if (newValue === oldValue) {
+            $rootScope.$watch(watchFn3);
+          }
+        };
+
+        $rootScope.$watch(watchFn1, addWatcherOnce);
+        $rootScope.$watch(watchFn2);
+
+        $rootScope.$digest();
+
+        expect(log).toEqual([1, 2, 3, 1, 2, 3]);
+      })
+    );
+
+
+    it('should not run the current watcher twice when removing a watcher during digest',
+      inject(function($rootScope) {
+        var log = [];
+        var removeWatcher3;
+
+        var watchFn3 = function() { log.push(3); };
+        var watchFn2 = function() { log.push(2); };
+        var watchFn1 = function() { log.push(1); };
+        var removeWatcherOnce = function(newValue, oldValue) {
+          if (newValue === oldValue) {
+            removeWatcher3();
+          }
+        };
+
+        $rootScope.$watch(watchFn1, removeWatcherOnce);
+        $rootScope.$watch(watchFn2);
+        removeWatcher3 = $rootScope.$watch(watchFn3);
+
+        $rootScope.$digest();
+
+        expect(log).toEqual([1, 2, 1, 2]);
+      })
+    );
+
+
+    it('should not skip watchers when removing itself during digest',
+      inject(function($rootScope) {
+        var log = [];
+        var removeWatcher1;
+
+        var watchFn3 = function() { log.push(3); };
+        var watchFn2 = function() { log.push(2); };
+        var watchFn1 = function() { log.push(1); };
+        var removeItself = function() {
+          removeWatcher1();
+        };
+
+        removeWatcher1 = $rootScope.$watch(watchFn1, removeItself);
+        $rootScope.$watch(watchFn2);
+        $rootScope.$watch(watchFn3);
+
+        $rootScope.$digest();
+
+        expect(log).toEqual([1, 2, 3, 2, 3]);
+      })
+    );
+
+
     it('should not infinitely digest when current value is NaN', inject(function($rootScope) {
       $rootScope.$watch(function() { return NaN;});
 
@@ -545,7 +617,7 @@ describe('Scope', function() {
 
         listener.calls.reset();
         $rootScope.foo = 'bar';
-        $rootScope.$digest(); //triger
+        $rootScope.$digest(); //trigger
         expect(listener).toHaveBeenCalledOnce();
 
         listener.calls.reset();
@@ -598,7 +670,7 @@ describe('Scope', function() {
 
         $rootScope.$digest();
 
-        expect(log).toEqual(['watch1', 'watchAction1', 'watch1', 'watch3', 'watchAction3',
+        expect(log).toEqual(['watch1', 'watchAction1', 'watch3', 'watchAction3',
                              'watch1', 'watch3']);
         scope.$destroy();
         log.reset();
@@ -895,8 +967,7 @@ describe('Scope', function() {
           $rootScope.$watch(log.fn('w5'), log.fn('w5action'));
         });
         $rootScope.$digest();
-        expect(log).toEqual(['w1', 'w2', 'w3', 'w4', 'w4action',
-                             'w1', 'w2', 'w3', 'w4', 'w5', 'w5action',
+        expect(log).toEqual(['w1', 'w2', 'w3', 'w4', 'w4action', 'w5', 'w5action',
                              'w1', 'w2', 'w3', 'w4', 'w5']);
       }));
 
@@ -1227,6 +1298,7 @@ describe('Scope', function() {
     }));
 
 
+    // Support: IE 9 only
     if (msie === 9) {
       // See issue https://github.com/angular/angular.js/issues/10706
       it('should completely disconnect all child scopes on IE9', inject(function($rootScope) {
@@ -1372,9 +1444,9 @@ describe('Scope', function() {
       expect(childScope.$$asyncQueue).toBe($rootScope.$$asyncQueue);
       expect(isolateScope.$$asyncQueue).toBeUndefined();
       expect($rootScope.$$asyncQueue).toEqual([
-        {scope: $rootScope, expression: $parse('rootExpression'), locals: undefined},
-        {scope: childScope, expression: $parse('childExpression'), locals: undefined},
-        {scope: isolateScope, expression: $parse('isolateExpression'), locals: undefined}
+        {scope: $rootScope, fn: $parse('rootExpression'), locals: undefined},
+        {scope: childScope, fn: $parse('childExpression'), locals: undefined},
+        {scope: isolateScope, fn: $parse('isolateExpression'), locals: undefined}
       ]);
     }));
 
@@ -1427,6 +1499,14 @@ describe('Scope', function() {
         expect(log).toEqual(['eval-ed 1!', 'eval-ed 2!']);
       });
     });
+
+    it('should not pass anything as `this` to scheduled functions', inject(function($rootScope) {
+      var this1 = {};
+      var this2 = (function() { return this; })();
+      $rootScope.$evalAsync(function() { this1 = this; });
+      $rootScope.$digest();
+      expect(this1).toEqual(this2);
+    }));
   });
 
 

@@ -194,7 +194,7 @@ angular.module('phonecatApp', [
 ```
 
 Now, in addition to the core services and directives, we can also configure the `$route` service
-(using it's provider) for our application. In order to be able to quickly locate the configuration
+(using its provider) for our application. In order to be able to quickly locate the configuration
 code, we put it into a separate file and used the `.config` suffix.
 
 <br />
@@ -324,7 +324,7 @@ modularity.
 
 The takeaway here is:
 
-* Always be explicit about the dependecies of a sub-module. Do not rely on dependencies inherited
+* Always be explicit about the dependencies of a sub-module. Do not rely on dependencies inherited
   from a parent module (because that parent module might not be there some day).
 
 <div class="alert alert-success">
@@ -402,7 +402,7 @@ You can now rerun `npm run protractor` to see the tests run (and hopefully pass)
 
 <div></div>
 
-* Try to add a `{{$ctrl.phoneId}` binding in the template string for the phone details view:
+* Try to add a `{{$ctrl.phoneId}}` binding in the template string for the phone details view:
 
   ```js
   when('/phones/:phoneId', {

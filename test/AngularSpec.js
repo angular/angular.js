@@ -7,6 +7,7 @@ Float32Array, Float64Array,  */
 
 describe('angular', function() {
   var element, document;
+  var originalObjectMaxDepthInErrorMessage = minErrConfig.objectMaxDepth;
 
   beforeEach(function() {
     document = window.document;
@@ -14,6 +15,30 @@ describe('angular', function() {
 
   afterEach(function() {
     dealoc(element);
+    minErrConfig.objectMaxDepth = originalObjectMaxDepthInErrorMessage;
+  });
+
+  describe('errorHandlingConfig', function() {
+    it('should get default objectMaxDepth', function() {
+      expect(errorHandlingConfig().objectMaxDepth).toBe(5);
+    });
+
+    it('should set objectMaxDepth', function() {
+      errorHandlingConfig({objectMaxDepth: 3});
+      expect(errorHandlingConfig().objectMaxDepth).toBe(3);
+    });
+
+    it('should not change objectMaxDepth when undefined is supplied', function() {
+      errorHandlingConfig({objectMaxDepth: undefined});
+      expect(errorHandlingConfig().objectMaxDepth).toBe(originalObjectMaxDepthInErrorMessage);
+    });
+
+    they('should set objectMaxDepth to NaN when $prop is supplied',
+        [NaN, null, true, false, -1, 0], function(maxDepth) {
+          errorHandlingConfig({objectMaxDepth: maxDepth});
+          expect(errorHandlingConfig().objectMaxDepth).toBeNaN();
+        }
+    );
   });
 
   describe('case', function() {
@@ -602,6 +627,31 @@ describe('angular', function() {
       expect(copy(new Number(NaN)).valueOf()).toBeNaN();
       /* eslint-enable */
     });
+
+    it('should copy source until reaching a given max depth', function() {
+      var source = {a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}};
+      var dest;
+
+      dest =  copy(source, {}, 1);
+      expect(dest).toEqual({a1:1, b1:'...', c1:'...', d1:'...'});
+
+      dest =  copy(source, {}, 2);
+      expect(dest).toEqual({a1:1, b1:{b2:'...'}, c1:[1,'...'], d1:{d2:1}});
+
+      dest =  copy(source, {}, 3);
+      expect(dest).toEqual({a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}});
+
+      dest =  copy(source, {}, 4);
+      expect(dest).toEqual({a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}});
+    });
+
+    they('should copy source and ignore max depth when maxDepth = $prop',
+      [NaN, null, undefined, true, false, -1, 0], function(maxDepth) {
+        var source = {a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}};
+        var dest =  copy(source, {}, maxDepth);
+        expect(dest).toEqual({a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}});
+      }
+    );
   });
 
   describe('extend', function() {
@@ -1682,8 +1732,100 @@ describe('angular', function() {
 
       dealoc(appElement);
     });
-  });
 
+    // IE does not support `document.currentScript` (nor extensions with protocol), so skip tests.
+    if (!msie) {
+      describe('auto bootstrap restrictions', function() {
+
+        function createFakeDoc(attrs, protocol, currentScript) {
+
+          protocol = protocol || 'http:';
+          var origin = protocol + '//something';
+
+          if (currentScript === undefined) {
+            currentScript = document.createElement('script');
+            Object.keys(attrs).forEach(function(key) { currentScript.setAttribute(key, attrs[key]); });
+          }
+
+          // Fake a minimal document object (the actual document.currentScript is readonly).
+          return {
+            currentScript: currentScript,
+            location: {protocol: protocol, origin: origin},
+            createElement: document.createElement.bind(document)
+          };
+        }
+
+        it('should bootstrap from an extension into an extension document for same-origin documents only', function() {
+
+          // Extension URLs are browser-specific, so we must choose a scheme that is supported by the browser to make
+          // sure that the URL is properly parsed.
+          var protocol;
+          var userAgent = window.navigator.userAgent;
+          if (/Firefox\//.test(userAgent)) {
+            protocol = 'moz-extension:';
+          } else if (/Edge\//.test(userAgent)) {
+            protocol = 'ms-browser-extension:';
+          } else if (/Chrome\//.test(userAgent)) {
+            protocol = 'chrome-extension:';
+          } else if (/Safari\//.test(userAgent)) {
+            protocol = 'safari-extension:';
+          } else {
+            protocol = 'browserext:';  // Upcoming standard scheme.
+          }
+
+          expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something'}, protocol))).toBe(true);
+          expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something-else'}, protocol))).toBe(false);
+        });
+
+        it('should bootstrap from a script with no source (e.g. src, href or xlink:href attributes)', function() {
+
+          expect(allowAutoBootstrap(createFakeDoc({src: null}))).toBe(true);
+          expect(allowAutoBootstrap(createFakeDoc({href: null}))).toBe(true);
+          expect(allowAutoBootstrap(createFakeDoc({'xlink:href': null}))).toBe(true);
+        });
+
+        it('should not bootstrap from a script with an empty source (e.g. `src=""`)', function() {
+          expect(allowAutoBootstrap(createFakeDoc({src: ''}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({href: ''}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({'xlink:href': ''}))).toBe(false);
+        });
+
+
+        it('should not bootstrap from an extension into a non-extension document', function() {
+
+          expect(allowAutoBootstrap(createFakeDoc({src: 'resource://something'}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({src: 'file://whatever'}))).toBe(true);
+        });
+
+        it('should not bootstrap from an extension into a non-extension document, via SVG script', function() {
+
+          // SVG script tags don't use the `src` attribute to load their source.
+          // Instead they use `href` or the deprecated `xlink:href` attributes.
+
+          expect(allowAutoBootstrap(createFakeDoc({href: 'resource://something'}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({'xlink:href': 'resource://something'}))).toBe(false);
+
+          expect(allowAutoBootstrap(createFakeDoc({src: 'http://something', href: 'resource://something'}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({href: 'http://something', 'xlink:href': 'resource://something'}))).toBe(false);
+          expect(allowAutoBootstrap(createFakeDoc({src: 'resource://something', href: 'http://something', 'xlink:href': 'http://something'}))).toBe(false);
+        });
+
+        it('should not bootstrap if the currentScript property has been clobbered', function() {
+
+          var img = document.createElement('img');
+          img.setAttribute('src', '');
+          expect(allowAutoBootstrap(createFakeDoc({}, 'http:', img))).toBe(false);
+        });
+
+        it('should not bootstrap if bootstrapping is disabled', function() {
+          isAutoBootstrapAllowed = false;
+          angularInit(jqLite('<div ng-app></div>')[0], bootstrapSpy);
+          expect(bootstrapSpy).not.toHaveBeenCalled();
+          isAutoBootstrapAllowed = true;
+        });
+      });
+    }
+  });
 
   describe('angular service', function() {
     it('should override services', function() {

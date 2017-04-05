@@ -60,7 +60,7 @@ var $$CoreAnimateJsProvider = /** @this */ function() {
 // this is prefixed with Core since it conflicts with
 // the animateQueueProvider defined in ngAnimate/animateQueue.js
 var $$CoreAnimateQueueProvider = /** @this */ function() {
-  var postDigestQueue = new HashMap();
+  var postDigestQueue = new NgMap();
   var postDigestElements = [];
 
   this.$get = ['$$AnimateRunner', '$rootScope',
@@ -139,7 +139,7 @@ var $$CoreAnimateQueueProvider = /** @this */ function() {
               jqLiteRemoveClass(elm, toRemove);
             }
           });
-          postDigestQueue.remove(element);
+          postDigestQueue.delete(element);
         }
       });
       postDigestElements.length = 0;
@@ -154,7 +154,7 @@ var $$CoreAnimateQueueProvider = /** @this */ function() {
 
       if (classesAdded || classesRemoved) {
 
-        postDigestQueue.put(element, data);
+        postDigestQueue.set(element, data);
         postDigestElements.push(element);
 
         if (postDigestElements.length === 1) {
@@ -179,6 +179,7 @@ var $$CoreAnimateQueueProvider = /** @this */ function() {
  */
 var $AnimateProvider = ['$provide', /** @this */ function($provide) {
   var provider = this;
+  var classNameFilter = null;
 
   this.$$registeredAnimations = Object.create(null);
 
@@ -247,16 +248,16 @@ var $AnimateProvider = ['$provide', /** @this */ function($provide) {
    */
   this.classNameFilter = function(expression) {
     if (arguments.length === 1) {
-      this.$$classNameFilter = (expression instanceof RegExp) ? expression : null;
-      if (this.$$classNameFilter) {
-        var reservedRegex = new RegExp('(\\s+|\\/)' + NG_ANIMATE_CLASSNAME + '(\\s+|\\/)');
-        if (reservedRegex.test(this.$$classNameFilter.toString())) {
-          throw $animateMinErr('nongcls','$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "{0}" CSS class.', NG_ANIMATE_CLASSNAME);
-
+      classNameFilter = (expression instanceof RegExp) ? expression : null;
+      if (classNameFilter) {
+        var reservedRegex = new RegExp('[(\\s|\\/)]' + NG_ANIMATE_CLASSNAME + '[(\\s|\\/)]');
+        if (reservedRegex.test(classNameFilter.toString())) {
+          classNameFilter = null;
+          throw $animateMinErr('nongcls', '$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "{0}" CSS class.', NG_ANIMATE_CLASSNAME);
         }
       }
     }
-    return this.$$classNameFilter;
+    return classNameFilter;
   };
 
   this.$get = ['$$animateQueue', function($$animateQueue) {

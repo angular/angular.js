@@ -584,6 +584,40 @@ describe('ngView', function() {
         });
       });
     });
+
+
+    it('should not trigger a digest when the view is changed', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/foo', {templateUrl: 'myUrl1'});
+        $routeProvider.when('/bar', {templateUrl: 'myUrl2'});
+      });
+
+      inject(function($$rAF, $templateCache, $rootScope, $compile, $timeout, $location, $httpBackend) {
+        var spy = spyOn($rootScope, '$digest').and.callThrough();
+
+        $templateCache.put('myUrl1', 'my template content');
+        $templateCache.put('myUrl2', 'my other template content');
+
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        // The animation completion is async even without actual animations
+        $$rAF.flush();
+        expect(element.text()).toEqual('my template content');
+
+        $location.path('/bar');
+        $rootScope.$digest();
+        spy.calls.reset();
+
+        $$rAF.flush();
+        expect(element.text()).toEqual('my other template content');
+
+        expect(spy).not.toHaveBeenCalled();
+        // A digest may have been triggered asynchronously, so check the queue
+        $timeout.verifyNoPendingTasks();
+      });
+    });
+
   });
 
   describe('and transcludes', function() {

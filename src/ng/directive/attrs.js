@@ -159,7 +159,8 @@
  *
  * @description
  *
- * This directive sets the `disabled` attribute on the element if the
+ * This directive sets the `disabled` attribute on the element (typically a form control,
+ * e.g. `input`, `button`, `select` etc.) if the
  * {@link guide/expression expression} inside `ngDisabled` evaluates to truthy.
  *
  * A special directive is necessary because we cannot use interpolation inside the `disabled`
@@ -426,10 +427,11 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
 
           attr.$set(name, value);
 
-          // on IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
+          // Support: IE 9-11 only
+          // On IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
           // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
           // to set the property as well to achieve the desired effect.
-          // we use attr[attrName] value since $set can sanitize the url.
+          // We use attr[attrName] value since $set can sanitize the url.
           if (msie && propName) element.prop(propName, attr[name]);
         });
       }

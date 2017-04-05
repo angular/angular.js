@@ -717,6 +717,13 @@ function findConstantAndWatchExpressions(ast, $filter) {
       if (!property.value.constant) {
         argsToWatch.push.apply(argsToWatch, property.value.toWatch);
       }
+      if (property.computed) {
+        findConstantAndWatchExpressions(property.key, $filter);
+        if (!property.key.constant) {
+          argsToWatch.push.apply(argsToWatch, property.key.toWatch);
+        }
+      }
+
     });
     ast.constant = allConstants;
     ast.toWatch = argsToWatch;
@@ -762,15 +769,13 @@ function isConstant(ast) {
   return ast.constant;
 }
 
-function ASTCompiler(astBuilder, $filter) {
-  this.astBuilder = astBuilder;
+function ASTCompiler($filter) {
   this.$filter = $filter;
 }
 
 ASTCompiler.prototype = {
-  compile: function(expression) {
+  compile: function(ast) {
     var self = this;
-    var ast = this.astBuilder.ast(expression);
     this.state = {
       nextId: 0,
       filters: {},
@@ -819,16 +824,12 @@ ASTCompiler.prototype = {
         'getStringValue',
         'ifDefined',
         'plus',
-        'text',
         fnString))(
           this.$filter,
           getStringValue,
           ifDefined,
-          plusFn,
-          expression);
+          plusFn);
     this.state = this.stage = undefined;
-    fn.literal = isLiteral(ast);
-    fn.constant = isConstant(ast);
     return fn;
   },
 
@@ -1231,16 +1232,13 @@ ASTCompiler.prototype = {
 };
 
 
-function ASTInterpreter(astBuilder, $filter) {
-  this.astBuilder = astBuilder;
+function ASTInterpreter($filter) {
   this.$filter = $filter;
 }
 
 ASTInterpreter.prototype = {
-  compile: function(expression) {
+  compile: function(ast) {
     var self = this;
-    var ast = this.astBuilder.ast(expression);
-    this.expression = expression;
     findConstantAndWatchExpressions(ast, self.$filter);
     var assignable;
     var assign;
@@ -1279,8 +1277,6 @@ ASTInterpreter.prototype = {
     if (inputs) {
       fn.inputs = inputs;
     }
-    fn.literal = isLiteral(ast);
-    fn.constant = isConstant(ast);
     return fn;
   },
 
@@ -1311,8 +1307,7 @@ ASTInterpreter.prototype = {
         context
       );
     case AST.Identifier:
-      return self.identifier(ast.name,
-                             context, create, self.expression);
+      return self.identifier(ast.name, context, create);
     case AST.MemberExpression:
       left = this.recurse(ast.object, false, !!create);
       if (!ast.computed) {
@@ -1320,8 +1315,8 @@ ASTInterpreter.prototype = {
       }
       if (ast.computed) right = this.recurse(ast.property);
       return ast.computed ?
-        this.computedMember(left, right, context, create, self.expression) :
-        this.nonComputedMember(left, right, context, create, self.expression);
+        this.computedMember(left, right, context, create) :
+        this.nonComputedMember(left, right, context, create);
     case AST.CallExpression:
       args = [];
       forEach(ast.arguments, function(expr) {
@@ -1547,7 +1542,7 @@ ASTInterpreter.prototype = {
   value: function(value, context) {
     return function() { return context ? {context: undefined, name: undefined, value: value} : value; };
   },
-  identifier: function(name, context, create, expression) {
+  identifier: function(name, context, create) {
     return function(scope, locals, assign, inputs) {
       var base = locals && (name in locals) ? locals : scope;
       if (create && create !== 1 && base && base[name] == null) {
@@ -1561,7 +1556,7 @@ ASTInterpreter.prototype = {
       }
     };
   },
-  computedMember: function(left, right, context, create, expression) {
+  computedMember: function(left, right, context, create) {
     return function(scope, locals, assign, inputs) {
       var lhs = left(scope, locals, assign, inputs);
       var rhs;
@@ -1583,7 +1578,7 @@ ASTInterpreter.prototype = {
       }
     };
   },
-  nonComputedMember: function(left, right, context, create, expression) {
+  nonComputedMember: function(left, right, context, create) {
     return function(scope, locals, assign, inputs) {
       var lhs = left(scope, locals, assign, inputs);
       if (create && create !== 1) {
@@ -1610,20 +1605,21 @@ ASTInterpreter.prototype = {
 /**
  * @constructor
  */
-var Parser = function Parser(lexer, $filter, options) {
-  this.lexer = lexer;
-  this.$filter = $filter;
-  this.options = options;
+function Parser(lexer, $filter, options) {
   this.ast = new AST(lexer, options);
-  this.astCompiler = options.csp ? new ASTInterpreter(this.ast, $filter) :
-                                   new ASTCompiler(this.ast, $filter);
-};
+  this.astCompiler = options.csp ? new ASTInterpreter($filter) :
+                                   new ASTCompiler($filter);
+}
 
 Parser.prototype = {
   constructor: Parser,
 
   parse: function(text) {
-    return this.astCompiler.compile(text);
+    var ast = this.ast.ast(text);
+    var fn = this.astCompiler.compile(ast);
+    fn.literal = isLiteral(ast);
+    fn.constant = isConstant(ast);
+    return fn;
   }
 };
 
@@ -1769,8 +1765,8 @@ function $ParseProvider() {
             if (parsedExpression.constant) {
               parsedExpression.$$watchDelegate = constantWatchDelegate;
             } else if (oneTime) {
-              parsedExpression.$$watchDelegate = parsedExpression.literal ?
-                  oneTimeLiteralWatchDelegate : oneTimeWatchDelegate;
+              parsedExpression.oneTime = true;
+              parsedExpression.$$watchDelegate = oneTimeWatchDelegate;
             } else if (parsedExpression.inputs) {
               parsedExpression.$$watchDelegate = inputsWatchDelegate;
             }
@@ -1786,7 +1782,7 @@ function $ParseProvider() {
       }
     }
 
-    function expressionInputDirtyCheck(newValue, oldValueOfValue) {
+    function expressionInputDirtyCheck(newValue, oldValueOfValue, compareObjectIdentity) {
 
       if (newValue == null || oldValueOfValue == null) { // null/undefined
         return newValue === oldValueOfValue;
@@ -1799,7 +1795,7 @@ function $ParseProvider() {
         //             be cheaply dirty-checked
         newValue = getValueOf(newValue);
 
-        if (typeof newValue === 'object') {
+        if (typeof newValue === 'object' && !compareObjectIdentity) {
           // objects/arrays are not supported - deep-watching them would be too expensive
           return false;
         }
@@ -1821,7 +1817,7 @@ function $ParseProvider() {
         inputExpressions = inputExpressions[0];
         return scope.$watch(function expressionInputWatch(scope) {
           var newInputValue = inputExpressions(scope);
-          if (!expressionInputDirtyCheck(newInputValue, oldInputValueOf)) {
+          if (!expressionInputDirtyCheck(newInputValue, oldInputValueOf, parsedExpression.literal)) {
             lastResult = parsedExpression(scope, undefined, undefined, [newInputValue]);
             oldInputValueOf = newInputValue && getValueOf(newInputValue);
           }
@@ -1841,7 +1837,7 @@ function $ParseProvider() {
 
         for (var i = 0, ii = inputExpressions.length; i < ii; i++) {
           var newInputValue = inputExpressions[i](scope);
-          if (changed || (changed = !expressionInputDirtyCheck(newInputValue, oldInputValueOfValues[i]))) {
+          if (changed || (changed = !expressionInputDirtyCheck(newInputValue, oldInputValueOfValues[i], parsedExpression.literal))) {
             oldInputValues[i] = newInputValue;
             oldInputValueOfValues[i] = newInputValue && getValueOf(newInputValue);
           }
@@ -1856,6 +1852,7 @@ function $ParseProvider() {
     }
 
     function oneTimeWatchDelegate(scope, listener, objectEquality, parsedExpression, prettyPrintExpression) {
+      var isDone = parsedExpression.literal ? isAllDefined : isDefined;
       var unwatch, lastValue;
       if (parsedExpression.inputs) {
         unwatch = inputsWatchDelegate(scope, oneTimeListener, objectEquality, parsedExpression, prettyPrintExpression);
@@ -1872,9 +1869,9 @@ function $ParseProvider() {
         if (isFunction(listener)) {
           listener(value, old, scope);
         }
-        if (isDefined(value)) {
+        if (isDone(value)) {
           scope.$$postDigest(function() {
-            if (isDefined(lastValue)) {
+            if (isDone(lastValue)) {
               unwatch();
             }
           });
@@ -1882,31 +1879,12 @@ function $ParseProvider() {
       }
     }
 
-    function oneTimeLiteralWatchDelegate(scope, listener, objectEquality, parsedExpression) {
-      var unwatch, lastValue;
-      unwatch = scope.$watch(function oneTimeWatch(scope) {
-        return parsedExpression(scope);
-      }, function oneTimeListener(value, old, scope) {
-        lastValue = value;
-        if (isFunction(listener)) {
-          listener(value, old, scope);
-        }
-        if (isAllDefined(value)) {
-          scope.$$postDigest(function() {
-            if (isAllDefined(lastValue)) unwatch();
-          });
-        }
-      }, objectEquality);
-
-      return unwatch;
-
-      function isAllDefined(value) {
-        var allDefined = true;
-        forEach(value, function(val) {
-          if (!isDefined(val)) allDefined = false;
-        });
-        return allDefined;
-      }
+    function isAllDefined(value) {
+      var allDefined = true;
+      forEach(value, function(val) {
+        if (!isDefined(val)) allDefined = false;
+      });
+      return allDefined;
     }
 
     function constantWatchDelegate(scope, listener, objectEquality, parsedExpression) {
@@ -1922,26 +1900,31 @@ function $ParseProvider() {
       var watchDelegate = parsedExpression.$$watchDelegate;
       var useInputs = false;
 
-      var regularWatch =
-          watchDelegate !== oneTimeLiteralWatchDelegate &&
-          watchDelegate !== oneTimeWatchDelegate;
+      var isDone = parsedExpression.literal ? isAllDefined : isDefined;
 
-      var fn = regularWatch ? function regularInterceptedExpression(scope, locals, assign, inputs) {
+      function regularInterceptedExpression(scope, locals, assign, inputs) {
         var value = useInputs && inputs ? inputs[0] : parsedExpression(scope, locals, assign, inputs);
         return interceptorFn(value, scope, locals);
-      } : function oneTimeInterceptedExpression(scope, locals, assign, inputs) {
-        var value = parsedExpression(scope, locals, assign, inputs);
+      }
+
+      function oneTimeInterceptedExpression(scope, locals, assign, inputs) {
+        var value = useInputs && inputs ? inputs[0] : parsedExpression(scope, locals, assign, inputs);
         var result = interceptorFn(value, scope, locals);
         // we only return the interceptor's result if the
         // initial value is defined (for bind-once)
-        return isDefined(value) ? result : value;
-      };
+        return isDone(value) ? result : value;
+      }
 
-      // Propagate $$watchDelegates other then inputsWatchDelegate
+      var fn = parsedExpression.oneTime ? oneTimeInterceptedExpression : regularInterceptedExpression;
+
+      // Propogate the literal/oneTime attributes
+      fn.literal = parsedExpression.literal;
+      fn.oneTime = parsedExpression.oneTime;
+
+      // Propagate or create inputs / $$watchDelegates
       useInputs = !parsedExpression.inputs;
-      if (parsedExpression.$$watchDelegate &&
-          parsedExpression.$$watchDelegate !== inputsWatchDelegate) {
-        fn.$$watchDelegate = parsedExpression.$$watchDelegate;
+      if (watchDelegate && watchDelegate !== inputsWatchDelegate) {
+        fn.$$watchDelegate = watchDelegate;
         fn.inputs = parsedExpression.inputs;
       } else if (!interceptorFn.$stateful) {
         // If there is an interceptor, but no watchDelegate then treat the interceptor like

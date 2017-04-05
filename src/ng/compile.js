@@ -128,7 +128,8 @@
  * * `$onChanges(changesObj)` - Called whenever one-way (`<`) or interpolation (`@`) bindings are updated. The
  *   `changesObj` is a hash whose keys are the names of the bound properties that have changed, and the values are an
  *   object of the form `{ currentValue, previousValue, isFirstChange() }`. Use this hook to trigger updates within a
- *   component such as cloning the bound value to prevent accidental mutation of the outer value.
+ *   component such as cloning the bound value to prevent accidental mutation of the outer value. Note that this will
+ *   also be called when your bindings are initialized.
  * * `$doCheck()` - Called on each turn of the digest cycle. Provides an opportunity to detect and act on
  *   changes. Any actions that you wish to take in response to the changes that you detect must be
  *   invoked from this hook; implementing this has no effect on when `$onChanges` is called. For example, this hook
@@ -276,10 +277,12 @@
  * the directive's element. If multiple directives on the same element request a new scope,
  * only one new scope is created.
  *
- * * **`{...}` (an object hash):** A new "isolate" scope is created for the directive's element. The
- * 'isolate' scope differs from normal scope in that it does not prototypically inherit from its parent
- * scope. This is useful when creating reusable components, which should not accidentally read or modify
- * data in the parent scope.
+ * * **`{...}` (an object hash):** A new "isolate" scope is created for the directive's template.
+ * The 'isolate' scope differs from normal scope in that it does not prototypically
+ * inherit from its parent scope. This is useful when creating reusable components, which should not
+ * accidentally read or modify data in the parent scope. Note that an isolate scope
+ * directive without a `template` or `templateUrl` will not apply the isolate scope
+ * to its children elements.
  *
  * The 'isolate' scope object hash defines a set of local scope properties derived from attributes on the
  * directive's element. These local properties are useful for aliasing values for templates. The keys in
@@ -372,9 +375,9 @@
  * initialized.
  *
  * <div class="alert alert-warning">
- * **Deprecation warning:** although bindings for non-ES6 class controllers are currently
- * bound to `this` before the controller constructor is called, this use is now deprecated. Please place initialization
- * code that relies upon bindings inside a `$onInit` method on the controller, instead.
+ * **Deprecation warning:** if `$compileProcvider.preAssignBindingsEnabled(true)` was called, bindings for non-ES6 class
+ * controllers are bound to `this` before the controller constructor is called but this use is now deprecated. Please
+ * place initialization code that relies upon bindings inside a `$onInit` method on the controller, instead.
  * </div>
  *
  * It is also possible to set `bindToController` to an object hash with the same format as the `scope` property.
@@ -402,7 +405,7 @@
  *        * defines the parent to which the `cloneLinkingFn` will add the cloned elements.
  *        * default: `$element.parent()` resp. `$element` for `transclude:'element'` resp. `transclude:true`.
  *        * only needed for transcludes that are allowed to contain non html elements (e.g. SVG elements)
- *          and when the `cloneLinkinFn` is passed,
+ *          and when the `cloneLinkingFn` is passed,
  *          as those elements need to created and cloned in a special way when they are defined outside their
  *          usual containers (e.g. like `<svg>`).
  *        * See also the `directive.templateNamespace` property.
@@ -943,6 +946,16 @@
  *
  * For information on how the compiler works, see the
  * {@link guide/compiler Angular HTML Compiler} section of the Developer Guide.
+ *
+ * @knownIssue
+ *
+ * ### Double Compilation
+ *
+   Double compilation occurs when an already compiled part of the DOM gets
+   compiled again. This is an undesired effect and can lead to misbehaving directives, performance issues,
+   and memory leaks. Refer to the Compiler Guide {@link guide/compiler#double-compilation-and-how-to-avoid-it
+   section on double compilation} for an in-depth explanation and ways to avoid it.
+ *
  */
 
 var $compileMinErr = minErr('$compile');
@@ -961,8 +974,8 @@ $CompileProvider.$inject = ['$provide', '$$sanitizeUriProvider'];
 function $CompileProvider($provide, $$sanitizeUriProvider) {
   var hasDirectives = {},
       Suffix = 'Directive',
-      COMMENT_DIRECTIVE_REGEXP = /^\s*directive:\s*([\w\-]+)\s+(.*)$/,
-      CLASS_DIRECTIVE_REGEXP = /(([\w\-]+)(?::([^;]+))?;?)/,
+      COMMENT_DIRECTIVE_REGEXP = /^\s*directive:\s*([\w-]+)\s+(.*)$/,
+      CLASS_DIRECTIVE_REGEXP = /(([\w-]+)(?::([^;]+))?;?)/,
       ALL_OR_NOTHING_ATTRS = makeMap('ngSrc,ngSrcset,src,srcset'),
       REQUIRE_PREFIX_REGEXP = /^(?:(\^\^?)?(\?)?(\^\^?)?)?/;
 
@@ -973,7 +986,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   var bindingCache = createMap();
 
   function parseIsolateBindings(scope, directiveName, isController) {
-    var LOCAL_REGEXP = /^\s*([@&<]|=(\*?))(\??)\s*(\w*)\s*$/;
+    var LOCAL_REGEXP = /^\s*([@&<]|=(\*?))(\??)\s*([\w$]*)\s*$/;
 
     var bindings = createMap();
 
@@ -1377,9 +1390,16 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    *
    * If disabled (false), the compiler calls the constructor first before assigning bindings.
    *
-   * The default value is true in Angular 1.5.x but will switch to false in Angular 1.6.x.
+   * The default value is false.
+   *
+   * @deprecated
+   * sinceVersion="1.6.0"
+   * removeVersion="1.7.0"
+   *
+   * This method and the option to assign the bindings before calling the controller's constructor
+   * will be removed in v1.7.0.
    */
-  var preAssignBindingsEnabled = true;
+  var preAssignBindingsEnabled = false;
   this.preAssignBindingsEnabled = function(enabled) {
     if (isDefined(enabled)) {
       preAssignBindingsEnabled = enabled;
@@ -1949,6 +1969,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       for (var i = 0; i < nodeList.length; i++) {
         attrs = new Attributes();
 
+        // Support: IE 11 only
         // Workaround for #11781 and #14924
         if (msie === 11) {
           mergeConsecutiveTextNodes(nodeList, i, notLiveList);
@@ -2222,7 +2243,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     }
 
     /**
-     * Given a node with an directive-start it collects all of the siblings until it finds
+     * Given a node with a directive-start it collects all of the siblings until it finds
      * directive-end.
      * @param node
      * @param attrStart
@@ -2409,7 +2430,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         if (!directive.templateUrl && directive.controller) {
-          directiveValue = directive.controller;
           controllerDirectives = controllerDirectives || createMap();
           assertNoDuplicate('\'' + directiveName + '\' controller',
               controllerDirectives[directiveName], directive, $compileNode);
@@ -3145,7 +3165,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           if (error instanceof Error) {
             $exceptionHandler(error);
           }
-        }).catch(noop);
+        });
 
       return function delayedNodeLinkFn(ignoreChildLinkFn, scope, node, rootElement, boundTranscludeFn) {
         var childBoundTranscludeFn = boundTranscludeFn;
@@ -3434,7 +3454,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (!optional && !hasOwnProperty.call(attrs, attrName)) {
               destination[scopeName] = attrs[attrName] = undefined;
             }
-            attrs.$observe(attrName, function(value) {
+            removeWatch = attrs.$observe(attrName, function(value) {
               if (isString(value) || isBoolean(value)) {
                 var oldValue = destination[scopeName];
                 recordChanges(scopeName, value, oldValue);
@@ -3453,6 +3473,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               destination[scopeName] = lastValue;
             }
             initialChanges[scopeName] = new SimpleChange(_UNINITIALIZED_VALUE, destination[scopeName]);
+            removeWatchCollection.push(removeWatch);
             break;
 
           case '=':
@@ -3466,8 +3487,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (parentGet.literal) {
               compare = equals;
             } else {
-              // eslint-disable-next-line no-self-compare
-              compare = function simpleCompare(a, b) { return a === b || (a !== a && b !== b); };
+              compare = simpleCompare;
             }
             parentSet = parentGet.assign || function() {
               // reset the change, or we will throw this exception on every $digest
@@ -3542,9 +3562,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       });
 
       function recordChanges(key, currentValue, previousValue) {
-        if (isFunction(destination.$onChanges) && currentValue !== previousValue &&
-            // eslint-disable-next-line no-self-compare
-            (currentValue === currentValue || previousValue === previousValue)) {
+        if (isFunction(destination.$onChanges) && !simpleCompare(currentValue, previousValue)) {
           // If we have not already scheduled the top level onChangesQueue handler then do so now
           if (!onChangesQueue) {
             scope.$$postDigest(flushOnChangesQueue);
