@@ -19,9 +19,12 @@ describe('angular', function() {
   describe('case', function() {
     it('should change case', function() {
       expect(lowercase('ABC90')).toEqual('abc90');
-      expect(manualLowercase('ABC90')).toEqual('abc90');
       expect(uppercase('abc90')).toEqual('ABC90');
-      expect(manualUppercase('abc90')).toEqual('ABC90');
+    });
+
+    it('should change case of non-ASCII letters', function() {
+      expect(lowercase('Ω')).toEqual('ω');
+      expect(uppercase('ω')).toEqual('Ω');
     });
   });
 

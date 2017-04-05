@@ -28,8 +28,6 @@
     "REGEX_STRING_REGEXP" : false,
     "lowercase": false,
     "uppercase": false,
-    "manualLowercase": false,
-    "manualUppercase": false,
     "isArrayLike": false,
     "forEach": false,
     "forEachSorted": false,
