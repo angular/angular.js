@@ -122,9 +122,9 @@ module.exports = function(config, specificOptions) {
       },
       'BS_iOS': {
         base: 'BrowserStack',
-        device: 'iPhone 6',
+        device: 'iPhone 6S',
         os: 'ios',
-        os_version: '8.0'
+        os_version: '9.3'
       }
     }
   });
