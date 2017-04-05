@@ -699,6 +699,7 @@ function jsonFilter() {
  * @description
  * Converts string to lowercase.
  * @see angular.lowercase
+ * @see angular.uppercase
  */
 var lowercaseFilter = valueFn(lowercase);
 
@@ -724,11 +725,6 @@ var lowercaseFilter = valueFn(lowercase);
          <!-- This title should be capitalized -->
          <h1>{{title | uppercase}}</h1>
        </div>
-     </file>
-     <file name="protractor.js" type="protractor">
-       it('should capitalize the text', function() {
-         expect(element(by.binding('title | uppercase')).getText()).toBe('THIS IS A TITLE');
-       });
      </file>
    </example>
  */
