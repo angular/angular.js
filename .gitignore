@@ -1,4 +1,3 @@
-/build/
 /benchpress-build/
 .DS_Store
 gen_docs.disable
@@ -23,3 +22,6 @@ npm-debug.log
 .vscode
 *.log
 *.stackdump
+build/*
+!build/angular.js
+!build/angular.min.js
