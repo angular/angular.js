@@ -698,7 +698,9 @@ function jsonFilter() {
  * @kind function
  * @description
  * Converts string to lowercase.
- * {@link ng.filter.uppercase Reference the example in uppercase as they are nearly identical.}
+ *
+ * See the {@link ng.uppercase uppercase filter documentation} for a functionally identical example.
+ *
  * @see angular.lowercase
  */
 var lowercaseFilter = valueFn(lowercase);
