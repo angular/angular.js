@@ -698,8 +698,8 @@ function jsonFilter() {
  * @kind function
  * @description
  * Converts string to lowercase.
+ * {@link ng.filter.uppercase Reference the example in uppercase as they are nearly identical.}
  * @see angular.lowercase
- * @see angular.uppercase
  */
 var lowercaseFilter = valueFn(lowercase);
 
@@ -711,7 +711,7 @@ var lowercaseFilter = valueFn(lowercase);
  * @description
  * Converts string to uppercase.
  * @example
-   <example name="filter-uppercase">
+   <example module="uppercaseFilterExample" name="filter-uppercase">
      <file name="index.html">
        <script>
          angular.module('uppercaseFilterExample', [])
