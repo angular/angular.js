@@ -770,7 +770,13 @@ browserstack@1.5.0:
   dependencies:
     https-proxy-agent "1.0.0"
 
-browserstacktunnel-wrapper@^1.4.2, browserstacktunnel-wrapper@~1.4.2:
+browserstacktunnel-wrapper@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/browserstacktunnel-wrapper/-/browserstacktunnel-wrapper-2.0.0.tgz#4d6ebf6a667451ad4ee9325fddcf3546607b4d92"
+  dependencies:
+    unzip "~0.1.9"
+
+browserstacktunnel-wrapper@~1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/browserstacktunnel-wrapper/-/browserstacktunnel-wrapper-1.4.2.tgz#6598fb7d784b6ff348e3df7c104b0d9c27ea5275"
   dependencies:
