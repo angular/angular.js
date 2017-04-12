@@ -876,9 +876,7 @@ function createInjector(modulesToLoad, strictDi) {
       }
       var result = func.$$ngIsClass;
       if (!isBoolean(result)) {
-        // Support: Edge 12-13 only
-        // See: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/6156135/
-        result = func.$$ngIsClass = /^(?:class\b|constructor\()/.test(stringifyFn(func));
+        result = func.$$ngIsClass = /^class\b/.test(stringifyFn(func));
       }
       return result;
     }
