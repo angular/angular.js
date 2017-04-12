@@ -292,7 +292,7 @@ function $HttpProvider() {
    *     into JSON format.
    *
    * - **`defaults.transformResponse`** -
-   * `{Array<function(data, headersGetter, status)>|function((data, headersGetter, status))}` -
+   * `{Array<function(data, headersGetter, status)>|function(data, headersGetter, status)}` -
    * An array of functions (or a single function) which are applied to the response data. By default,
    * this is an array which applies one response transformation function that does two things:
    *
