@@ -1733,6 +1733,7 @@ describe('angular', function() {
       dealoc(appElement);
     });
 
+    // Support: IE 9-11 only
     // IE does not support `document.currentScript` (nor extensions with protocol), so skip tests.
     if (!msie) {
       describe('auto bootstrap restrictions', function() {

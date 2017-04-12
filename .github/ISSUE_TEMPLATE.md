@@ -29,7 +29,7 @@ https://plnkr.co or similar (you can use this template as a starting point: http
 **Angular version:** 1.x.y
 <!-- Check whether this is still an issue in the most recent stable or in the snapshot AngularJS version (https://code.angularjs.org/snapshot/) -->
 
-**Browser:** [all | Chrome XX | Firefox XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ]
+**Browser:** [all | Chrome XX | Firefox XX | Edge XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ]
 <!-- All browsers where this could be reproduced (and Operating System if relevant) -->
 
 **Anything else:**

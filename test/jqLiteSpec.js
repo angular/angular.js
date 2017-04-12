@@ -1368,7 +1368,7 @@ describe('jqLite', function() {
       expect(callback).toHaveBeenCalledTimes(1);
     });
 
-    it('should set event.target on IE', function() {
+    it('should set event.target', function() {
       var elm = jqLite(a);
       elm.on('click', function(event) {
         expect(event.target).toBe(a);

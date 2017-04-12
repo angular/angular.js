@@ -18,9 +18,6 @@
     <ul>
     {% if doc.restrict.element %}
       <li>as element:
-      {% if doc.name.indexOf('ng') == 0 -%}
-      (This directive can be used as custom element, but be aware of <a href="guide/ie">IE restrictions</a>).
-      {%- endif %}
       {% code %}
       <{$ doc.name | dashCase $}
         {%- for param in doc.params %}

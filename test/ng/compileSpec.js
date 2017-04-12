@@ -498,7 +498,7 @@ describe('$compile', function() {
       }));
 
       // NOTE: This test may be redundant.
-      // Support: Edge 14+
+      // Support: Edge 14-15+
       // An `<svg>` element inside a `<foreignObject>` element on MS Edge has no
       // size, causing the included `<circle>` element to also have no size and thus fails an
       // assertion (relying on the element having a non-zero size).
@@ -749,36 +749,26 @@ describe('$compile', function() {
           element = $compile('<div factory-error template-error linking-error></div>')($rootScope);
           expect($exceptionHandler.errors[0]).toEqual('FactoryError');
           expect($exceptionHandler.errors[1][0]).toEqual('TemplateError');
-          expect(ie($exceptionHandler.errors[1][1])).
-              toEqual('<div factory-error linking-error template-error>');
+          expect(sortTag($exceptionHandler.errors[1][1])).
+              toEqual('<div factory-error="" linking-error="" template-error="">');
           expect($exceptionHandler.errors[2][0]).toEqual('LinkingError');
-          expect(ie($exceptionHandler.errors[2][1])).
-              toEqual('<div class="ng-scope" factory-error linking-error template-error>');
+          expect(sortTag($exceptionHandler.errors[2][1])).
+              toEqual('<div class="ng-scope" factory-error="" linking-error="" template-error="">');
 
+          // Support: IE 9-11 only, Edge 15+
+          // IE/Edge sort attributes in a different order.
+          function sortTag(text) {
+            var parts, elementName;
 
-          // crazy stuff to make IE happy
-          function ie(text) {
-            var list = [],
-                parts, elementName;
-
-            parts = lowercase(text).
-                replace('<', '').
-                replace('>', '').
-                split(' ');
+            parts = text
+              .replace('<', '')
+              .replace('>', '')
+              .split(' ');
             elementName = parts.shift();
             parts.sort();
             parts.unshift(elementName);
-            forEach(parts, function(value) {
-              if (value.substring(0,2) !== 'ng') {
-                value = value.replace('=""', '');
-                var match = value.match(/=(.*)/);
-                if (match && match[1].charAt(0) !== '"') {
-                  value = value.replace(/=(.*)/, '="$1"');
-                }
-                list.push(value);
-              }
-            });
-            return '<' + list.join(' ') + '>';
+
+            return '<' + parts.join(' ') + '>';
           }
         });
       });
@@ -3358,13 +3348,13 @@ describe('$compile', function() {
     it('should translate {{}} in terminal nodes', inject(function($rootScope, $compile) {
       element = $compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>')($rootScope);
       $rootScope.$digest();
-      expect(sortedHtml(element).replace(' selected="true"', '')).
+      expect(sortedHtml(element).replace(' selected="selected"', '')).
         toEqual('<select ng:model="x">' +
                   '<option value="">Greet !</option>' +
                 '</select>');
       $rootScope.name = 'Misko';
       $rootScope.$digest();
-      expect(sortedHtml(element).replace(' selected="true"', '')).
+      expect(sortedHtml(element).replace(' selected="selected"', '')).
         toEqual('<select ng:model="x">' +
                   '<option value="">Greet Misko!</option>' +
                 '</select>');

@@ -40,8 +40,8 @@ initialization.
         <html ng-app>
 
   3. If you choose to use the old style directive syntax `ng:` then include xml-namespace in `html`
-    to make IE happy. (This is here for historical reasons, and we no longer recommend use of
-    `ng:`.)
+    when running the page in the XHTML mode. (This is here for historical reasons, and we no longer
+    recommend use of `ng:`.)
 
         <html xmlns:ng="http://angularjs.org">
 

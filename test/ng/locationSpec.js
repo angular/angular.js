@@ -1887,29 +1887,11 @@ describe('$location', function() {
         initBrowser({ url: 'http://host.com/base/index.html', basePath: '/base/index.html' }),
         setupRewriteChecks(),
         function($browser) {
-          var rightClick;
-          if (window.document.createEvent) {
-            rightClick = window.document.createEvent('MouseEvents');
-            rightClick.initMouseEvent('click', true, true, window, 1, 10, 10, 10,  10, false,
-                                      false, false, false, 2, null);
+          var rightClick = window.document.createEvent('MouseEvents');
+          rightClick.initMouseEvent('click', true, true, window, 1, 10, 10, 10,  10, false,
+                                    false, false, false, 2, null);
 
-            link.dispatchEvent(rightClick);
-          } else if (window.document.createEventObject) { // for IE
-            rightClick = window.document.createEventObject();
-            rightClick.type = 'click';
-            rightClick.cancelBubble = true;
-            rightClick.detail = 1;
-            rightClick.screenX = 10;
-            rightClick.screenY = 10;
-            rightClick.clientX = 10;
-            rightClick.clientY = 10;
-            rightClick.ctrlKey = false;
-            rightClick.altKey = false;
-            rightClick.shiftKey = false;
-            rightClick.metaKey = false;
-            rightClick.button = 2;
-            link.fireEvent('onclick', rightClick);
-          }
+          link.dispatchEvent(rightClick);
           expectNoRewrite($browser);
         }
       );

@@ -5,7 +5,7 @@
 var noopNgModelController = { $setViewValue: noop, $render: noop };
 
 function setOptionSelectedStatus(optionEl, value) {
-  optionEl.prop('selected', value); // needed for IE
+  optionEl.prop('selected', value);
   /**
    * When unselecting an option, setting the property to null / false should be enough
    * However, screenreaders might react to the selected attribute instead, see
@@ -40,6 +40,7 @@ var SelectController =
   // does not match any of the options. When it is rendered the value of the unknown
   // option is '? XXX ?' where XXX is the hashKey of the value that is not known.
   //
+  // Support: IE 9 only
   // We can't just jqLite('<option>') since jqLite is not smart enough
   // to create it in <select> and IE barfs otherwise.
   self.unknownOption = jqLite(window.document.createElement('option'));
@@ -625,10 +626,11 @@ var selectDirective = function() {
                                                includes(value, selectCtrl.selectValueMap[option.value]));
             var currentlySelected = option.selected;
 
-            // IE and Edge, adding options to the selection via shift+click/UP/DOWN,
+            // Support: IE 9-11 only, Edge 12-15+
+            // In IE and Edge adding options to the selection via shift+click/UP/DOWN
             // will de-select already selected options if "selected" on those options was set
             // more than once (i.e. when the options were already selected)
-            // So we only modify the selected property if neccessary.
+            // So we only modify the selected property if necessary.
             // Note: this behavior cannot be replicated via unit tests because it only shows in the
             // actual user interface.
             if (shouldBeSelected !== currentlySelected) {

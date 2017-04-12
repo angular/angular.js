@@ -53,6 +53,7 @@ describe('minErr', function() {
                                arr,      obj,      anonFn,      namedFn);
 
     expect(myError.message).toContain('[test:26] arr: [1,2,3]; obj: {"a":123,"b":"baar"};');
+    // Support: IE 9-11 only
     // IE does not add space after "function"
     expect(myError.message).toMatch(/anonFn: function\s?\(something\);/);
     expect(myError.message).toContain('namedFn: function foo(something)');

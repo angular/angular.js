@@ -284,7 +284,7 @@ describe('ngHref', function() {
     expect(element.attr('href')).toEqual(undefined);
   }));
 
-  // Support: IE 9-11 only, Edge 12-14+
+  // Support: IE 9-11 only, Edge 12-15+
   if (msie || /\bEdge\/[\d.]+\b/.test(window.navigator.userAgent)) {
     // IE/Edge fail when setting a href to a URL containing a % that isn't a valid escape sequence
     // See https://github.com/angular/angular.js/issues/13388

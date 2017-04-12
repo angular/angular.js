@@ -31,8 +31,8 @@ function xthey(msg, vals, spec) {
 }
 
 function browserSupportsCssAnimations() {
-  // Support: IE < 10
-  // Only IE10+ support keyframes / transitions
+  // Support: IE 9 only
+  // Only IE 10+ support keyframes / transitions
   return !(window.document.documentMode < 10);
 }
 
