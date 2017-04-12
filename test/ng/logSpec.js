@@ -101,24 +101,29 @@ describe('$log', function() {
       })
     );
 
-    it('should not attempt to log the second argument in IE if it is not specified', inject(
-      function() {
-        log = function(arg1, arg2) { logger += 'log;' + arg2; };
-        warn = function(arg1, arg2) { logger += 'warn;' + arg2; };
-        info = function(arg1, arg2) { logger += 'info;' + arg2; };
-        error = function(arg1, arg2) { logger += 'error;' + arg2; };
-        debug = function(arg1, arg2) { logger += 'debug;' + arg2; };
-      },
-      removeApplyFunctionForIE,
-      function($log) {
-        $log.log();
-        $log.warn();
-        $log.info();
-        $log.error();
-        $log.debug();
-        expect(logger).toEqual('log;warn;info;error;debug;');
-      })
-    );
+    // Support: Safari 9.1 only, iOS 9.3 only
+    // For some reason Safari thinks there is always 1 parameter passed here.
+    if (!/\b9\.\d(\.\d+)* safari/i.test(window.navigator.userAgent) &&
+      !/\biphone os 9_/i.test(window.navigator.userAgent)) {
+      it('should not attempt to log the second argument in IE if it is not specified', inject(
+        function() {
+          log = function(arg1, arg2) { logger += 'log,' + arguments.length + ';'; };
+          warn = function(arg1, arg2) { logger += 'warn,' + arguments.length + ';'; };
+          info = function(arg1, arg2) { logger += 'info,' + arguments.length + ';'; };
+          error = function(arg1, arg2) { logger += 'error,' + arguments.length + ';'; };
+          debug = function(arg1, arg2) { logger += 'debug,' + arguments.length + ';'; };
+        },
+        removeApplyFunctionForIE,
+        function($log) {
+          $log.log();
+          $log.warn();
+          $log.info();
+          $log.error();
+          $log.debug();
+          expect(logger).toEqual('log,0;warn,0;info,0;error,0;debug,0;');
+        })
+      );
+    }
   });
 
   describe('$log.debug', function() {
