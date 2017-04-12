@@ -313,8 +313,7 @@ function $SanitizeProvider() {
     return obj;
   }
 
-  var inertBodyElement;
-  (function(window) {
+  var inertBodyElement = (function(window) {
     var doc;
     if (window.document && window.document.implementation) {
       doc = window.document.implementation.createHTMLDocument('inert');
@@ -322,17 +321,7 @@ function $SanitizeProvider() {
       throw $sanitizeMinErr('noinert', 'Can\'t create an inert html document');
     }
     var docElement = doc.documentElement || doc.getDocumentElement();
-    var bodyElements = docElement.getElementsByTagName('body');
-
-    // usually there should be only one body element in the document, but IE doesn't have any, so we need to create one
-    if (bodyElements.length === 1) {
-      inertBodyElement = bodyElements[0];
-    } else {
-      var html = doc.createElement('html');
-      inertBodyElement = doc.createElement('body');
-      html.appendChild(inertBodyElement);
-      doc.appendChild(html);
-    }
+    return docElement.getElementsByTagName('body')[0];
   })(window);
 
   /**
@@ -363,6 +352,7 @@ function $SanitizeProvider() {
       }
       mXSSAttempts--;
 
+      // Support: IE 9-11 only
       // strip custom-namespaced attributes on IE<=11
       if (window.document.documentMode) {
         stripCustomNsAttrs(inertBodyElement);

@@ -17,7 +17,7 @@ describe('urlUtils', function() {
 
 
     it('should return pathname as / if empty path provided', function() {
-      //IE counts / as empty, necessary to use / so that pathname is not context.html
+      // IE (all versions) counts / as empty, necessary to use / so that pathname is not context.html
       var parsed = urlResolve('/');
       expect(parsed.pathname).toBe('/');
     });
