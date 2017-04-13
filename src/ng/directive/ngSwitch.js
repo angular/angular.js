@@ -67,7 +67,7 @@
         <select ng-model="selection" ng-options="item for item in items">
         </select>
         <code>selection={{selection}}</code>
-        <hr/>
+        <hr>
         <div class="animate-switch-container"
           ng-switch on="selection">
             <div class="animate-switch" ng-switch-when="settings|options" ng-switch-when-separator="|">Settings Div</div>

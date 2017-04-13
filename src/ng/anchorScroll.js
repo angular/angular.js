@@ -109,7 +109,7 @@ function $AnchorScrollProvider() {
        </file>
      </example>
    *
-   * <hr />
+   * <hr>
    * The example below illustrates the use of a vertical scroll-offset (specified as a fixed value).
    * See {@link ng.$anchorScroll#yOffset $anchorScroll.yOffset} for more details.
    *

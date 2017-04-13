@@ -317,7 +317,7 @@ The web server is configured to use port 8000. If the port is already in use (fo
 instance of a running web server) you will get an `EADDRINUSE` error. Make sure the port is
 available, before running `npm start`.
 
-<hr />
+<hr>
 
 Now that you have set up your local machine, let's get started with the tutorial:
 {@link step_00 Step 0 - Bootstrapping}

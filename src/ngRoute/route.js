@@ -408,7 +408,7 @@ function $RouteProvider() {
      *
      *       <div ng-view></div>
      *
-     *       <hr />
+     *       <hr>
      *
      *       <pre>$location.path() = {{$location.path()}}</pre>
      *       <pre>$route.current.templateUrl = {{$route.current.templateUrl}}</pre>

@@ -53,7 +53,7 @@ ngRouteModule.directive('ngView', ngViewFillContentFactory);
           <div class="view-animate-container">
             <div ng-view class="view-animate"></div>
           </div>
-          <hr />
+          <hr>
 
           <pre>$location.path() = {{main.$location.path()}}</pre>
           <pre>$route.current.templateUrl = {{main.$route.current.templateUrl}}</pre>

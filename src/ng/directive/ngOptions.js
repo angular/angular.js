@@ -186,7 +186,7 @@ var ngOptionsMinErr = minErr('ngOptions');
               <button ng-click="colors.push({})">add</button>
             </li>
           </ul>
-          <hr/>
+          <hr>
           <label>Color (null not allowed):
             <select ng-model="myColor" ng-options="color.name for color in colors"></select>
           </label><br/>
@@ -212,7 +212,7 @@ var ngOptionsMinErr = minErr('ngOptions');
 
           Select <button ng-click="myColor = { name:'not in list', shade: 'other' }">bogus</button>.
           <br/>
-          <hr/>
+          <hr>
           Currently selected: {{ {selected_color:myColor} }}
           <div style="border:solid 1px black; height:20px"
                ng-style="{'background-color':myColor.name}">

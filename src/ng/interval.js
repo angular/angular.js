@@ -119,9 +119,9 @@ function $IntervalProvider() {
       *
       *   <div>
       *     <div ng-controller="ExampleController">
-      *       <label>Date format: <input ng-model="format"></label> <hr/>
+      *       <label>Date format: <input ng-model="format"></label> <hr>
       *       Current time is: <span my-current-time="format"></span>
-      *       <hr/>
+      *       <hr>
       *       Blood 1 : <font color='red'>{{blood_1}}</font>
       *       Blood 2 : <font color='red'>{{blood_2}}</font>
       *       <button type="button" data-ng-click="fight()">Fight</button>

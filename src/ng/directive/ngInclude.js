@@ -58,7 +58,7 @@
         <option value="">(blank)</option>
        </select>
        url of the template: <code>{{template.url}}</code>
-       <hr/>
+       <hr>
        <div class="slide-animate-container">
          <div class="slide-animate" ng-include="template.url"></div>
        </div>
