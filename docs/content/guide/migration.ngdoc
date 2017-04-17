@@ -486,14 +486,6 @@ lifecycle hook), you may need to manually call `$onInit()` from your constructor
 
 <hr />
 <minor />
-**Due to [13c252](https://github.com/angular/angular.js/commit/13c2522baf7c8f616b2efcaab4bffd54c8736591)**,
-on **IE11 only**, consecutive text nodes will always get merged. Previously, they would not get
-merged if they had no parent. The new behavior, which fixes an IE11 bug affecting interpolation
-under certain circumstances, might in some edge-cases have unexpected side effects that you should
-be aware of. Please, check the commit message for more details.
-
-<hr />
-<minor />
 **Due to [04cad4](https://github.com/angular/angular.js/commit/04cad41d26ebaf44b5ee0c29a152d61f235f3efa)**,
 `link[href]` attributes are now protected via `$sce`, which prevents interpolated values that fail
 the `RESOURCE_URL` context tests from being used in interpolation. For example if the application is
