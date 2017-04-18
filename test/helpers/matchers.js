@@ -400,6 +400,27 @@ beforeEach(function() {
           return result;
         }
       };
+    },
+    toEqualSelect: function() {
+      return {
+        compare: function(actual, expected) {
+          var actualValues = [],
+              expectedValues = [].slice.call(arguments, 1);
+
+          forEach(actual.find('option'), function(option) {
+            actualValues.push(option.selected ? [option.value] : option.value);
+          });
+
+          var message = function() {
+            return 'Expected ' + toJson(actualValues) + ' to equal ' + toJson(expectedValues) + '.';
+          };
+
+          return {
+            pass: equals(expectedValues, actualValues),
+            message: message
+          };
+        }
+      };
     }
   });
 });

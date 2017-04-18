@@ -86,28 +86,6 @@ describe('select', function() {
 
   beforeEach(function() {
     jasmine.addMatchers({
-      toEqualSelect: function() {
-        return {
-          compare: function(actual, expected) {
-            var actualValues = [],
-                expectedValues = [].slice.call(arguments, 1);
-
-            forEach(actual.find('option'), function(option) {
-              actualValues.push(option.selected ? [option.value] : option.value);
-            });
-
-            var message = function() {
-              return 'Expected ' + toJson(actualValues) + ' to equal ' + toJson(expectedValues) + '.';
-            };
-
-            return {
-              pass: equals(expectedValues, actualValues),
-              message: message
-            };
-          }
-        };
-      },
-
       toEqualSelectWithOptions: function() {
         return {
           compare: function(actual, expected) {
@@ -396,6 +374,7 @@ describe('select', function() {
 
     it('should remove the "selected" attribute from the previous option when the model changes', function() {
       compile('<select name="select" ng-model="selected">' +
+        '<option value="">--empty--</option>' +
         '<option value="a">A</option>' +
         '<option value="b">B</option>' +
       '</select>');
@@ -411,24 +390,45 @@ describe('select', function() {
       scope.$digest();
 
       options = element.find('option');
-      expect(options.length).toBe(2);
-      expect(options[0]).toBeMarkedAsSelected();
-      expect(options[1]).not.toBeMarkedAsSelected();
+      expect(options.length).toBe(3);
+      expect(options[0]).not.toBeMarkedAsSelected();
+      expect(options[1]).toBeMarkedAsSelected();
+      expect(options[2]).not.toBeMarkedAsSelected();
 
       scope.selected = 'b';
       scope.$digest();
 
       options = element.find('option');
       expect(options[0]).not.toBeMarkedAsSelected();
-      expect(options[1]).toBeMarkedAsSelected();
+      expect(options[1]).not.toBeMarkedAsSelected();
+      expect(options[2]).toBeMarkedAsSelected();
 
-      scope.selected = 'no match';
+      // This will select the empty option
+      scope.selected = null;
       scope.$digest();
 
-      options = element.find('option');
       expect(options[0]).toBeMarkedAsSelected();
       expect(options[1]).not.toBeMarkedAsSelected();
       expect(options[2]).not.toBeMarkedAsSelected();
+
+      // This will add and select the unknown option
+      scope.selected = 'unmatched value';
+      scope.$digest();
+      options = element.find('option');
+
+      expect(options[0]).toBeMarkedAsSelected();
+      expect(options[1]).not.toBeMarkedAsSelected();
+      expect(options[2]).not.toBeMarkedAsSelected();
+      expect(options[3]).not.toBeMarkedAsSelected();
+
+      // Back to matched value
+      scope.selected = 'b';
+      scope.$digest();
+      options = element.find('option');
+
+      expect(options[0]).not.toBeMarkedAsSelected();
+      expect(options[1]).not.toBeMarkedAsSelected();
+      expect(options[2]).toBeMarkedAsSelected();
     });
 
     describe('empty option', function() {

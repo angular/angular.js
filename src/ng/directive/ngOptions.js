@@ -473,7 +473,8 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
             option.element.setAttribute('selected', 'selected');
           } else {
 
-            if (providedEmptyOption) {
+            if (value == null && providedEmptyOption) {
+              selectCtrl.removeUnknownOption();
               selectCtrl.selectEmptyOption();
             } else if (selectCtrl.unknownOption.parent().length) {
               selectCtrl.updateUnknownOption(value);
@@ -657,7 +658,12 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
         // Ensure that the empty option is always there if it was explicitly provided
         if (providedEmptyOption) {
-          selectElement.prepend(selectCtrl.emptyOption);
+
+          if (selectCtrl.unknownOption.parent().length) {
+            selectCtrl.unknownOption.after(selectCtrl.emptyOption);
+          } else {
+            selectElement.prepend(selectCtrl.emptyOption);
+          }
         }
 
         options.items.forEach(function addOption(option) {
