@@ -773,12 +773,32 @@ describe('ngOptions', function() {
     expect(options[1]).not.toBeMarkedAsSelected();
     expect(options[2]).toBeMarkedAsSelected();
 
-    scope.selected = 'no match';
+    // This will select the empty option
+    scope.selected = null;
     scope.$digest();
 
     expect(options[0]).toBeMarkedAsSelected();
     expect(options[1]).not.toBeMarkedAsSelected();
     expect(options[2]).not.toBeMarkedAsSelected();
+
+    // This will add and select the unknown option
+    scope.selected = 'unmatched value';
+    scope.$digest();
+    options = element.find('option');
+
+    expect(options[0]).toBeMarkedAsSelected();
+    expect(options[1]).not.toBeMarkedAsSelected();
+    expect(options[2]).not.toBeMarkedAsSelected();
+    expect(options[3]).not.toBeMarkedAsSelected();
+
+    // Back to matched value
+    scope.selected = scope.values[1];
+    scope.$digest();
+    options = element.find('option');
+
+    expect(options[0]).not.toBeMarkedAsSelected();
+    expect(options[1]).not.toBeMarkedAsSelected();
+    expect(options[2]).toBeMarkedAsSelected();
   });
 
   describe('disableWhen expression', function() {
@@ -2195,6 +2215,20 @@ describe('ngOptions', function() {
     });
 
 
+  it('should insert and select temporary unknown option when no options-model match, empty ' +
+        'option is present and model is defined', function() {
+      scope.selected = 'C';
+      scope.values = [{name: 'A'}, {name: 'B'}];
+      createSingleSelect(true);
+
+      expect(element).toEqualSelect(['?'], '', 'object:3', 'object:4');
+
+      scope.$apply('selected = values[1]');
+
+      expect(element).toEqualSelect('', 'object:3', ['object:4']);
+    });
+
+
     it('should select correct input if previously selected option was "?"', function() {
       createSingleSelect();
 
@@ -2213,6 +2247,19 @@ describe('ngOptions', function() {
       expect(element.find('option').eq(0).prop('selected')).toBeTruthy();
     });
 
+
+    it('should remove unknown option when empty option exists and model is undefined', function() {
+      scope.selected = 'C';
+      scope.values = [{name: 'A'}, {name: 'B'}];
+      createSingleSelect(true);
+
+      expect(element).toEqualSelect(['?'], '', 'object:3', 'object:4');
+
+      scope.selected = undefined;
+      scope.$digest();
+
+      expect(element).toEqualSelect([''], 'object:3', 'object:4');
+    });
 
     it('should use exact same values as values in scope with one-time bindings', function() {
       scope.values = [{name: 'A'}, {name: 'B'}];
@@ -2955,7 +3002,7 @@ describe('ngOptions', function() {
       expect(ngModelCtrl.$error.required).toBeFalsy();
 
       // model -> view
-      scope.$apply('selection = "unmatched value"');
+      scope.$apply('selection = null');
       expect(options[0]).toBeMarkedAsSelected();
       expect(element).toBeInvalid();
       expect(ngModelCtrl.$error.required).toBeTruthy();
