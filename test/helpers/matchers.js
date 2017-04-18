@@ -365,13 +365,15 @@ beforeEach(function() {
       return {
         compare: function(actual) {
           var errors = [];
+          var optionVal = toJson(actual.value);
+
           if (actual.selected === null || typeof actual.selected === 'undefined' || actual.selected === false) {
-            errors.push('Expected option property "selected" to be truthy');
+            errors.push('Expected option with value ' + optionVal + ' to have property "selected" set to truthy');
           }
 
           // Support: IE 9 only
           if (msie !== 9 && actual.hasAttribute('selected') === false) {
-            errors.push('Expected option to have attribute "selected"');
+            errors.push('Expected option with value ' + optionVal + ' to have attribute "selected"');
           }
 
           var result = {
@@ -383,13 +385,15 @@ beforeEach(function() {
         },
         negativeCompare: function(actual) {
           var errors = [];
+          var optionVal = toJson(actual.value);
+
           if (actual.selected) {
-            errors.push('Expected option property "selected" to be falsy');
+            errors.push('Expected option with value ' + optionVal + ' property "selected" to be falsy');
           }
 
           // Support: IE 9 only
           if (msie !== 9 && actual.hasAttribute('selected')) {
-            errors.push('Expected option not to have attribute "selected"');
+            errors.push('Expected option with value ' + optionVal + ' not to have attribute "selected"');
           }
 
           var result = {
