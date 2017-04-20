@@ -1885,10 +1885,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   $httpBackend.verifyNoOutstandingRequest = function(digest) {
     if (digest !== false) $rootScope.$digest();
     if (responses.length) {
-      var unflushedDescriptions = [];
-      for (var i = 0, len = responses.length; i < len; ++i) {
-        unflushedDescriptions.push(responses[i].description);
-      }
+      var unflushedDescriptions = responses.map(function(res) { return res.description; });
       throw new Error('Unflushed requests: ' + responses.length + '\n  ' +
                       unflushedDescriptions.join('\n  '));
     }
