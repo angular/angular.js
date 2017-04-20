@@ -1678,7 +1678,7 @@ describe('ngMock', function() {
 
         expect(function() {
           hb.verifyNoOutstandingRequest();
-        }).toThrowError('Unflushed requests: 1');
+        }).toThrowError('Unflushed requests: \n  GET /some');
       });
 
 
@@ -1690,7 +1690,7 @@ describe('ngMock', function() {
 
         expect(function() {
           hb.verifyNoOutstandingRequest();
-        }).toThrowError('Unflushed requests: 1');
+        }).toThrowError('Unflushed requests: \n  GET /some');
       }));
     });
 

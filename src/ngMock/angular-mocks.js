@@ -1378,6 +1378,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         }
       }
 
+      handleResponse.description = method + ' ' + url;
       return handleResponse;
 
       function handleResponse() {
@@ -1884,7 +1885,12 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   $httpBackend.verifyNoOutstandingRequest = function(digest) {
     if (digest !== false) $rootScope.$digest();
     if (responses.length) {
-      throw new Error('Unflushed requests: ' + responses.length);
+      var unflushedDescriptions = [];
+      for (var i = 0, len = responses.length; i < len; ++i) {
+        unflushedDescriptions.push(responses[i].description);
+      }
+      throw new Error('Unflushed requests: \n  ' +
+                      unflushedDescriptions.join('\n  '));
     }
   };
 
