@@ -1889,7 +1889,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
       for (var i = 0, len = responses.length; i < len; ++i) {
         unflushedDescriptions.push(responses[i].description);
       }
-      throw new Error('Unflushed requests: \n  ' +
+      throw new Error('Unflushed requests: ' + responses.length + '\n  ' +
                       unflushedDescriptions.join('\n  '));
     }
   };
