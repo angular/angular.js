@@ -369,8 +369,7 @@ beforeEach(function() {
             errors.push('Expected option property "selected" to be truthy');
           }
 
-          // Support: IE 9 only
-          if (msie !== 9 && actual.hasAttribute('selected') === false) {
+          if (actual.hasAttribute('selected') === false) {
             errors.push('Expected option to have attribute "selected"');
           }
 
@@ -388,7 +387,7 @@ beforeEach(function() {
           }
 
           // Support: IE 9 only
-          if (msie !== 9 && actual.hasAttribute('selected')) {
+          if (actual.hasAttribute('selected')) {
             errors.push('Expected option not to have attribute "selected"');
           }
 
