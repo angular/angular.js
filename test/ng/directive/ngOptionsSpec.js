@@ -779,6 +779,32 @@ describe('ngOptions', function() {
     expect(options[2]).not.toBeMarkedAsSelected();
   });
 
+
+  it('should render the initial options only one time', function() {
+    scope.values = ['black', 'white', 'red'];
+    // Insert a select element into the DOM without ng-options to suscribe to DOM change events
+    createSelect({
+      'ng-model': 'value'
+    });
+
+    // Add ngOptions as attribute before recompiling the select element
+    element.attr('ng-options', 'value for value in values');
+
+    var repaint = 0;
+    // Detect only when the childNodes count changes
+    var lastElementChildrenCount = -1;
+    element[0].addEventListener('DOMSubtreeModified', function(ev) {
+      var childrenCount = jqLite(ev.target).contents().length;
+      if (childrenCount !== lastElementChildrenCount) {
+        repaint++;
+        lastElementChildrenCount = childrenCount;
+        expect(repaint).toBeLessThan(2);
+      }
+    });
+
+    $compile(element)(scope);
+  });
+
   describe('disableWhen expression', function() {
 
     describe('on single select', function() {
@@ -2640,6 +2666,25 @@ describe('ngOptions', function() {
 
       dealoc(element);
     }));
+
+
+    it('should remove all comments inside the select element except the initial falsy ngIf empty option', function() {
+      scope.values = [
+        {name:'black'},
+        {name:'white'},
+        {name:'red'}
+      ];
+      scope.isBlank = false;
+
+      createSingleSelect('<!-- test comment -->'
+                          + '<option ng-if="isBlank" value="">blank</option>'
+                          + '<!-- test comment 2 -->');
+      scope.$apply('isBlank = true');
+
+      expect(element.find('option')[0].value).toBe('');
+      expect(element.find('option')[0].textContent).toBe('blank');
+      expect(element.find('option')[1].textContent).toBe('black');
+    });
 
   });
 
