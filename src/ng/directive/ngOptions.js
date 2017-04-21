@@ -449,36 +449,38 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
       if (!multiple) {
 
         selectCtrl.writeValue = function writeNgOptionsValue(value) {
-          var selectedOption = options.selectValueMap[selectElement.val()];
-          var option = options.getOptionFromViewValue(value);
-
-          // Make sure to remove the selected attribute from the previously selected option
-          // Otherwise, screen readers might get confused
-          if (selectedOption) selectedOption.element.removeAttribute('selected');
-
-          if (option) {
-            // Don't update the option when it is already selected.
-            // For example, the browser will select the first option by default. In that case,
-            // most properties are set automatically - except the `selected` attribute, which we
-            // set always
-
-            if (selectElement[0].value !== option.selectValue) {
-              selectCtrl.removeUnknownOption();
-              selectCtrl.unselectEmptyOption();
-
-              selectElement[0].value = option.selectValue;
-              option.element.selected = true;
-            }
-
-            option.element.setAttribute('selected', 'selected');
-          } else {
-
-            if (providedEmptyOption) {
-              selectCtrl.selectEmptyOption();
-            } else if (selectCtrl.unknownOption.parent().length) {
-              selectCtrl.updateUnknownOption(value);
+          if(options) {
+            var selectedOption = options.selectValueMap[selectElement.val()];
+            var option = options.getOptionFromViewValue(value);
+            
+            // Make sure to remove the selected attribute from the previously selected option
+            // Otherwise, screen readers might get confused
+            if (selectedOption) selectedOption.element.removeAttribute('selected');
+            
+            if (option) {
+              // Don't update the option when it is already selected.
+              // For example, the browser will select the first option by default. In that case,
+              // most properties are set automatically - except the `selected` attribute, which we
+              // set always
+            
+              if (selectElement[0].value !== option.selectValue) {
+                selectCtrl.removeUnknownOption();
+                selectCtrl.unselectEmptyOption();
+            
+                selectElement[0].value = option.selectValue;
+                option.element.selected = true;
+              }
+            
+              option.element.setAttribute('selected', 'selected');
             } else {
-              selectCtrl.renderUnknownOption(value);
+            
+              if (providedEmptyOption) {
+                selectCtrl.selectEmptyOption();
+              } else if (selectCtrl.unknownOption.parent().length) {
+                selectCtrl.updateUnknownOption(value);
+              } else {
+                selectCtrl.renderUnknownOption(value);
+              }
             }
           }
         };
@@ -590,12 +592,6 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
 
       }
 
-      selectElement.empty();
-
-      // We need to do this here to ensure that the options object is defined
-      // when we first hit it in writeNgOptionsValue
-      updateOptions();
-
       // We will re-render the option elements if the option values or labels change
       scope.$watchCollection(ngOptions.getWatchables, updateOptions);
 
@@ -624,7 +620,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
         // the option list in listbox style, i.e. the select is [multiple], or specifies a [size].
         // See https://github.com/angular/angular.js/issues/11314 for more info.
         // This is unfortunately untestable with unit / e2e tests
-        if (option.label !== element.label) {
+        if(option.label !== undefined) {
           element.label = option.label;
           element.textContent = option.label;
         }
