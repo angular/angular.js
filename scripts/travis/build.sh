@@ -9,9 +9,9 @@ if [ "$JOB" == "ci-checks" ]; then
   grunt ci-checks
 elif [ "$JOB" == "unit" ]; then
   if [ "$BROWSER_PROVIDER" == "browserstack" ]; then
-    BROWSERS="BS_Chrome,BS_Safari,BS_Firefox,BS_IE_9,BS_IE_10,BS_IE_11,BS_iOS_8,BS_iOS_9"
+    BROWSERS="BS_Chrome,BS_Safari,BS_Firefox,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9"
   else
-    BROWSERS="SL_Chrome,SL_Firefox,SL_Safari_8,SL_Safari_9,SL_IE_9,SL_IE_10,SL_IE_11,SL_iOS"
+    BROWSERS="SL_Chrome,SL_Firefox,SL_Safari_8,SL_Safari_9,SL_IE_9,SL_IE_10,SL_IE_11,SL_EDGE,SL_iOS"
   fi
 
   grunt test:promises-aplus

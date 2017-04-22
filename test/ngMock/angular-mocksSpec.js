@@ -1678,7 +1678,8 @@ describe('ngMock', function() {
 
         expect(function() {
           hb.verifyNoOutstandingRequest();
-        }).toThrowError('Unflushed requests: 1');
+        }).toThrowError('Unflushed requests: 1\n' +
+                        '  GET /some');
       });
 
 
@@ -1690,8 +1691,23 @@ describe('ngMock', function() {
 
         expect(function() {
           hb.verifyNoOutstandingRequest();
-        }).toThrowError('Unflushed requests: 1');
+        }).toThrowError('Unflushed requests: 1\n' +
+                        '  GET /some');
       }));
+
+
+      it('should describe multiple unflushed requests', function() {
+        hb.when('GET').respond(200);
+        hb.when('PUT').respond(200);
+        hb('GET', '/some', null, noop, {});
+        hb('PUT', '/elsewhere', null, noop, {});
+
+        expect(function() {
+          hb.verifyNoOutstandingRequest();
+        }).toThrowError('Unflushed requests: 2\n' +
+                        '  GET /some\n' +
+                        '  PUT /elsewhere');
+      });
     });
 
 
