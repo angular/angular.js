@@ -314,6 +314,11 @@ function $SanitizeProvider() {
   }
 
   var inertBodyElement;
+  // Fix for IE11 memory leak https://github.com/angular/angular.js/issues/13800
+  window.cleanInertBodyElement = function() {
+    inertBodyElement = null;
+  };
+
   (function(window) {
     var doc;
     if (window.document && window.document.implementation) {
