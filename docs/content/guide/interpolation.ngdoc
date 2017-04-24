@@ -32,7 +32,7 @@ If the interpolated value is not a `String`, it is computed as follows:
 - `undefined` and `null` are converted to `''`
 - if the value is an object that is not a `Number`, `Date` or `Array`, $interpolate looks for
 a custom `toString()` function on the object, and uses that. Custom means that
-`myObject.toString !== `Object.prototype.toString`.
+`myObject.toString !== Object.prototype.toString`.
 - if the above doesn't apply, `JSON.stringify` is used.
 
 ### Binding to boolean attributes
