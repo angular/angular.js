@@ -26,7 +26,7 @@
  *     factory('$exceptionHandler',  function($injector) {
  *
  *       return function myExceptionHandler(exception, cause) {
- *      
+ *
  *         var $log = $injector.get('$log');
  *
  *         var logErrorsToBackend = $injector.get('logErrorsToBackend');
@@ -34,6 +34,7 @@
  *         logErrorsToBackend(exception, cause);
  *
  *         $log.warn(exception, cause);
+ *
  *       };
  *     });
  * ```
