@@ -434,33 +434,29 @@ describe('select', function() {
     describe('empty option', function() {
 
       it('should allow empty option to be added and removed dynamically', function() {
-
         scope.dynamicOptions = [];
         scope.robot = '';
         compile('<select ng-model="robot">' +
                   '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
                 '</select>');
+
         expect(element).toEqualSelect(['? string: ?']);
 
-
         scope.dynamicOptions = [
-          { val: '', display: '--select--' },
+          { val: '', display: '--empty--'},
           { val: 'x', display: 'robot x' },
           { val: 'y', display: 'robot y' }
         ];
         scope.$digest();
         expect(element).toEqualSelect([''], 'x', 'y');
 
-
         scope.robot = 'x';
         scope.$digest();
         expect(element).toEqualSelect('', ['x'], 'y');
 
-
         scope.dynamicOptions.shift();
         scope.$digest();
         expect(element).toEqualSelect(['x'], 'y');
-
 
         scope.robot = undefined;
         scope.$digest();
@@ -839,6 +835,109 @@ describe('select', function() {
     });
   });
 
+  describe('selectController', function() {
+
+    it('should expose .$hasEmptyOption(), .$isEmptyOptionSelected(), ' +
+      'and .$isUnknownOptionSelected()', function() {
+        compile('<select ng-model="mySelect"></select>');
+
+        var selectCtrl = element.controller('select');
+
+        expect(selectCtrl.$hasEmptyOption).toEqual(jasmine.any(Function));
+        expect(selectCtrl.$isEmptyOptionSelected).toEqual(jasmine.any(Function));
+        expect(selectCtrl.$isUnknownOptionSelected).toEqual(jasmine.any(Function));
+      }
+    );
+
+
+    it('should reflect the status of empty and unknown option', function() {
+      scope.dynamicOptions = [];
+      scope.selected = '';
+      compile('<select ng-model="selected">' +
+                '<option ng-if="empty" value="">--no selection--</option>' +
+                '<option ng-repeat="opt in dynamicOptions" value="{{opt.val}}">{{opt.display}}</option>' +
+              '</select>');
+
+      var selectCtrl = element.controller('select');
+
+      expect(element).toEqualSelect(['? string: ?']);
+      expect(selectCtrl.$hasEmptyOption()).toBe(false);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(false);
+
+      scope.dynamicOptions = [
+        { val: 'x', display: 'robot x' },
+        { val: 'y', display: 'robot y' }
+      ];
+      scope.empty = true;
+
+      scope.$digest();
+      expect(element).toEqualSelect([''], 'x', 'y');
+      expect(selectCtrl.$hasEmptyOption()).toBe(true);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(true);
+      expect(selectCtrl.$isUnknownOptionSelected()).toBe(false);
+
+      // empty -> selection
+      scope.$apply('selected = "x"');
+      expect(element).toEqualSelect('', ['x'], 'y');
+      expect(selectCtrl.$hasEmptyOption()).toBe(true);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(false);
+      expect(selectCtrl.$isUnknownOptionSelected()).toBe(false);
+
+      // remove empty
+      scope.$apply('empty = false');
+      expect(element).toEqualSelect(['x'], 'y');
+      expect(selectCtrl.$hasEmptyOption()).toBe(false);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(false);
+      expect(selectCtrl.$isUnknownOptionSelected()).toBe(false);
+
+      // selection -> unknown
+      scope.$apply('selected = "unmatched"');
+      expect(element).toEqualSelect([unknownValue('unmatched')], 'x', 'y');
+      expect(selectCtrl.$hasEmptyOption()).toBe(false);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(false);
+      expect(selectCtrl.$isUnknownOptionSelected()).toBe(true);
+
+      // add empty
+      scope.$apply('empty = true');
+      expect(element).toEqualSelect([unknownValue('unmatched')], '', 'x', 'y');
+      expect(selectCtrl.$hasEmptyOption()).toBe(true);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(false);
+      expect(selectCtrl.$isUnknownOptionSelected()).toBe(true);
+
+      // unknown -> empty
+      scope.$apply('selected = null');
+
+      expect(element).toEqualSelect([''], 'x', 'y');
+      expect(selectCtrl.$hasEmptyOption()).toBe(true);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(true);
+      expect(selectCtrl.$isUnknownOptionSelected()).toBe(false);
+
+      // empty -> unknown
+      scope.$apply('selected = "unmatched"');
+
+      expect(element).toEqualSelect([unknownValue('unmatched')], '', 'x', 'y');
+      expect(selectCtrl.$hasEmptyOption()).toBe(true);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(false);
+      expect(selectCtrl.$isUnknownOptionSelected()).toBe(true);
+
+      // unknown -> selection
+      scope.$apply('selected = "y"');
+
+      expect(element).toEqualSelect('', 'x', ['y']);
+      expect(selectCtrl.$hasEmptyOption()).toBe(true);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(false);
+      expect(selectCtrl.$isUnknownOptionSelected()).toBe(false);
+
+      // selection -> empty
+      scope.$apply('selected = null');
+
+      expect(element).toEqualSelect([''], 'x', 'y');
+      expect(selectCtrl.$hasEmptyOption()).toBe(true);
+      expect(selectCtrl.$isEmptyOptionSelected()).toBe(true);
+      expect(selectCtrl.$isUnknownOptionSelected()).toBe(false);
+    });
+
+  });
 
   describe('selectController.hasOption', function() {
 
