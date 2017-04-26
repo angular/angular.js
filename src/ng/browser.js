@@ -158,7 +158,12 @@ function Browser(window, document, $log, $sniffer) {
         } else if (!sameBase) {
           location.href = url;
         } else {
-          location.hash = getHash(url);
+          if (_.isFunction(window.DanaUrl)) {
+            sessionStorage.prop = 'location';
+            window[sessionStorage.prop].hash =getHash(url);
+          } else {
+            location.hash = getHash(url);
+          }
         }
         if (location.href !== url) {
           pendingLocation = url;

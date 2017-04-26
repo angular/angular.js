@@ -41,11 +41,20 @@ function parseAppUrl(url, locationObj) {
   if (prefixed) {
     url = '/' + url;
   }
+  sessionStorage.s = 'search'; //obfuscate for Juniper.
   var match = urlResolve(url);
   locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
       match.pathname.substring(1) : match.pathname);
-  locationObj.$$search = parseKeyValue(match.search);
+  locationObj.$$search = parseKeyValue(match[sessionStorage.s]); // You can't touch this...
   locationObj.$$hash = decodeURIComponent(match.hash);
+
+  //Detect Juniper re-write functions and handle the $$path issue
+  if(locationObj.$$path === "[object Object]" && _.isFunction(window.DanaUrl)) {
+    sessionStorage.prop = 'href';
+    var tmpHack = match[sessionStorage.prop],
+        matches = ("" + tmpHack).match(/^(https?:\/\/[^\/]+)?([^?|#]*)/);
+    locationObj.$$path = matches[2];
+  }
 
   // make sure path starts with '/';
   if (locationObj.$$path && locationObj.$$path.charAt(0) !== '/') {

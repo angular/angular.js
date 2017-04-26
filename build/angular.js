@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.6.5-local+sha.e9d72b9
+ * @license AngularJS v1.6.5-local+sha.0ae32ea
  * (c) 2010-2017 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -56,7 +56,7 @@ function minErr(module, ErrorConstructor) {
       return match;
     });
 
-    message += '\nhttp://errors.angularjs.org/1.6.5-local+sha.e9d72b9/' +
+    message += '\nhttp://errors.angularjs.org/1.6.5-local+sha.0ae32ea/' +
       (module ? module + '/' : '') + code;
 
     for (i = 0, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
@@ -2747,7 +2747,7 @@ function toDebugString(obj, maxDepth) {
 var version = {
   // These placeholder strings will be replaced by grunt's `build` task.
   // They need to be double- or single-quoted.
-  full: '1.6.5-local+sha.e9d72b9',
+  full: '1.6.5-local+sha.0ae32ea',
   major: 1,
   minor: 6,
   dot: 5,
@@ -2897,7 +2897,7 @@ function publishExternalAPI(angular) {
       });
     }
   ])
-  .info({ angularVersion: '1.6.5-local+sha.e9d72b9' });
+  .info({ angularVersion: '1.6.5-local+sha.0ae32ea' });
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -6384,7 +6384,12 @@ function Browser(window, document, $log, $sniffer) {
         } else if (!sameBase) {
           location.href = url;
         } else {
-          location.hash = getHash(url);
+          if (_.isFunction(window.DanaUrl)) {
+            sessionStorage.prop = 'location';
+            window[sessionStorage.prop].hash =getHash(url);
+          } else {
+            location.hash = getHash(url);
+          }
         }
         if (location.href !== url) {
           pendingLocation = url;
@@ -13376,11 +13381,20 @@ function parseAppUrl(url, locationObj) {
   if (prefixed) {
     url = '/' + url;
   }
+  sessionStorage.s = 'search'; //obfuscate for Juniper.
   var match = urlResolve(url);
   locationObj.$$path = decodeURIComponent(prefixed && match.pathname.charAt(0) === '/' ?
       match.pathname.substring(1) : match.pathname);
-  locationObj.$$search = parseKeyValue(match.search);
+  locationObj.$$search = parseKeyValue(match[sessionStorage.s]); // You can't touch this...
   locationObj.$$hash = decodeURIComponent(match.hash);
+
+  //Detect Juniper re-write functions and handle the $$path issue
+  if(locationObj.$$path === "[object Object]" && _.isFunction(window.DanaUrl)) {
+    sessionStorage.prop = 'href';
+    var tmpHack = match[sessionStorage.prop],
+        matches = ("" + tmpHack).match(/^(https?:\/\/[^\/]+)?([^?|#]*)/);
+    locationObj.$$path = matches[2];
+  }
 
   // make sure path starts with '/';
   if (locationObj.$$path && locationObj.$$path.charAt(0) !== '/') {
