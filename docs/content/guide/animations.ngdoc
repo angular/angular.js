@@ -307,8 +307,17 @@ app.config(function($animateProvider) {
 ```
 
 The `customFilter` approach generally gives a big speed boost compared to other strategies, because
-the matching is done before other animation disabling strategies are checked. However, the filter
-function has to be kept as lean as possible, since it will be executed for each animation.
+the matching is done before other animation disabling strategies are checked.
+
+<div class="alert alert-success">
+  **Best Practice:**
+  Keep the filtering function as lean as possible, because it will be called for each DOM
+  action (e.g. insertion, removal, class change) performed by "animation-aware" directives.
+  See {@link guide/animations#which-directives-support-animations- here} for a list of built-in
+  directives that support animations.
+  Performing computationally expensive or time-consuming operations on each call of the
+  filtering function can make your animations sluggish.
+</div>
 
 ### During the config: {@link $animateProvider#classNameFilter $animateProvider.classNameFilter()}
 

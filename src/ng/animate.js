@@ -250,9 +250,12 @@ var $AnimateProvider = ['$provide', /** @this */ function($provide) {
    *
    * <div class="alert alert-success">
    *   **Best Practice:**
-   *   The filtering function will be called for each animation, so try to keep it as lean as
-   *   possible. Performing computationally expensive or time-consuming operations can make your
-   *   animations sluggish.
+   *   Keep the filtering function as lean as possible, because it will be called for each DOM
+   *   action (e.g. insertion, removal, class change) performed by "animation-aware" directives.
+   *   See {@link guide/animations#which-directives-support-animations- here} for a list of built-in
+   *   directives that support animations.
+   *   Performing computationally expensive or time-consuming operations on each call of the
+   *   filtering function can make your animations sluggish.
    * </div>
    *
    * **Note:** If present, `customFilter` will be checked before
