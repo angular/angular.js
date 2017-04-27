@@ -307,6 +307,32 @@ describe('animations', function() {
       });
     });
 
+    it('should not try to match the `classNameFilter` RegExp if animations are globally disabled',
+      function() {
+        var regex = /foo/;
+        var regexTestSpy = spyOn(regex, 'test').and.callThrough();
+
+        module(function($animateProvider) {
+          $animateProvider.classNameFilter(regex);
+        });
+
+        inject(function($animate) {
+          $animate.addClass(element, 'foo');
+          expect(regexTestSpy).toHaveBeenCalled();
+
+          regexTestSpy.calls.reset();
+          $animate.enabled(false);
+          $animate.addClass(element, 'bar');
+          expect(regexTestSpy).not.toHaveBeenCalled();
+
+          regexTestSpy.calls.reset();
+          $animate.enabled(true);
+          $animate.addClass(element, 'baz');
+          expect(regexTestSpy).toHaveBeenCalled();
+        });
+      }
+    );
+
     describe('customFilter()', function() {
       it('should be `null` by default', module(function($animateProvider) {
         expect($animateProvider.customFilter()).toBeNull();
@@ -432,6 +458,29 @@ describe('animations', function() {
 
           expect(capturedAnimation).toBeNull();
           expect(element.parent()[0]).toBeUndefined();
+        });
+      });
+
+      it('should not execute the function if animations are globally disabled', function() {
+        var customFilterSpy = jasmine.createSpy('customFilterFn');
+
+        module(function($animateProvider) {
+          $animateProvider.customFilter(customFilterSpy);
+        });
+
+        inject(function($animate) {
+          $animate.addClass(element, 'foo');
+          expect(customFilterSpy).toHaveBeenCalled();
+
+          customFilterSpy.calls.reset();
+          $animate.enabled(false);
+          $animate.addClass(element, 'bar');
+          expect(customFilterSpy).not.toHaveBeenCalled();
+
+          customFilterSpy.calls.reset();
+          $animate.enabled(true);
+          $animate.addClass(element, 'baz');
+          expect(customFilterSpy).toHaveBeenCalled();
         });
       });
     });
