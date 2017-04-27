@@ -570,8 +570,12 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
               ngModelCtrl.$render();
 
               optionEl.on('$destroy', function() {
+                var needsRerender = selectCtrl.$isEmptyOptionSelected();
+
                 selectCtrl.hasEmptyOption = false;
                 selectCtrl.emptyOption = undefined;
+
+                if (needsRerender) ngModelCtrl.$render();
               });
             }
           };
