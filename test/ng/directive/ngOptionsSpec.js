@@ -2536,18 +2536,11 @@ describe('ngOptions', function() {
         scope.isBlank = true;
       });
 
-      expect(element.find('option').length).toBe(2);
-      option = element.find('option').eq(0);
-      expect(option.val()).toBe('');
-      expect(option.text()).toBe('blank');
+      expect(element).toEqualSelect([''], 'object:4');
 
-      scope.$apply(function() {
-        scope.isBlank = false;
-      });
+      scope.$apply('isBlank = false');
 
-      expect(element.find('option').length).toBe(1);
-      option = element.find('option').eq(0);
-      expect(option.text()).toBe('A');
+      expect(element).toEqualSelect(['?'], 'object:4');
 
       scope.$apply('isBlank = true');
 
@@ -2571,9 +2564,7 @@ describe('ngOptions', function() {
 
         scope.$apply('isBlank = false');
 
-        options = element.find('option');
-        expect(options.length).toBe(1);
-        expect(options.eq(0).text()).toBe('A');
+        expect(element).toEqualSelect(['?'], 'object:3');
       }
     );
 
