@@ -171,17 +171,17 @@ myModule.animation('.repeated-item', function() {
 ```
 
 With these generated CSS class names present on the element at the time, AngularJS automatically
-figures out whether to perform a CSS and/or JavaScript animation. If both CSS and JavaScript
-animation code is present, and match the CSS class name on the element, then AngularJS will run both
-animations at the same time.
+figures out whether to perform a CSS and/or JavaScript animation. Note that you can't have both CSS
+and JavaScript animations based on the same CSS class. See
+{@link ngAnimate#css-js-animations-together here} for more details.
 
 ## Class and `ngClass` animation hooks
 
 AngularJS also pays attention to CSS class changes on elements by triggering the **add** and
 **remove** hooks. This means that if a CSS class is added to or removed from an element then an
 animation can be executed in between, before the CSS class addition or removal is finalized.
-(Keep in mind that AngularJS will only be able to capture class changes if an **expression** or the
-**ng-class** directive is used on the element.)
+(Keep in mind that AngularJS will only be able to capture class changes if an
+**interpolated expression** or the **ng-class** directive is used on the element.)
 
 The example below shows how to perform animations during class changes:
 
