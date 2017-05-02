@@ -385,7 +385,8 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
       var aliasAs = match[3];
       var trackByExp = match[4];
 
-      match = lhs.match(/^(?:(\s*[$\w]+)|\(\s*([$\w]+)\s*,\s*([$\w]+)\s*\))$/);
+      // Changed groups like this: ([$\w]+) => ([^\s(),]+). 02.05.17 E.P.
+      match = lhs.match(/^(?:\s*([^\s(),]+)|\(\s*([^\s(),]+)\s*,\s*([^\s(),]+)\s*\))$/);
 
       if (!match) {
         throw ngRepeatMinErr('iidexp', '\'_item_\' in \'_item_ in _collection_\' should be an identifier or \'(_key_, _value_)\' expression, but got \'{0}\'.',
@@ -394,7 +395,14 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
       var valueIdentifier = match[3] || match[1];
       var keyIdentifier = match[2];
 
-      if (aliasAs && (!/^[$a-zA-Z_][$a-zA-Z0-9_]*$/.test(aliasAs) ||
+      // Use $parse service to check identifiers. 01.05.17 E.P.
+      if (!$parse.is_valid_identifier(valueIdentifier))
+        throw ngRepeatMinErr('badident', 'Not valid loop value identifier: \'{0}\'.', valueIdentifier);
+
+      if (keyIdentifier && !$parse.is_valid_identifier(keyIdentifier))
+        throw ngRepeatMinErr('badident', 'Not valid loop key identifier: \'{0}\'.', keyIdentifier);
+
+      if (aliasAs && (!$parse.is_valid_identifier(aliasAs) ||
           /^(null|undefined|this|\$index|\$first|\$middle|\$last|\$even|\$odd|\$parent|\$root|\$id)$/.test(aliasAs))) {
         throw ngRepeatMinErr('badident', 'alias \'{0}\' is invalid --- must be a valid JS identifier which is not a reserved name.',
           aliasAs);
