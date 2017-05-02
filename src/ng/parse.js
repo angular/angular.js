@@ -1742,6 +1742,37 @@ function $ParseProvider() {
           isIdentifierStart: isFunction(identStart) && identStart,
           isIdentifierContinue: isFunction(identContinue) && identContinue
         };
+
+    // Check if given text is a valid identifier. 01.05.17 E.P.
+    var valid_identifier_lexer;
+    $parse.is_valid_identifier = function(
+        var_name
+    ){
+        // Check argument
+        if ( !var_name ||
+             typeof var_name !== 'string'
+           ) return false;
+        //console.log('$parse.is_valid_identifier entry "' + var_name + '"');
+
+        // Instantiate lexer once, when required
+        if ( valid_identifier_lexer === undefined)
+            valid_identifier_lexer = new Lexer($parseOptions);
+
+        // Parse given text into tokens
+        var tokens = valid_identifier_lexer.lex(var_name);
+        //console.log('$parse.is_valid_identifier tokens = ' + JSON.stringify(tokens));
+
+        // The whole text expected to be one token of "identifier" type
+        var result = (
+                tokens &&
+                tokens.length === 1 &&
+                tokens[0].index === 0 &&
+                tokens[0].text === var_name &&
+                tokens[0].identifier === true );
+        //console.log('$parse.is_valid_identifier result = ' + result);
+        return result;
+    }
+
     return $parse;
 
     function $parse(exp, interceptorFn) {
