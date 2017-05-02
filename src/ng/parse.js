@@ -1747,15 +1747,15 @@ function $ParseProvider() {
     var valid_identifier_lexer;
     $parse.is_valid_identifier = function(
         var_name
-    ){
+    ) {
         // Check argument
-        if ( !var_name ||
-             typeof var_name !== 'string'
+        if (!var_name ||
+            typeof var_name !== 'string'
            ) return false;
         //console.log('$parse.is_valid_identifier entry "' + var_name + '"');
 
         // Instantiate lexer once, when required
-        if ( valid_identifier_lexer === undefined)
+        if (valid_identifier_lexer === undefined)
             valid_identifier_lexer = new Lexer($parseOptions);
 
         // Parse given text into tokens
@@ -1768,10 +1768,10 @@ function $ParseProvider() {
                 tokens.length === 1 &&
                 tokens[0].index === 0 &&
                 tokens[0].text === var_name &&
-                tokens[0].identifier === true );
+                tokens[0].identifier === true);
         //console.log('$parse.is_valid_identifier result = ' + result);
         return result;
-    }
+    };
 
     return $parse;
 
