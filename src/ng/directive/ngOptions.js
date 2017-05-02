@@ -234,8 +234,9 @@ var ngOptionsMinErr = minErr('ngOptions');
  */
 
 /* eslint-disable max-len */
-//                     //00001111111111000000000002222222222000000000000000000000333333333300000000000000000000000004444444444400000000000005555555555555000000000666666666666600000007777777777777000000000000000888888888800000000000000000009999999999
-var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?(?:\s+disable\s+when\s+([\s\S]+?))?\s+for\s+(?:([$\w][$\w]*)|(?:\(\s*([$\w][$\w]*)\s*,\s*([$\w][$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
+// Changed groups 5-7 like this: ([$\w][$\w]*) => ([^\s(),]+). 02.05.17 E.P.
+                       //00001111111111000000000002222222222000000000000000000000333333333300000000000000000000000004444444444400000000000005555555555500000000066666666666000000077777777777000000000000000888888888800000000000000000009999999999
+var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?(?:\s+disable\s+when\s+([\s\S]+?))?\s+for\s+(?:([^\s(),]+)|(?:\(\s*([^\s(),]+)\s*,\s*([^\s(),]+)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
                         // 1: value expression (valueFn)
                         // 2: label expression (displayFn)
                         // 3: group by expression (groupByFn)
@@ -267,6 +268,13 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
     var valueName = match[5] || match[7];
     // The variable name for the key of the item in the collection
     var keyName = match[6];
+
+    // Use $parse service to check identifiers. 02.05.17 E.P.
+    if (!$parse.is_valid_identifier(valueName))
+      throw ngOptionsMinErr('badident', 'Not valid option value identifier: \'{0}\'.', valueName);
+
+    if (keyName && !$parse.is_valid_identifier(keyName))
+      throw ngOptionsMinErr('badident', 'Not valid option key identifier: \'{0}\'.', keyName);
 
     // An expression that generates the viewValue for an option if there is a label expression
     var selectAs = / as /.test(match[0]) && match[1];
