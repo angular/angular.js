@@ -1,0 +1,87 @@
+<!document html>
+<html>
+  <head>
+    <script type="text/javascript" ng:autobind src="build/angular.js">
+    </script>
+    <script>
+      function TodoCtrl() {
+          var scope = this;
+
+          // initialize controller's model
+          this.todos = [{
+              text: "learn Angular",
+              done: true},
+          {
+              text: "build Angular app",
+              done: false},
+          {
+              text: "show off Angular app",
+              done: false}];
+
+          // Define member functions
+          this.addTodo = function() {
+              scope.todos.push({
+                  text: scope.todoText,
+                  done: false
+              });
+              scope.remaining++;
+              scope.todoText = "";
+          };
+
+          this.recalc = function() {
+              scope.remaining = scope.todos.length;
+              angular.forEach(scope.todos, function(todo) {
+                  if (todo.done) {
+                      scope.remaining--;
+                  }
+              });
+          };
+
+          this.removeDone = function() {
+              var todos = scope.todos;
+              scope.todos = [];
+
+              angular.forEach(todos, function(todo) {
+                  if (!todo.done) {
+                      scope.todos.push(todo);
+                  }
+              });
+          };
+
+          // call recalc once to update the model's 'remaining' value
+          // Note: this needs to be called after definition
+          this.recalc();
+      }
+    </script>
+    <style>
+    .done_false {text-decoration: none; color: red;}
+    .done_true {text-decoration: line-through; color: gray;}
+    </style>
+  </head>
+  <body>
+    <div ng:controller="TodoCtrl">
+        <input type="text" name="todoText" size="35" msgId="todoInput" placeholder="enter your todo here"/>
+        <!-- How to localize placeholders??-->
+
+        <button msgId="addButton" msgDesc="button used to add todos" ng:click="addTodo()">add</button> <br/>
+
+        <ng:pluralize msgId="remainLabel" msgDesc="label used to show the number of todos left"
+                     count="remaining" when="{'0': 'Nothing left to do.',
+                                              'one': 'One todo left.',
+                                              'other': '{{remaining | number}} todoes left.'}">
+        </ng:pluralize>
+
+        <button ng:click="removeDone()" msgId="removeButton" msgDesc="button used to remove todo">
+         remove done
+        </button><br/>
+
+        <ul ng:repeat="todo in todos">
+            <li>
+                <input type="checkbox" name="todo.done" ng:click="recalc()">
+                <!-- updates the css class to done_true or done_false -->
+                <span ng:class="'done_' + todo.done">{{todo.text}}</span><br/>
+            </li>
+        </ul>
+    </div>
+  </body>
+</html>
