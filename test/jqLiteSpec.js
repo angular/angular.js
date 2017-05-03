@@ -2243,6 +2243,16 @@ describe('jqLite', function() {
   });
 
 
+  describe('prev', function() {
+    it('should return prev sibling', function() {
+      var element = jqLite('<div><b>b</b><i>i</i></div>');
+      var b = element.find('b');
+      var i = element.find('i');
+      expect(i.prev()).toJqEqual([b]);
+    });
+  });
+
+
   describe('find', function() {
     it('should find child by name', function() {
       var root = jqLite('<div><div>text</div></div>');

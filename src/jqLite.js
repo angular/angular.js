@@ -1010,6 +1010,10 @@ forEach({
     return element.nextElementSibling;
   },
 
+  prev: function(element) {
+    return element.previousSibling;
+  },
+
   find: function(element, selector) {
     if (element.getElementsByTagName) {
       return element.getElementsByTagName(selector);
