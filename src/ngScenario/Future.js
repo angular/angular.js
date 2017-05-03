@@ -14,6 +14,22 @@ angular.scenario.Future = function(name, behavior, line) {
   this.value = undefined;
   this.parser = angular.identity;
   this.line = line || function() { return ''; };
+  this.readyHandler = undefined;
+};
+
+/**
+ * Adds a callback function to be executed when the future has been fulfilled.
+ * Example:
+ * <code>
+ * element('#myElement').html().ready(function(value) {
+ *    window.console.log(value);//value will be the result of the future which n this case is the innerHTML of the element.
+ * });
+ * </code>
+ *
+ * @param {function()} The callback function to be executed after the future has been fulfilled.
+ */
+angular.scenario.Future.prototype.ready = function(fn) {
+  this.readyHandler = fn;
 };
 
 /**
@@ -34,6 +50,11 @@ angular.scenario.Future.prototype.execute = function(doneFn) {
     }
     self.value = error || result;
     doneFn(error, result);
+
+    if (self.readyHandler) {
+      self.readyHandler(self.value);
+    }
+
   });
 };
 

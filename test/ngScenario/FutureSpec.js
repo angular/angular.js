@@ -74,4 +74,25 @@ describe('angular.scenario.Future', function() {
       expect(error).toBeDefined();
     });
   });
+
+  it('should call the ready function after the future is fulfilled, and verify it\'s value', function() {
+    var future = new angular.scenario.Future('test name', function(done) {
+          done(null, 'somedata');
+        });
+    future.ready(function(value) {
+      expect(value).toEqual('somedata');
+    });
+    future.execute(angular.noop);
+  });
+
+  it('should pass an error to the ready function', function() {
+    var future = new angular.scenario.Future('test name', function(done) {
+          done(null, '{');
+        });
+    future.ready(function(error) {
+      expect(error).toBeDefined();
+    });
+    future.fromJson().execute(angular.noop);
+  });
+
 });
