@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
+  <script src="angular-1.0.0rc12.hax.js"></script>
+  <script src="leet.js"></script>
+  <script>
+    var myApp = angular.module('myApp', []);
+
+    // Controllers
+    // ===========
+
+    function TodoCtrl($scope) {
+
+      $scope.listName = 'Todo';
+
+      $scope.todos = [
+        {text:'learn angular', done:true},
+        {text:'build an angular app', done:false}];
+
+      $scope.addTodo = function() {
+        $scope.todos.push({text:$scope.todoText, done:false});
+        $scope.todoText = '';
+      };
+
+      $scope.remaining = function() {
+        var count = 0;
+        angular.forEach($scope.todos, function(todo) {
+          count += todo.done ? 0 : 1;
+        });
+        return count;
+      };
+
+      $scope.archive = function() {
+        var oldTodos = $scope.todos;
+        $scope.todos = [];
+        angular.forEach(oldTodos, function(todo) {
+          if (!todo.done) $scope.todos.push(todo);
+        });
+      };
+    }
+
+    function SuperCtrl($scope) {
+      $scope.listName = 'Super List';
+    }
+
+    // filters
+    // =======
+
+    myApp.filter('leet', function () {
+      return function (input) {
+        return l33t(input);
+      }
+    });
+
+    myApp.filter('bogosort', function () {
+
+      // check if the array is sorted
+      var isSorted = function (ar) {
+        var i;
+        for (i = 1; i < ar.length; i++) {
+          if (ar[i - 1].text > ar[i].text) {
+            return false;
+          }
+        }
+        return true;
+      };
+
+      var bogosort = function (input) {
+        while (!isSorted(input)) {
+          input = input.sort(function () {
+            return Math.random() - 0.5;
+          });
+        }
+        return input;
+      };
+
+      return function (input, option) {
+        return bogosort(input);
+      };
+    });
+
+    myApp.filter('nativesort', function () {
+      return function (input, option) {
+        return input.sort();
+      };
+    });
+
+  </script>
+  <style>
+    .done-true {
+      text-decoration: line-through;
+      color: grey;
+    }
+    body {
+      margin: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div ng-controller="TodoCtrl">
+    <h2>{{listName}}</h2>
+    <span>{{remaining()}} of {{todos.length}} remaining</span>
+    [ <a href="" ng-click="archive()">archive</a> ]
+    <ul class="unstyled">
+      <li ng-repeat="todo in todos">
+        <input type="checkbox" ng-model="todo.done">
+        <span class="done-{{todo.done}}">{{todo.text}}</span>
+      </li>
+    </ul>
+    <form ng-submit="addTodo()">
+      <input type="text" ng-model="todoText"  size="30"
+             placeholder="add new todo here">
+      <input class="btn-primary" type="submit" value="add">
+    </form>
+  </div>
+  <script>
+    angular.element(document).ready(function() {
+      setTimeout(function () {
+        angular.bootstrap(document, ['myApp']);
+      }, 50);
+    });
+  </script>
+</body>
+</html>

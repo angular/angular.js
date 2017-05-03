@@ -1,0 +1,158 @@
+<!doctype html>
+<html ng-csp ng-app="panelApp">
+<head>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+  <link rel="stylesheet" type="text/css" href="css/panel.css">
+
+  <script src="js/lib/angular.js"></script>
+  <script src="js/lib/jquery-1.7.2.min.js"></script>
+
+  <script src="js/panelApp.js"></script>
+
+  <script src="js/directives/mtree.js"></script>
+  <script src="js/directives/wtree.js"></script>
+
+  <script src="js/filters/first.js"></script>
+
+  <script src="js/services/appContext.js"></script>
+  <script src="js/services/chromeExtension.js"></script>
+
+  <script src="js/controllers/OptionsCtrl.js"></script>
+  <script src="js/controllers/PerfCtrl.js"></script>
+  <script src="js/controllers/TabCtrl.js"></script>
+  <script src="js/controllers/TreeCtrl.js"></script>
+
+</head>
+<body ng-controller="TabCtrl">
+
+  <ul class="nav nav-tabs">
+    <li ng-repeat="tabId in ['Model', 'Performance', 'Options', 'Help']"
+      ng-class="{active: $parent.selectedTab == tabId}"
+      ng-click="$parent.selectedTab = tabId">
+
+      <a href="#">{{tabId}}</a>
+    </li>
+  </ul>
+
+
+  <div ng-class="{hidden: $parent.selectedTab != 'Model'}" ng-controller="TreeCtrl">
+    <h2>Model Tree</h2>
+    <div ng-class="{hidden: roots.length <= 1}">
+      <label for="select-root">Root <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select></label>
+    </div>
+    <pre>
+      <mtree val="trees[selectedRoot]" inspect="inspect" edit="edit"></mtree>
+    </pre>
+  </div>
+
+
+  <div ng-class="{hidden: $parent.selectedTab != 'Performance'}" ng-controller="PerfCtrl">
+    <h2>Performance</h2>
+    <div>
+      <label class="checkbox" for="extra">
+        <input type="checkbox" ng-model="enable" id="extra"> Enable (Causes tab to refresh)
+      </label>
+      <label class="checkbox" for="log">
+        <input type="checkbox" ng-model="log" id="log"> Log to console
+      </label>
+    </div>
+    <div ng-class="{hidden: !enable}">
+
+      <label for="select-root" ng-class="{hidden: roots.length <= 1}">Root 
+        <select id="select-root" ng-options="p.value as p.label for p in roots" ng-model="selectedRoot"></select>
+      </label>
+
+      <wtree val="trees[selectedRoot]" inspect="inspect"></wtree>
+
+      <!--
+      <h3>Timeline</h3>
+      <button ng-click="clear()">Clear Timeline</button>
+      <div style="height: 400px; background-color: blue; position: relative; overflow: scroll;">
+        <div ng-repeat="x in timeline" style="height: 50px; position: absolute; background-color: red;" ng-style="{width: (x.end - x.start) + 'px', left: x.start + 'px', top: $index * 50 + 'px'}"></div>
+      </div>
+      -->
+
+      <h3>Watch Expressions</h3>
+
+      <div class="well" style="height: 400px; overflow-y: auto;">
+        <div ng-repeat="watch in histogram|sortByTime">
+          <span style="font-family: monospace;">{{watch.name | first}} </span>
+          <span> | {{watch.percent}}% | {{watch.time}}ms</span>
+          <div class="progress">
+            <div ng-style="{width: (watch.percent) + '%'}" class= "bar">
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn" ng-click="clearHistogram()">Clear Data</button>
+
+    </div>
+  </div>
+
+
+  <div ng-class="{hidden: $parent.selectedTab != 'Options'}" ng-controller="OptionsCtrl">
+    <h2>Options</h2>
+    <div>
+      <label class="checkbox" for="app">
+        <input type="checkbox" ng-model="debugger.app" id="app"> Show applications
+      </label>
+    </div>
+    <div>
+      <label class="checkbox" for="bindings">
+        <input type="checkbox" ng-model="debugger.bindings" id="bindings"> Show bindings
+      </label>
+    </div>
+    <div>
+      <label class="checkbox" for="scopes">
+        <input type="checkbox" ng-model="debugger.scopes" id="scopes"> Show scopes
+      </label>
+    </div>
+  </div>
+
+  <div ng-class="{hidden: selectedTab != 'Help'}">
+    <h2>Using the Batarang</h2>
+
+    <p>First, navigate Chrome Canary to the AngularJS application that you want to debug. <a href="https://developers.google.com/chrome-developer-tools/docs/overview#access">Open the Developer Tools</a>. There should be an AngularJS icon. Click on it to open he AngularJS Batarang.</p>
+
+    <p>The Batarang has four tabs: Model, Performance, Options, and Help.</p>
+
+    <h3>Model</h3>
+
+    <p><img src="img/model-tree.png" alt="Batarang screenshot" title="" /></p>
+
+    <p>Starting at the top of this tab, there is the root selection. If the application has only one <code>ng-app</code> declaration (as most applications do) then you will not see the option to change roots.</p>
+
+    <p>Below that is a tree showing how scopes are nested, and which models are attached to them. Clicking on a scope name will take you to the Elements tab, and show you the DOM element associated with that scope. Models and methods attached to each scope are listed with bullet points on the tree. Just the name of methods attached to a scope are shown. Models with a simple value and complex objects are shown as JSON. You can edit either, and the changes will be reflected in the application being debugged.</p>
+
+    <h3>Performance</h3>
+
+    <p><img src="img/performance.png" alt="Batarang performance tab screenshot" title="" /></p>
+
+    <p>The performance tab must be enabled separately because it causes code to be injected into AngularJS to track and report performance metrics. There is also an option to output performance metrics to the console.</p>
+
+    <p>Below that is a tree of watched expressions, showing which expressions are attached to which scopes. Much like the model tree, you can collapse sections by clicking on "toggle" and you can inspect the element that a scope is attached to by clicking on the scope name.</p>
+
+    <p>Underneath that is a graph showing the relative performance of all of the application's expressions. This graph will update as you interact with the application.</p>
+
+    <h3>Options</h3>
+
+    <p><img src="img/options.png" alt="Batarang options tab screenshot" title="" /></p>
+
+    <p>Last, there is the options tab. The options tab has two checkboxes: one for "show scopes" and one for "show bindings." Each of these options, when enabled, highlights the respective feature of the application being debugged; scopes will have a red outline, and bindings will have a blue outline.</p>
+
+    <h3>Elements</h3>
+
+    <p><img src="img/inspect.png" alt="Batarang console screenshot" title="" /></p>
+
+    <p>The Batarang also hooks into some of the existing features of the Chrome developer tools. For AngularJS applications, there is now a properties pane on in the Elements tab. Much like the model tree in the AngularJS tab, you can use this to inspect the models attached to a given element's scope.</p>
+
+    <h3>Console</h3>
+
+    <p><img src="img/console.png" alt="Batarang console screenshot" title="" /></p>
+
+    <p>The Batarang exposes some convenient features to the Chrome developer tools console. To access the scope of an element selected in the Elements tab of the developer tools, in console, you can type <code>$scope</code>. If you change value of some model on <code>$scope</code> and want to have this change reflected in the running application, you need to call <code>$scope.$apply()</code> after making the change.</p>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "AngularJS Batarang",
+  "version": "0.1",
+  "description": "Extends the Developer Tools, adding a tools for debugging and profiling AngularJS applications.",
+  "background": {
+    "page": "background.html"
+  },
+  "devtools_page": "devtools.html",
+  "manifest_version": 2,
+  "permissions": [
+    "experimental",
+    "tabs",
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/inject/debug.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

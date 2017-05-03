@@ -1,0 +1,18 @@
+.hidden {
+  display: none;
+}
+.col {
+  float: left;
+  width: 200px;
+}
+.col-2 {
+  float: left;
+  width: 400px;
+}
+.scope-branch {
+  margin-left: 30px;
+  background-color:rgba(0,0,0,0.06);
+}
+body {
+  margin: 10px;
+}
