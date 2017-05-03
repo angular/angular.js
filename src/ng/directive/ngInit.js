@@ -41,8 +41,8 @@
    </script>
    <div ng-controller="ExampleController">
      <div ng-repeat="innerList in list" ng-init="outerIndex = $index">
-       <div ng-repeat="value in innerList" ng-init="innerIndex = $index">
-          <span class="example-init">list[ {{outerIndex}} ][ {{innerIndex}} ] = {{value}};</span>
+       <div ng-repeat="value in innerList">
+          <span class="example-init">list[ {{outerIndex}} ][ {{$index}} ] = {{value}};</span>
        </div>
      </div>
    </div>
