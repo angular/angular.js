@@ -1213,6 +1213,8 @@ var inputType = {
    */
   'checkbox': checkboxInputType,
 
+  'file': fileInputType,
+
   'hidden': noop,
   'button': noop,
   'submit': noop,
@@ -1869,6 +1871,19 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
 
   ctrl.$parsers.push(function(value) {
     return value ? trueValue : falseValue;
+  });
+}
+
+function fileInputType(scope, element, attr, ctrl) {
+  element.bind('change', function() {
+    var files = [];
+
+    for (var i = 0; i < element[0].files.length; i++) {
+      files.push(element[0].files[i]);
+    }
+    scope.$apply(function() {
+      ctrl.$setViewValue(files);
+    });
   });
 }
 
