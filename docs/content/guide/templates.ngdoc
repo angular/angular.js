@@ -30,7 +30,7 @@ curly-brace {@link expression expression} bindings:
           string expression 'buttonText'
           wrapped in "{{ }}" markup -->
    <button ng-click="changeFoo()">{{buttonText}}</button>
-   <script src="angular.js">
+   <script src="angular.js"></script>
  </body>
 </html>
 ```
