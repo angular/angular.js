@@ -33,6 +33,11 @@
  * Additionally, you can provide animations via the `ngAnimate` module to animate the `enter`
  * and `leave` effects.
  *
+ * <div class="alert alert-warning">
+ * **Note:** Here is a list of values that ngShow will consider as a falsy value (case insensitive):<br />
+ * "f" / "0" / "false" / "no" / "n" / "[]"
+ * </div>
+ *
  * @animations
  * | Animation                        | Occurs                               |
  * |----------------------------------|-------------------------------------|
