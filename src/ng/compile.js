@@ -557,7 +557,7 @@
  * <div class="alert alert-danger">
  * **Note:** The `transclude` function that is passed to the compile function is deprecated, as it
  *   e.g. does not know about the right outer scope. Please use the transclude function that is passed
- *   to the link function instead.
+ *   to the compile function instead.
  * </div>
 
  * A compile function can have a return value which can be either a function or an object.
