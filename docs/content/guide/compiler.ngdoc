@@ -101,6 +101,7 @@ Here is a directive which makes any element draggable. Notice the `draggable` at
           });
 
           function mousemove(event) {
+            event.preventDefault();
             y = event.screenY - startY;
             x = event.screenX - startX;
             element.css({
