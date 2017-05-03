@@ -1600,7 +1600,34 @@ describe('basic usage', function() {
       $httpBackend.flush();
       expect(item).toEqualData({id: 'abc'});
     });
-  });
+    
+    it('should support extending returned data from server instead of overwriting', function() {
+      $httpBackend.expect('POST', '/Customer/abc').respond({id: 'abc2',serverData:"serverData"});
+
+      var R = $resource('/Customer/:id', {}, {post: {method: 'POST', params: {id: '@id',extend:true}}});
+
+      var r = new R({id:'abc'});
+      r.clientData="clientData";
+      expect(r).toEqualData({id: 'abc',clientData:"clientData"});
+      
+      r.post();
+      $httpBackend.flush();
+      expect(r).toEqualData({id: 'abc2',clientData:"clientData",serverData:"serverData"});
+    });
+
+    it('should support (by default) *not* extending returned data from server instead of overwriting', function() {
+      $httpBackend.expect('POST', '/Customer/abc').respond({id: 'abc2',serverData:"serverData"});
+
+      var R = $resource('/Customer/:id', {}, {post: {method: 'POST', params: {id: '@id'/*,extend:false*/}}});
+
+      var r = new R({id:'abc'});
+      r.clientData="clientData";
+      expect(r).toEqualData({id: 'abc',clientData:"clientData",serverData:"serverData"});
+
+      r.post();
+      $httpBackend.flush();
+      expect(r).toEqualData({id: 'abc2',serverData:"serverData"});
+    });
 });
 
 describe('extra params', function() {
