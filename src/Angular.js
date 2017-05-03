@@ -1237,6 +1237,8 @@ function toJsonReplacer(key, value) {
     val = '$DOCUMENT';
   } else if (isScope(value)) {
     val = '$SCOPE';
+  } else if (value instanceof RegExp) {
+    val = value.toString();
   }
 
   return val;
