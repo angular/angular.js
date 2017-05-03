@@ -301,6 +301,8 @@ pass.
 </div>
 
 
+* Reverse the sort order by adding a `-` symbol before the sorting value: `<option value="-age">Oldest</option>`
+
 # Summary
 
 Even if we didn't add any new and exciting functionality to our application, we have made a great
