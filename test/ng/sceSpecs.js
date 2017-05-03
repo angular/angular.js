@@ -2,6 +2,11 @@
 
 describe('SCE', function() {
 
+  iit('CKCK: IE8 TypeError', function() {
+    module(function() { throw "CKCK: foo"; });
+    expect(function() { inject(angular.nop); }).toThrow('CKCK: foo');
+  });
+
   describe('when disabled', function() {
     beforeEach(function() {
       module(function($sceProvider) {
