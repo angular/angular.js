@@ -933,6 +933,11 @@ function $LocationProvider() {
     // rewrite hashbang url <> html5 url
     if (trimEmptyHash($location.absUrl()) !== trimEmptyHash(initialUrl)) {
       $browser.url($location.absUrl(), true);
+
+      // this stops the application loading any further
+      if (!$sniffer.history) {
+        return $location;
+      }
     }
 
     var initializing = true;
