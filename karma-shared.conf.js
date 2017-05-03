@@ -8,7 +8,7 @@ module.exports = function(config, specificOptions) {
     logColors: true,
     browsers: ['Chrome'],
     browserDisconnectTimeout: 10000,
-    browserDisconnectTolerance: 2,
+    browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 30000,
 
 
