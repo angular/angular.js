@@ -12,6 +12,10 @@ branches:
   except:
     - /^g3_.*$/
 
+branches:
+  except:
+    - /^g3_.*$/
+
 env:
   matrix:
     - JOB=ci-checks
