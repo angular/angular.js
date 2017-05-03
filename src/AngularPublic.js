@@ -177,6 +177,7 @@ function publishExternalAPI(angular) {
             textarea: inputDirective,
             form: formDirective,
             script: scriptDirective,
+            template:templateDirective,
             select: selectDirective,
             option: optionDirective,
             ngBind: ngBindDirective,
