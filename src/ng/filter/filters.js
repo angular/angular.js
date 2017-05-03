@@ -731,3 +731,21 @@ var lowercaseFilter = valueFn(lowercase);
    </example>
  */
 var uppercaseFilter = valueFn(uppercase);
+
+/**
+ * @ngdoc filter
+ * @name ng.filter:boolean
+ * @description
+ * Convert values into booleans by these rules:
+ * * false, 0, null, '0', 'false' converts to false
+ * * true, 1, '1', 'true' converts to true
+ */
+function booleanFilter() {
+  return function (value) {    
+    switch(value){
+      case "true": case "yes": case "1": return true;
+      case "false": case "no": case "0": case null: return false;
+    }
+    return Boolean(value);
+  };
+};

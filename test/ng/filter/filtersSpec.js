@@ -578,4 +578,50 @@ describe('filters', function() {
       expect(date(value, 'yyyy-MM-dd HH-mm-ssZ', 'WTF')).toEqual(date(value, 'yyyy-MM-dd HH-mm-ssZ'));
     });
   });
+
+  describe('boolean', function() {
+    it('should convert 0 to false', function() {
+      expect(filter('boolean')(0)).toBeFalsy();
+    });
+
+    it('should convert 1 to true', function() {
+      expect(filter('boolean')(1)).toBeTruthy();
+    });
+
+    it('should return true as true', function() {
+      expect(filter('boolean')(true)).toBeTruthy();
+    });
+
+    it('should convert "true" String to true', function() {
+      expect(filter('boolean')('true')).toBeTruthy();
+    });
+
+    it('should return false as false', function() {
+      expect(filter('boolean')(false)).toBeFalsy();
+    });
+
+    it('should convert "false" String to false', function() {
+      expect(filter('boolean')('false')).toBeFalsy();
+    });
+
+    it('should convert "0" String to false', function() {
+      expect(filter('boolean')('0')).toBeFalsy();
+    });
+
+    it('should convert "1" String to true', function() {
+      expect(filter('boolean')('1')).toBeTruthy();
+    });
+
+    it('should convert "yes" String to true', function() {
+      expect(filter('boolean')('yes')).toBeTruthy();
+    });
+
+    it('should convert "no" String to true', function() {
+      expect(filter('boolean')('no')).toBeFalsy();
+    });
+
+    it('should convert null to false', function() {
+      expect(filter('boolean')(null)).toBeFalsy();
+    });
+  });
 });
