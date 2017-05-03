@@ -292,6 +292,12 @@ describe('filters', function() {
     });
   });
 
+  describe('escapeHtml', function () {
+    it('should escape HTML', function () {
+      expect(filter('escapeHtml')('<>&')).toEqual('&lt;&gt;&amp;');
+    });
+  });
+
   describe('date', function() {
     var morning    = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.001Z'); //7am
     var noon       = new angular.mock.TzDate(+5, '2010-09-03T17:05:08.012Z'); //12pm

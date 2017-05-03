@@ -731,3 +731,26 @@ var lowercaseFilter = valueFn(lowercase);
    </example>
  */
 var uppercaseFilter = valueFn(uppercase);
+
+/**
+ * @ngdoc filter
+ * @name ng.filter:escapeHtml
+ * @function
+ * @description
+ * Escapes angle brackets and ampersands.  Optionally, you can also escape
+ * quotes for insertion into an HTML attribute.
+ * @param {string} string Any text string, which may include HTML.
+ * @returns {string} A string with all HTML escaped.
+ */
+function escapeHtmlFilter() {
+  return function(string) {
+    var result = string;
+    if (string) {
+      result = string.
+        replace(/&/g, '&amp;').
+        replace(/</g, '&lt;').
+        replace(/>/g, '&gt;');
+    }
+    return result;
+  }
+}
