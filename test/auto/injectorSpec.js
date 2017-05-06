@@ -1,7 +1,5 @@
 'use strict';
 
-/* globals support: false */
-
 describe('injector.modules', function() {
     it('should expose the loaded module info on the instance injector', function() {
       var test1 = angular.module('test1', ['test2']).info({ version: '1.1' });
@@ -327,26 +325,24 @@ describe('injector', function() {
           expect(instance.aVal()).toEqual('a-value');
         });
 
-        if (/chrome/.test(window.navigator.userAgent)) {
-          they('should detect ES6 classes regardless of whitespace/comments ($prop)', [
-            'class Test {}',
-            'class Test{}',
-            'class //<--ES6 stuff\nTest {}',
-            'class//<--ES6 stuff\nTest {}',
-            'class {}',
-            'class{}',
-            'class //<--ES6 stuff\n {}',
-            'class//<--ES6 stuff\n {}',
-            'class/* Test */{}',
-            'class /* Test */ {}'
-          ], function(classDefinition) {
-            // eslint-disable-next-line no-eval
-            var Clazz = eval('(' + classDefinition + ')');
-            var instance = injector.invoke(Clazz);
+        they('should detect ES6 classes regardless of whitespace/comments ($prop)', [
+          'class Test {}',
+          'class Test{}',
+          'class //<--ES6 stuff\nTest {}',
+          'class//<--ES6 stuff\nTest {}',
+          'class {}',
+          'class{}',
+          'class //<--ES6 stuff\n {}',
+          'class//<--ES6 stuff\n {}',
+          'class/* Test */{}',
+          'class /* Test */ {}'
+        ], function(classDefinition) {
+          // eslint-disable-next-line no-eval
+          var Clazz = eval('(' + classDefinition + ')');
+          var instance = injector.invoke(Clazz);
 
-            expect(instance).toEqual(jasmine.any(Clazz));
-          });
-        }
+          expect(instance).toEqual(jasmine.any(Clazz));
+        });
       }
     });
 

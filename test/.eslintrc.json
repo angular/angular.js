@@ -176,6 +176,7 @@
     "browserSupportsCssAnimations": false,
     "browserTrigger": false,
     "jqLiteCacheSize": false,
-    "createAsync": false
+    "createAsync": false,
+    "support": false
   }
 }

@@ -4,7 +4,7 @@
 if (window.bindJQuery) bindJQuery();
 
 var supportTests = {
-  classes: '(class {})',
+  classes: '/^class\\b/.test((class C {}).toString())',
   fatArrow: 'a => a',
   ES6Function: '({ fn(x) { return; } })'
 };
@@ -15,8 +15,7 @@ for (var prop in supportTests) {
   if (supportTests.hasOwnProperty(prop)) {
     try {
       // eslint-disable-next-line no-eval
-      eval(supportTests[prop]);
-      support[prop] = true;
+      support[prop] = !!eval(supportTests[prop]);
     } catch (e) {
       support[prop] = false;
     }
