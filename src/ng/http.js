@@ -110,7 +110,6 @@ function $HttpParamSerializerJQLikeProvider() {
       return parts.join('&');
 
       function serialize(toSerialize, prefix, topLevel) {
-        if (toSerialize === null || isUndefined(toSerialize)) return;
         if (isArray(toSerialize)) {
           forEach(toSerialize, function(value, index) {
             serialize(value, prefix + '[' + (isObject(value) ? index : '') + ']');
@@ -123,7 +122,8 @@ function $HttpParamSerializerJQLikeProvider() {
                 (topLevel ? '' : ']'));
           });
         } else {
-          parts.push(encodeUriQuery(prefix) + '=' + encodeUriQuery(serializeValue(toSerialize)));
+          parts.push(encodeUriQuery(prefix) + '=' +
+              (toSerialize == null ? '' : encodeUriQuery(serializeValue(toSerialize))));
         }
       }
     };

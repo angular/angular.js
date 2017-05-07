@@ -2306,5 +2306,11 @@ describe('$http param serializers', function() {
          'a%5B%5D=b&a%5B%5D=c&d%5B0%5D%5Be%5D=f&d%5B0%5D%5Bg%5D=h&d%5B%5D=i&d%5B2%5D%5Bj%5D=k');
          //a[]=b&a[]=c&d[0][e]=f&d[0][g]=h&d[]=i&d[2][j]=k
     });
+
+    it('should serialize `null` and `undefined` elements as empty', function() {
+      expect(jqrSer({items:['foo', 'bar', null, undefined, 'baz'], x: null, y: undefined})).toEqual(
+         'items%5B%5D=foo&items%5B%5D=bar&items%5B%5D=&items%5B%5D=&items%5B%5D=baz&x=&y=');
+         //items[]=foo&items[]=bar&items[]=&items[]=&items[]=baz&x=&y=
+    });
   });
 });
