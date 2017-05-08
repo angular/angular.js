@@ -460,24 +460,21 @@ shows how to do this for the `heroDetail` component from above.
 
 The examples use the [Jasmine](http://jasmine.github.io/) testing framework.
 
+<div class="alert alert-warning">
+The bindings passed to $componentController simulate the `bindToController` feature and no verifications are made to verify them against the bindings definition of the component.
+Use the {@link ng.$compile $compile} service if you want to test the component with its bindings and controller the same way as described in 
+'Testing Directives' and 'Testing Directives With External Templates' of {@link guide/unit-testing unit-testing}.
+</div>
+
 **Controller Test:**
 ```js
-describe('component: heroDetail', function() {
+describe('controller: heroDetail', function() {
   var $componentController;
 
   beforeEach(module('heroApp'));
   beforeEach(inject(function(_$componentController_) {
     $componentController = _$componentController_;
   }));
-
-  it('should expose a `hero` object', function() {
-    // Here we are passing actual bindings to the component
-    var bindings = {hero: {name: 'Wolverine'}};
-    var ctrl = $componentController('heroDetail', null, bindings);
-
-    expect(ctrl.hero).toBeDefined();
-    expect(ctrl.hero.name).toBe('Wolverine');
-  });
 
   it('should call the `onDelete` binding, when deleting the hero', function() {
     var onDeleteSpy = jasmine.createSpy('onDelete');
