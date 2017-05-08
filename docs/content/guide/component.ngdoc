@@ -462,22 +462,13 @@ The examples use the [Jasmine](http://jasmine.github.io/) testing framework.
 
 **Controller Test:**
 ```js
-describe('component: heroDetail', function() {
+describe('HeroDetailController', function() {
   var $componentController;
 
   beforeEach(module('heroApp'));
   beforeEach(inject(function(_$componentController_) {
     $componentController = _$componentController_;
   }));
-
-  it('should expose a `hero` object', function() {
-    // Here we are passing actual bindings to the component
-    var bindings = {hero: {name: 'Wolverine'}};
-    var ctrl = $componentController('heroDetail', null, bindings);
-
-    expect(ctrl.hero).toBeDefined();
-    expect(ctrl.hero.name).toBe('Wolverine');
-  });
 
   it('should call the `onDelete` binding, when deleting the hero', function() {
     var onDeleteSpy = jasmine.createSpy('onDelete');
