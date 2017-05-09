@@ -202,132 +202,136 @@ describe('Scope', function() {
       expect($rootScope.$$watchersCount).toBe(2);
     }));
 
-    it('should remove $watch of constant literals after initial digest', inject(function($rootScope) {
-      $rootScope.$watch('[]', function() {});
-      $rootScope.$watch('{}', function() {});
-      $rootScope.$watch('1', function() {});
-      $rootScope.$watch('"foo"', function() {});
-      expect($rootScope.$$watchers.length).not.toEqual(0);
-      $rootScope.$digest();
+    describe('constants cleanup', function() {
+      it('should remove $watch of constant literals after initial digest', inject(function($rootScope) {
+        $rootScope.$watch('[]', function() {});
+        $rootScope.$watch('{}', function() {});
+        $rootScope.$watch('1', function() {});
+        $rootScope.$watch('"foo"', function() {});
+        expect($rootScope.$$watchers.length).not.toEqual(0);
+        $rootScope.$digest();
 
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
 
-    it('should remove $watchCollection of constant literals after initial digest', inject(function($rootScope) {
-      $rootScope.$watchCollection('[]', function() {});
-      $rootScope.$watchCollection('{}', function() {});
-      $rootScope.$watchCollection('1', function() {});
-      $rootScope.$watchCollection('"foo"', function() {});
-      expect($rootScope.$$watchers.length).not.toEqual(0);
-      $rootScope.$digest();
+      it('should remove $watchCollection of constant literals after initial digest', inject(function($rootScope) {
+        $rootScope.$watchCollection('[]', function() {});
+        $rootScope.$watchCollection('{}', function() {});
+        $rootScope.$watchCollection('1', function() {});
+        $rootScope.$watchCollection('"foo"', function() {});
+        expect($rootScope.$$watchers.length).not.toEqual(0);
+        $rootScope.$digest();
 
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
 
-    it('should remove $watchGroup of constant literals after initial digest', inject(function($rootScope) {
-      $rootScope.$watchGroup(['[]', '{}', '1', '"foo"'], function() {});
-      expect($rootScope.$$watchers.length).not.toEqual(0);
-      $rootScope.$digest();
+      it('should remove $watchGroup of constant literals after initial digest', inject(function($rootScope) {
+        $rootScope.$watchGroup(['[]', '{}', '1', '"foo"'], function() {});
+        expect($rootScope.$$watchers.length).not.toEqual(0);
+        $rootScope.$digest();
 
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
 
-    it('should remove $watch of filtered constant literals after initial digest', inject(function($rootScope) {
-      $rootScope.$watch('[1] | filter:"x"', function() {});
-      $rootScope.$watch('1 | number:2', function() {});
-      expect($rootScope.$$watchers.length).not.toEqual(0);
-      $rootScope.$digest();
+      it('should remove $watch of filtered constant literals after initial digest', inject(function($rootScope) {
+        $rootScope.$watch('[1] | filter:"x"', function() {});
+        $rootScope.$watch('1 | number:2', function() {});
+        expect($rootScope.$$watchers.length).not.toEqual(0);
+        $rootScope.$digest();
 
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
 
-    it('should remove $watchCollection of filtered constant literals after initial digest', inject(function($rootScope) {
-      $rootScope.$watchCollection('[1] | filter:"x"', function() {});
-      expect($rootScope.$$watchers.length).not.toEqual(0);
-      $rootScope.$digest();
+      it('should remove $watchCollection of filtered constant literals after initial digest', inject(function($rootScope) {
+        $rootScope.$watchCollection('[1] | filter:"x"', function() {});
+        expect($rootScope.$$watchers.length).not.toEqual(0);
+        $rootScope.$digest();
 
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
 
-    it('should remove $watchGroup of filtered constant literals after initial digest', inject(function($rootScope) {
-      $rootScope.$watchGroup(['[1] | filter:"x"', '1 | number:2'], function() {});
-      expect($rootScope.$$watchers.length).not.toEqual(0);
-      $rootScope.$digest();
+      it('should remove $watchGroup of filtered constant literals after initial digest', inject(function($rootScope) {
+        $rootScope.$watchGroup(['[1] | filter:"x"', '1 | number:2'], function() {});
+        expect($rootScope.$$watchers.length).not.toEqual(0);
+        $rootScope.$digest();
 
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
 
-    it('should remove $watch of constant expressions after initial digest', inject(function($rootScope) {
-      $rootScope.$watch('1 + 1', function() {});
-      $rootScope.$watch('"a" + "b"', function() {});
-      $rootScope.$watch('"ab".length', function() {});
-      $rootScope.$watch('[].length', function() {});
-      $rootScope.$watch('(1 + 1) | number:2', function() {});
-      expect($rootScope.$$watchers.length).not.toEqual(0);
-      $rootScope.$digest();
+      it('should remove $watch of constant expressions after initial digest', inject(function($rootScope) {
+        $rootScope.$watch('1 + 1', function() {});
+        $rootScope.$watch('"a" + "b"', function() {});
+        $rootScope.$watch('"ab".length', function() {});
+        $rootScope.$watch('[].length', function() {});
+        $rootScope.$watch('(1 + 1) | number:2', function() {});
+        expect($rootScope.$$watchers.length).not.toEqual(0);
+        $rootScope.$digest();
 
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
+    });
 
-    it('should clean up stable watches on the watch queue', inject(function($rootScope) {
-      $rootScope.$watch('::foo', function() {});
-      expect($rootScope.$$watchers.length).toEqual(1);
+    describe('onetime cleanup', function() {
+      it('should clean up stable watches on the watch queue', inject(function($rootScope) {
+        $rootScope.$watch('::foo', function() {});
+        expect($rootScope.$$watchers.length).toEqual(1);
 
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(1);
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(1);
 
-      $rootScope.foo = 'foo';
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        $rootScope.foo = 'foo';
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
 
-    it('should clean up stable watches from $watchCollection', inject(function($rootScope) {
-      $rootScope.$watchCollection('::foo', function() {});
-      expect($rootScope.$$watchers.length).toEqual(1);
+      it('should clean up stable watches from $watchCollection', inject(function($rootScope) {
+        $rootScope.$watchCollection('::foo', function() {});
+        expect($rootScope.$$watchers.length).toEqual(1);
 
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(1);
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(1);
 
-      $rootScope.foo = [];
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        $rootScope.foo = [];
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
 
-    it('should clean up stable watches from $watchCollection literals', inject(function($rootScope) {
-      $rootScope.$watchCollection('::[foo, bar]', function() {});
-      expect($rootScope.$$watchers.length).toEqual(1);
+      it('should clean up stable watches from $watchCollection literals', inject(function($rootScope) {
+        $rootScope.$watchCollection('::[foo, bar]', function() {});
+        expect($rootScope.$$watchers.length).toEqual(1);
 
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(1);
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(1);
 
-      $rootScope.foo = 1;
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(1);
+        $rootScope.foo = 1;
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(1);
 
-      $rootScope.foo = 2;
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(1);
+        $rootScope.foo = 2;
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(1);
 
-      $rootScope.bar = 3;
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        $rootScope.bar = 3;
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
 
-    it('should clean up stable watches from $watchGroup', inject(function($rootScope) {
-      $rootScope.$watchGroup(['::foo', '::bar'], function() {});
-      expect($rootScope.$$watchers.length).toEqual(2);
+      it('should clean up stable watches from $watchGroup', inject(function($rootScope) {
+        $rootScope.$watchGroup(['::foo', '::bar'], function() {});
+        expect($rootScope.$$watchers.length).toEqual(2);
 
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(2);
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(2);
 
-      $rootScope.foo = 'foo';
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(1);
+        $rootScope.foo = 'foo';
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(1);
 
-      $rootScope.bar = 'bar';
-      $rootScope.$digest();
-      expect($rootScope.$$watchers.length).toEqual(0);
-    }));
+        $rootScope.bar = 'bar';
+        $rootScope.$digest();
+        expect($rootScope.$$watchers.length).toEqual(0);
+      }));
+    });
 
     it('should delegate exceptions', function() {
       module(function($exceptionHandlerProvider) {
