@@ -2100,7 +2100,7 @@ describe('ngMock', function() {
     );
 
 
-    if (/chrome/.test(window.navigator.userAgent)) {
+    if (support.classes) {
       it('should support assigning bindings to class-based controller', function() {
         var called = false;
         var data = [
