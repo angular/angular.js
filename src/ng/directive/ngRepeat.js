@@ -429,7 +429,7 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
         // Store a list of elements from previous run. This is a hash where key is the item from the
         // iterator, and the value is objects with following properties.
         //   - scope: bound scope
-        //   - element: previous element.
+        //   - clone: previous element.
         //   - index: position
         //
         // We are using no-proto object so that we don't need to guard against inherited props via
