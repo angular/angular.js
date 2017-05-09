@@ -6172,10 +6172,10 @@ describe('$compile', function() {
         });
 
         it('should eventually expose isolate scope variables on ES6 class controller with controllerAs when bindToController is true', function() {
-          if (!/chrome/i.test(window.navigator.userAgent)) return;
+          if (!support.classes) return;
           var controllerCalled = false;
           // eslint-disable-next-line no-eval
-          var Controller = eval(
+          var Controller = eval('(\n' +
             'class Foo {\n' +
             '  constructor($scope) {}\n' +
             '  $onInit() { this.check(); }\n' +
@@ -6192,7 +6192,8 @@ describe('$compile', function() {
             '    expect(this.fn()).toBe(\'called!\');\n' +
             '    controllerCalled = true;\n' +
             '  }\n' +
-            '}');
+            '}\n' +
+            ')');
           spyOn(Controller.prototype, '$onInit').and.callThrough();
 
           module(function($compileProvider) {
