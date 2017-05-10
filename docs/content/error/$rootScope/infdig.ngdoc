@@ -39,3 +39,9 @@ $scope.getUsers = function() {
 ```
 
 The maximum number of allowed iterations of the `$digest` cycle is controlled via TTL setting which can be configured via {@link ng.$rootScopeProvider $rootScopeProvider}.
+
+One common mistake is passing a toggle value to a directive which takes boolian.  For example:
+
+<div ng-show="showMyDialog!=showMyDialog">
+  <h1>My Dialog</h1>
+</div>
