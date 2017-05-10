@@ -996,7 +996,9 @@ function $RootScopeProvider() {
        * @kind function
        *
        * @description
-       * Executes the expression on the current scope at a later point in time.
+       * Executes the expression at a later point in time.
+       * The expression will be executed on a scope whose {@link ng.$rootScope.Scope#$digest $digest cycle} is the next to run.
+       * This scope might or might not be the same as the current scope.
        *
        * The `$evalAsync` makes no guarantees as to when the `expression` will be executed, only
        * that:
@@ -1016,7 +1018,7 @@ function $RootScopeProvider() {
        * @param {(string|function())=} expression An AngularJS expression to be executed.
        *
        *    - `string`: execute using the rules as defined in {@link guide/expression expression}.
-       *    - `function(scope)`: execute the function with the current `scope` parameter.
+       *    - `function(scope)`: execute the function with the `scope` whose {@link ng.$rootScope.Scope#$digest $digest cycle} is being run.
        *
        * @param {(object)=} locals Local variables object, useful for overriding values in scope.
        */
