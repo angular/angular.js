@@ -1,0 +1,27 @@
+@ngdoc error
+@name ngScopeAs:nonassign
+@fullName Non-assignable Expression
+@description
+
+Occurs when {@link ng.directive:ngScopeAs ngScopeAs} is passed an expression which is not assignable.
+
+The expression passed to the {@link ng.directive:ngScopeAs ngScopeAs} directive is used to assign an alias for the current scope.
+
+If the expression is not assignable (such as a literal value or a function call or comparison operation), the expression is unassignable.
+
+Invalid expressions might look like this:
+
+```html
+<div ng-scope-as="'some constant value'"></div>
+<div ng-scope-as="$collection = []"></div>
+<div ng-scope-as="resultOfSomeMethod()"></div>
+<div ng-scope-as="null"></div>
+```
+
+Valid expressions might look like this:
+
+```html
+<div ng-scope-as="scopes[0]"></div>
+<div ng-scope-as="clothes.tshirts"></div>
+<div ng-scope-as="outerScope"></div>
+```
