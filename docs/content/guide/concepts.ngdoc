@@ -3,6 +3,15 @@
 @sortOrder 200
 @description
 
+
+============================================================================
+
+SEE "Propose file change" FOR DISPLAY PROBLEMS (DON'T KNOW WHY THIS OCCURS!).
+
+============================================================================
+
+
+
 # Conceptual Overview
 
 This section briefly touches on all of the important parts of AngularJS using a simple example.
