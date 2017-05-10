@@ -91,7 +91,7 @@ FormController.prototype = {
    * @description
    * Rollback all form controls pending updates to the `$modelValue`.
    *
-   * Updates may be pending by a debounced event or because the input is waiting for a some future
+   * Updates may be pending by a debounced event or because the input is waiting for a future
    * event defined in `ng-model-options`. This method is typically needed by the reset button of
    * a form that uses `ng-model-options` to pend updates.
    */
@@ -108,7 +108,7 @@ FormController.prototype = {
    * @description
    * Commit all form controls pending updates to the `$modelValue`.
    *
-   * Updates may be pending by a debounced event or because the input is waiting for a some future
+   * Updates may be pending by a debounced event or because the input is waiting for a future
    * event defined in `ng-model-options`. This method is rarely needed as `NgModelController`
    * usually handles calling this in response to input events.
    */
