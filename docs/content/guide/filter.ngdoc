@@ -11,7 +11,9 @@ templates, controllers or services. AngularJS comes with a collection of
 
 The underlying API is the {@link ng.$filterProvider}.
 
-## Using filters in view templates
+A list of {@link ng.filter `built in filters`} in Angular.
+
+## Using filters in view templatesa
 
 Filters can be applied to expressions in view templates using the following syntax:
 
