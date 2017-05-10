@@ -421,7 +421,7 @@ we call an **isolate scope**. To do this, we can use a {@link $compile#-scope- d
         return {
           restrict: 'E',
           scope: {
-            customerInfo: '=info'
+            customerInfo: '=info'//>=1.3.0,use '@info'
           },
           templateUrl: 'my-customer-iso.html'
         };
@@ -447,7 +447,7 @@ Let's take a closer look at the scope option:
 ```javascript
 //...
 scope: {
-  customerInfo: '=info'
+  customerInfo: '=info'//>=1.3.0,use '@info'
 },
 //...
 ```
@@ -471,8 +471,8 @@ directive's scope, you can use this shorthand syntax:
 ```javascript
 ...
 scope: {
-  // same as '=customer'
-  customer: '='
+  // same as '=customer' | '@customer'
+  customer: '=' //>=1.3.0,use {customer: '@'}
 },
 ...
 ```
