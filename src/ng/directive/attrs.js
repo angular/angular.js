@@ -355,6 +355,12 @@ forEach(BOOLEAN_ATTR, function(propName, attrName) {
     });
   }
 
+  function defaultLinkFn(scope, element, attr) {
+    scope.$watch(attr[normalized], function ngBooleanAttrWatchAction(value) {
+      attr.$set(attrName, !!value);
+    });
+  }
+
   var normalized = directiveNormalize('ng-' + attrName);
   var linkFn = defaultLinkFn;
 
