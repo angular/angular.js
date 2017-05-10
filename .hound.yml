@@ -1,0 +1,8 @@
+scss:
+  enabled: true
+
+fail_on_violations: true
+
+jshint:
+  config_file: .jshintrc
+  enable: true

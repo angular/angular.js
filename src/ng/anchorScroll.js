@@ -11,9 +11,10 @@
  */
 function $AnchorScrollProvider() {
 
+
   var autoScrollingEnabled = true;
 
-  /**
+  /
    * @ngdoc method
    * @name $anchorScrollProvider#disableAutoScrolling
    *
