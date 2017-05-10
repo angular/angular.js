@@ -1670,15 +1670,19 @@ function angularInit(element, bootstrap) {
       module = element.getAttribute(name);
     }
   });
-  forEach(ngAttrPrefixes, function(prefix) {
-    var name = prefix + 'app';
-    var candidate;
 
-    if (!appElement && (candidate = element.querySelector('[' + name.replace(':', '\\:') + ']'))) {
-      appElement = candidate;
-      module = candidate.getAttribute(name);
-    }
-  });
+  if(!appElement) {
+    forEach(ngAttrPrefixes, function(prefix) {
+      var name = prefix + 'app';
+      var candidate;
+
+      if (!appElement && (candidate = element.querySelector('[' + name.replace(':', '\\:') + ']'))) {
+        appElement = candidate;
+        module = candidate.getAttribute(name);
+      }
+    });
+  }
+
   if (appElement) {
     if (!isAutoBootstrapAllowed) {
       window.console.error('AngularJS: disabling automatic bootstrap. <script> protocol indicates ' +
