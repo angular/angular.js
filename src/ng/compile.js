@@ -2178,8 +2178,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           break;
       }
 
-      directives.sort(byPriority);
-      return directives;
+      return byPriority(directives);
     }
 
     function collectCommentDirectives(node, directives, attrs, maxPriority, ignoreDirective) {
@@ -3124,11 +3123,18 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
     /**
      * Sorting function for bound directives.
      */
-    function byPriority(a, b) {
-      var diff = b.priority - a.priority;
-      if (diff !== 0) return diff;
-      if (a.name !== b.name) return (a.name < b.name) ? -1 : 1;
-      return a.index - b.index;
+    function byPriority(arr) {
+      // insert sort algorithm
+      for (var i = 1; i < arr.length; i++) {
+        var tmp = arr[i],
+            j = i;
+        while (arr[j - 1].priority > tmp.priority) {
+          arr[j] = arr[j - 1];
+          --j;
+        }
+        arr[j] = tmp;
+      }
+      return arr;
     }
 
     function assertNoDuplicate(what, previousDirective, directive, element) {
