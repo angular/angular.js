@@ -15,8 +15,8 @@ describe('$cookieStore', function() {
 
 
   it('should put cookie', inject(function($cookieStore, $cookies) {
-    $cookieStore.put('name', 'value');
-    expect($cookies.putObject).toHaveBeenCalledWith('name', 'value');
+    $cookieStore.put('name', 'value', 'options');
+    expect($cookies.putObject).toHaveBeenCalledWith('name', 'value', 'options');
   }));
 
 
