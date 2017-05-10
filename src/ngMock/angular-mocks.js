@@ -1336,6 +1336,7 @@ angular.mock.$httpBackendDecorator =
 function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   var definitions = [],
       expectations = [],
+      notCalledExpectations = [],
       responses = [],
       responsesPush = angular.bind(responses, responses.push),
       copy = angular.copy,
@@ -1397,6 +1398,10 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
           }
         }
       }
+    }
+
+    if (notCalledExpectations.some(function(exp) { return exp.match(method, url, data, headers); })) {
+      throw new Error('Request should not be called: ' + method + ' ' + url);
     }
 
     if (expectation && expectation.match(method, url)) {
@@ -1669,6 +1674,14 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         chain = {
           respond: function(status, data, headers, statusText) {
             expectation.response = createResponse(status, data, headers, statusText);
+            return chain;
+          },
+          haveNotBeenCalled: function() {
+            var index = expectations.indexOf(expectation);
+            if (index > -1) {
+              expectations.splice(index, 1);
+            }
+            notCalledExpectations.push(expectation);
             return chain;
           }
         };
