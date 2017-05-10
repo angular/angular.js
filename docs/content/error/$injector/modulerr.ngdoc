@@ -4,7 +4,7 @@
 @description
 
 This error occurs when a module fails to load due to some exception. The error
-message above should provide additional context.
+message above should provide additional context as long as you're not running the minified version of Angular.
 
 A common reason why the module fails to load is that you've forgotten to
 include the file with the defined module or that the file couldn't be loaded.
