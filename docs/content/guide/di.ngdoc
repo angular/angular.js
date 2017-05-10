@@ -152,6 +152,9 @@ the parameters in the function declaration.
 <div class="alert alert-danger">
 **Careful:** If you plan to [minify](http://en.wikipedia.org/wiki/Minification_(programming&#41;)
 your code, your service names will get renamed and break your app.
+
+You will need to use a library such like [ng-annotate](https://github.com/olov/ng-annotate)
+to add on the fly dependencies names before minification.
 </div>
 
 The simplest way to get hold of the dependencies is to assume that the function parameter names
