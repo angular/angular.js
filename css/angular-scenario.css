@@ -43,7 +43,7 @@ body {
 
 #application h2,
 #specs h2 {
-  margin: 0;
+  margin: 20;
   padding: 0.5em;
   font-size: 1.1em;
 }
