@@ -129,13 +129,13 @@ We extended the vocabulary of the browser in a way which is natural to anyone wh
 ## Understanding View
 
 Most other templating systems consume a static string template and
-combine it with data, resulting in a new string. The resulting text is then `innerHTML`ed into
+combine it with data, resulting in a new string. The resulting text is then `innerHTML` used into
 an element.
 
 <img src="img/One_Way_Data_Binding.png">
 
 This means that any changes to the data need to be re-merged with the template and then
-`innerHTML`ed into the DOM. Some of the issues with this approach are:
+`innerHTML` used into the DOM. Some of the issues with this approach are:
 
 1. reading user input and merging it with data
 2. clobbering user input by overwriting it
