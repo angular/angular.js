@@ -46,6 +46,7 @@
          <input ng-model="newCacheKey" placeholder="Key">
          <input ng-model="newCacheValue" placeholder="Value">
          <button ng-click="put(newCacheKey, newCacheValue)">Cache</button>
+         <button ng-click="clearCache()">Clear Cache</button>
 
          <p ng-if="keys.length">Cached Values</p>
          <div ng-repeat="key in keys">
@@ -72,6 +73,10 @@
                $scope.keys.push(key);
              }
              $scope.cache.put(key, angular.isUndefined(value) ? null : value);
+           };
+           $scope.clearCache = function(key) {
+            $scope.keys = [];
+             return $scope.cache.removeAll();
            };
          }]);
      </file>
