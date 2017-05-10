@@ -121,7 +121,8 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       });
 
       if (withCredentials) {
-        xhr.withCredentials = true;
+        // if native XMLHTTP is not enabled in IE8, setting this property will throw an exception
+        try { xhr.withCredentials = true; } catch (e) {}
       }
 
       if (responseType) {
