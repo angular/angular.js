@@ -24,6 +24,13 @@
  * `<div ng-init="test1 = ($index | toString)"></div>`
  * </pre>
  * </div>
+ * <div class="alert alert-error">
+ * *Caveat*: If you have assignment in `ngInit` along with {@link api/ng.$filter `$filter`}, make
+ * sure you have parenthesis for correct precedence:
+ * <pre class="prettyprint">
+ *   <ng-init="test1 = (data | orderBy:'name')">
+ * </pre>
+ * </div>
  *
  * @priority 450
  *
