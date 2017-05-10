@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html ng-app="myApp">
+<head>
+  <title>Demo Templator Angular With Bootstrap</title>
+
+	<!-- VENDOR COMPONENTS -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic"> 
+	<link rel="stylesheet" href="bower-components/bootstrap-3.3.5/dist/css/bootstrap.min.css">  
+  <link id="dynamicaCss" rel="stylesheet" href="bower-components/bootswatch-gh-pages/readable/bootstrap.min.css">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>  
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular.min.js"></script>  
+  <script type="text/javascript" src="bower-components/angular/angular-sanitize.min.js"></script> 
+ 	<script type="text/javascript" src="bower-components/bootstrap-3.3.5/dist/js/bootstrap.min.js"></script>
+	<!-- /VENDOR COMPONENTS --> 
+	
+	<!-- ANGULAR TERMINATOR -->
+    <script type="text/javascript" src="ng-templator.js"></script>
+    <script>
+    'use strict'
+        var app =   angular.module(		
+        		///LOAD MODULOS
+        		'myApp', 
+        		[
+        		'ngTemplator'
+        		 ]
+        );
+    </script>
+</head>
+<body  ng-controller="LayoutCtrl as ctrl">
+<render-templator ng-repeat="section in ctrl.sections" content="section">
+</render-templator>
+</body>
+</html>

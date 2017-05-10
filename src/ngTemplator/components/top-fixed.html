@@ -1,0 +1,50 @@
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <div class="form-group">
+           <a class="navbar-brand" href="#" > <img class="first-slide" ng-src="{{content.logo}}" style="height:30px;float:left" alt="First slide">  {{content.title}}</a>
+     
+            </div>
+          </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav" ng-repeat="button in content.buttons" >
+            
+            <!-- IF SINGLE BUTTON -->
+            <li ng-if="button.type == 'single'" ng-class="{active: $route.current.activetab == button.link}">
+            <a href="{{button.link}}">{{button.label}}</a>
+            </li>
+            
+            <!-- IF DROPDOWN -->            
+            <li ng-if="button.type == 'dropdown'"  class="dropdown">
+                <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{button.label}} <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li ng-repeat="button in button.dropdown">
+                  <a href="{{button.link}}">{{button.label}}</a>
+                  </li>
+                </ul>
+              </li>
+            </li>
+            
+          
+        
+          </ul> 
+          <form class="navbar-form navbar-right"  >
+          <div class="form-group">
+            <h5> Change Theme</h5>
+            </div>
+            <div class="form-group" ng-controller="ThemeColor">
+                <select class="form-control" ng-model="ThemeSelected"  ng-change="changeTheme(ThemeSelected)"> 
+				  <option value="">Bootswatch</option>
+				  <option  ng-repeat="theme in themes" value="{{theme.cssMin}}">{{theme.name}}</option>
+				  </select>
+            </div>
+          </form></div><!--/.nav-collapse --> 
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
