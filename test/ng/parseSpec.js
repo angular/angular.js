@@ -2177,6 +2177,15 @@ describe('parser', function() {
         expect(scope.$eval('concat(\'abcd\'|limitTo:limit:begin,\'abcd\'|limitTo:2:1|uppercase)')).toEqual('bcBC');
       });
 
+      it('should allow filter chains as arguments', function() {
+        scope.concat = function(a, b) {
+          return a + b;
+        };
+        scope.begin = 1;
+        scope.limit = 2;
+        expect(scope.$eval("concat('abcd'|limitTo:limit:begin,'abcd'|limitTo:2:1|uppercase)")).toEqual("bcBC");
+      });
+
       it('should evaluate function call from a return value', function() {
         scope.getter = function() { return function() { return 33; }; };
         expect(scope.$eval('getter()()')).toBe(33);
