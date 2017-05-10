@@ -65,6 +65,11 @@ FormController.$inject = ['$element', '$attrs', '$scope', '$animate', '$interpol
 function FormController($element, $attrs, $scope, $animate, $interpolate) {
   this.$$controls = [];
 
+  // do not link to parent form if not-required attr is defined
+  if (attrs.notRequired) {
+    parentForm = nullFormCtrl;
+  }
+  
   // init state
   this.$error = {};
   this.$$success = {};
