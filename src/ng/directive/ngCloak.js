@@ -34,6 +34,7 @@
  * application.
  *
  * @element ANY
+ * @priority -500
  *
  * @example
    <example name="ng-cloak">
@@ -53,6 +54,7 @@
  *
  */
 var ngCloakDirective = ngDirective({
+  priority: -500,
   compile: function(element, attr) {
     attr.$set('ngCloak', undefined);
     element.removeClass('ng-cloak');
