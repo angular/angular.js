@@ -269,6 +269,9 @@ function ngViewFillContentFactory($compile, $controller, $route) {
       var link = $compile($element.contents());
 
       if (current.controller) {
+        if (angular.isFunction(current.controller)) {
+          current.controller = current.controller(current.params);
+        }
         locals.$scope = scope;
         var controller = $controller(current.controller, locals);
         if (current.controllerAs) {
