@@ -33,7 +33,7 @@ npm install
 
 To see the app running in a browser, open a _separate_ terminal/command line tab or window, then run
 `npm start` to start the web server. Now, open a browser window for the app and navigate to
-http://localhost:8000/index.html.
+http://localhost:8000/app/index.html.
 
 Note that if you already ran the master branch app prior to checking out step-0, you may see the
 cached master version of the app in your browser window at this point. Just hit refresh to re-load
