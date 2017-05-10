@@ -20,7 +20,7 @@ var NG_HIDE_IN_PROGRESS_CLASS = 'ng-hide-animate';
  * <!-- when $scope.myValue is truthy (element is visible) -->
  * <div ng-show="myValue"></div>
  *
- * <!-- when $scope.myValue is falsy (element is hidden) -->
+ * <!-- when $scope.myValue is false (element is hidden) -->
  * <div ng-show="myValue" class="ng-hide"></div>
  * ```
  *
