@@ -1357,7 +1357,7 @@ function startingTag(element) {
  *
  * @private
  * @param str value potential URI component to check.
- * @returns {boolean} True if `value` can be decoded
+ * @returns {string|undefined} Decoded URI Component or undefined if failed
  * with the decodeURIComponent function.
  */
 function tryDecodeURIComponent(value) {
@@ -1371,7 +1371,7 @@ function tryDecodeURIComponent(value) {
 
 /**
  * Parses an escaped url query string into key-value pairs.
- * @returns {Object.<string,boolean|Array>}
+ * @returns {Object.<string,boolean|string|Array>}
  */
 function parseKeyValue(/**string*/keyValue) {
   var obj = {};
