@@ -977,6 +977,7 @@ describe('basic usage', function() {
         var cc = CreditCard.get({id: 123});
         $httpBackend.flush();
         expect(cc.$resolved).toBe(true);
+        expect(cc.$resolved).toBe(false);
 
         $httpBackend.expect('POST', '/CreditCard/123').respond();
         cc.$save({id: 123});
