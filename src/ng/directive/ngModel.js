@@ -119,11 +119,11 @@ var ngModelMinErr = minErr('ngModel');
  *   // Lookup user by username
  *   return $http.get('/api/users/' + value).
  *      then(function resolved() {
- *        //username exists, this means validation fails
- *        return $q.reject('exists');
- *      }, function rejected() {
- *        //username does not exist, therefore this validation passes
+ *        // Username does not exist, therefore this validation passes
  *        return true;
+ *      }, function rejected() {
+ *        // Username exists, this means validation fails
+ *        return $q.reject('exists');
  *      });
  * };
  * ```
