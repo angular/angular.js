@@ -20,3 +20,16 @@ The example above can be resolved by using `track by $index`, which will cause t
 ```
 <div ng-repeat="value in [4, 4] track by $index"></div>
 ```
+In Detail, if same object is used to add in the array, that create this error. Reason is in javascript a object never dies. That's why if same name object is used to insert in array
+than error comes.
+
+```javascript
+var customers=[];
+var obj={name:"rk"};
+customers.push(obj); // work fine
+customers.push(obj); // give same error if used in repeater
+obj={name:"rk1"};
+customers.push(obj); // give same error if used in repeater
+var obj1={name:"rk"};
+customers.push(obj1); // work fine
+```
