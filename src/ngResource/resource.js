@@ -269,6 +269,9 @@ function shallowClearAndCopy(src, dst) {
  *
  *     On failure, the promise is rejected with the {@link ng.$http http response} object, without
  *     the `resource` property.
+ * 
+ *     If an interceptor object was provided, the promise will instead be resolved with the value
+ *     returned by the interceptor.
  *
  *     If an interceptor object was provided, the promise will instead be resolved with the value
  *     returned by the interceptor.
