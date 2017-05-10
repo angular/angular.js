@@ -116,6 +116,40 @@ describe('a', function() {
   });
 
 
+  it('should not preventDefault if anchor element is replaced with href-containing element', function() {
+    spyOn(jqLite.prototype, 'on').andCallThrough();
+    element = $compile('<a link-to="https://www.google.com">')($rootScope);
+    $rootScope.$digest();
+
+    var child = element.children('a');
+    var preventDefault = jasmine.createSpy('preventDefault');
+
+    child.triggerHandler({
+      type: 'click',
+      preventDefault: preventDefault
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+  });
+
+
+  it('should preventDefault if anchor element is replaced with element without href attribute', function() {
+    spyOn(jqLite.prototype, 'on').andCallThrough();
+    element = $compile('<a link-not="https://www.google.com">')($rootScope);
+    $rootScope.$digest();
+
+    var child = element.children('a');
+    var preventDefault = jasmine.createSpy('preventDefault');
+
+    child.triggerHandler({
+      type: 'click',
+      preventDefault: preventDefault
+    });
+
+    expect(preventDefault).toHaveBeenCalled();
+  });
+
+
   if (isDefined(window.SVGElement)) {
     describe('SVGAElement', function() {
       it('should prevent default action to be executed when href is empty', function() {
