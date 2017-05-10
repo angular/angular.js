@@ -1858,7 +1858,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * "afterEach" clause.
    *
    * ```js
-   *   afterEach($httpBackend.verifyNoOutstandingExpectation);
+   *   afterEach($httpBackend.verifyNoOutstandingExpectation());
    * ```
    */
   $httpBackend.verifyNoOutstandingExpectation = function(digest) {
@@ -1879,7 +1879,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * "afterEach" clause.
    *
    * ```js
-   *   afterEach($httpBackend.verifyNoOutstandingRequest);
+   *   afterEach($httpBackend.verifyNoOutstandingRequest());
    * ```
    */
   $httpBackend.verifyNoOutstandingRequest = function(digest) {
