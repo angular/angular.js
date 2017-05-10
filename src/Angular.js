@@ -548,7 +548,7 @@ function isDefined(value) {return typeof value !== 'undefined';}
  */
 function isObject(value) {
   // http://jsperf.com/isobject4
-  return value !== null && typeof value === 'object';
+  return value !== null && value.constructor === Object;
 }
 
 
