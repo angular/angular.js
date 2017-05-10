@@ -114,7 +114,7 @@ $provide.value("$locale", {
     "PATTERNS": [
       {
         "gSize": 3,
-        "lgSize": 3,
+        "lgSize": 4,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -125,7 +125,7 @@ $provide.value("$locale", {
       },
       {
         "gSize": 3,
-        "lgSize": 3,
+        "lgSize": 4,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
