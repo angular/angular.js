@@ -1312,7 +1312,7 @@ jqLite/jQuery collections
 
 #### Helper Functions:
 
-The {@link angular.lowercase `angular.lowercase`} and {@link angular.uppercase `angular.uppercase`} functions have been **deprecated** and will be removed
+The `angular.lowercase` and `angular.uppercase` functions have been **deprecated** and will be removed
 in version 1.7.0. It is recommended to use [String.prototype.toLowerCase](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String/toLowerCase) and [String.prototype.toUpperCase](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase) functions instead.
 
 
