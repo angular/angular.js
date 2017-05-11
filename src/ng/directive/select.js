@@ -483,7 +483,7 @@ var SelectController =
  * the content of the `value` attribute or the textContent of the `<option>`, if the value attribute is missing.
  * Value and textContent can be interpolated.
  *
- * The {@link select.selectController select controller} exposes utility functions that can be used
+ * The {@link select.SelectController select controller} exposes utility functions that can be used
  * to manipulate the select's behavior.
  *
  * ## Matching model and option values
