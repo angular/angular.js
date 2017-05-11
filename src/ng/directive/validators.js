@@ -151,6 +151,23 @@ var requiredDirective = function() {
        });
  *   </file>
  * </example>
+ * <div class="alert alert-info">
+ * **Note:** Avoid using the regex directly inside the ng-pattern.Sometime ng-pattern does not validates the patten properly.
+   Put your regex inside your   controller and than use it inside ng-pattern.
+ * </div>
+   @example
+   <example name="ngPatternDirective" module="ngPatternExample">
+ *     <script>
+ *       angular.module('ngPatternValidate', [])
+ *         .controller('ExampleController', ['$scope', function($scope) {
+             //This pattern is for email validation
+ *           $scope.regex = /^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/; (don't put expression in quotes)
+ *         }]);
+ *     </script>
+     <div ng-controller="ExampleController">
+       <input ng-model="widget.title" required ng-pattern="regex" />
+     </div>
+ </example>
  */
 var patternDirective = function() {
   return {
