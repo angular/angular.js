@@ -32,7 +32,7 @@ function nullFormRenameControl(control, name) {
  *  pending validators, where:
  *
  *  - keys are validations tokens (error names).
- *  - values are arrays of controls or forms that have a pending validator fot the given error name.
+ *  - values are arrays of controls or forms that have a pending validator for the given error name.
  *
  * See {@link form.FormController#$error $error} for a list of built-in validation tokens.
  *
@@ -292,7 +292,7 @@ FormController.prototype = {
  *
  * Application developers will rarely need to call this method directly. It is used internally, by
  * {@link ngModel.NgModelController#$setValidity NgModelController.$setValidity()}, to propagate a
- * control's validity state to parent `FormControllers`.
+ * control's validity state to the parent `FormController`.
  *
  * @param {string} validationErrorKey Name of the validator. The `validationErrorKey` will be
  *        assigned to either `$error[validationErrorKey]` or `$pending[validationErrorKey]` (for
