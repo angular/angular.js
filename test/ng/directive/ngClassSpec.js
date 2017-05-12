@@ -567,6 +567,26 @@ describe('ngClass', function() {
     })
   );
 
+  //https://github.com/angular/angular.js/issues/15960#issuecomment-299109412
+  it('should always reevaluate filters with non-primitive inputs within literals', function() {
+    module(function($filterProvider) {
+      $filterProvider.register('foo', valueFn(function(o) {
+        return o.a || o.b;
+      }));
+    });
+
+    inject(function($rootScope, $compile) {
+      $rootScope.testObj = {};
+      element = $compile('<div ng-class="{x: (testObj | foo)}">')($rootScope);
+
+      $rootScope.$apply();
+      expect(element).not.toHaveClass('x');
+
+      $rootScope.$apply('testObj.a = true');
+      expect(element).toHaveClass('x');
+    });
+  });
+
   describe('large objects', function() {
     var getProp;
     var veryLargeObj;
