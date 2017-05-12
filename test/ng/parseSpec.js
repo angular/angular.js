@@ -2973,6 +2973,244 @@ describe('parser', function() {
           expect(watcherCalls).toBe(1);
         }));
 
+        it('should not reevaluate filters in literals with non-primitive input that does support valueOf()',
+            inject(function($parse) {
+          var filterCalls = 0;
+          $filterProvider.register('foo', valueFn(function(input) {
+            filterCalls++;
+            return input;
+          }));
+
+          scope.date = new Date(1234567890123);
+
+          var watcherCalls = 0;
+          scope.$watch('[(date | foo)]', function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+
+          scope.$digest();
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+        }));
+
+        it('should reevaluate filters in literals with non-primitive input that does support valueOf() when' +
+           ' valueOf() value changes',
+            inject(function($parse) {
+          var filterCalls = 0;
+          $filterProvider.register('foo', valueFn(function(input) {
+            filterCalls++;
+            return input;
+          }));
+
+          scope.date = new Date(1234567890123);
+
+          var watcherCalls = 0;
+          scope.$watch('[(date | foo)]', function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+
+          scope.date.setTime(1234567890);
+
+          scope.$digest();
+          expect(filterCalls).toBe(2);
+          expect(watcherCalls).toBe(2);
+        }));
+
+        it('should not reevaluate literals containing filters with non-primitive input that does support valueOf()' +
+            ' when the instance changes but valueOf() does not', inject(function($parse) {
+          var filterCalls = 0;
+          $filterProvider.register('foo', valueFn(function(input) {
+            filterCalls++;
+            return input;
+          }));
+
+          scope.date = new Date(1234567890123);
+
+          var watcherCalls = 0;
+          scope.$watch($parse('[(date | foo)]'), function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+          expect(filterCalls).toBe(1);
+
+          scope.date = new Date(1234567890123);
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+          expect(filterCalls).toBe(1);
+        }));
+
+        it('should not reevaluate filters with literal input containing primitives', inject(function($parse) {
+          var filterCalls = 0;
+          $filterProvider.register('foo', valueFn(function(input) {
+            filterCalls++;
+            return input;
+          }));
+
+          var watcherCalls = 0;
+          scope.$watch('[a] | foo', function(input) {
+            watcherCalls++;
+          });
+
+          scope.$apply('a = 1');
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+
+          scope.$apply('a = 2');
+          expect(filterCalls).toBe(2);
+          expect(watcherCalls).toBe(2);
+        }));
+
+        it('should not reevaluate filters within literals with primitive inputs', inject(function($parse) {
+          var filterCalls = 0;
+          $filterProvider.register('foo', valueFn(function(input) {
+            filterCalls++;
+            return input;
+          }));
+
+          scope.prim = 1234567890123;
+
+          var watcherCalls = 0;
+          scope.$watch('[(prim | foo)]', function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+
+          scope.$digest();
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+        }));
+
+        it('should always reevaluate filters with non-primitive inputs within literals',
+            inject(function($parse) {
+          $filterProvider.register('foo', valueFn(function(input) {
+            return input.b > 0;
+          }));
+
+          scope.$watch('[(a | foo)]', function() {});
+
+          // Would be great if filter-output was checked for changes and this didn't throw...
+          expect(function() { scope.$apply('a = {b: 1}'); }).toThrowMinErr('$rootScope', 'infdig');
+        }));
+
+        it('should always reevaluate filters with literal input containing non-primitives',
+            inject(function($parse) {
+          scope.$watch('[a] | filter', function() {});
+
+          scope.$apply('a = 1');
+
+          // Would be great if filter-output was checked for changes and this didn't throw...
+          expect(function() { scope.$apply('a = {}'); }).toThrowMinErr('$rootScope', 'infdig');
+        }));
+
+        it('should not reevaluate filters with non-primitive input that gets simplified via unary operators',
+            inject(function($parse) {
+          var filterCalls = 0;
+          $filterProvider.register('foo', valueFn(function(input) {
+            filterCalls++;
+            return input;
+          }));
+
+          scope.obj = {};
+
+          var watcherCalls = 0;
+          scope.$watch('!obj | foo:!obj', function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+
+          scope.$digest();
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+        }));
+
+        it('should not reevaluate filters with non-primitive input that gets simplified via non plus/concat binary operators',
+            inject(function($parse) {
+          var filterCalls = 0;
+          $filterProvider.register('foo', valueFn(function(input) {
+            filterCalls++;
+            return input;
+          }));
+
+          scope.obj = {};
+
+          var watcherCalls = 0;
+          scope.$watch('1 - obj | foo:(1 * obj)', function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+
+          scope.$digest();
+          expect(filterCalls).toBe(1);
+          expect(watcherCalls).toBe(1);
+        }));
+
+        it('should reevaluate filters with non-primitive input that gets simplified via plus/concat', inject(function($parse) {
+          var filterCalls = 0;
+          $filterProvider.register('foo', valueFn(function(input) {
+            filterCalls++;
+            return input;
+          }));
+
+          scope.obj = {};
+
+          var watcherCalls = 0;
+          scope.$watch('1 + obj | foo', function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(filterCalls).toBe(2);
+          expect(watcherCalls).toBe(1);
+
+          scope.$digest();
+          expect(filterCalls).toBe(3);
+          expect(watcherCalls).toBe(1);
+        }));
+
+        it('should reevaluate computed member expressions with non-primitive input', inject(function($parse) {
+          var toStringCalls = 0;
+
+          scope.obj = {};
+          scope.key = {
+            toString: function() {
+              toStringCalls++;
+              return 'foo';
+            }
+          };
+
+          var watcherCalls = 0;
+          scope.$watch('obj[key]', function(input) {
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(toStringCalls).toBe(2);
+          expect(watcherCalls).toBe(1);
+
+          scope.$digest();
+          expect(toStringCalls).toBe(3);
+          expect(watcherCalls).toBe(1);
+        }));
+
         it('should always reevaluate filters with non-primitive input created with null prototype',
             inject(function($parse) {
           var filterCalls = 0;
@@ -3027,7 +3265,7 @@ describe('parser', function() {
         }));
 
         it('should reevaluate filters with non-primitive input that does support valueOf() when' +
-           'valueOf() value changes', inject(function($parse) {
+           ' valueOf() value changes', inject(function($parse) {
           var filterCalls = 0;
           $filterProvider.register('foo', valueFn(function(input) {
             filterCalls++;
@@ -3055,7 +3293,7 @@ describe('parser', function() {
           expect(watcherCalls).toBe(1);
         }));
 
-        it('should invoke interceptorFns if they are flagged as having $stateful',
+        it('should always invoke interceptorFns if they are flagged as having $stateful',
             inject(function($parse) {
           var called = false;
           function interceptor() {
@@ -3078,6 +3316,23 @@ describe('parser', function() {
           expect(called).toBe(true);
         }));
 
+        it('should not reevaluate literals with non-primitive input', inject(function($parse) {
+          var obj = scope.obj = {};
+
+          var parsed = $parse('[obj]');
+          var watcherCalls = 0;
+          scope.$watch(parsed, function(input) {
+            expect(input[0]).toBe(obj);
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+        }));
+
         it('should not reevaluate literals with non-primitive input that does support valueOf()',
             inject(function($parse) {
 
@@ -3095,6 +3350,25 @@ describe('parser', function() {
 
           scope.$digest();
           expect(watcherCalls).toBe(1);
+        }));
+
+        it('should reevaluate literals with non-primitive input when valueOf() changes', inject(function($parse) {
+          var date = scope.date = new Date();
+
+          var parsed = $parse('[date]');
+          var watcherCalls = 0;
+          scope.$watch(parsed, function(input) {
+            expect(input[0]).toBe(date);
+            watcherCalls++;
+          });
+
+          scope.$digest();
+          expect(watcherCalls).toBe(1);
+
+          date.setYear(1901);
+
+          scope.$digest();
+          expect(watcherCalls).toBe(2);
         }));
 
         it('should not reevaluate literals with non-primitive input that does support valueOf()' +
