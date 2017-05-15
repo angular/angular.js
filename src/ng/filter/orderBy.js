@@ -49,9 +49,8 @@
  * second, or `1` otherwise.
  *
  * In order to ensure that the sorting will be deterministic across platforms, if none of the
- * specified predicates can distinguish between two items, `orderBy` will automatically introduce a
- * dummy predicate that returns the item's index as `value`.
- * (If you are using a custom comparator, make sure it can handle this predicate as well.)
+ * specified predicates nor the custom comparator can distinguish between two items, `orderBy` will
+ * automatically introduce a dummy predicate that returns the item's index as `value`.
  *
  * Finally, in an attempt to simplify things, if a predicate returns an object as the extracted
  * value for an item, `orderBy` will try to convert that object to a primitive value, before passing
@@ -599,7 +598,7 @@ function orderByFilter($parse) {
         }
       }
 
-      return compare(v1.tieBreaker, v2.tieBreaker) * descending;
+      return (compare(v1.tieBreaker, v2.tieBreaker) || defaultCompare(v1.tieBreaker, v2.tieBreaker)) * descending;
     }
   };
 
