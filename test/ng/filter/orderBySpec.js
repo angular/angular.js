@@ -457,6 +457,19 @@ describe('Filter: orderBy', function() {
 
         expect(orderBy(items, expr, reverse, comparator)).toEqual(sorted);
       });
+
+      it('should use the default comparator to break ties on a provided comparator', function() {
+        // Some list that won't be sorted "naturally", i.e. should sort to ['a', 'B', 'c']
+        var items = ['c', 'a', 'B'];
+        var expr = null;
+        function comparator() {
+          return 0;
+        }
+        var reversed = ['B', 'a', 'c'];
+
+        expect(orderBy(items, expr, false, comparator)).toEqual(items);
+        expect(orderBy(items, expr, true, comparator)).toEqual(reversed);
+      });
     });
 
     describe('(object as `value`)', function() {
