@@ -41,14 +41,16 @@ angular.module('myModule', [])
   }]);
 ```
 
-To fix this problem, make sure you only define each module with the
-`angular.module(name, [requires])` syntax once across your entire project.
-Retrieve it for subsequent use with `angular.module(name)`. The fixed example
-is shown below.
+Also, an unknown provider error can also be caused by dependency which is defined 
+in the new injected dependency, as shown in the following example.
+
+The example is shown below. Make sure the 'myUnknownDependency' also available with in your injector list and services available.
 
 ```
 angular.module('myModule', [])
-  .service('myCoolService', function () { /* ... */ });
+  .service('myCoolService', ['myUnknownDependency',function (myUnknownDependency) { 
+    // This directive definition throw unknown provider for 'myUnknownDependency'.
+  });
 
 angular.module('myModule')
   .directive('myDirective', ['myCoolService', function (myCoolService) {
