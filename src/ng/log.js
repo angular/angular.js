@@ -10,6 +10,9 @@
  * into the browser's console (if present).
  *
  * The main purpose of this service is to simplify debugging and troubleshooting.
+ * 
+ * To reveal the location of the calls to `$log` in the JavaScript console,
+ * "blackbox" the Angular source in your browser.
  *
  * The default is to log `debug` messages. You can use
  * {@link ng.$logProvider ng.$logProvider#debugEnabled} to change this.
