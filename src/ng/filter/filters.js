@@ -703,7 +703,9 @@ function jsonFilter() {
  *
  * @see angular.lowercase
  */
-var lowercaseFilter = valueFn(lowercase);
+var lowercaseFilter = function(){
+  return lowercase;
+};
 
 
 /**
@@ -730,4 +732,6 @@ var lowercaseFilter = valueFn(lowercase);
      </file>
    </example>
  */
-var uppercaseFilter = valueFn(uppercase);
+var uppercaseFilter = function(){
+  return uppercase;
+};
