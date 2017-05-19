@@ -58,27 +58,27 @@ $provide.value("$locale", {
       "decembar"
     ],
     "SHORTDAY": [
-      "ned",
-      "pon",
-      "uto",
-      "sre",
-      "\u010det",
-      "pet",
-      "sub"
+      "ned.",
+      "pon.",
+      "ut.",
+      "sr.",
+      "\u010det.",
+      "pet.",
+      "sub."
     ],
     "SHORTMONTH": [
-      "jan",
-      "feb",
-      "mar",
-      "apr",
+      "jan.",
+      "feb.",
+      "mart",
+      "apr.",
       "maj",
       "jun",
       "jul",
-      "avg",
-      "sep",
-      "okt",
-      "nov",
-      "dec"
+      "avg.",
+      "sept.",
+      "okt.",
+      "nov.",
+      "dec."
     ],
     "STANDALONEMONTH": [
       "januar",
@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, dd. MMMM y.",
     "longDate": "dd. MMMM y.",
-    "medium": "dd.MM.y. HH.mm.ss",
+    "medium": "dd.MM.y. HH:mm:ss",
     "mediumDate": "dd.MM.y.",
-    "mediumTime": "HH.mm.ss",
-    "short": "d.M.yy. HH.mm",
+    "mediumTime": "HH:mm:ss",
+    "short": "d.M.yy. HH:mm",
     "shortDate": "d.M.yy.",
-    "shortTime": "HH.mm"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20ac",

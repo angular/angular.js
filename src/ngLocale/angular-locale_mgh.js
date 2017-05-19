@@ -42,7 +42,7 @@ $provide.value("$locale", {
       "HY",
       "YY"
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Mweri wo kwanza",
       "Mweri wo unayeli",

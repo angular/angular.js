@@ -35,8 +35,8 @@ $provide.value("$locale", {
       "sabato"
     ],
     "ERANAMES": [
-      "a.C.",
-      "d.C."
+      "avanti Cristo",
+      "dopo Cristo"
     ],
     "ERAS": [
       "a.C.",
@@ -110,7 +110,7 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "CHF",
     "DECIMAL_SEP": ".",
-    "GROUP_SEP": "'",
+    "GROUP_SEP": "\u2019",
     "PATTERNS": [
       {
         "gSize": 3,

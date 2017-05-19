@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE, dd. MMMM y.",
     "longDate": "dd. MMMM y.",
-    "medium": "dd.MM.y. HH.mm.ss",
+    "medium": "dd.MM.y. HH:mm:ss",
     "mediumDate": "dd.MM.y.",
-    "mediumTime": "HH.mm.ss",
-    "short": "d.M.yy. HH.mm",
+    "mediumTime": "HH:mm:ss",
+    "short": "d.M.yy. HH:mm",
     "shortDate": "d.M.yy.",
-    "shortTime": "HH.mm"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "din",
@@ -126,8 +126,8 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 0,
+        "minFrac": 0,
         "minInt": 1,
         "negPre": "-",
         "negSuf": "\u00a0\u00a4",

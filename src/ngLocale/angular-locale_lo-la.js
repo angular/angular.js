@@ -40,13 +40,13 @@ $provide.value("$locale", {
       "\u0e97\u0eb1\u0e99\u0ea7\u0eb2"
     ],
     "SHORTDAY": [
-      "\u0ea7\u0eb1\u0e99\u0ead\u0eb2\u0e97\u0eb4\u0e94",
-      "\u0ea7\u0eb1\u0e99\u0e88\u0eb1\u0e99",
-      "\u0ea7\u0eb1\u0e99\u0ead\u0eb1\u0e87\u0e84\u0eb2\u0e99",
-      "\u0ea7\u0eb1\u0e99\u0e9e\u0eb8\u0e94",
-      "\u0ea7\u0eb1\u0e99\u0e9e\u0eb0\u0eab\u0eb1\u0e94",
-      "\u0ea7\u0eb1\u0e99\u0eaa\u0eb8\u0e81",
-      "\u0ea7\u0eb1\u0e99\u0ec0\u0eaa\u0ebb\u0eb2"
+      "\u0ead\u0eb2\u0e97\u0eb4\u0e94",
+      "\u0e88\u0eb1\u0e99",
+      "\u0ead\u0eb1\u0e87\u0e84\u0eb2\u0e99",
+      "\u0e9e\u0eb8\u0e94",
+      "\u0e9e\u0eb0\u0eab\u0eb1\u0e94",
+      "\u0eaa\u0eb8\u0e81",
+      "\u0ec0\u0eaa\u0ebb\u0eb2"
     ],
     "SHORTMONTH": [
       "\u0ea1.\u0e81.",
@@ -108,8 +108,8 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 0,
+        "minFrac": 0,
         "minInt": 1,
         "negPre": "\u00a4-",
         "negSuf": "",

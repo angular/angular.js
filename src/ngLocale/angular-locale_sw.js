@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "Asubuhi",
+      "Mchana"
     ],
     "DAY": [
       "Jumapili",
@@ -39,8 +39,8 @@ $provide.value("$locale", {
       "Baada ya Kristo"
     ],
     "ERAS": [
-      "BC",
-      "AD"
+      "KK",
+      "BK"
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [

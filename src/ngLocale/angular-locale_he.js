@@ -129,9 +129,9 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-",
+        "negPre": "\u200f-",
         "negSuf": "\u00a0\u00a4",
-        "posPre": "",
+        "posPre": "\u200f",
         "posSuf": "\u00a0\u00a4"
       }
     ]

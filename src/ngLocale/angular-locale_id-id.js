@@ -18,7 +18,7 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "Sebelum Masehi",
-      "M"
+      "Masehi"
     ],
     "ERAS": [
       "SM",
@@ -108,8 +108,8 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 0,
+        "minFrac": 0,
         "minInt": 1,
         "negPre": "-\u00a4",
         "negSuf": "",

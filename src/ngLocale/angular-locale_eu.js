@@ -18,7 +18,7 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "K.a.",
-      "K.o."
+      "Kristo ondoren"
     ],
     "ERAS": [
       "K.a.",
@@ -26,18 +26,18 @@ $provide.value("$locale", {
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
-      "urtarrilak",
-      "otsailak",
-      "martxoak",
-      "apirilak",
-      "maiatzak",
-      "ekainak",
-      "uztailak",
-      "abuztuak",
-      "irailak",
-      "urriak",
-      "azaroak",
-      "abenduak"
+      "urtarrila",
+      "otsaila",
+      "martxoa",
+      "apirila",
+      "maiatza",
+      "ekaina",
+      "uztaila",
+      "abuztua",
+      "iraila",
+      "urria",
+      "azaroa",
+      "abendua"
     ],
     "SHORTDAY": [
       "ig.",
@@ -63,7 +63,7 @@ $provide.value("$locale", {
       "abe."
     ],
     "STANDALONEMONTH": [
-      "Urtarrila",
+      "urtarrila",
       "Otsaila",
       "Martxoa",
       "Apirila",
@@ -85,8 +85,8 @@ $provide.value("$locale", {
     "medium": "y MMM d HH:mm:ss",
     "mediumDate": "y MMM d",
     "mediumTime": "HH:mm:ss",
-    "short": "y/MM/dd HH:mm",
-    "shortDate": "y/MM/dd",
+    "short": "yy/M/d HH:mm",
+    "shortDate": "yy/M/d",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {

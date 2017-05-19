@@ -98,13 +98,13 @@ $provide.value("$locale", {
       5,
       6
     ],
-    "fullDate": "EEEE, y MMMM dd",
+    "fullDate": "y MMMM d, EEEE",
     "longDate": "y MMMM d",
     "medium": "y MMM d HH:mm:ss",
     "mediumDate": "y MMM d",
     "mediumTime": "HH:mm:ss",
-    "short": "yy/MM/dd HH:mm",
-    "shortDate": "yy/MM/dd",
+    "short": "y-MM-dd HH:mm",
+    "shortDate": "y-MM-dd",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
@@ -126,8 +126,8 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 0,
+        "minFrac": 0,
         "minInt": 1,
         "negPre": "-\u00a4\u00a0",
         "negSuf": "",

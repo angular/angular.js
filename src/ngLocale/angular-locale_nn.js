@@ -100,12 +100,12 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE d. MMMM y",
     "longDate": "d. MMMM y",
-    "medium": "d. MMM y HH.mm.ss",
+    "medium": "d. MMM y HH:mm:ss",
     "mediumDate": "d. MMM y",
-    "mediumTime": "HH.mm.ss",
-    "short": "dd.MM.y HH.mm",
+    "mediumTime": "HH:mm:ss",
+    "short": "dd.MM.y HH:mm",
     "shortDate": "dd.MM.y",
-    "shortTime": "HH.mm"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "kr",
