@@ -27,6 +27,8 @@ function nullFormRenameControl(control, name) {
  * @property {boolean} $valid True if all of the containing forms and controls are valid.
  * @property {boolean} $invalid True if at least one containing control or form is invalid.
  * @property {boolean} $submitted True if user has submitted the form even if its invalid.
+ * @property {boolean} $touched True if control has lost focus.
+ * @property {boolean} $untouched True if control has not lost focus yet.
  *
  * @property {Object} $pending An object hash, containing references to controls or forms with
  *  pending validators, where:
