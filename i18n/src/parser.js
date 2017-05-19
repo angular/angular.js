@@ -4,13 +4,26 @@
 * A simple parser to parse a number format into a pattern object
 */
 
+exports.ensureDecimalSep = ensureDecimalSep;
 exports.parsePattern = parsePattern;
 
-var PATTERN_SEP = ';',
-    DECIMAL_SEP = '.',
-    GROUP_SEP   = ',',
-    ZERO        = '0',
-    DIGIT       = '#';
+var PATTERN_SEP  = ';',
+    DECIMAL_SEP  = '.',
+    GROUP_SEP    = ',',
+    DIGIT        = '#',
+    ZERO         = '0',
+    LAST_ZERO_RE = /^(.*0)(?!0)(.*)$/;
+
+/**
+ * Helper function for parser.
+ * Ensures that `pattern` (e.g #,##0.###) contains a DECIMAL_SEP, which is necessary for further
+ * parsing. If a pattern does not include one, it is added after the last ZERO (which is the last
+ * thing before the `posSuf` - if any).
+ */
+function ensureDecimalSep(pattern) {
+  return (pattern.indexOf(DECIMAL_SEP) !== -1)
+      ? pattern : pattern.replace(LAST_ZERO_RE, '$1' + DECIMAL_SEP + '$2');
+}
 
 /**
  * main function for parser
@@ -33,7 +46,12 @@ function parsePattern(pattern) {
       positive = patternParts[0],
       negative = patternParts[1];
 
-  var positiveParts = positive.split(DECIMAL_SEP),
+  // The parsing logic below assumes that there will always be a DECIMAL_SEP in the pattern.
+  // However, some locales (e.g. agq_CM) do not have one, thus we add one after the last ZERO
+  // (which is the last thing before the `posSuf` - if any).
+  // Note: We shouldn't modify `positive` directly, because it is used to parse the negative part.)
+  var positiveWithDecimalSep = ensureDecimalSep(positive),
+      positiveParts = positiveWithDecimalSep.split(DECIMAL_SEP),
       integer = positiveParts[0],
       fraction = positiveParts[1];
 
