@@ -18,7 +18,7 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "Sebelum Masehi",
-      "M"
+      "Masehi"
     ],
     "ERAS": [
       "SM",

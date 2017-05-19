@@ -108,8 +108,8 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 3,
+        "minFrac": 3,
         "minInt": 1,
         "negPre": "-",
         "negSuf": "\u00a0\u00a4",

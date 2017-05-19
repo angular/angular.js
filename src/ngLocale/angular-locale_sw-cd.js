@@ -22,63 +22,63 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "ya asubuyi",
-      "ya muchana"
+      "Asubuhi",
+      "Mchana"
     ],
     "DAY": [
-      "siku ya yenga",
-      "siku ya kwanza",
-      "siku ya pili",
-      "siku ya tatu",
-      "siku ya ine",
-      "siku ya tanu",
-      "siku ya sita"
+      "Jumapili",
+      "Jumatatu",
+      "Jumanne",
+      "Jumatano",
+      "Alhamisi",
+      "Ijumaa",
+      "Jumamosi"
     ],
     "ERANAMES": [
       "Kabla ya Kristo",
       "Baada ya Kristo"
     ],
     "ERAS": [
-      "BC",
-      "AD"
+      "KK",
+      "BK"
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
-      "mwezi ya kwanja",
-      "mwezi ya pili",
-      "mwezi ya tatu",
-      "mwezi ya ine",
-      "mwezi ya tanu",
-      "mwezi ya sita",
-      "mwezi ya saba",
-      "mwezi ya munane",
-      "mwezi ya tisa",
-      "mwezi ya kumi",
-      "mwezi ya kumi na moya",
-      "mwezi ya kumi ya mbili"
+      "Januari",
+      "Februari",
+      "Machi",
+      "Aprili",
+      "Mei",
+      "Juni",
+      "Julai",
+      "Agosti",
+      "Septemba",
+      "Oktoba",
+      "Novemba",
+      "Desemba"
     ],
     "SHORTDAY": [
-      "yen",
-      "kwa",
-      "pil",
-      "tat",
-      "ine",
-      "tan",
-      "sit"
+      "Jumapili",
+      "Jumatatu",
+      "Jumanne",
+      "Jumatano",
+      "Alhamisi",
+      "Ijumaa",
+      "Jumamosi"
     ],
     "SHORTMONTH": [
-      "mkw",
-      "mpi",
-      "mtu",
-      "min",
-      "mtn",
-      "mst",
-      "msb",
-      "mun",
-      "mts",
-      "mku",
-      "mkm",
-      "mkb"
+      "Jan",
+      "Feb",
+      "Mac",
+      "Apr",
+      "Mei",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Des"
     ],
     "STANDALONEMONTH": [
       "Januari",
@@ -98,13 +98,13 @@ $provide.value("$locale", {
       5,
       6
     ],
-    "fullDate": "EEEE d MMMM y",
+    "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
     "mediumTime": "HH:mm:ss",
-    "short": "d/M/y HH:mm",
-    "shortDate": "d/M/y",
+    "short": "dd/MM/y HH:mm",
+    "shortDate": "dd/MM/y",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {

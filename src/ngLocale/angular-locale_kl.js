@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "ulloqeqqata-tungaa",
-      "ulloqeqqata-kingorna"
+      "AM",
+      "PM"
     ],
     "DAY": [
       "sabaat",
@@ -35,12 +35,12 @@ $provide.value("$locale", {
       "arfininngorneq"
     ],
     "ERANAMES": [
-      "Kristusip inunngornerata siornagut",
-      "Kristusip inunngornerata kingornagut"
+      "BCE",
+      "CE"
     ],
     "ERAS": [
-      "Kr.in.si.",
-      "Kr.in.king."
+      "BCE",
+      "CE"
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
@@ -98,14 +98,14 @@ $provide.value("$locale", {
       5,
       6
     ],
-    "fullDate": "EEEE dd MMMM y",
-    "longDate": "dd MMMM y",
-    "medium": "MMM dd, y h:mm:ss a",
-    "mediumDate": "MMM dd, y",
-    "mediumTime": "h:mm:ss a",
-    "short": "y-MM-dd h:mm a",
+    "fullDate": "y MMMM d, EEEE",
+    "longDate": "y MMMM d",
+    "medium": "y MMM d HH:mm:ss",
+    "mediumDate": "y MMM d",
+    "mediumTime": "HH:mm:ss",
+    "short": "y-MM-dd HH:mm",
     "shortDate": "y-MM-dd",
-    "shortTime": "h:mm a"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "kr.",

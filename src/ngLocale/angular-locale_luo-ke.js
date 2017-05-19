@@ -42,7 +42,7 @@ $provide.value("$locale", {
       "BC",
       "AD"
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Dwe mar Achiel",
       "Dwe mar Ariyo",

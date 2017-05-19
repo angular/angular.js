@@ -17,8 +17,8 @@ $provide.value("$locale", {
       "\u0577\u0561\u0562\u0561\u0569"
     ],
     "ERANAMES": [
-      "\u0574.\u0569.\u0561.",
-      "\u0574.\u0569."
+      "\u0554\u0580\u056b\u057d\u057f\u0578\u057d\u056b\u0581 \u0561\u057c\u0561\u057b",
+      "\u0554\u0580\u056b\u057d\u057f\u0578\u057d\u056b\u0581 \u0570\u0565\u057f\u0578"
     ],
     "ERAS": [
       "\u0574.\u0569.\u0561.",
@@ -80,23 +80,23 @@ $provide.value("$locale", {
       5,
       6
     ],
-    "fullDate": "y\u0569. MMMM d, EEEE",
-    "longDate": "dd MMMM, y\u0569.",
-    "medium": "dd MMM, y\u0569. H:mm:ss",
-    "mediumDate": "dd MMM, y\u0569.",
-    "mediumTime": "H:mm:ss",
-    "short": "dd.MM.yy H:mm",
+    "fullDate": "y \u0569. MMMM d, EEEE",
+    "longDate": "dd MMMM, y \u0569.",
+    "medium": "dd MMM, y \u0569. HH:mm:ss",
+    "mediumDate": "dd MMM, y \u0569.",
+    "mediumTime": "HH:mm:ss",
+    "short": "dd.MM.yy HH:mm",
     "shortDate": "dd.MM.yy",
-    "shortTime": "H:mm"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Dram",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": ".",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": [
       {
-        "gSize": 0,
-        "lgSize": 0,
+        "gSize": 3,
+        "lgSize": 3,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -108,8 +108,8 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 0,
+        "minFrac": 0,
         "minInt": 1,
         "negPre": "-\u00a4\u00a0",
         "negSuf": "",

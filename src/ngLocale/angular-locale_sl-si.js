@@ -36,11 +36,11 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "pred Kristusom",
-      "na\u0161e \u0161tetje"
+      "po Kristusu"
     ],
     "ERAS": [
       "pr. Kr.",
-      "po n. \u0161t."
+      "po Kr."
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [

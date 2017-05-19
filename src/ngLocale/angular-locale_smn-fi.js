@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "ip.",
+      "ep."
     ],
     "DAY": [
       "pasepeeivi",
@@ -35,50 +35,50 @@ $provide.value("$locale", {
       "l\u00e1vurduv"
     ],
     "ERANAMES": [
-      "BCE",
-      "CE"
+      "Ovdil Kristus \u0161odd\u00e2m",
+      "ma\u014ba Kristus \u0161odd\u00e2m"
     ],
     "ERAS": [
-      "BCE",
-      "CE"
+      "oKr.",
+      "mKr."
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
-      "M01",
-      "M02",
-      "M03",
-      "M04",
-      "M05",
-      "M06",
-      "M07",
-      "M08",
-      "M09",
-      "M10",
-      "M11",
-      "M12"
+      "u\u0111\u0111\u00e2ivem\u00e1\u00e1nu",
+      "kuov\u00e2m\u00e1\u00e1nu",
+      "njuh\u010d\u00e2m\u00e1\u00e1nu",
+      "cu\u00e1\u014buim\u00e1\u00e1nu",
+      "vyesim\u00e1\u00e1nu",
+      "kesim\u00e1\u00e1nu",
+      "syeinim\u00e1\u00e1nu",
+      "porgem\u00e1\u00e1nu",
+      "\u010doh\u010d\u00e2m\u00e1\u00e1nu",
+      "roovv\u00e2dm\u00e1\u00e1nu",
+      "skamm\u00e2m\u00e1\u00e1nu",
+      "juovl\u00e2m\u00e1\u00e1nu"
     ],
     "SHORTDAY": [
-      "pa",
-      "vu",
-      "ma",
-      "ko",
-      "tu",
-      "v\u00e1",
-      "l\u00e1"
+      "pas",
+      "vuo",
+      "maj",
+      "kos",
+      "tuo",
+      "v\u00e1s",
+      "l\u00e1v"
     ],
     "SHORTMONTH": [
-      "M01",
-      "M02",
-      "M03",
-      "M04",
-      "M05",
-      "M06",
-      "M07",
-      "M08",
-      "M09",
-      "M10",
-      "M11",
-      "M12"
+      "u\u0111iv",
+      "kuov\u00e2",
+      "njuh\u010d\u00e2",
+      "cu\u00e1\u014bui",
+      "vyesi",
+      "kesi",
+      "syeini",
+      "porge",
+      "\u010doh\u010d\u00e2",
+      "roovv\u00e2d",
+      "skamm\u00e2",
+      "juovl\u00e2"
     ],
     "STANDALONEMONTH": [
       "u\u0111\u0111\u00e2ivem\u00e1\u00e1nu",
@@ -98,19 +98,19 @@ $provide.value("$locale", {
       5,
       6
     ],
-    "fullDate": "y MMMM d, EEEE",
-    "longDate": "y MMMM d",
-    "medium": "y MMM d HH:mm:ss",
-    "mediumDate": "y MMM d",
-    "mediumTime": "HH:mm:ss",
-    "short": "y-MM-dd HH:mm",
-    "shortDate": "y-MM-dd",
-    "shortTime": "HH:mm"
+    "fullDate": "cccc, MMMM d. y",
+    "longDate": "MMMM d. y",
+    "medium": "MMM d. y H.mm.ss",
+    "mediumDate": "MMM d. y",
+    "mediumTime": "H.mm.ss",
+    "short": "d.M.y H.mm",
+    "shortDate": "d.M.y",
+    "shortTime": "H.mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20ac",
-    "DECIMAL_SEP": ".",
-    "GROUP_SEP": ",",
+    "DECIMAL_SEP": ",",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": [
       {
         "gSize": 3,
@@ -129,10 +129,10 @@ $provide.value("$locale", {
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "-\u00a4\u00a0",
-        "negSuf": "",
-        "posPre": "\u00a4\u00a0",
-        "posSuf": ""
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },
