@@ -3,12 +3,12 @@
 @fullName Bad JSON Data
 @description
 
-The default @{link ng.$http#default-transformations `transformResponse`} will try to parse the
-response as JSON if the `Content-Type` header is `application/json` or the response looks like a
+The default {@link ng.$http#default-transformations `transformResponse`} will try to parse the
+response as JSON if the `Content-Type` header is `application/json`, or the response looks like a
 valid JSON-stringified object or array.
 This error occurs when that data is not a valid JSON object.
 
-The error message should provide additional context such as the actual response.
-
-To resolve this error, make sure you pass valid JSON data to `transformResponse` or use an
-appropriate `Content-Type` header for non-JSON data.
+To resolve this error, make sure you pass valid JSON data to `transformResponse`. If the response
+data looks like JSON, but has a different `Content-Type` header, you must
+{@link ng.$http#overriding-the-default-transformations-per-request implement your own response
+transformer on a per request basis}, or {@link ng.$http#default-transformations modify the default `$http` responseTransform}.

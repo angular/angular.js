@@ -329,7 +329,7 @@ describe('$$AnimateRunner', function() {
       expect(status).toBe(true);
     }));
 
-    it('should break the chian when a function evaluates to false',
+    it('should break the chain when a function evaluates to false',
       inject(function($$rAF, $$AnimateRunner) {
 
       var runner1 = new $$AnimateRunner();

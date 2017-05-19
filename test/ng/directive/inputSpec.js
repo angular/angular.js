@@ -5,6 +5,9 @@
 describe('input', function() {
   var helper = {}, $compile, $rootScope, $browser, $sniffer, $timeout, $q;
 
+  // UA sniffing to exclude Edge from some date input tests
+  var isEdge = /\bEdge\//.test(window.navigator.userAgent);
+
   generateInputCompilerHelper(helper);
 
   beforeEach(inject(function(_$compile_, _$rootScope_, _$browser_, _$sniffer_, _$timeout_, _$q_) {
@@ -688,18 +691,20 @@ describe('input', function() {
       expect($rootScope.form.alias.$error.month).toBeTruthy();
     });
 
-    it('should allow four or more digits in year', function() {
-      var inputElm = helper.compileInput('<input type="month" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
 
-      helper.changeInputValueTo('10123-03');
-      expect(+$rootScope.value).toBe(Date.UTC(10123, 2, 1, 0, 0, 0));
+    if (!isEdge) {
+      it('should allow four or more digits in year', function() {
+        var inputElm = helper.compileInput('<input type="month" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
 
-      $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(20456, 3, 1, 0, 0, 0));
+        helper.changeInputValueTo('10123-03');
+        expect(+$rootScope.value).toBe(Date.UTC(10123, 2, 1, 0, 0, 0));
+
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(20456, 3, 1, 0, 0, 0));
+        });
+        expect(inputElm.val()).toBe('20456-04');
       });
-      expect(inputElm.val()).toBe('20456-04');
-    });
-
+    }
 
     it('should only change the month of a bound date', function() {
       var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
@@ -899,17 +904,19 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
-    it('should allow four or more digits in year', function() {
-      var inputElm = helper.compileInput('<input type="week" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
+    if (!isEdge) {
+      it('should allow four or more digits in year', function() {
+        var inputElm = helper.compileInput('<input type="week" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
 
-      helper.changeInputValueTo('10123-W03');
-      expect(+$rootScope.value).toBe(Date.UTC(10123, 0, 21));
+        helper.changeInputValueTo('10123-W03');
+        expect(+$rootScope.value).toBe(Date.UTC(10123, 0, 21));
 
-      $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(20456, 0, 28));
+        $rootScope.$apply(function() {
+          $rootScope.value = new Date(Date.UTC(20456, 0, 28));
+        });
+        expect(inputElm.val()).toBe('20456-W04');
       });
-      expect(inputElm.val()).toBe('20456-W04');
-    });
+    }
 
     it('should use UTC if specified in the options', function() {
       var inputElm = helper.compileInput('<input type="week" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
@@ -1195,18 +1202,22 @@ describe('input', function() {
       expect(+$rootScope.value).toBe(+new Date(2000, 0, 1, 1, 2, 0));
     });
 
-    it('should allow four or more digits in year', function() {
-      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" />');
 
-        helper.changeInputValueTo('10123-01-01T01:02');
-        expect(+$rootScope.value).toBe(+new Date(10123, 0, 1, 1, 2, 0));
+    if (!isEdge) {
+      it('should allow four or more digits in year', function() {
+        var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" />');
 
-        $rootScope.$apply(function() {
-          $rootScope.value = new Date(20456, 1, 1, 1, 2, 0);
-        });
-        expect(inputElm.val()).toBe('20456-02-01T01:02:00.000');
-      }
-    );
+          helper.changeInputValueTo('10123-01-01T01:02');
+          expect(+$rootScope.value).toBe(+new Date(10123, 0, 1, 1, 2, 0));
+
+          $rootScope.$apply(function() {
+            $rootScope.value = new Date(20456, 1, 1, 1, 2, 0);
+          });
+          expect(inputElm.val()).toBe('20456-02-01T01:02:00.000');
+        }
+      );
+    }
+
 
     it('should label parse errors as `datetimelocal`', function() {
       var inputElm = helper.compileInput('<input type="datetime-local" ng-model="val" name="alias" />', {
@@ -1800,19 +1811,20 @@ describe('input', function() {
       }
     );
 
-    it('should allow four or more digits in year', function() {
-      var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+    if (!isEdge) {
+      it('should allow four or more digits in year', function() {
+        var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
 
-        helper.changeInputValueTo('10123-01-01');
-        expect(+$rootScope.value).toBe(Date.UTC(10123, 0, 1, 0, 0, 0));
+          helper.changeInputValueTo('10123-01-01');
+          expect(+$rootScope.value).toBe(Date.UTC(10123, 0, 1, 0, 0, 0));
 
-        $rootScope.$apply(function() {
-          $rootScope.value = new Date(Date.UTC(20456, 1, 1, 0, 0, 0));
-        });
-        expect(inputElm.val()).toBe('20456-02-01');
-      }
-    );
-
+          $rootScope.$apply(function() {
+            $rootScope.value = new Date(Date.UTC(20456, 1, 1, 0, 0, 0));
+          });
+          expect(inputElm.val()).toBe('20456-02-01');
+        }
+      );
+    }
 
     it('should label parse errors as `date`', function() {
       var inputElm = helper.compileInput('<input type="date" ng-model="val" name="alias" />', {
@@ -4224,10 +4236,14 @@ describe('input', function() {
       });
 
       expect(inputElm[0].value).toBe('');
-      // Support: IE 9-11
+      // Support: IE 9-11, Edge
       // In IE it is not possible to remove the `value` attribute from an input element.
-      if (!msie) {
+      if (!msie && !isEdge) {
         expect(inputElm[0].getAttribute('value')).toBeNull();
+      } else {
+        // Support: IE 9-11, Edge
+        // This will fail if the Edge bug gets fixed
+        expect(inputElm[0].getAttribute('value')).toBe('something');
       }
     });
 

@@ -74,6 +74,12 @@ module.exports = function(config, specificOptions) {
         platform: 'Windows 8.1',
         version: '11'
       },
+      'SL_EDGE': {
+        base: 'SauceLabs',
+        browserName: 'microsoftedge',
+        platform: 'Windows 10',
+        version: '14'
+      },
       'SL_iOS': {
         base: 'SauceLabs',
         browserName: 'iphone',
@@ -85,19 +91,19 @@ module.exports = function(config, specificOptions) {
         base: 'BrowserStack',
         browser: 'chrome',
         os: 'OS X',
-        os_version: 'Yosemite'
+        os_version: 'Sierra'
       },
       'BS_Safari': {
         base: 'BrowserStack',
         browser: 'safari',
         os: 'OS X',
-        os_version: 'Yosemite'
+        os_version: 'Sierra'
       },
       'BS_Firefox': {
         base: 'BrowserStack',
         browser: 'firefox',
         os: 'Windows',
-        os_version: '8'
+        os_version: '10'
       },
       'BS_IE_9': {
         base: 'BrowserStack',
@@ -120,11 +126,30 @@ module.exports = function(config, specificOptions) {
         os: 'Windows',
         os_version: '8.1'
       },
-      'BS_iOS': {
+      'BS_EDGE': {
+        base: 'BrowserStack',
+        browser: 'edge',
+        browser_version: '14',
+        os: 'Windows',
+        os_version: '10'
+      },
+      'BS_iOS_8': {
         base: 'BrowserStack',
         device: 'iPhone 6',
         os: 'ios',
-        os_version: '8.0'
+        os_version: '8.3'
+      },
+      'BS_iOS_9': {
+        base: 'BrowserStack',
+        device: 'iPhone 6S',
+        os: 'ios',
+        os_version: '9.3'
+      },
+      'BS_iOS_10': {
+        base: 'BrowserStack',
+        device: 'iPhone 7',
+        os: 'ios',
+        os_version: '10.0'
       }
     }
   });
