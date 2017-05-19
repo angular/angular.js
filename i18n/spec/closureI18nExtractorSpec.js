@@ -75,7 +75,6 @@ describe('findLocaleId', function() {
   it('should not find localeId if data is missing', function() {
     expect(findLocaleId('', 'num')).toBeUndefined();
     expect(findLocaleId('aa', 'datetime')).toBeUndefined();
-    expect(findLocaleId('aa', 'randomType')).toBeUndefined();
     expect(findLocaleId('NumberFormatSymbols_en', 'datetime')).toBeUndefined();
     expect(findLocaleId('DateTimeSymbols_en', 'num')).toBeUndefined();
   });
