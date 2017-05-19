@@ -4,13 +4,26 @@
 * A simple parser to parse a number format into a pattern object
 */
 
+exports.ensureDecimalSep = ensureDecimalSep;
 exports.parsePattern = parsePattern;
 
-var PATTERN_SEP = ';',
-    DECIMAL_SEP = '.',
-    GROUP_SEP   = ',',
-    ZERO        = '0',
-    DIGIT       = '#';
+var PATTERN_SEP  = ';',
+    DECIMAL_SEP  = '.',
+    GROUP_SEP    = ',',
+    DIGIT        = '#',
+    ZERO         = '0',
+    LAST_ZERO_RE = /^(.*0)(?!0)(.*)$/;
+
+/**
+ * Helper function for parser.
+ * Ensures that `pattern` (e.g #,##0.###) contains a DECIMAL_SEP, which is necessary for further
+ * parsing. If a pattern does not include one, it is added after the last ZERO (which is the last
+ * thing before the `posSuf` - if any).
+ */
+function ensureDecimalSep(pattern) {
+  return (pattern.indexOf(DECIMAL_SEP) !== -1)
+      ? pattern : pattern.replace(LAST_ZERO_RE, '$1' + DECIMAL_SEP + '$2');
+}
 
 /**
  * main function for parser
@@ -33,7 +46,16 @@ function parsePattern(pattern) {
       positive = patternParts[0],
       negative = patternParts[1];
 
-  var positiveParts = positive.split(DECIMAL_SEP),
+  // The parsing logic further below assumes that there will always be a DECIMAL_SEP in the pattern.
+  // However, some locales (e.g. agq_CM) do not have one, thus we add one after the last ZERO
+  // (which is the last thing before the `posSuf` - if any). Since there will be no ZEROs or DIGITs
+  // after DECIMAL_SEP, `min/maxFrac` will remain 0 (which is accurate - no fraction digits) and
+  // `posSuf` will be processed correctly.
+  // For example `#,##0$` would be converted to `#,##0.$`, which would (correctly) result in:
+  // `minFrac: 0`, `maxFrac: 0`, `posSuf: '$'`
+  // Note: We shouldn't modify `positive` directly, because it is used to parse the negative part.)
+  var positiveWithDecimalSep = ensureDecimalSep(positive),
+      positiveParts = positiveWithDecimalSep.split(DECIMAL_SEP),
       integer = positiveParts[0],
       fraction = positiveParts[1];
 
