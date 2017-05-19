@@ -17,8 +17,8 @@ $provide.value("$locale", {
       "\u1005\u1014\u1031"
     ],
     "ERANAMES": [
-      "\u1001\u101b\u1005\u103a\u1010\u1031\u102c\u103a \u1019\u1015\u1031\u102b\u103a\u1019\u102e\u1000\u102c\u101c",
-      "\u1001\u101b\u1005\u103a\u1010\u1031\u102c\u103a \u1015\u1031\u102b\u103a\u1011\u103d\u1014\u103a\u1038\u1015\u103c\u102e\u1038\u1000\u102c\u101c"
+      "\u1001\u101b\u1005\u103a\u1010\u1031\u102c\u103a \u1019\u1015\u1031\u102b\u103a\u1019\u102e\u1014\u103e\u1005\u103a",
+      "\u1001\u101b\u1005\u103a\u1014\u103e\u1005\u103a"
     ],
     "ERAS": [
       "\u1018\u102e\u1005\u102e",
@@ -52,7 +52,7 @@ $provide.value("$locale", {
       "\u1007\u1014\u103a",
       "\u1016\u1031",
       "\u1019\u1010\u103a",
-      "\u1027\u1015\u103c\u102e",
+      "\u1027",
       "\u1019\u1031",
       "\u1007\u103d\u1014\u103a",
       "\u1007\u1030",
@@ -80,7 +80,7 @@ $provide.value("$locale", {
       5,
       6
     ],
-    "fullDate": "EEEE\u104a dd MMMM y",
+    "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
@@ -108,13 +108,13 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 0,
+        "minFrac": 0,
         "minInt": 1,
-        "negPre": "-\u00a4\u00a0",
-        "negSuf": "",
-        "posPre": "\u00a4\u00a0",
-        "posSuf": ""
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },

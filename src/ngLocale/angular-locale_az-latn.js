@@ -18,11 +18,11 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "eram\u0131zdan \u0259vv\u0259l",
-      "eram\u0131z"
+      "yeni era"
     ],
     "ERAS": [
       "e.\u0259.",
-      "b.e."
+      "y.e."
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [

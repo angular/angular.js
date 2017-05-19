@@ -67,18 +67,18 @@ $provide.value("$locale", {
       "ds."
     ],
     "SHORTMONTH": [
-      "gen.",
-      "febr.",
-      "mar\u00e7",
-      "abr.",
-      "maig",
-      "juny",
-      "jul.",
-      "ag.",
-      "set.",
-      "oct.",
-      "nov.",
-      "des."
+      "de gen.",
+      "de febr.",
+      "de mar\u00e7",
+      "d\u2019abr.",
+      "de maig",
+      "de juny",
+      "de jul.",
+      "d\u2019ag.",
+      "de set.",
+      "d\u2019oct.",
+      "de nov.",
+      "de des."
     ],
     "STANDALONEMONTH": [
       "gener",

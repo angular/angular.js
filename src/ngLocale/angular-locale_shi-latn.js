@@ -42,7 +42,7 @@ $provide.value("$locale", {
       "da\u025b",
       "df\u025b"
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 5,
     "MONTH": [
       "innayr",
       "b\u1e5bay\u1e5b",
@@ -95,8 +95,8 @@ $provide.value("$locale", {
       "dujanbir"
     ],
     "WEEKENDRANGE": [
-      5,
-      6
+      4,
+      5
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",

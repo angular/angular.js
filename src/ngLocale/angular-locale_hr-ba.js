@@ -40,7 +40,7 @@ $provide.value("$locale", {
     ],
     "ERAS": [
       "pr. Kr.",
-      "p. Kr."
+      "po. Kr."
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
@@ -103,8 +103,8 @@ $provide.value("$locale", {
     "medium": "d. MMM y. HH:mm:ss",
     "mediumDate": "d. MMM y.",
     "mediumTime": "HH:mm:ss",
-    "short": "dd.MM.y. HH:mm",
-    "shortDate": "dd.MM.y.",
+    "short": "d. M. yy. HH:mm",
+    "shortDate": "d. M. yy.",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {

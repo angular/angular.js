@@ -23,7 +23,7 @@ $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
       "de la ma\u00f1ana",
-      "de la tardi"
+      "de la tarde"
     ],
     "DAY": [
       "domingu",
@@ -35,11 +35,11 @@ $provide.value("$locale", {
       "s\u00e1badu"
     ],
     "ERANAMES": [
-      "a.C.",
+      "enantes de Cristu",
       "despu\u00e9s de Cristu"
     ],
     "ERAS": [
-      "a.C.",
+      "e.C.",
       "d.C."
     ],
     "FIRSTDAYOFWEEK": 0,

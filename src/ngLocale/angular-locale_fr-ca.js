@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "a.m.",
+      "p.m."
     ],
     "DAY": [
       "dimanche",
@@ -55,7 +55,7 @@ $provide.value("$locale", {
       "avr.",
       "mai",
       "juin",
-      "juil.",
+      "juill.",
       "ao\u00fbt",
       "sept.",
       "oct.",
@@ -85,9 +85,9 @@ $provide.value("$locale", {
     "medium": "d MMM y HH:mm:ss",
     "mediumDate": "d MMM y",
     "mediumTime": "HH:mm:ss",
-    "short": "yy-MM-dd HH:mm",
+    "short": "yy-MM-dd HH 'h' mm",
     "shortDate": "yy-MM-dd",
-    "shortTime": "HH:mm"
+    "shortTime": "HH 'h' mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "$",

@@ -95,7 +95,7 @@ $provide.value("$locale", {
       "\u0f5f\u0fb3\u0f0b\u0f56\u0f0b\u0f56\u0f45\u0f74\u0f0b\u0f42\u0f49\u0f72\u0f66\u0f0b\u0f54\u0f0b"
     ],
     "WEEKENDRANGE": [
-      5,
+      6,
       6
     ],
     "fullDate": "y MMMM\u0f60\u0f72\u0f0b\u0f5a\u0f7a\u0f66\u0f0bd, EEEE",

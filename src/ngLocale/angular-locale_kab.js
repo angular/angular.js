@@ -42,7 +42,7 @@ $provide.value("$locale", {
       "snd. T.\u0190",
       "sld. T.\u0190"
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 5,
     "MONTH": [
       "Yennayer",
       "Fu\u1e5bar",
@@ -95,8 +95,8 @@ $provide.value("$locale", {
       "Du\u01e7embe\u1e5b"
     ],
     "WEEKENDRANGE": [
-      5,
-      6
+      4,
+      5
     ],
     "fullDate": "EEEE d MMMM y",
     "longDate": "d MMMM y",
