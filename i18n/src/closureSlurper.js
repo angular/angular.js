@@ -7,7 +7,7 @@ var Q  = require('q'),
     localeInfo = {};
 
 
-var NG_LOCALE_DIR = '../src/ngLocale/';
+var NG_LOCALE_DIR = __dirname + '/../../src/ngLocale/';
 
 
 function readSymbols() {
