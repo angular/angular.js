@@ -49,3 +49,12 @@ You could as well convert the object to an array using a filter such as
   {{ item }}
 </div>
 ```
+
+This error might occur as a type error when track by $index is used (Where the value of $index is 0 for the first element which will be used for filtering instead of the array) such as
+```html
+<input ng-model="search">
+<div ng-repeat="item in items track by $index | filter:search">
+  {{ item }}
+</div>
+```
+You can use the track by $index method at the end after using filters.
