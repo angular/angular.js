@@ -39,14 +39,8 @@ Components can be registered using the `.component()` method of an AngularJS mod
   });
 </file>
 <file name="heroDetail.js">
-
-  function HeroDetailController() {
-
-  }
-
   angular.module('heroApp').component('heroDetail', {
     templateUrl: 'heroDetail.html',
-    controller: HeroDetailController,
     bindings: {
       hero: '='
     }
