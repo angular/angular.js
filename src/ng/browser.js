@@ -324,8 +324,10 @@ function Browser(window, document, $log, $sniffer) {
     var timeoutId;
     outstandingRequestCount++;
     timeoutId = setTimeout(function() {
-      delete pendingDeferIds[timeoutId];
-      completeOutstandingRequest(fn);
+      if (pendingDeferIds[timeoutId]) {
+        delete pendingDeferIds[timeoutId];
+        completeOutstandingRequest(fn);
+      }
     }, delay || 0);
     pendingDeferIds[timeoutId] = true;
     return timeoutId;
