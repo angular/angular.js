@@ -313,6 +313,14 @@ describe('$location', function() {
       expect(locationUrl.hash()).toBe('');
     });
 
+    it('url() should change path when empty string specified', function() {
+      url.url('');
+
+      expect(url.path()).toBe('/');
+      expect(url.search()).toEqual({});
+      expect(url.hash()).toBe('');
+    });
+
 
     it('replace should set $$replace flag and return itself', function() {
       var locationUrl = createLocationHtml5Url();
