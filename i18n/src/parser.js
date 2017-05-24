@@ -46,9 +46,13 @@ function parsePattern(pattern) {
       positive = patternParts[0],
       negative = patternParts[1];
 
-  // The parsing logic below assumes that there will always be a DECIMAL_SEP in the pattern.
+  // The parsing logic further below assumes that there will always be a DECIMAL_SEP in the pattern.
   // However, some locales (e.g. agq_CM) do not have one, thus we add one after the last ZERO
-  // (which is the last thing before the `posSuf` - if any).
+  // (which is the last thing before the `posSuf` - if any). Since there will be no ZEROs or DIGITs
+  // after DECIMAL_SEP, `min/maxFrac` will remain 0 (which is accurate - no fraction digits) and
+  // `posSuf` will be processed correctly.
+  // For example `#,##0$` would be converted to `#,##0.$`, which would (correctly) result in:
+  // `minFrac: 0`, `maxFrac: 0`, `posSuf: '$'`
   // Note: We shouldn't modify `positive` directly, because it is used to parse the negative part.)
   var positiveWithDecimalSep = ensureDecimalSep(positive),
       positiveParts = positiveWithDecimalSep.split(DECIMAL_SEP),
