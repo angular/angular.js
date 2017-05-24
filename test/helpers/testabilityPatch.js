@@ -49,7 +49,7 @@ afterEach(function() {
   // These Nodes are persisted across tests.
   // They used to be assigned a `$$hashKey` when animated, which we needed to clear after each test
   // to avoid affecting other tests. This is no longer the case, so we are just ensuring that there
-  // is indeed no `$$hachKey` on them.
+  // is indeed no `$$hashKey` on them.
   var doc = window.document;
   var html = doc.querySelector('html');
   var body = doc.body;
