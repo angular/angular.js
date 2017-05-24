@@ -3,26 +3,6 @@
 
 if (window.bindJQuery) bindJQuery();
 
-var supportTests = {
-  classes: '/^class\\b/.test((class C {}).toString())',
-  fatArrow: 'a => a',
-  ES6Function: '({ fn(x) { return; } })'
-};
-
-var support = {};
-
-for (var prop in supportTests) {
-  if (supportTests.hasOwnProperty(prop)) {
-    try {
-      // eslint-disable-next-line no-eval
-      support[prop] = !!eval(supportTests[prop]);
-    } catch (e) {
-      support[prop] = false;
-    }
-  }
-}
-
-
 beforeEach(function() {
 
   // all this stuff is not needed for module tests, where jqlite and publishExternalAPI and jqLite are not global vars
