@@ -49,6 +49,8 @@ describe('HTML', function() {
           comment = comment_;
         }
       };
+      // Trigger the $sanitizer provider to execute, which initializes the `htmlParser` function.
+      inject(function($sanitize) {});
     });
 
     it('should not parse comments', function() {
@@ -266,13 +268,24 @@ describe('HTML', function() {
     });
   });
 
+  // See https://github.com/cure53/DOMPurify/blob/a992d3a75031cb8bb032e5ea8399ba972bdf9a65/src/purify.js#L439-L449
+  it('should not allow JavaScript execution when creating inert document', inject(function($sanitize) {
+    var doc = $sanitize('<svg><g onload="window.xxx = 100"></g></svg>');
+    expect(window.xxx).toBe(undefined);
+    delete window.xxx;
+  }));
+
+  // See https://github.com/cure53/DOMPurify/releases/tag/0.6.7
+  it('should not allow JavaScript hidden in badly formed HTML to get through sanitization (Firefox bug)', inject(function($sanitize) {
+    var doc = $sanitize('<svg><p><style><img src="</style><img src=x onerror=alert(1)//">');
+    expect(doc).toEqual('<p><img src="x"></p>');
+  }));
 
   describe('SVG support', function() {
 
     beforeEach(module(function($sanitizeProvider) {
       $sanitizeProvider.enableSvg(true);
     }));
-
 
     it('should accept SVG tags', function() {
       expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
