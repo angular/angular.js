@@ -51,6 +51,7 @@ var isEagerInstantiationEnabled;
  *
  * ## Dependencies
  * Requires the {@link ngRoute `ngRoute`} module to be installed.
+ * Requires an ng-view element in the HTML
  */
 function $RouteProvider() {
   isArray = angular.isArray;
