@@ -658,7 +658,7 @@ var inputType = {
    *
    * @description
    * Text input with number validation and transformation. Sets the `number` validation
-   * error if not a valid number.
+   * error if the number is not valid.
    *
    * <div class="alert alert-warning">
    * The model must always be of type `number` otherwise AngularJS will throw an error.
@@ -876,8 +876,8 @@ var inputType = {
    * @name input[email]
    *
    * @description
-   * Text input with email validation. Sets the `email` validation error key if not a valid email
-   * address.
+   * Text input with email validation. Sets the `email` validation error key if the email
+   * address is not valid.
    *
    * <div class="alert alert-warning">
    * **Note:** `input[email]` uses a regex to validate email addresses that is derived from the regex
