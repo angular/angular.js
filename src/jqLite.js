@@ -319,7 +319,7 @@ function jqLiteOff(element, type, fn, unsupported) {
 
   if (!handle) return; //no listeners registered
 
-  if (!type) {
+  if (isUndefined(type)) {
     for (type in events) {
       if (type !== '$destroy') {
         element.removeEventListener(type, handle);
