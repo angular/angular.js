@@ -283,16 +283,16 @@ describe('injector', function() {
 
 
     describe('es6', function() {
-      if (support.ES6Function) {
+      if (support.shorthandMethods) {
         // The functions are generated using `eval` as just having the ES6 syntax can break some browsers.
-        it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+        it('should be possible to annotate shorthand methods', function() {
           // eslint-disable-next-line no-eval
           expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
         });
       }
 
 
-      if (support.fatArrow) {
+      if (support.fatArrows) {
         it('should create $inject for arrow functions', function() {
           // eslint-disable-next-line no-eval
           expect(annotate(eval('(a, b) => a'))).toEqual(['a', 'b']);
@@ -300,7 +300,7 @@ describe('injector', function() {
       }
 
 
-      if (support.fatArrow) {
+      if (support.fatArrows) {
         it('should create $inject for arrow functions with no parenthesis', function() {
           // eslint-disable-next-line no-eval
           expect(annotate(eval('a => a'))).toEqual(['a']);
@@ -308,7 +308,7 @@ describe('injector', function() {
       }
 
 
-      if (support.fatArrow) {
+      if (support.fatArrows) {
         it('should take args before first arrow', function() {
           // eslint-disable-next-line no-eval
           expect(annotate(eval('a => b => b'))).toEqual(['a']);
