@@ -74,8 +74,7 @@ function prepare {
   do
     echo "-- Updating version in bower-$repo to $NEW_VERSION"
     cd $TMP_DIR/bower-$repo
-    replaceJsonProp "bower.json" "version" ".*" "$NEW_VERSION"
-    replaceJsonProp "bower.json" "angular.*" ".*" "$NEW_VERSION"
+    rm -f "bower.json"
     replaceJsonProp "package.json" "version" ".*" "$NEW_VERSION"
     replaceJsonProp "package.json" "angular.*" ".*" "$NEW_VERSION"
 
