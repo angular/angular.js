@@ -142,6 +142,13 @@ components should follow a few simple conventions:
         });
       }
     ```
+  - Add a `?` if the binding is optional. 
+     ```js
+      bindings: {
+        onDelete: '&?', // $ctrl.onDelete will not be defined unless an `on-delete` attribute is passed
+        onUpdate: '&' 
+      }
+    ```
 
 - **Components have a well-defined lifecycle**
 Each component can implement "lifecycle hooks". These are methods that will be called at certain points in the life
