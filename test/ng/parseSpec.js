@@ -3277,6 +3277,25 @@ describe('parser', function() {
             expect(called).toBe(true);
           }));
 
+          it('should always be invoked if inputs are non-primitive', inject(function($parse) {
+            var called = false;
+            function interceptor(v) {
+              called = true;
+              return v.sub;
+            }
+
+            scope.$watch($parse('[o]', interceptor));
+            scope.o = {sub: 1};
+
+            called = false;
+            scope.$digest();
+            expect(called).toBe(true);
+
+            called = false;
+            scope.$digest();
+            expect(called).toBe(true);
+          }));
+
           it('should not be invoked unless the input.valueOf() changes even if the instance changes', inject(function($parse) {
             var called = false;
             function interceptor(v) {

@@ -517,6 +517,22 @@ describe('ngClass', function() {
     })
   );
 
+  // https://github.com/angular/angular.js/issues/15905
+  it('should support a mixed literal-array/object variable', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="[classVar]"></div>')($rootScope);
+
+      $rootScope.classVar = {orange: true};
+      $rootScope.$digest();
+      expect(element).toHaveClass('orange');
+
+      $rootScope.classVar.orange = false;
+      $rootScope.$digest();
+
+      expect(element).not.toHaveClass('orange');
+    })
+  );
+
+
   it('should do value stabilization as expected when one-time binding',
     inject(function($rootScope, $compile) {
       element = $compile('<div ng-class="::className"></div>')($rootScope);
