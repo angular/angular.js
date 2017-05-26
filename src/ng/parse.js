@@ -1798,15 +1798,9 @@ function $ParseProvider() {
             var lexer = new Lexer($parseOptions);
             var parser = new Parser(lexer, $filter, $parseOptions);
             parsedExpression = parser.parse(exp);
-            if (parsedExpression.constant) {
-              parsedExpression.$$watchDelegate = constantWatchDelegate;
-            } else if (oneTime) {
-              parsedExpression.oneTime = true;
-              parsedExpression.$$watchDelegate = oneTimeWatchDelegate;
-            } else if (parsedExpression.inputs) {
-              parsedExpression.$$watchDelegate = inputsWatchDelegate;
-            }
-            cache[cacheKey] = parsedExpression;
+            parsedExpression.oneTime = !!oneTime;
+
+            cache[cacheKey] = addWatchDelegate(parsedExpression);
           }
           return addInterceptor(parsedExpression, interceptorFn);
 
@@ -1931,9 +1925,21 @@ function $ParseProvider() {
       return unwatch;
     }
 
+    function addWatchDelegate(parsedExpression) {
+      if (parsedExpression.constant) {
+        parsedExpression.$$watchDelegate = constantWatchDelegate;
+      } else if (parsedExpression.oneTime) {
+        parsedExpression.$$watchDelegate = oneTimeWatchDelegate;
+      } else if (parsedExpression.inputs) {
+        parsedExpression.$$watchDelegate = inputsWatchDelegate;
+      }
+
+      return parsedExpression;
+    }
+
     function addInterceptor(parsedExpression, interceptorFn) {
       if (!interceptorFn) return parsedExpression;
-      var watchDelegate = parsedExpression.$$watchDelegate;
+
       var useInputs = false;
 
       var isDone = parsedExpression.literal ? isAllDefined : isDefined;
@@ -1953,18 +1959,16 @@ function $ParseProvider() {
 
       var fn = parsedExpression.oneTime ? oneTimeInterceptedExpression : regularInterceptedExpression;
 
-      // Propogate the literal/oneTime attributes
+      // Propogate the literal/oneTime/constant attributes
       fn.literal = parsedExpression.literal;
       fn.oneTime = parsedExpression.oneTime;
+      fn.constant = parsedExpression.constant;
 
-      // Propagate or create inputs / $$watchDelegates
-      useInputs = !parsedExpression.inputs;
-      if (watchDelegate && watchDelegate !== inputsWatchDelegate) {
-        fn.$$watchDelegate = watchDelegate;
-        fn.inputs = parsedExpression.inputs;
-      } else if (!interceptorFn.$stateful) {
-        // Treat interceptor like filters - assume non-stateful by default and use the inputsWatchDelegate
-        fn.$$watchDelegate = inputsWatchDelegate;
+      // Treat the interceptor like filters.
+      // If it is not $stateful then only watch its inputs.
+      // If the expression itself has no inputs then use the full expression as an input.
+      if (!interceptorFn.$stateful) {
+        useInputs = !parsedExpression.inputs;
         fn.inputs = (parsedExpression.inputs ? parsedExpression.inputs : [parsedExpression]).map(function(e) {
               // Remove the isPure flag of inputs when it is not absolute because they are now wrapped in a
               // potentially non-pure interceptor function.
@@ -1975,7 +1979,7 @@ function $ParseProvider() {
             });
       }
 
-      return fn;
+      return addWatchDelegate(fn);
     }
   }];
 }

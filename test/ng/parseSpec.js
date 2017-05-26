@@ -3324,6 +3324,72 @@ describe('parser', function() {
             expect(called).toBe(true);
           }));
 
+          it('should always be invoked if flagged as $stateful when wrapping one-time',
+              inject(function($parse) {
+
+            var interceptorCalls = 0;
+            function interceptor() {
+              interceptorCalls++;
+              return 123;
+            }
+            interceptor.$stateful = true;
+
+            scope.$watch($parse('::a', interceptor));
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+          }));
+
+          it('should always be invoked if flagged as $stateful when wrapping one-time with inputs',
+              inject(function($parse) {
+
+            $filterProvider.register('identity', valueFn(identity));
+
+            var interceptorCalls = 0;
+            function interceptor() {
+              interceptorCalls++;
+              return 123;
+            }
+            interceptor.$stateful = true;
+
+            scope.$watch($parse('::a | identity', interceptor));
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+          }));
+
+          it('should always be invoked if flagged as $stateful when wrapping one-time literal',
+              inject(function($parse) {
+
+            var interceptorCalls = 0;
+            function interceptor() {
+              interceptorCalls++;
+              return 123;
+            }
+            interceptor.$stateful = true;
+
+            scope.$watch($parse('::[a]', interceptor));
+
+            // Would be great if interceptor-output was checked for changes and this didn't throw...
+            interceptorCalls = 0;
+            expect(function() { scope.$digest(); }).toThrowMinErr('$rootScope', 'infdig');
+            expect(interceptorCalls).not.toBe(0);
+
+            interceptorCalls = 0;
+            expect(function() { scope.$digest(); }).toThrowMinErr('$rootScope', 'infdig');
+            expect(interceptorCalls).not.toBe(0);
+          }));
+
           it('should not be invoked unless the input changes', inject(function($parse) {
             var called = false;
             function interceptor(v) {
@@ -3433,6 +3499,29 @@ describe('parser', function() {
             scope.x = 1;
             scope.$digest();
             expect(scope.$$watchersCount).toBe(0);
+          }));
+
+          it('should not propogate $$watchDelegate to the interceptor wrapped expression', inject(function($parse) {
+            function getter(s) {
+              return s.x;
+            }
+            getter.$$watchDelegate = getter;
+
+            function doubler(v) {
+              return 2 * v;
+            }
+
+            var lastValue;
+            function watcher(val) {
+              lastValue = val;
+            }
+            scope.$watch($parse(getter, doubler), watcher);
+
+            scope.$apply('x = 1');
+            expect(lastValue).toBe(2 * 1);
+
+            scope.$apply('x = 123');
+            expect(lastValue).toBe(2 * 123);
           }));
         });
 
