@@ -82,7 +82,10 @@ describe('$$rAF', function() {
           location: window.location,
           history: window.history,
           webkitRequestAnimationFrame: jasmine.createSpy('$window.webkitRequestAnimationFrame'),
-          webkitCancelRequestAnimationFrame: jasmine.createSpy('$window.webkitCancelRequestAnimationFrame')
+          webkitCancelRequestAnimationFrame: jasmine.createSpy('$window.webkitCancelRequestAnimationFrame'),
+          navigator: {
+            userAgent: 'mock navigator'
+          }
         });
       }]);
 

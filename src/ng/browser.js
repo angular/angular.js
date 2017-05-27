@@ -358,6 +358,41 @@ function Browser(window, document, $log, $sniffer) {
 function $BrowserProvider() {
   this.$get = ['$window', '$log', '$sniffer', '$document',
       function($window, $log, $sniffer, $document) {
-        return new Browser($window, $document, $log, $sniffer);
+        var browser = new Browser($window, $document, $log, $sniffer);
+
+        if (isIOS9UIWebView($window.navigator.userAgent)) {
+          browser = applyIOS9Shim(browser);
+        }
+
+        return browser;
       }];
+}
+
+
+function isIOS9UIWebView(userAgent) {
+  return /(iPhone|iPad|iPod) OS 9_\d/.test(userAgent) && !/Version\/9\./.test(userAgent);
+}
+
+
+function applyIOS9Shim(browser) {
+  var pendingLocationUrl = null;
+  var patchedBrowser = Object.create(browser);
+
+  patchedBrowser.url = function() {
+    if (arguments.length) {
+      pendingLocationUrl = arguments[0];
+      return browser.url.apply(patchedBrowser, arguments);
+    }
+
+    return pendingLocationUrl || browser.url();
+  };
+
+  jqLite(window).on('popstate', clearPendingLocationUrl);
+  jqLite(window).on('hashchange', clearPendingLocationUrl);
+
+  function clearPendingLocationUrl() {
+    pendingLocationUrl = null;
+  }
+
+  return patchedBrowser;
 }
