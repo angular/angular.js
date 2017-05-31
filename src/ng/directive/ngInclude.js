@@ -60,7 +60,7 @@
        url of the template: <code>{{template.url}}</code>
        <hr/>
        <div class="slide-animate-container">
-         <div class="slide-animate" ng-include="template.url"></div>
+         <div class="slide-animate" ng-include="  'template.url'  "></div>
        </div>
      </div>
     </file>
