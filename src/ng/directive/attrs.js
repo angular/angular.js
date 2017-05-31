@@ -153,6 +153,32 @@
 
 /**
  * @ngdoc directive
+ * @name ngContent
+ * @restrict META
+ * @priority 99
+ *
+ * @description
+ * Using Angular markup like `{{hash}}` in a `content` attribute doesn't
+ * work right: bots will fetch from the URL with the literal
+ * text `{{hash}}` until Angular replaces the expression inside
+ * `{{hash}}`. The `ngContent` directive solves this problem.
+ *
+ * The buggy way to write it:
+ * ```html
+ * <meta property="og:url" content="https://docs.angularjs.org/{{hash}}"/>
+ * ```
+ *
+ * The correct way to write it:
+ * ```html
+ * <meta property="og:url" ng-content="https://docs.angularjs.org/{{hash}}"/>
+ * ```
+ *
+ * @element META
+ * @param {template} ngContent any string which can contain `{{}}` markup.
+ */
+
+/**
+ * @ngdoc directive
  * @name ngDisabled
  * @restrict A
  * @priority 100
@@ -401,7 +427,7 @@ forEach(ALIASED_ATTR, function(htmlAttr, ngAttr) {
 });
 
 // ng-src, ng-srcset, ng-href are interpolated
-forEach(['src', 'srcset', 'href'], function(attrName) {
+forEach(['src', 'srcset', 'href', 'content'], function(attrName) {
   var normalized = directiveNormalize('ng-' + attrName);
   ngAttributeAliasDirectives[normalized] = function() {
     return {
