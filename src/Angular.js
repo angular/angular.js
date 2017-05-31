@@ -1256,6 +1256,8 @@ function toJsonReplacer(key, value) {
     val = '$DOCUMENT';
   } else if (isScope(value)) {
     val = '$SCOPE';
+  } else if (isDate(value) && isNaN(value.getMilliseconds())) {
+    val = null;
   }
 
   return val;

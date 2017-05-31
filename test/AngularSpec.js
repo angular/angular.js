@@ -2228,6 +2228,10 @@ describe('angular', function() {
     it('should serialize undefined as undefined', function() {
       expect(toJson(undefined)).toEqual(undefined);
     });
+
+    it('should serialize invalid dates to null', function() {
+      expect(toJson({when: new Date(1 / 0)})).toEqual('{"when":null}');
+    });
   });
 
   describe('isElement', function() {
