@@ -659,14 +659,19 @@ describe('jqLite', function() {
       expect(jqLite('<select multiple="x">').attr('multiple')).toBe('multiple');
     });
 
-    it('should add/remove boolean attributes', function() {
-      var select = jqLite('<select>');
-      select.attr('multiple', false);
-      expect(select.attr('multiple')).toBeUndefined();
+    var attributes = 'multiple,selected,checked,disabled,readOnly,required,open,indeterminate'.split(',');
 
-      select.attr('multiple', true);
-      expect(select.attr('multiple')).toBe('multiple');
-    });
+    for(var i = 0; i < attributes.length; i++) {
+      var thisAttribute = attributes[i];
+      it('should add/remove boolean attributes', function() {
+        var select = jqLite('<select>');
+        select.attr(thisAttribute, false);
+        expect(select.attr(thisAttribute)).toBeUndefined();
+
+        select.attr(thisAttribute, true);
+        expect(select.attr(thisAttribute)).toBe(thisAttribute);
+      });
+    };
 
     it('should not take properties into account when getting respective boolean attributes', function() {
       // Use a div and not a select as the latter would itself reflect the multiple attribute
