@@ -851,6 +851,21 @@ function specialMouseHandlerWrapper(target, event, handler) {
 // These functions chain results into a single
 // selector.
 //////////////////////////////////////////
+function passiveOptionSupported() {
+  var supportsPassiveOption = false;
+  try {
+    var opts = Object.defineProperty({}, 'passive', {
+      get: function() {
+        supportsPassiveOption = true;
+      }
+    });
+    window.addEventListener('test', null, opts);
+    // eslint-disable-next-line no-empty
+  } catch (e) {
+  }
+  return supportsPassiveOption;
+}
+
 forEach({
   removeData: jqLiteRemoveData,
 
@@ -881,7 +896,7 @@ forEach({
         eventFns = events[type] = [];
         eventFns.specialHandlerWrapper = specialHandlerWrapper;
         if (type !== '$destroy' && !noEventListener) {
-          element.addEventListener(type, handle);
+          element.addEventListener(type, handle, passiveOptionSupported() ? { passive: true } : false);
         }
       }
 
