@@ -227,5 +227,16 @@ describe('$controller', function() {
       expect(scope.$foo).toBe(foo);
       expect(scope.$foo.mark).toBe('foo');
     });
+
+
+    it('should allow identifiers containing `$`', function() {
+      var scope = {};
+
+      $controllerProvider.register('FooCtrl', function() { this.mark = 'foo'; });
+
+      var foo = $controller('FooCtrl as $foo', {$scope: scope});
+      expect(scope.$foo).toBe(foo);
+      expect(scope.$foo.mark).toBe('foo');
+    });
   });
 });
