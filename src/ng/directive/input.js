@@ -770,6 +770,7 @@ var inputType = {
       </example>
    */
   'number': numberInputType,
+  'range': numberInputType,
 
 
   /**
