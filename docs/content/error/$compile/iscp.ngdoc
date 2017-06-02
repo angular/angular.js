@@ -11,12 +11,14 @@ myModule.directive('directiveName', function factory() {
     ...
     scope: {
       'localName': '@', // OK
-      'localName2': '=attr', // OK
+      'localName2': '&attr', // OK
       'localName3': '<?attr', // OK
       'localName4': ' = attr', // OK
-      'localName5': 'attr',    // ERROR: missing mode @&=
-      'localName6': 'attr=',   // ERROR: must be prefixed with @&=
-      'localName7': '=attr?',  // ERROR: ? must come directly after the mode
+      'localName5': ' =*attr', // OK      
+      'localName6': 'attr',    // ERROR: missing mode @&=<
+      'localName7': 'attr=',   // ERROR: must be prefixed with @&=<
+      'localName8': '=attr?',  // ERROR: ? must come directly after the mode
+      'localName9': '<*'  // ERROR: * is only valid with =
     }
     ...
   }
