@@ -113,6 +113,10 @@ var requiredDirective = function() {
  *   </li>
  * </ol>
  * </div>
+ * <div class="alert alert-info">
+ * **Note:** The $observe method is used for tracking changes only in the 'pattern'.
+ * </div>
+ *
  *
  * @example
  * <example name="ngPatternDirective" module="ngPatternExample">
