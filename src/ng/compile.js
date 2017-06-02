@@ -348,8 +348,8 @@
  *
  * All 4 kinds of bindings (`@`, `=`, `<`, and `&`) can be made optional by adding `?` to the expression.
  * The marker must come before the attribute name.
- * See the {@link error/$compile/iscp the Invalid Isolate Scope Definition error} for definition examples.
- * This is useful to refine the interface directives provides.
+ * See the {@link error/$compile/iscp Invalid Isolate Scope Definition error} for definition examples.
+ * This is useful to refine the interface directives provide.
  * One subtle difference between optional and non-optional happens **when the binding attribute is not
  * set**:
  * - the binding is optional: the property will not be defined
