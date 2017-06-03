@@ -1517,7 +1517,8 @@ function allowAutoBootstrap(document) {
     var link = document.createElement('a');
     link.href = src.value;
 
-    if (document.location.origin === link.origin) {
+    if (document.location.protocol === link.protocol && document.location.host === link.host &&
+      document.location.port === link.port) {
       // Same-origin resources are always allowed, even for non-whitelisted schemes.
       return true;
     }
