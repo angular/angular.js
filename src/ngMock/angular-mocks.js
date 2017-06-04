@@ -1155,7 +1155,7 @@ angular.mock.dump = function(object) {
   ```js
     // testing controller
     describe('MyController', function() {
-       var $httpBackend, $rootScope, createController, authRequestHandler;
+       var $httpBackend, scope, createController, authRequestHandler;
 
        // Set up the module
        beforeEach(module('MyApp'));
@@ -1167,13 +1167,13 @@ angular.mock.dump = function(object) {
          authRequestHandler = $httpBackend.when('GET', '/auth.py')
                                 .respond({userId: 'userX'}, {'A-Token': 'xxx'});
 
-         // Get hold of a scope (i.e. the root scope)
-         $rootScope = $injector.get('$rootScope');
+         // Get hold of a scope - create a new one from a $rootScope
+         scope = $injector.get('$rootScope').$new();
          // The $controller service is used to create instances of controllers
          var $controller = $injector.get('$controller');
 
          createController = function() {
-           return $controller('MyController', {'$scope' : $rootScope });
+           return $controller('MyController', {'$scope' : scope });
          };
        }));
 
@@ -1199,7 +1199,7 @@ angular.mock.dump = function(object) {
          $httpBackend.expectGET('/auth.py');
          var controller = createController();
          $httpBackend.flush();
-         expect($rootScope.status).toBe('Failed...');
+         expect(scope.status).toBe('Failed...');
        });
 
 
@@ -1213,10 +1213,10 @@ angular.mock.dump = function(object) {
          // specify the expectation and response for this request
 
          $httpBackend.expectPOST('/add-msg.py', 'message content').respond(201, '');
-         $rootScope.saveMessage('message content');
-         expect($rootScope.status).toBe('Saving...');
+         scope.saveMessage('message content');
+         expect(scope.status).toBe('Saving...');
          $httpBackend.flush();
-         expect($rootScope.status).toBe('');
+         expect(scope.status).toBe('');
        });
 
 
@@ -1230,7 +1230,7 @@ angular.mock.dump = function(object) {
            return headers['Authorization'] === 'xxx';
          }).respond(201, '');
 
-         $rootScope.saveMessage('whatever');
+         scope.saveMessage('whatever');
          $httpBackend.flush();
        });
     });
