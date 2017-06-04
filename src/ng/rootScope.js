@@ -799,6 +799,7 @@ function $RootScopeProvider() {
               fn = asyncTask.fn;
               fn(asyncTask.scope, asyncTask.locals);
             } catch (e) {
+              clearPhase();
               $exceptionHandler(e);
             }
             lastDirtyWatch = null;
@@ -843,6 +844,7 @@ function $RootScopeProvider() {
                     }
                   }
                 } catch (e) {
+                  clearPhase();
                   $exceptionHandler(e);
                 }
               }
