@@ -349,6 +349,9 @@ function jqLiteOff(element, type, fn, unsupported) {
 }
 
 function jqLiteRemoveData(element, name) {
+  if (element === null) {
+    return;
+  }
   var expandoId = element.ng339;
   var expandoStore = expandoId && jqCache[expandoId];
 
