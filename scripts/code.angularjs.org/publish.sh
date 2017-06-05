@@ -62,7 +62,11 @@ function _update_code() {
 
   for backend in "$@" ; do
     echo "-- Refreshing code.angularjs.org: backend=$backend"
-    curl http://$backend:8003/gitFetchSite.php
+
+    # FIXME: We gave up publishing to code.angularjs.org because the GCE automatically removes firewall
+    # rules that allow access to port 8003.
+
+    # curl http://$backend:8003/gitFetchSite.php
   done
 }
 
