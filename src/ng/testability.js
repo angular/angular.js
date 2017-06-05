@@ -109,7 +109,11 @@ function $$TestabilityProvider() {
      * @param {function} callback
      */
     testability.whenStable = function(callback) {
-      $browser.notifyWhenNoOutstandingRequests(callback);
+      // Register the callback asynchronously, so that services that trigger
+      // async callbacks have a chance to run.
+      $rootScope.$evalAsync(function() {
+        $browser.notifyWhenNoOutstandingRequests(callback);
+      });
     };
 
     return testability;
