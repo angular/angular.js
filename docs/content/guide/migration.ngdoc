@@ -527,14 +527,6 @@ Note that `$parse` trims expressions automatically, so attributes with expressio
 bindings) should not be affected by this change.
 
 <hr />
-<minor />
-**Due to [13c252](https://github.com/angular/angular.js/commit/13c2522baf7c8f616b2efcaab4bffd54c8736591)**,
-on **IE11 only**, consecutive text nodes will always get merged. Previously, they would not get
-merged if they had no parent. The new behavior, which fixes an IE11 bug affecting interpolation
-under certain circumstances, might in some edge-cases have unexpected side effects that you should
-be aware of. Please, check the commit message for more details.
-
-<hr />
 <tests-only />
 **Due to [b89c21](https://github.com/angular/angular.js/commit/b89c2181a9a165e06c027390164e08635ec449f4)**,
 using interpolation in any `on*` event attribute (e.g. `<button onclick="{{myVar}}">`) will now
