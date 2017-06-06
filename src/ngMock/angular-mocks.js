@@ -1114,7 +1114,7 @@ angular.mock.dump = function(object) {
  *
  * ## Flushing HTTP requests
  *
- * The $httpBackend used in production always responds to requests asynchronously. If we preserved
+ * The $http used in production always responds to requests asynchronously. If we preserved
  * this behavior in unit testing, we'd have to create async unit tests, which are hard to write,
  * to follow and to maintain. But neither can the testing mock respond synchronously; that would
  * change the execution of the code under test. For this reason, the mock $httpBackend has a
