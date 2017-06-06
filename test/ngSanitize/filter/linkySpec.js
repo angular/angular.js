@@ -64,6 +64,11 @@ describe('linky', function() {
     expect(linky('www.example.com')).toEqual('<a href="http://www.example.com">www.example.com</a>');
   });
 
+  it('should handle punctuation', function() {
+    expect(linky('www.example.com):')).toEqual('<a href="http://www.example.com">www.example.com</a>):');
+    expect(linky('(www.example.com).')).toEqual('(<a href="http://www.example.com">www.example.com</a>).');
+  });
+
   it('should handle mailto:', function() {
     expect(linky('mailto:me@example.com')).
                     toEqual('<a href="mailto:me@example.com">me@example.com</a>');
