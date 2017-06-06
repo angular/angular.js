@@ -787,7 +787,8 @@ function $HttpProvider() {
      *
      * The name of the headers can be specified using the xsrfHeaderName and xsrfCookieName
      * properties of either $httpProvider.defaults at config-time, $http.defaults at run-time,
-     * or the per-request config object.
+     * or the per-request config object. In environments where multiple sites can set cookies
+     * for your domain, we recommend using a unique cookie name for each site.
      *
      * In order to prevent collisions in environments where multiple AngularJS apps share the
      * same domain or subdomain, we recommend that each application uses unique cookie name.
