@@ -18,6 +18,6 @@ definition's controller property, or in the call to {@link ng.$controller `$cont
 2. You have not registered the controller (neither via {@link angular.Module#controller `Module.controller`}
 nor {@link ng.$controllerProvider#register `$controllerProvider.register()`}.
 3. You have a typo in the *registered* controller name.
-
+4. You have a typo within the controller logic itself.
 
 Please consult the {@link ng.$controller $controller} service api docs to learn more.
