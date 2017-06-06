@@ -424,12 +424,12 @@ function extend(dst) {
 * @deprecated
 * sinceVersion="1.6.5"
 * This function is deprecated, but will not be removed in the 1.x lifecycle.
-* There are a edge cases (see {@link angular.merge#known-issues known issues}) that are not
+* There are edge cases (see {@link angular.merge#known-issues known issues}) that are not
 * supported by this function. We suggest
 * using [lodash's merge()](https://lodash.com/docs/4.17.4#merge) instead.
 *
 * @knownIssue
-* This is a list of (known) object types that cannot be / are incorrectly handled by this function:
+* This is a list of (known) object types that are not handled correctly by this function:
 * - [`Blob`](https://developer.mozilla.org/docs/Web/API/Blob)
 * - [`MediaStream`](https://developer.mozilla.org/docs/Web/API/MediaStream)
 * - [`CanvasGradient`](https://developer.mozilla.org/docs/Web/API/CanvasGradient)
