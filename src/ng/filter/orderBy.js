@@ -49,9 +49,8 @@
  * second, or `1` otherwise.
  *
  * In order to ensure that the sorting will be deterministic across platforms, if none of the
- * specified predicates can distinguish between two items, `orderBy` will automatically introduce a
- * dummy predicate that returns the item's index as `value`.
- * (If you are using a custom comparator, make sure it can handle this predicate as well.)
+ * specified predicates nor the custom comparator can distinguish between two items, `orderBy` will
+ * automatically introduce a dummy predicate that returns the item's index as `value`.
  *
  * If a custom comparator still can't distinguish between two items, then they will be sorted based
  * on their index using the built-in comparator.
