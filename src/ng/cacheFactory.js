@@ -35,6 +35,7 @@
  * - `{{*}}` `put({string} key, {*} value)` — Puts a new key-value pair into the cache and returns
  *   it.
  * - `{{*}}` `get({string} key)` — Returns cached value for `key` or undefined for cache miss.
+ * - `{boolean}` `has({string} key)` — Returns `true` if key exists in the cache.
  * - `{void}` `remove({string} key)` — Removes a key-value pair from the cache.
  * - `{void}` `removeAll()` — Removes all cached values.
  * - `{void}` `destroy()` — Removes references to this cache from $cacheFactory.
@@ -68,7 +69,7 @@
            $scope.keys = [];
            $scope.cache = $cacheFactory('cacheId');
            $scope.put = function(key, value) {
-             if (angular.isUndefined($scope.cache.get(key))) {
+             if (!$scope.cache.has(key)) {
                $scope.keys.push(key);
              }
              $scope.cache.put(key, angular.isUndefined(value) ? null : value);
@@ -200,6 +201,20 @@ function $CacheFactoryProvider() {
           return data[key];
         },
 
+        /**
+         * @ngdoc method
+         * @name $cacheFactory.Cache#has
+         * @kind function
+         *
+         * @description
+         * Determine if named data is stored in the {@link $cacheFactory.Cache Cache} object.
+         *
+         * @param {string} key the key of the data to be retrieved
+         * @returns {boolean} `true` if the named data is stored in the {@link $cacheFactory.Cache Cache} object.
+         */
+        has: function(key) {
+          return key in data;
+        },
 
         /**
          * @ngdoc method
