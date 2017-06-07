@@ -490,8 +490,6 @@ addSetValidityMethod({
       </file>
     </example>
  *
- * @param {string=} name Name of the form. If specified, the form controller will be published into
- *                       related scope, under this name.
  */
 var formDirectiveFactory = function(isNgForm) {
   return ['$timeout', '$parse', function($timeout, $parse) {
