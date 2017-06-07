@@ -6,6 +6,6 @@ function ngDirective(directive) {
       link: directive
     };
   }
-  directive.restrict = directive.restrict || 'AC';
+  directive.restrict = directive.restrict || 'AE';
   return valueFn(directive);
 }
