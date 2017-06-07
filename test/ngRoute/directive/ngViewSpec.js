@@ -163,6 +163,114 @@ describe('ngView', function() {
       });
     });
 
+  it('should reference resolved locals via $scope.$resolve in controller', function() {
+    var controllerScope,
+        Ctrl = function($scope) {
+          controllerScope = $scope;
+          controllerScope.mutated = $scope.$resolve.name + 'bar';
+        };
+
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {
+        resolve: {
+          name: function() {
+            return 'foo';
+          }
+        },
+        template: '<div>{{mutated}}</div>',
+        controller: Ctrl
+      });
+    });
+
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('foobar');
+    });
+
+  });
+
+  it('should reference resolved locals via alias in controller using resolveAs', function() {
+    var controllerScope,
+        Ctrl = function($scope) {
+          controllerScope = $scope;
+          controllerScope.mutated = $scope.myResolve.name + 'bar';
+        };
+
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {
+        resolveAs: 'myResolve',
+        resolve: {
+          name: function() {
+            return 'foo';
+          }
+        },
+        template: '<div>{{mutated}}</div>',
+        controller: Ctrl
+      });
+    });
+
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('foobar');
+    });
+
+  });
+
+  it('should inject resolved locals into controller', function() {
+    var controllerScope,
+        Ctrl = function($scope, $resolve) {
+          controllerScope = $scope;
+          controllerScope.name = $resolve.name;
+        };
+
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {
+        resolve: {
+          name: function() {
+            return 'foobar';
+          }
+        },
+        template: '<div>{{name}}</div>',
+        controller: Ctrl
+      });
+    });
+
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('foobar');
+    });
+  });
+
+  it('should inject resolved locals via alias into controller using resolveAs', function() {
+    var controllerScope,
+        Ctrl = function($scope, myResolve) {
+          controllerScope = $scope;
+          controllerScope.name = myResolve.name;
+        };
+
+    module(function($routeProvider) {
+      $routeProvider.when('/foo', {
+        resolveAs: 'myResolve',
+        resolve: {
+          name: function() {
+            return 'foobar';
+          }
+        },
+        template: '<div>{{name}}</div>',
+        controller: Ctrl
+      });
+    });
+
+    inject(function($location, $rootScope) {
+      $location.path('/foo');
+      $rootScope.$digest();
+      expect(element.text()).toEqual('foobar');
+    });
+  });
+
 
     it('should load content via xhr when route changes', function() {
       module(function($routeProvider) {
