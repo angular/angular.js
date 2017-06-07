@@ -155,11 +155,12 @@ describe('$httpBackend', function() {
   });
 
   it('should not try to read response data when request is aborted', function() {
-    callback.and.callFake(function(status, response, headers, statusText) {
+    callback.and.callFake(function(status, response, headers, statusText, xhrStatus) {
       expect(status).toBe(-1);
       expect(response).toBe(null);
       expect(headers).toBe(null);
       expect(statusText).toBe('');
+      expect(xhrStatus).toBe('abort');
     });
     $backend('GET', '/url', null, callback, {}, 2000);
     xhr = MockXhr.$$lastInstance;
@@ -174,11 +175,12 @@ describe('$httpBackend', function() {
   });
 
   it('should complete the request on timeout', function() {
-    callback.and.callFake(function(status, response, headers, statusText) {
+    callback.and.callFake(function(status, response, headers, statusText, xhrStatus) {
       expect(status).toBe(-1);
       expect(response).toBe(null);
       expect(headers).toBe(null);
       expect(statusText).toBe('');
+      expect(xhrStatus).toBe('timeout');
     });
     $backend('GET', '/url', null, callback, {});
     xhr = MockXhr.$$lastInstance;
@@ -511,4 +513,3 @@ describe('$httpBackend', function() {
     });
   });
 });
-
