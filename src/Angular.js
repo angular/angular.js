@@ -460,6 +460,7 @@ function inherit(parent, extra) {
        (callback || angular.noop)(result);
      }
    ```
+ * @returns {undefined}
  */
 function noop() {}
 noop.$inject = [];
