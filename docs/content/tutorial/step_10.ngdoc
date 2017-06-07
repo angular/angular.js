@@ -91,6 +91,7 @@ including lists and bindings that comprise the phone details. Note how we use th
 **`app/phone-detail/phone-detail.template.html`:**
 
 ```html
+<div><a href="/">Home</a></div>
 <img ng-src="{{$ctrl.phone.images[0]}}" class="phone" />
 
 <h1>{{$ctrl.phone.name}}</h1>
