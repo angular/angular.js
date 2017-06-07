@@ -268,6 +268,8 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
       var link = $compile($element.contents());
 
+      scope[current.resolveAs || '$resolve'] = locals;
+
       if (current.controller) {
         locals.$scope = scope;
         var controller = $controller(current.controller, locals);
@@ -277,7 +279,6 @@ function ngViewFillContentFactory($compile, $controller, $route) {
         $element.data('$ngControllerController', controller);
         $element.children().data('$ngControllerController', controller);
       }
-      scope[current.resolveAs || '$resolve'] = locals;
 
       link(scope);
     }
