@@ -257,6 +257,7 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate',
 
               currentScope.$emit('$includeContentLoaded', src);
               scope.$eval(onloadExp);
+              return null;
             }, function() {
               if (scope.$$destroyed) return;
 
