@@ -973,6 +973,11 @@ forEach({
   },
 
   after: function(element, newElement) {
+    if (!element.parentNode) {
+      // may happen with nodes using ngInclude
+      return;
+    }
+
     var index = element, parent = element.parentNode;
 
     if (parent) {
