@@ -1162,30 +1162,50 @@ function $RootScopeProvider() {
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $on: function(name, listener) {
-        var namedListeners = this.$$listeners[name];
-        if (!namedListeners) {
-          this.$$listeners[name] = namedListeners = [];
-        }
-        namedListeners.push(listener);
-
-        var current = this;
-        do {
-          if (!current.$$listenerCount[name]) {
-            current.$$listenerCount[name] = 0;
-          }
-          current.$$listenerCount[name]++;
-        } while ((current = current.$parent));
+        registerListener(this, name, listener);
 
         var self = this;
         return function() {
-          var indexOfListener = namedListeners.indexOf(listener);
-          if (indexOfListener !== -1) {
-            namedListeners[indexOfListener] = null;
-            decrementListenerCount(self, 1, name);
-          }
+          deregisterListener(self, name, listener);
         };
       },
 
+      /**
+       * @ngdoc method
+       * @name $rootScope.Scope#$once
+       * @kind function
+       *
+       * @description
+       * Listens on an event of a given type at most once. The listener will be deregistered
+       * after being called the first time. See {@link ng.$rootScope.Scope#$emit $emit}
+       * for discussion of event life cycle.
+       *
+       * The event listener function format is: `function(event, args...)`. The `event` object
+       * passed into the listener has the following attributes:
+       *
+       *   - `targetScope` - `{Scope}`: the scope on which the event was `$emit`-ed or
+       *     `$broadcast`-ed.
+       *   - `currentScope` - `{Scope}`: the scope that is currently handling the event. Once the
+       *     event propagates through the scope hierarchy, this property is set to null.
+       *   - `name` - `{string}`: name of the event.
+       *   - `stopPropagation` - `{function=}`: calling `stopPropagation` function will cancel
+       *     further event propagation (available only for events that were `$emit`-ed).
+       *   - `preventDefault` - `{function}`: calling `preventDefault` sets `defaultPrevented` flag
+       *     to true.
+       *   - `defaultPrevented` - `{boolean}`: true if `preventDefault` was called.
+       *
+       * @param {string} name Event name to listen on.
+       * @param {function(event, ...args)} listener Function to call when the event is emitted.
+       */
+      $once: function(name, listener) {
+        var self = this;
+        var modifiedListener = function() {
+          deregisterListener(self, name, modifiedListener);
+          listener.apply(null, arguments);
+        };
+
+        registerListener(this, name, modifiedListener);
+      },
 
       /**
        * @ngdoc method
@@ -1376,6 +1396,30 @@ function $RootScopeProvider() {
       } while ((current = current.$parent));
     }
 
+    function registerListener(current, name, listener) {
+      var namedListeners = current.$$listeners[name];
+        if (!namedListeners) {
+          current.$$listeners[name] = namedListeners = [];
+        }
+        namedListeners.push(listener);
+
+        do {
+          if (!current.$$listenerCount[name]) {
+            current.$$listenerCount[name] = 0;
+          }
+          current.$$listenerCount[name]++;
+        } while ((current = current.$parent));
+
+    }
+
+    function deregisterListener(current, name, listener) {
+      var namedListeners = current.$$listeners[name];
+      var indexOfListener = namedListeners.indexOf(listener);
+      if (indexOfListener !== -1) {
+        namedListeners[indexOfListener] = null;
+        decrementListenerCount(current, 1, name);
+      }
+    }
     /**
      * function used as an initial value for watchers.
      * because it's unique we can easily tell it apart from other values
