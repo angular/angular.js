@@ -70,6 +70,11 @@ function stripBaseUrl(base, url) {
   }
 }
 
+function findSearch(url)
+{
+  var index = url.indexOf('?');
+  return index === -1 ? false : url.substr(index, url.length);
+}
 
 function stripHash(url) {
   var index = url.indexOf('#');
@@ -204,6 +209,14 @@ function LocationHashbangUrl(appBase, appBaseNoFile, hashPrefix) {
       if (isUndefined(withoutHashUrl)) {
         // There was no hashbang prefix so we just have a hash fragment
         withoutHashUrl = withoutBaseUrl;
+      }
+
+      // apply any search params from the actual url to the withoutHashUrl
+      // appBase will already have the hash taken off at this point.
+      var search = findSearch(appBase);
+      if (search !== false)
+      {
+        withoutHashUrl = withoutHashUrl + search;
       }
 
     } else {
