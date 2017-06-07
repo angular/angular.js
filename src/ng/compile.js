@@ -1534,13 +1534,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
 
     function Attributes(element, attributesToCopy) {
       if (attributesToCopy) {
-        var keys = Object.keys(attributesToCopy);
-        var i, l, key;
-
-        for (i = 0, l = keys.length; i < l; i++) {
-          key = keys[i];
-          this[key] = attributesToCopy[key];
-        }
+        forEach(attributesToCopy, function(value, key) {
+          this[key] = value;
+        }, this);
       } else {
         this.$attr = {};
       }
