@@ -616,7 +616,7 @@ function dateFilter($locale) {
       date = NUMBER_STRING.test(date) ? toInt(date) : jsonStringToDate(date);
     }
 
-    if (isNumber(date)) {
+    if (isNumber(date) && !isNaN(date)) {
       date = new Date(date);
     }
 
