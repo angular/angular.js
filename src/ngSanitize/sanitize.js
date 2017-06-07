@@ -151,11 +151,14 @@ var htmlSanitizeWriter;
  */
 function $SanitizeProvider() {
   var svgEnabled = false;
+  var addAttributes = "";
 
   this.$get = ['$$sanitizeUri', function($$sanitizeUri) {
     if (svgEnabled) {
       extend(validElements, svgElements);
     }
+    var attrMap = toMap(addAttributes);
+    angular.extend(validAttrs, attrMap);
     return function(html) {
       var buf = [];
       htmlParser(html, htmlSanitizeWriter(buf, function(uri, isImage) {
@@ -165,6 +168,27 @@ function $SanitizeProvider() {
     };
   }];
 
+
+  /**
+   *
+   * @ngdoc method
+   * @name $sanitizeProvider#additionalAttributes
+   * @kind function
+   *
+   * @description
+   * Allows additional whitelisting of html (and other) attributes.
+   *
+   * @param {string=} comma separated string containing valid attributes.
+   */
+
+  this.additionalAttributes = function(attributes) {
+    if (angular.isDefined(attributes )) {
+      addAttributes = attributes;
+      return this;
+    } else {
+      return addAttributes;
+    }
+  };
 
   /**
    * @ngdoc method
