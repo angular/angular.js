@@ -82,6 +82,11 @@ gets loaded, but not "how". This declarative approach greatly simplifies app dev
 of WYSIWYG way. Rather than spending time on how the program flows and orchestrating the various
 moving parts, we simply define what we want and AngularJS will take care of the dependencies.
 
+HTML is also used to determine the execution of the app. Special attributes in the HTML determine which controllers to use
+for each element. These attributes determine "what" gets loaded, but not "how". This declarative approach greatly simplifies app
+development in a sort of WYSIWYG way. Rather than spending time on how the program flows and what should get loaded first,
+you simply define what you want and Angular will take care of the dependencies.
+
 #### Data Handling made simple
 Data and Data Models in AngularJS are plain JavaScript objects and one can add and change properties
 directly on it and loop over objects and arrays at will.
