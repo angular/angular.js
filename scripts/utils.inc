@@ -207,6 +207,12 @@ function replaceJsonProp {
   replaceInFile $1 '"('$2')"[ ]*:[ ]*"'$3'"' '"\1": "'$4'"'
 }
 
+# deleteJsonProp(jsonFile, property)
+# - restriction: property needs to be on a single line!
+function deleteJsonProp {
+  sed -i '' -e /\"$2\"\:/d $1
+}
+
 # replaceInFile(file, findPattern, replacePattern)
 function replaceInFile {
   sed -i .tmp -E "s/$2/$3/" $1
