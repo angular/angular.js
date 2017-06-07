@@ -12287,6 +12287,64 @@ describe('$compile', function() {
         }));
       });
     });
+
+    it('should register as controller options if options is a function', function() {
+      function Controller(log) {
+        log('OK');
+      }
+      Controller.template = '<div>SUCCESS</div>';
+      angular.module('my', []).component('myComponent', Controller);
+      module('my');
+
+      inject(function($compile, $rootScope, log) {
+        element = $compile('<my-component></my-component>')($rootScope);
+        expect(element.find('div').text()).toEqual('SUCCESS');
+        expect(log).toEqual('OK');
+      });
+    });
+
+    it('should register as controller options if options is a class', function() {
+      if (!/chrome/i.test(window.navigator.userAgent)) return;
+      // eslint-disable-next-line no-eval
+      var Controller = eval('' +
+        'class Foo {\n' +
+        '  static get template() {\n' +
+        '    return "<div>SUCCESS</div>";\n' +
+        '  }\n' +
+        '  constructor(log) {\n' +
+        '    log("OK")\n' +
+        '  }\n' +
+        '}\n' +
+      '');
+      Controller.$inject = ['log'];
+      angular.module('my', []).component('myComponent', Controller);
+      module('my');
+
+      inject(function($compile, $rootScope, log) {
+        element = $compile('<my-component></my-component>')($rootScope);
+        expect(element.find('div').text()).toEqual('SUCCESS');
+        expect(log).toEqual('OK');
+      });
+    });
+
+    it('should not register as controller options if controller is specified', function() {
+      function Controller(log) {
+        log('OK');
+      }
+      function Options(log) {
+        log('KO');
+      }
+      Options.template = '<div>SUCCESS</div>';
+      Options.controller = Controller;
+      angular.module('my', []).component('myComponent', Options);
+      module('my');
+
+      inject(function($compile, $rootScope, log) {
+        element = $compile('<my-component></my-component>')($rootScope);
+        expect(element.find('div').text()).toEqual('SUCCESS');
+        expect(log).toEqual('OK');
+      });
+    });
   });
 
   describe('$$createComment', function() {
