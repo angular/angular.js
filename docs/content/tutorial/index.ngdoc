@@ -115,7 +115,7 @@ suggested solution is to also install the `nodejs-legacy` apt package, which ren
 `nodejs`.
 
 ```
-apt-get install nodejs-legacy npm
+sudo apt-get install nodejs-legacy npm
 nodejs --version
 npm --version
 ```
