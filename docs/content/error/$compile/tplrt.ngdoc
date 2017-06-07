@@ -51,3 +51,8 @@ well.  Consider the following template:
 
 The `<!-- container -->` comment is interpreted as a second root element and causes the template to
 be invalid.
+
+If your template contains nothing at all (and therefore no root element), it is also invalid.  For example:
+
+```
+```
