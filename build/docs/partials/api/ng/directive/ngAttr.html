@@ -1,0 +1,67 @@
+<a href='http://github.com/angular/angular.js/edit/master/src/Angular.js' class='improve-docs btn btn-primary'><i class="glyphicon glyphicon-edit">&nbsp;</i>Improve this doc</a>
+
+
+
+<a href='http://github.com/angular/angular.js/tree/master/src/Angular.js#L1176' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">ngAttr</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    
+    <li>
+      - directive in module <a href="api/ng">ng</a>
+    </li>
+  </ol>
+</header>
+
+
+
+<div class="api-profile-description">
+
+<p>If an attribute with a binding is prefixed with the ngAttr prefix (denormalized as ng-attr-) then during the binding it will be applied to the corresponding unprefixed attribute. This allows you to bind to attributes that would otherwise be eagerly processed by browsers (e.g. an SVG element's circle[cx] attributes). When using ngAttr, the allOrNothing flag of $interpolate is used, so if any expression in the interpolated string results in undefined, the attribute is removed and not added to the element.</p>
+
+<h3 id="-ngattr-attribute-bindings"><code>ngAttr</code> attribute bindings</h3>
+<p>We would expect Angular to be able to bind to this, but when we check the console we see
+something like <code>Error: Invalid value for attribute cx=&quot;{{cx}}&quot;</code>. Because of the SVG DOM API&#39;s
+restrictions, you cannot simply write <code>cx=&quot;{{cx}}&quot;</code>.</p>
+<p>With <code>ng-attr-cx</code> you can work around this problem.</p>
+<p>If an attribute with a binding is prefixed with the <code>ngAttr</code> prefix (denormalized as <code>ng-attr-</code>)
+then during the binding will be applied to the corresponding unprefixed attribute. This allows
+you to bind to attributes that would otherwise be eagerly processed by browsers
+(e.g. an SVG element&#39;s <code>circle[cx]</code> attributes).</p>
+
+
+  
+</div>
+
+
+<div>
+  
+
+  <h2>Directive Info</h2>
+  <ul>
+    
+    <li>This directive executes at priority level 0.</li>
+  </ul>
+
+  
+  <h2 id="usage">Usage</h2>
+  <div class="usage">
+  
+    <ul>
+    <li>as attribute:
+        <pre><code class="lang-html">&lt;svg&gt;
+  &lt;circle cx=&quot;{{cx}}&quot;&gt;&lt;/circle&gt;
+&lt;/svg&gt;</code></pre>
+      </li>
+    
+  </div>
+  
+
+
+  
+</div>
+
