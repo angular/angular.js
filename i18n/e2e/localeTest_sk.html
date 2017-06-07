@@ -18,6 +18,7 @@
     date: {{input | date:"longDate"}}<br>
     number: {{input | number}}<br>
     currency: {{input | currency }}
+    uncurrency: {{input | currency | uncurrency }}
     <hr/>
     <input type="text" ng-model="plInput"><br>
     <ng-pluralize count="plInput"
