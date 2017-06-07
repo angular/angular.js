@@ -207,15 +207,17 @@ describe('q', function() {
 
 
   describe('$Q', function() {
-    var resolve, reject, resolve2, reject2;
+    var resolve, reject, notify, resolve2, reject2, notify2;
     var createPromise = function() {
-      return q(function(resolveFn, rejectFn) {
+      return q(function(resolveFn, rejectFn, notifyFn) {
         if (resolve === null) {
           resolve = resolveFn;
           reject = rejectFn;
+          notify = notifyFn;
         } else if (resolve2 === null) {
           resolve2 = resolveFn;
           reject2 = rejectFn;
+          notify2 = notifyFn;
         }
       });
     };
@@ -440,6 +442,86 @@ describe('q', function() {
       });
     });
 
+    describe('notify', function() {
+      it('should notify the promise and execute all progress callbacks in the registration order', function() {
+        var promise = createPromise();
+        promise.then(success(), error(), progress(1));
+        promise.then(success(), error(), progress(2));
+        expect(logStr()).toBe('');
+
+        notify('foo');
+        mockNextTick.flush();
+        expect(logStr()).toBe('progress1(foo)->foo; progress2(foo)->foo');
+      });
+
+      it('should do nothing if the promise was previously resolved', function() {
+        var promise = createPromise();
+        promise.then(success(1), error(), progress(1));
+        expect(logStr()).toBe('');
+
+        resolve('foo');
+        mockNextTick.flush();
+        expect(logStr()).toBe('success1(foo)->foo');
+
+        log = [];
+        notify('bar');
+        expect(mockNextTick.queue.length).toBe(0);
+        expect(logStr()).toBe('');
+
+        promise.then(success(2), error(), progress(2));
+        mockNextTick.flush();
+        expect(logStr()).toBe('success2(foo)->foo');
+      });
+
+      it('should do nothing if the promise was previously rejected', function() {
+        var promise = createPromise();
+        promise.then(success(), error(1), progress(1));
+        expect(logStr()).toBe('');
+
+        reject('foo');
+        mockNextTick.flush();
+        expect(logStr()).toBe('error1(foo)->reject(foo)');
+
+        log = [];
+        notify('bar');
+        expect(mockNextTick.queue.length).toBe(0);
+        expect(logStr()).toBe('');
+
+        promise.then(success(), error(2), progress(2));
+        mockNextTick.flush();
+        expect(logStr()).toBe('error2(foo)->reject(foo)');
+      });
+
+      it('should not resolve the promise', function() {
+        var promise = createPromise();
+        promise.then(success(), error(), progress());
+        expect(logStr()).toBe('');
+
+        notify('50%');
+        mockNextTick.flush();
+        expect(logStr()).toBe('progress(50%)->50%');
+        log = [];
+
+        resolve('done');
+        mockNextTick.flush();
+        expect(logStr()).toBe('success(done)->done');
+      });
+
+      it('should not reject the promise', function() {
+        var promise = createPromise();
+        promise.then(success(), error(), progress());
+        expect(logStr()).toBe('');
+
+        notify('50%');
+        mockNextTick.flush();
+        expect(logStr()).toBe('progress(50%)->50%');
+        log = [];
+
+        reject('foo');
+        mockNextTick.flush();
+        expect(logStr()).toBe('error(foo)->reject(foo)');
+      });
+    });
 
     describe('promise', function() {
       describe('then', function() {

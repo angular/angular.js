@@ -32,7 +32,8 @@
  *
  *   function asyncGreet(name) {
  *     // perform some asynchronous operation, resolve or reject the promise when appropriate.
- *     return $q(function(resolve, reject) {
+ *     return $q(function(resolve, reject, notify) {
+ *       notify('Determining whether it\'s ok to greet.');
  *       setTimeout(function() {
  *         if (okToGreet(name)) {
  *           resolve('Hello, ' + name + '!');
@@ -48,10 +49,10 @@
  *     alert('Success: ' + greeting);
  *   }, function(reason) {
  *     alert('Failed: ' + reason);
+ *   }, function(progress) {
+ *     alert('Notification: ' + progress);
  *   });
  * ```
- *
- * Note: progress/notify callbacks are not currently supported via the ES6-style interface.
  *
  * Note: unlike ES6 behavior, an exception thrown in the constructor function will NOT implicitly reject the promise.
  *
@@ -89,8 +90,8 @@
  *     alert('Success: ' + greeting);
  *   }, function(reason) {
  *     alert('Failed: ' + reason);
- *   }, function(update) {
- *     alert('Got notification: ' + update);
+ *   }, function(value) {
+ *     alert('Got notification: ' + value);
  *   });
  * ```
  *
@@ -653,7 +654,11 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
       rejectPromise(promise, reason);
     }
 
-    resolver(resolveFn, rejectFn);
+    function notifyFn(value) {
+      deferred.notify(value);
+    }
+
+    resolver(resolveFn, rejectFn, notifyFn);
 
     return promise;
   }
