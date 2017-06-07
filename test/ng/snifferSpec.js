@@ -25,6 +25,25 @@ describe('$sniffer', function() {
     });
 
 
+    it('should be true if running inside nw.js', function() {
+      var mockWindow = {
+        nw: {
+          process: noop
+        },
+        history: {
+          pushState: noop
+        },
+        chrome: {
+          app: {
+            runtime: noop
+          }
+        }
+      };
+
+      expect(sniffer(mockWindow).history).toBe(true);
+    });
+
+
     it('should be false if history or pushState not defined', function() {
       expect(sniffer({}).history).toBe(false);
       expect(sniffer({history: {}}).history).toBe(false);

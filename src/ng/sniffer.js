@@ -20,6 +20,7 @@
 function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {
     var eventSupport = {},
+        isNw = $window.nw && $window.nw.process,
         // Chrome Packaged Apps are not allowed to access `history.pushState`.
         // If not sandboxed, they can be detected by the presence of `chrome.app.runtime`
         // (see https://developer.chrome.com/apps/api_index). If sandboxed, they can be detected by
