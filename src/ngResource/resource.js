@@ -521,7 +521,9 @@ angular.module('ngResource', ['ng']).
         'save': {method: 'POST'},
         'query': {method: 'GET', isArray: true},
         'remove': {method: 'DELETE'},
-        'delete': {method: 'DELETE'}
+        'delete': {method: 'DELETE'},
+        'put': {method: 'PUT'},
+        'patch': {method: 'PATCH'}
       }
     };
 
