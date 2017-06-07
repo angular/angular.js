@@ -213,7 +213,7 @@ $http.get('phones/phones.json').then(function(response) {
 with just:
 
 ```js
-this.phones = Phone.query();
+this.phone = Phone.query();
 ```
 
 This is a simple and declarative statement that we want to query for all phones.
