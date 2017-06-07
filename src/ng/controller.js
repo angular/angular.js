@@ -65,7 +65,8 @@ function $ControllerProvider() {
      *    controller constructor function. Otherwise it's considered to be a string which is used
      *    to retrieve the controller constructor using the following steps:
      *
-     *    * check if a controller with given name is registered via `$controllerProvider`
+     *    * check if a controller of the given name is registered with `$controllerProvider`
+     *    * check if a provider of the given name is registered with `$provide`.
      *    * check if evaluating the string on the current scope returns a constructor
      *
      *    The string can use the `controller as property` syntax, where the controller instance is published
@@ -111,6 +112,10 @@ function $ControllerProvider() {
         if (!expression) {
           throw $controllerMinErr('ctrlreg',
             'The controller with the name \'{0}\' is not registered.', constructor);
+        }
+
+        if (!expression && $injector.has(constructor)) {
+          expression = $injector.get(constructor);
         }
 
         assertArgFn(expression, constructor, true);
