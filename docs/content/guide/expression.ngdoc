@@ -71,7 +71,7 @@ You can try evaluating different expressions here:
   <file name="index.html">
     <div ng-controller="ExampleController" class="expressions">
       Expression:
-      <input type='text' ng-model="expr" size="80"/>
+      <input type="text" ng-model="expr" size="80"/>
       <button ng-click="addExp(expr)">Evaluate</button>
       <ul>
        <li ng-repeat="expr in exprs track by $index">
