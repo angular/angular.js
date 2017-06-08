@@ -49,7 +49,6 @@ if (!process.env.TRAVIS && !process.env.JENKINS_HOME) {
   }
 }
 
-
 module.exports = function(grunt) {
 
   // this loads all the node_modules that start with `grunt-` as plugins
@@ -63,6 +62,8 @@ module.exports = function(grunt) {
   var NG_VERSION = versionInfo.currentVersion;
   NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-' + NG_VERSION.full;
+
+  var deployVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.full;
 
   if (versionInfo.cdnVersion == null) {
     throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?\n' +
@@ -324,6 +325,15 @@ module.exports = function(grunt) {
         expand: true,
         dot: true,
         dest: dist + '/'
+      },
+      firebaseCodeDeploy: {
+        options: {
+          mode: 'gzip'
+        },
+        src: ['**'],
+        cwd: 'build',
+        expand: true,
+        dest: 'upload/' + deployVersion + '/'
       }
     },
 
@@ -418,7 +428,7 @@ module.exports = function(grunt) {
     'write',
     'docs',
     'copy',
-    'compress'
+    'compress:build'
   ]);
   grunt.registerTask('ci-checks', [
     'ddescribe-iit',
