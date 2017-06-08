@@ -202,6 +202,11 @@ function $RouteProvider() {
    *
    * @description
    * Adds a new route definition to the `$route` service.
+   * 
+   * Note:
+   * Purpose of `templateUrl` option (as a string value) within `param` parameter when there also exists `path` parameter: 
+   *    - `path` allows scenarios where same route URL is used with different controllers
+   *    - `templateUrl` allows scenarios where route URL is different for same controller.
    */
   this.when = function(path, route) {
     //copy original route object to preserve params inherited from proto chain
