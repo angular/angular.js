@@ -680,7 +680,7 @@ function $HttpProvider() {
      *
      * ```js
      *   // register the interceptor as a service
-     *   $provide.factory('myHttpInterceptor', function($q, dependency1, dependency2) {
+     *   $provide.factory('myHttpInterceptor', ['$q', 'dependency1', 'dependency2', function($q, dependency1, dependency2) {
      *     return {
      *       // optional method
      *       'request': function(config) {
@@ -714,13 +714,13 @@ function $HttpProvider() {
      *         return $q.reject(rejection);
      *       }
      *     };
-     *   });
+     *   }]);
      *
      *   $httpProvider.interceptors.push('myHttpInterceptor');
      *
      *
      *   // alternatively, register the interceptor via an anonymous factory
-     *   $httpProvider.interceptors.push(function($q, dependency1, dependency2) {
+     *   $httpProvider.interceptors.push(['$q', 'dependency1', 'dependency2', function($q, dependency1, dependency2) {
      *     return {
      *      'request': function(config) {
      *          // same as above
@@ -730,7 +730,7 @@ function $HttpProvider() {
      *          // same as above
      *       }
      *     };
-     *   });
+     *   }]);
      * ```
      *
      * ## Security Considerations
