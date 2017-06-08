@@ -55,4 +55,4 @@ deploy:
   on:
     repo: angular/angular.js
     branch: chore-firebase
-    condition: $JOB = ci-checks
+    condition: $JOB = unit
