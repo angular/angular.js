@@ -805,6 +805,10 @@ function $RootScopeProvider() {
           }
           asyncQueue.length = 0;
 
+          if (this === $rootScope) {
+            hasRootScopeDigestRun = true;
+          }
+
           traverseScopesLoop:
           do { // "traverse the scopes" loop
             if ((watchers = current.$$watchers)) {
@@ -1024,8 +1028,9 @@ function $RootScopeProvider() {
         // if we are outside of an $digest loop and this is the first time we are scheduling async
         // task also schedule async auto-flush
         if (!$rootScope.$$phase && !asyncQueue.length) {
+          hasRootScopeDigestRun = false;
           $browser.defer(function() {
-            if (asyncQueue.length) {
+            if (!hasRootScopeDigestRun || asyncQueue.length) {
               $rootScope.$digest();
             }
           });
@@ -1343,6 +1348,7 @@ function $RootScopeProvider() {
     var postDigestQueue = $rootScope.$$postDigestQueue = [];
     var applyAsyncQueue = $rootScope.$$applyAsyncQueue = [];
 
+    var hasRootScopeDigestRun = false;
     var postDigestQueuePosition = 0;
 
     return $rootScope;
