@@ -34,7 +34,7 @@ We made no changes to the component's controller.
       <div class="col-md-2">
         <!--Sidebar content-->
 
-        Search: <input ng-model="$ctrl.query" />
+        Search: <input ng-model="$ctrl.query">
 
       </div>
       <div class="col-md-10">
