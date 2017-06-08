@@ -85,6 +85,7 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
       function(done) {
         var error;
         self.actual = self.future.value;
+        expected = self.resolveFuture(expected);
         if ((self.inverse && fn.call(self, expected)) ||
             (!self.inverse && !fn.call(self, expected))) {
           error = 'expected ' + description +
