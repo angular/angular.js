@@ -24,7 +24,7 @@ $provide.value("$locale", {
       "av. J.-C.",
       "ap. J.-C."
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 1,
     "MONTH": [
       "janvier",
       "f\u00e9vrier",
