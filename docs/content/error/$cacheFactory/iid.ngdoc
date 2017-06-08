@@ -5,4 +5,8 @@
 
 This error occurs when trying to create a new `cache` object via {@link ng.$cacheFactory} with an ID that was already used to create another cache object.
 
-To resolve the error please use a different cache ID when calling `$cacheFactory`.
+To resolve the error please use a different cache ID when calling `$cacheFactory` or get an existing cache object by calling the following:
+
+```javascript
+$cacheFactory.get('existingCacheId')
+```
