@@ -403,7 +403,7 @@ angular.module('app').directive('addMouseover', function($compile) {
       $compile(element)(scope); // Double compilation
     }
   }
-})
+});
 ```
 
 At first glance, it looks like removing the original `addMouseover` attribute is all there is needed
@@ -431,7 +431,7 @@ angular.module('app').directive('addMouseover', function($compile) {
       $compile(newEl)(scope); // Only compile the new element
     }
   }
-})
+});
 ```
 
 Another scenario is adding a directive programmatically to a compiled element and then executing
