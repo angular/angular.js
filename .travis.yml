@@ -31,8 +31,8 @@ addons:
 before_script:
 - du -sh ./node_modules ./bower_components/ || true
 - "./scripts/travis/before_build.sh"
-script:
-- "./scripts/travis/build.sh"
+script: skip
+# - "./scripts/travis/build.sh"
 after_script:
 - "./scripts/travis/tear_down_browser_provider.sh"
 - "./scripts/travis/print_logs.sh"
@@ -47,7 +47,7 @@ notifications:
 jobs:
   include:
     - stage: deploy
-      script: grunt package
+      script: travis_wait 20 grunt package
       before_script: skip
       after_script: echo "after script"
       after_deploy: echo "after deploy"
