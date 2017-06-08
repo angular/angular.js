@@ -12,7 +12,7 @@ branches:
 env:
   matrix:
   - JOB=ci-checks
-  # - JOB=unit BROWSER_PROVIDER=saucelabs
+  - JOB=unit BROWSER_PROVIDER=saucelabs
   # - JOB=docs-e2e BROWSER_PROVIDER=saucelabs
   # - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
   # - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
