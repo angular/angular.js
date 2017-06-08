@@ -14,9 +14,9 @@ elif [ "$JOB" == "unit" ]; then
     BROWSERS="SL_Chrome,SL_Firefox,SL_Safari_8,SL_Safari_9,SL_IE_9,SL_IE_10,SL_IE_11,SL_EDGE,SL_iOS"
   fi
 
-  grunt test:promises-aplus
-  grunt test:unit --browsers="$BROWSERS" --reporters=dots
-  grunt tests:docs --browsers="$BROWSERS" --reporters=dots
+  # grunt test:promises-aplus
+  # grunt test:unit --browsers="$BROWSERS" --reporters=dots
+  # grunt tests:docs --browsers="$BROWSERS" --reporters=dots
 elif [ "$JOB" == "docs-e2e" ]; then
   grunt test:travis-protractor --specs="docs/app/e2e/**/*.scenario.js"
 elif [ "$JOB" == "e2e" ]; then
