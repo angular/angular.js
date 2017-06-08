@@ -47,9 +47,18 @@ notifications:
 jobs:
   include:
     - stage: deploy
-      script: travis_wait 20 grunt package
+      script: grunt package
       before_script: skip
       after_script: echo "after script"
+      # keep the process alive until the deploy is completed
+      before_deploy: |
+        function keep_alive() {
+          while true; do
+            echo -en "\a"
+            sleep 5
+          done
+        }
+        keep_alive &
       after_deploy: echo "after deploy"
       env:
         - JOB=deploy
