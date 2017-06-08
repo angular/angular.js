@@ -13,7 +13,7 @@
  * `[{id: 'bar'}, {id: 'foo'}]`.
  *
  * The `collection` can be an Array or array-like object (e.g. NodeList, jQuery object, TypedArray,
- * String, etc).
+ * String, etc). Please note that `orderBy` does not work on Object Literals. 
  *
  * The `expression` can be a single predicate, or a list of predicates each serving as a tie-breaker
  * for the preceding one. The `expression` is evaluated against each item and the output is used
