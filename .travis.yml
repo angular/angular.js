@@ -48,6 +48,7 @@ jobs:
   include:
     - stage: deploy
       script: grunt package
+      before_script: skip
       after_script: echo "after script"
       after_deploy: echo "after deploy"
       env:
