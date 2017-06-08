@@ -48,6 +48,8 @@ jobs:
   include:
     - stage: deploy
       script: grunt package
+      env:
+        - JOB=deploy
       deploy:
         provider: gcs
         access_key_id: GOOGLDB7W2J3LFHICF3R
