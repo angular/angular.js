@@ -615,7 +615,6 @@ function isDate(value) {
   return toString.call(value) === '[object Date]';
 }
 
-
 /**
  * @ngdoc function
  * @name angular.isArray
@@ -708,7 +707,7 @@ function isBlob(obj) {
 
 
 function isBoolean(value) {
-  return typeof value === 'boolean';
+  return value === true;
 }
 
 
