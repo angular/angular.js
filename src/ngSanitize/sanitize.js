@@ -85,22 +85,22 @@ var htmlSanitizeWriter;
          <tr id="bind-html-with-sanitize">
            <td>ng-bind-html</td>
            <td>Automatically uses $sanitize</td>
-           <td><pre>&lt;div ng-bind-html="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+           <td><pre><div ng-bind-html="snippet"><br/></div></pre></td>
            <td><div ng-bind-html="snippet"></div></td>
          </tr>
          <tr id="bind-html-with-trust">
            <td>ng-bind-html</td>
            <td>Bypass $sanitize by explicitly trusting the dangerous value</td>
            <td>
-           <pre>&lt;div ng-bind-html="deliberatelyTrustDangerousSnippet()"&gt;
-&lt;/div&gt;</pre>
+           <pre><div ng-bind-html="deliberatelyTrustDangerousSnippet()">
+</div></pre>
            </td>
            <td><div ng-bind-html="deliberatelyTrustDangerousSnippet()"></div></td>
          </tr>
          <tr id="bind-default">
            <td>ng-bind</td>
            <td>Automatically escapes</td>
-           <td><pre>&lt;div ng-bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+           <td><pre><div ng-bind="snippet"><br/></div></pre></td>
            <td><div ng-bind="snippet"></div></td>
          </tr>
        </table>
