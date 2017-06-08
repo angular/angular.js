@@ -146,6 +146,7 @@ function $RouteProvider() {
    *        resolved before its value is injected into the controller. Be aware that
    *        `ngRoute.$routeParams` will still refer to the previous route within these resolve
    *        functions.  Use `$route.current.params` to access the new route parameters, instead.
+   *        Finally, use `$route.current.locals` to access resolved dependencies.
    *
    *    - `resolveAs` - `{string=}` - The name under which the `resolve` map will be available on
    *      the scope of the route. If omitted, defaults to `$resolve`.
