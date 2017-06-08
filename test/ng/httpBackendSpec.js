@@ -175,7 +175,7 @@ describe('$httpBackend', function() {
 
   it('should complete the request on timeout', function() {
     callback.and.callFake(function(status, response, headers, statusText) {
-      expect(status).toBe(-1);
+      expect(status).toBe(408);
       expect(response).toBe(null);
       expect(headers).toBe(null);
       expect(statusText).toBe('');
