@@ -44,15 +44,19 @@ notifications:
     on_success: always
     on_failure: always
     on_start: always
-deploy:
-  provider: gcs
-  access_key_id: GOOGLDB7W2J3LFHICF3R
-  secret_access_key:
-    secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
-  bucket: ng-i-1121e.appspot.com
-  local-dir: build
-  skip_cleanup: true
-  on:
-    repo: angular/angular.js
-    branch: chore-firebase
-    condition: $JOB = unit
+jobs:
+  include:
+    - stage: deploy
+      script: grunt package
+      deploy:
+        provider: gcs
+        access_key_id: GOOGLDB7W2J3LFHICF3R
+        secret_access_key:
+          secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
+        bucket: ng-i-1121e.appspot.com
+        local-dir: build
+        skip_cleanup: true
+        on:
+          repo: angular/angular.js
+          branch: chore-firebase
+
