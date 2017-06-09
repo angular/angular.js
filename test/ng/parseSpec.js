@@ -3340,6 +3340,32 @@ describe('parser', function() {
             scope.$digest();
             expect(called).toBe(true);
           }));
+
+          it('should not affect when a one-time binding becomes stable', inject(function($parse) {
+            scope.$watch($parse('::x'));
+            scope.$watch($parse('::x', identity));
+            scope.$watch($parse('::x', function() { return 1; }));  //interceptor that returns non-undefined
+
+            scope.$digest();
+            expect(scope.$$watchersCount).toBe(3);
+
+            scope.x = 1;
+            scope.$digest();
+            expect(scope.$$watchersCount).toBe(0);
+          }));
+
+          it('should not affect when a one-time literal binding becomes stable', inject(function($parse) {
+            scope.$watch($parse('::[x]'));
+            scope.$watch($parse('::[x]', identity));
+            scope.$watch($parse('::[x]', function() { return 1; }));  //interceptor that returns non-literal
+
+            scope.$digest();
+            expect(scope.$$watchersCount).toBe(3);
+
+            scope.x = 1;
+            scope.$digest();
+            expect(scope.$$watchersCount).toBe(0);
+          }));
         });
 
         describe('literals', function() {
