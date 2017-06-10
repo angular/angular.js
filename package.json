@@ -69,6 +69,7 @@
     "karma-ng-scenario": "^1.0.0",
     "karma-sauce-launcher": "^1.1.0",
     "karma-script-launcher": "^1.0.0",
+    "karma-spec-reporter": "^0.0.31",
     "load-grunt-tasks": "^3.5.0",
     "lodash": "~2.4.1",
     "log4js": "^0.6.27",
