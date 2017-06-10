@@ -504,8 +504,8 @@ angular.mock.$IntervalProvider = function() {
       }
 
       repeatFns.push({
-        nextTime: (now + (delay || 0)),
-        delay: delay || 1,
+        nextTime:(now + delay),
+        delay: delay,
         fn: tick,
         id: nextRepeatId,
         deferred: deferred
@@ -555,16 +555,10 @@ angular.mock.$IntervalProvider = function() {
      * @return {number} The amount of time moved forward.
      */
     $interval.flush = function(millis) {
-      var before = now;
       now += millis;
       while (repeatFns.length && repeatFns[0].nextTime <= now) {
         var task = repeatFns[0];
         task.fn();
-        if (task.nextTime === before) {
-          // this can only happen the first time
-          // a zero-delay interval gets triggered
-          task.nextTime++;
-        }
         task.nextTime += task.delay;
         repeatFns.sort(function(a, b) { return a.nextTime - b.nextTime;});
       }
