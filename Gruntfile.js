@@ -358,24 +358,73 @@ module.exports = function(grunt) {
   });
 
   //alias tasks
-  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', ['eslint', 'package', 'test:unit', 'test:promises-aplus', 'tests:docs', 'test:protractor']);
+  grunt.registerTask('test', 'Run unit, docs and e2e tests with Karma', [
+    'eslint',
+    'package',
+    'test:unit',
+    'test:promises-aplus',
+    'tests:docs',
+    'test:protractor'
+  ]);
   grunt.registerTask('test:jqlite', 'Run the unit tests with Karma' , ['tests:jqlite']);
   grunt.registerTask('test:jquery', 'Run the jQuery (latest) unit tests with Karma', ['tests:jquery']);
   grunt.registerTask('test:jquery-2.2', 'Run the jQuery 2.2 unit tests with Karma', ['tests:jquery-2.2']);
   grunt.registerTask('test:jquery-2.1', 'Run the jQuery 2.1 unit tests with Karma', ['tests:jquery-2.1']);
-  grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', ['build', 'tests:modules']);
+  grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', [
+    'build',
+    'tests:modules'
+  ]);
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
-  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', ['test:jqlite', 'test:jquery', 'test:jquery-2.2', 'test:jquery-2.1', 'test:modules']);
-  grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', ['webdriver', 'connect:testserver', 'protractor:normal']);
-  grunt.registerTask('test:travis-protractor', 'Run the end to end tests with Protractor for Travis CI builds', ['connect:testserver', 'protractor:travis']);
-  grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor for Jenkins CI builds', ['webdriver', 'connect:testserver', 'protractor:jenkins']);
+  grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', [
+    'test:jqlite',
+    'test:jquery',
+    'test:jquery-2.2',
+    'test:jquery-2.1',
+    'test:modules'
+  ]);
+  grunt.registerTask('test:protractor', 'Run the end to end tests with Protractor and keep a test server running in the background', [
+    'webdriver',
+    'connect:testserver',
+    'protractor:normal'
+  ]);
+  grunt.registerTask('test:travis-protractor', 'Run the end to end tests with Protractor for Travis CI builds', [
+    'connect:testserver',
+    'protractor:travis'
+  ]);
+  grunt.registerTask('test:ci-protractor', 'Run the end to end tests with Protractor for Jenkins CI builds', [
+    'webdriver',
+    'connect:testserver',
+    'protractor:jenkins'
+  ]);
   grunt.registerTask('test:e2e', 'Alias for test:protractor', ['test:protractor']);
-  grunt.registerTask('test:promises-aplus',['build:promises-aplus-adapter', 'shell:promises-aplus-tests']);
-
-  grunt.registerTask('minify', ['bower', 'clean', 'build', 'minall']);
+  grunt.registerTask('test:promises-aplus',[
+    'build:promises-aplus-adapter',
+    'shell:promises-aplus-tests'
+  ]);
+  grunt.registerTask('minify', [
+    'bower',
+    'clean',
+    'build',
+    'minall'
+  ]);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'write', 'docs', 'copy', 'compress']);
-  grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'eslint']);
+  grunt.registerTask('package', [
+    'bower',
+    'validate-angular-files',
+    'clean',
+    'buildall',
+    'minall',
+    'collect-errors',
+    'write',
+    'docs',
+    'copy',
+    'compress'
+  ]);
+  grunt.registerTask('ci-checks', [
+    'ddescribe-iit',
+    'merge-conflict',
+    'eslint'
+  ]);
   grunt.registerTask('default', ['package']);
 };
 
