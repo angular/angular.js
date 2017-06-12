@@ -358,12 +358,12 @@ describe('ngMock', function() {
       $interval(function() { counterA++; });
       $interval(function() { counterB++; }, 0);
 
-      $interval.flush(1000);
-      expect(counterA).toBe(1000);
-      expect(counterB).toBe(1000);
-      $interval.flush(1000);
-      expect(counterA).toBe(2000);
-      expect(counterB).toBe(2000);
+      $interval.flush(100);
+      expect(counterA).toBe(100);
+      expect(counterB).toBe(100);
+      $interval.flush(100);
+      expect(counterA).toBe(200);
+      expect(counterB).toBe(200);
     }));
 
 
