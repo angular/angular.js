@@ -7,7 +7,7 @@ describe('SCE URL policy when base tags are present', function() {
 
 
   it('allows the page URL (location.href)', function() {
-    expectToBeTrusted(browser.getLocationAbsUrl(), true);
+    expectToBeTrusted(browser.getCurrentUrl(), true);
   });
 
   it('blocks off-origin URLs', function() {
