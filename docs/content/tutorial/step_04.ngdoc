@@ -259,7 +259,7 @@ After all the refactorings that took place, this is how our application looks fr
       phone-list.component.spec.js
       phone-list.module.js
       phone-list.template.html
-    app.css
+    app.js
     app.module.js
     index.html
 ```
