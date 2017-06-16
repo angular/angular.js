@@ -532,6 +532,20 @@ describe('ngClass', function() {
     })
   );
 
+  it('should support a one-time mixed literal-array/object variable', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-class="::[classVar1, classVar2]"></div>')($rootScope);
+
+      $rootScope.classVar1 = {orange: true};
+      $rootScope.$digest();
+      expect(element).toHaveClass('orange');
+
+      $rootScope.classVar1.orange = false;
+      $rootScope.$digest();
+
+      expect(element).not.toHaveClass('orange');
+    })
+  );
+
 
   it('should do value stabilization as expected when one-time binding',
     inject(function($rootScope, $compile) {
