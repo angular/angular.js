@@ -3380,13 +3380,12 @@ describe('parser', function() {
 
             scope.$watch($parse('::[a]', interceptor));
 
-            // Would be great if interceptor-output was checked for changes and this didn't throw...
             interceptorCalls = 0;
-            expect(function() { scope.$digest(); }).toThrowMinErr('$rootScope', 'infdig');
+            scope.$digest();
             expect(interceptorCalls).not.toBe(0);
 
             interceptorCalls = 0;
-            expect(function() { scope.$digest(); }).toThrowMinErr('$rootScope', 'infdig');
+            scope.$digest();
             expect(interceptorCalls).not.toBe(0);
           }));
 
@@ -3499,6 +3498,57 @@ describe('parser', function() {
             scope.x = 1;
             scope.$digest();
             expect(scope.$$watchersCount).toBe(0);
+          }));
+
+          it('should watch the intercepted value of one-time bindings', inject(function($parse, log) {
+            scope.$watch($parse('::{x:x, y:y}', function(lit) { return lit.x; }), log);
+
+            scope.$apply();
+            expect(log.empty()).toEqual([undefined]);
+
+            scope.$apply('x = 1');
+            expect(log.empty()).toEqual([1]);
+
+            scope.$apply('x = 2; y=1');
+            expect(log.empty()).toEqual([2]);
+
+            scope.$apply('x = 1; y=2');
+            expect(log.empty()).toEqual([]);
+          }));
+
+          it('should watch the intercepted value of one-time bindings in nested interceptors', inject(function($parse, log) {
+            scope.$watch($parse($parse('::{x:x, y:y}', function(lit) { return lit.x; }), identity), log);
+
+            scope.$apply();
+            expect(log.empty()).toEqual([undefined]);
+
+            scope.$apply('x = 1');
+            expect(log.empty()).toEqual([1]);
+
+            scope.$apply('x = 2; y=1');
+            expect(log.empty()).toEqual([2]);
+
+            scope.$apply('x = 1; y=2');
+            expect(log.empty()).toEqual([]);
+          }));
+
+          it('should nest interceptors around eachother, not around the intercepted', inject(function($parse) {
+            function origin() { return 0; }
+
+            var fn = origin;
+            function addOne(n) { return n + 1; }
+
+            fn = $parse(fn, addOne);
+            expect(fn.$$intercepted).toBe(origin);
+            expect(fn()).toBe(1);
+
+            fn = $parse(fn, addOne);
+            expect(fn.$$intercepted).toBe(origin);
+            expect(fn()).toBe(2);
+
+            fn = $parse(fn, addOne);
+            expect(fn.$$intercepted).toBe(origin);
+            expect(fn()).toBe(3);
           }));
 
           it('should not propogate $$watchDelegate to the interceptor wrapped expression', inject(function($parse) {
