@@ -1977,7 +1977,11 @@ function $ParseProvider() {
       } else if (!interceptorFn.$stateful) {
         // Treat interceptor like filters - assume non-stateful by default and use the inputsWatchDelegate
         fn.$$watchDelegate = inputsWatchDelegate;
-        fn.inputs = (parsedExpression.inputs ? parsedExpression.inputs : [parsedExpression]).map(function(e) {
+        fn.inputs = parsedExpression.inputs ? parsedExpression.inputs : [parsedExpression];
+      }
+
+      if (fn.inputs) {
+        fn.inputs = fn.inputs.map(function(e) {
               // Remove the isPure flag of inputs when it is not absolute because they are now wrapped in a
               // potentially non-pure interceptor function.
               if (e.isPure === PURITY_RELATIVE) {
