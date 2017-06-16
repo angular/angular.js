@@ -149,6 +149,22 @@ describe('$interpolate', function() {
       expect($rootScope.$countWatchers()).toBe(0);
     }));
 
+    it('should respect one-time bindings for literals', inject(function($interpolate, $rootScope) {
+      var calls = [];
+      $rootScope.$watch($interpolate('{{ ::{x: x} }}'), function(val) {
+        calls.push(val);
+      });
+
+      $rootScope.$apply();
+      expect(calls.pop()).toBe('{}');
+
+      $rootScope.$apply('x = 1');
+      expect(calls.pop()).toBe('{"x":1}');
+
+      $rootScope.$apply('x = 2');
+      expect(calls.pop()).toBeUndefined();
+    }));
+
     it('should stop watching strings with no expressions after first execution',
       inject(function($interpolate, $rootScope) {
         var spy = jasmine.createSpy();
