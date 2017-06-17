@@ -1005,6 +1005,9 @@ function copy(source, destination, maxDepth) {
 
       case '[object Blob]':
         return new source.constructor([source], {type: source.type});
+
+      case '[object MediaStream]':
+        return source.clone();
     }
 
     if (isFunction(source.cloneNode)) {

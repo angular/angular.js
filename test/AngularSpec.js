@@ -603,6 +603,18 @@ describe('angular', function() {
       /* eslint-enable */
     });
 
+    it('should copy media stream objects', function() {
+      var source = new MediaStream();
+      var destination = copy(source);
+
+      expect(destination.id).toMatch(/^((\w+)-){4}(\w+)$/);
+      expect(typeof destination.active).toBe('boolean');
+      expect(source.id).not.toBe(destination.id);
+      expect(source.active).toBe(destination.active);
+
+
+    });
+
     it('should copy source until reaching a given max depth', function() {
       var source = {a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}};
       var dest;
