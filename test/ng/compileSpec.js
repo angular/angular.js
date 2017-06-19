@@ -12089,6 +12089,7 @@ describe('$compile', function() {
     it('should return the module', function() {
       var myModule = angular.module('my', []);
       expect(myModule.component('myComponent', {})).toBe(myModule);
+      expect(myModule.component({})).toBe(myModule);
     });
 
     it('should register a directive', function() {
@@ -12104,6 +12105,34 @@ describe('$compile', function() {
         element = $compile('<my-component></my-component>')($rootScope);
         expect(element.find('div').text()).toEqual('SUCCESS');
         expect(log).toEqual('OK');
+      });
+    });
+
+    it('should register multiple directives when object passed as first parameter', function() {
+      var log = '';
+      angular.module('my', []).component({
+        fooComponent: {
+          template: '<div>FOO SUCCESS</div>',
+          controller: function() {
+            log += 'FOO:OK';
+          }
+        },
+        barComponent: {
+          template: '<div>BAR SUCCESS</div>',
+          controller: function() {
+            log += 'BAR:OK';
+          }
+        }
+      });
+      module('my');
+
+      inject(function($compile, $rootScope) {
+        var fooElement = $compile('<foo-component></foo-component>')($rootScope);
+        var barElement = $compile('<bar-component></bar-component>')($rootScope);
+
+        expect(fooElement.find('div').text()).toEqual('FOO SUCCESS');
+        expect(barElement.find('div').text()).toEqual('BAR SUCCESS');
+        expect(log).toEqual('FOO:OKBAR:OK');
       });
     });
 
