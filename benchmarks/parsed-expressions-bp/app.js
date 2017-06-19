@@ -29,6 +29,21 @@ app.directive('bmPeWatch', function() {
   };
 });
 
+//Executes the specified expression as a collection watcher
+app.directive('bmPeWatchCollection', function() {
+  return {
+    restrict: 'A',
+    compile: function($element, $attrs) {
+      $element.text($attrs.bmPeWatchCollection);
+      return function($scope, $element, $attrs) {
+        $scope.$watchCollection($attrs.bmPeWatchCollection, function(val) {
+          $element.text(val);
+        });
+      };
+    }
+  };
+});
+
 app.controller('DataController', function($scope, $rootScope) {
   var totalRows = 10000;
 
