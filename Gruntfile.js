@@ -64,6 +64,8 @@ module.exports = function(grunt) {
   NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-' + NG_VERSION.full;
 
+  var codeVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.full;
+
   if (versionInfo.cdnVersion == null) {
     throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?\n' +
                     'Perhaps you want to set the NG1_BUILD_NO_REMOTE_VERSION_REQUESTS environment variable?');
@@ -324,6 +326,15 @@ module.exports = function(grunt) {
         expand: true,
         dot: true,
         dest: dist + '/'
+      },
+      uploadBuild: {
+        options: {
+          mode: 'gzip'
+        },
+        src: ['**'],
+        cwd: 'build',
+        expand: true,
+        dest: 'upload/' + codeVersion + '/'
       }
     },
 
