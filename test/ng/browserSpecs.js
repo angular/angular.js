@@ -383,11 +383,6 @@ describe('browser', function() {
       expect(browser.url('http://any.com', true, state).url('http://any.com', true, state)).toBe(browser);
     });
 
-    it('should decode single quotes to work around FF bug 407273', function() {
-      fakeWindow.location.href = 'http://ff-bug/?single%27quote';
-      expect(browser.url()).toBe('http://ff-bug/?single\'quote');
-    });
-
     it('should not set URL when the URL is already set', function() {
       var current = fakeWindow.location.href;
       sniffer.history = false;
