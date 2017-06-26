@@ -64,7 +64,7 @@ module.exports = function(grunt) {
   NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-' + NG_VERSION.full;
 
-  var codeVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.full;
+  var deployVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.full;
 
   if (versionInfo.cdnVersion == null) {
     throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?\n' +
@@ -334,7 +334,7 @@ module.exports = function(grunt) {
         src: ['**'],
         cwd: 'build',
         expand: true,
-        dest: 'upload/' + codeVersion + '/'
+        dest: 'upload/' + deployVersion + '/'
       }
     },
 
@@ -385,7 +385,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('minify', ['bower', 'clean', 'build', 'minall']);
   grunt.registerTask('webserver', ['connect:devserver']);
-  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'write', 'docs', 'copy', 'compress']);
+  grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'write', 'docs', 'copy', 'compress:build']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'eslint']);
   grunt.registerTask('default', ['package']);
 };

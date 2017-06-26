@@ -70,7 +70,8 @@ jobs:
         bucket: ng-i-1121e.appspot.com
         local-dir: upload
         skip_cleanup: true
+        detect_encoding: true # detects gzip compression and sets the correct metadata in gcs
         on:
           repo: angular/angular.js
-          branch: chore-firebase
+          condition: "$TRAVIS_TAG != false || ($TRAVIS_PR = false && $TRAVIS_BRANCH = 'master') || $TRAVIS_BRANCH = 'chore-firebase'"
 
