@@ -1,0 +1,16 @@
+{
+  "hosting": {
+    "public": "public",
+    "redirects": [ {
+      "source" : "/:version/docs",
+      "destination" : "/:version/docs/index.html",
+      "type" : 302
+    }],
+    "rewrites": [
+      {
+        "source": "/**",
+        "function": "sendStoredFile"
+      }
+    ]
+  }
+}
