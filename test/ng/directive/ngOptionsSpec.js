@@ -2,7 +2,7 @@
 
 describe('ngOptions', function() {
 
-  var scope, formElement, element, $compile, linkLog, ngModelCtrl;
+  var scope, formElement, element, $compile, linkLog, childListMutationObserver, ngModelCtrl;
 
   function compile(html) {
     formElement = jqLite('<form name="form">' + html + '</form>');
@@ -151,7 +151,18 @@ describe('ngOptions', function() {
             $compile(element.contents())(scope);
           }
         };
-    });
+      })
+
+      .directive('observeChildList', function() {
+        return {
+          link: function(scope, element) {
+            var config = { childList: true };
+
+            childListMutationObserver = new window.MutationObserver(noop);
+            childListMutationObserver.observe(element[0], config);
+          }
+        };
+      });
 
     $provide.decorator('ngOptionsDirective', function($delegate) {
 
@@ -800,6 +811,29 @@ describe('ngOptions', function() {
     expect(options[1]).not.toBeMarkedAsSelected();
     expect(options[2]).toBeMarkedAsSelected();
   });
+
+
+  if (window.MutationObserver) {
+    //IE9 and IE10 do not support MutationObserver
+    //Since the feature is only needed for a test, it's okay to skip these browsers
+    it('should render the initial options only one time', function() {
+      scope.value = 'black';
+      scope.values = ['black', 'white', 'red'];
+      // observe-child-list adds a MutationObserver that we will read out after ngOptions
+      // has been compiled
+      createSelect({
+        'ng-model':'value',
+        'ng-options':'value.name for value in values',
+        'observe-child-list': ''
+      });
+
+      var optionEls = element[0].querySelectorAll('option');
+      var records = childListMutationObserver.takeRecords();
+
+      expect(records.length).toBe(1);
+      expect(records[0].addedNodes).toEqual(optionEls);
+    });
+  }
 
   describe('disableWhen expression', function() {
 
@@ -2966,6 +3000,30 @@ describe('ngOptions', function() {
       optionsSetSelected[0].calls.reset();
       optionsSetSelected[1].calls.reset();
     });
+
+    if (window.MutationObserver) {
+      //IE9 and IE10 do not support MutationObserver
+      //Since the feature is only needed for a test, it's okay to skip these browsers
+      it('should render the initial options only one time', function() {
+        scope.value = ['black'];
+        scope.values = ['black', 'white', 'red'];
+        // observe-child-list adds a MutationObserver that we will read out after ngOptions
+        // has been compiled
+        createSelect({
+          'ng-model':'selected',
+          'ng-options':'value.name for value in values',
+          'multiple': 'true',
+          'observe-child-list': ''
+        });
+
+        var optionEls = element[0].querySelectorAll('option');
+        var records = childListMutationObserver.takeRecords();
+
+        expect(records.length).toBe(1);
+        expect(records[0].addedNodes).toEqual(optionEls);
+      });
+    }
+
   });
 
 
