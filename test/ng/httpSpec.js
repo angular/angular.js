@@ -1409,7 +1409,7 @@ describe('$http', function() {
             $http.get('/url').then(callback);
             $httpBackend.flush();
 
-            expect(callback.calls.mostRecent().args[0].data).toMatch(response);
+            expect(callback.calls.mostRecent().args[0].data).toBe(response);
           });
 
           it('should return response unprocessed if JSON is invalid but content-type is not specified', function() {
@@ -1419,7 +1419,7 @@ describe('$http', function() {
             $http.get('/url').then(callback);
             $httpBackend.flush();
 
-            expect(callback.calls.mostRecent().args[0].data).toMatch(response);
+            expect(callback.calls.mostRecent().args[0].data).toBe(response);
           });
 
         });
