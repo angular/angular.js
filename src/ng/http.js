@@ -141,6 +141,9 @@ function defaultHttpResponseTransform(data, headers) {
         try {
           data = fromJson(tempData);
         } catch (e) {
+          if ((contentType && (contentType.indexOf(APPLICATION_JSON) !== 0))) {
+            return tempData;
+          }
           throw $httpMinErr('baddata', 'Data must be a valid JSON object. Received: "{0}". ' +
           'Parse error: "{1}"', data, e);
         }
