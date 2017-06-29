@@ -1391,9 +1391,30 @@ describe('$http', function() {
             expect(errCallback).not.toHaveBeenCalled();
           });
 
+          it('should not throw an error if JSON is invalid but content-type is not specified', function() {
+            var errCallback = jasmine.createSpy('error');
+            $httpBackend.expect('GET', '/url').respond('{abcd}');
+
+            $http.get('/url').then(callback).catch(errCallback);
+            $httpBackend.flush();
+
+            expect(callback).toHaveBeenCalledOnce();
+            expect(errCallback).not.toHaveBeenCalled();
+          });
+
           it('should return response unprocessed if JSON is invalid but content-type is not application/json', function() {
             var response = '{abcd}';
             $httpBackend.expect('GET', '/url').respond(response, {'Content-Type': 'text/plain'});
+
+            $http.get('/url').then(callback);
+            $httpBackend.flush();
+
+            expect(callback.calls.mostRecent().args[0].data).toMatch(response);
+          });
+
+          it('should return response unprocessed if JSON is invalid but content-type is not specified', function() {
+            var response = '{abcd}';
+            $httpBackend.expect('GET', '/url').respond(response);
 
             $http.get('/url').then(callback);
             $httpBackend.flush();
