@@ -1402,8 +1402,45 @@ describe('$http', function() {
             expect(errCallback.calls.mostRecent().args[0]).toEqualMinErr('$http', 'baddata');
           });
 
-        });
+          it('should not throw an error if JSON is invalid but content-type is not application/json', function() {
+            $httpBackend.expect('GET', '/url').respond('{abcd}', {'Content-Type': 'text/plain'});
 
+            $http.get('/url').then(callback);
+            $httpBackend.flush();
+
+            expect(callback).toHaveBeenCalledOnce();
+          });
+
+          it('should not throw an error if JSON is invalid but content-type is not specified', function() {
+            $httpBackend.expect('GET', '/url').respond('{abcd}');
+
+            $http.get('/url').then(callback);
+            $httpBackend.flush();
+
+            expect(callback).toHaveBeenCalledOnce();
+          });
+
+          it('should return response unprocessed if JSON is invalid but content-type is not application/json', function() {
+            var response = '{abcd}';
+            $httpBackend.expect('GET', '/url').respond(response, {'Content-Type': 'text/plain'});
+
+            $http.get('/url').then(callback);
+            $httpBackend.flush();
+
+            expect(callback.calls.mostRecent().args[0].data).toBe(response);
+          });
+
+          it('should return response unprocessed if JSON is invalid but content-type is not specified', function() {
+            var response = '{abcd}';
+            $httpBackend.expect('GET', '/url').respond(response);
+
+            $http.get('/url').then(callback);
+            $httpBackend.flush();
+
+            expect(callback.calls.mostRecent().args[0].data).toBe(response);
+          });
+
+        });
 
         it('should have access to response headers', function() {
           $httpBackend.expect('GET', '/url').respond(200, 'response', {h1: 'header1'});
