@@ -271,6 +271,25 @@ FormController.prototype = {
 
   /**
    * @ngdoc method
+   * @name form.FormController#$setTouched
+   *
+   * @description
+   * Sets the form to its touched state.
+   *
+   * This method can be called to remove the 'ng-untouched' class and set the form controls to their
+   * touched state (ng-touched class).
+   *
+   * Setting a form controls to their touched state is often useful when submitting the form or for
+   * showing invalid controllers.
+   */
+  $setTouched: function() {
+    forEach(this.$$controls, function(control) {
+      control.$setTouched();
+    });
+  },
+
+  /**
+   * @ngdoc method
    * @name form.FormController#$setSubmitted
    *
    * @description

@@ -1081,6 +1081,38 @@ describe('form', function() {
     });
   });
 
+  describe('$setTouched', function() {
+    it('should trigger setTouched on form controls', function() {
+      var form = $compile(
+          '<form name="myForm">' +
+            '<input name="alias" type="text" ng-model="name" />' +
+          '</form>')(scope);
+      scope.$digest();
+
+      scope.myForm.alias.$setUntouched();
+      expect(scope.myForm.alias.$touched).toBe(false);
+      scope.myForm.$setTouched();
+      expect(scope.myForm.alias.$touched).toBe(true);
+      dealoc(form);
+    });
+
+    it('should trigger setTouched on form controls with nested forms', function() {
+      var form = $compile(
+          '<form name="myForm">' +
+            '<div class="ng-form" name="childForm">' +
+              '<input name="alias" type="text" ng-model="name" />' +
+            '</div>' +
+          '</form>')(scope);
+      scope.$digest();
+
+      scope.myForm.childForm.alias.$setUntouched();
+      expect(scope.myForm.childForm.alias.$touched).toBe(false);
+      scope.myForm.$setTouched();
+      expect(scope.myForm.childForm.alias.$touched).toBe(true);
+      dealoc(form);
+    });
+  });
+
 
   it('should rename nested form controls when interpolated name changes', function() {
     scope.idA = 'A';
