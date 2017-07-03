@@ -339,6 +339,17 @@ describe('$interval', function() {
         inject(function($interval) {
       expect($interval.cancel()).toBe(false);
     }));
+
+
+    it('should not trigger digest when cancelled', inject(function($interval, $rootScope, $browser) {
+      var watchSpy = jasmine.createSpy('watchSpy');
+      $rootScope.$watch(watchSpy);
+
+      var t = $interval();
+      $interval.cancel(t);
+      expect(function() {$browser.defer.flush();}).toThrowError('No deferred tasks to be flushed');
+      expect(watchSpy).not.toHaveBeenCalled();
+    }));
   });
 
   describe('$window delegation', function() {

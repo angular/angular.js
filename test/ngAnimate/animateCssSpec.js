@@ -1328,8 +1328,7 @@ describe('ngAnimate $animateCss', function() {
           animator.end();
 
           expect(element.data(ANIMATE_TIMER_KEY)).toBeUndefined();
-          $timeout.flush();
-          expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+          $timeout.verifyNoPendingTasks();
         }));
 
       });

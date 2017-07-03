@@ -168,6 +168,9 @@
     /* ng/compile.js */
     "directiveNormalize": false,
 
+    /* ng/q.js */
+    "markQExceptionHandled": false,
+
     /* ng/directive/directives.js */
     "ngDirective": false,
 

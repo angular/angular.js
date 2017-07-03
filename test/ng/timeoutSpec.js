@@ -299,5 +299,16 @@ describe('$timeout', function() {
       $timeout.cancel(promise);
       expect(cancelSpy).toHaveBeenCalledOnce();
     }));
+
+
+    it('should not trigger digest when cancelled', inject(function($timeout, $rootScope, $browser) {
+      var watchSpy = jasmine.createSpy('watchSpy');
+      $rootScope.$watch(watchSpy);
+
+      var t = $timeout();
+      $timeout.cancel(t);
+      expect(function() {$browser.defer.flush();}).toThrowError('No deferred tasks to be flushed');
+      expect(watchSpy).not.toHaveBeenCalled();
+    }));
   });
 });
