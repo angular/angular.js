@@ -459,8 +459,14 @@ describe('ngModelOptions', function() {
           $rootScope.$watch(watchSpy);
 
           helper.changeInputValueTo('a');
+          $timeout.flush(2000);
           expect(watchSpy).not.toHaveBeenCalled();
 
+          helper.changeInputValueTo('b');
+          $timeout.flush(2000);
+          expect(watchSpy).not.toHaveBeenCalled();
+
+          helper.changeInputValueTo('c');
           $timeout.flush(10000);
           expect(watchSpy).toHaveBeenCalled();
         });
