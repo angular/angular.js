@@ -1,3 +1,96 @@
+<a name="1.6.5"></a>
+# 1.6.5 toffee-salinization (2017-07-03)
+
+
+## Bug Fixes
+- **core:**
+  - correctly detect Error instances from different contexts
+  ([6daca0](https://github.com/angular/angular.js/commit/6daca023e42098f7098b9bf153c8e53a17af84f1),
+  [#15868](https://github.com/angular/angular.js/issues/15868),
+  [#15872](https://github.com/angular/angular.js/issues/15872))
+  - deprecate `angular.merge`
+  ([dc41f4](https://github.com/angular/angular.js/commit/dc41f465baae9bc91418a61f446596157c530b6e),
+  [#12653](https://github.com/angular/angular.js/issues/12653),
+  [#14941](https://github.com/angular/angular.js/issues/14941),
+  [#15180](https://github.com/angular/angular.js/issues/15180),
+  [#15992](https://github.com/angular/angular.js/issues/15992),
+  [#16036](https://github.com/angular/angular.js/issues/16036))
+- **ngOptions:**
+  - re-render after empty option has been removed
+  ([510d0f](https://github.com/angular/angular.js/commit/510d0f946fa1a443ad43fa31bc9337676ef31332))
+  - allow empty option to be removed and re-added
+  ([71b4da](https://github.com/angular/angular.js/commit/71b4daa4e10b6912891927ee2a7930c604b538f8))
+  - select unknown option if unmatched model does not match empty option
+  ([17d34b](https://github.com/angular/angular.js/commit/17d34b7a983a0ef63f6cf404490385c696fb0da1))
+- **orderBy:** guarantee stable sort
+  ([e50ed4](https://github.com/angular/angular.js/commit/e50ed4da9e8177168f67da68bdf02f07da4e7bcf),
+  [#14881](https://github.com/angular/angular.js/issues/14881),
+  [#15914](https://github.com/angular/angular.js/issues/15914))
+- **$parse:**
+  - do not shallow-watch inputs to one-time intercepted expressions
+  ([6e3b5a](https://github.com/angular/angular.js/commit/6e3b5a57cd921823f3eca7200a79ac5c2ef0567a))
+  - standardize one-time literal vs non-literal and interceptors
+  ([f003d9](https://github.com/angular/angular.js/commit/f003d93a3dd052dccddef41125d9c51034ac3605))
+  - do not shallow-watch inputs when wrapped in an interceptor fn
+  ([aac562](https://github.com/angular/angular.js/commit/aac5623247a86681cbe0e1c8179617b816394c1d),
+  [#15905](https://github.com/angular/angular.js/issues/15905))
+  - always re-evaluate filters within literals when an input is an object
+  ([ec9768](https://github.com/angular/angular.js/commit/ec97686f2f4a5481cc806462313a664fc7a1c893),
+  [#15964](https://github.com/angular/angular.js/issues/15964),
+  [#15990](https://github.com/angular/angular.js/issues/15990))
+- **$sanitize:** use appropriate inert document strategy for Firefox and Safari
+  ([8f31f1](https://github.com/angular/angular.js/commit/8f31f1ff43b673a24f84422d5c13d6312b2c4d94))
+- **$timeout/$interval:** do not trigger a digest on cancel
+  ([a222d0](https://github.com/angular/angular.js/commit/a222d0b452622624dc498ef0b9d3c43647fd4fbc),
+  [#16057](https://github.com/angular/angular.js/issues/16057),
+  [#16064](https://github.com/angular/angular.js/issues/16064))<br>
+  This change might affect the use of `$timeout.flush()` in unit tests. See the commit message for
+  more info.
+- **ngMock/$interval:** add support for zero-delay intervals in tests
+  ([a1e3f8](https://github.com/angular/angular.js/commit/a1e3f8728e0a80396f980e48f8dc68dde6721b2b),
+  [#15952](https://github.com/angular/angular.js/issues/15952),
+  [#15953](https://github.com/angular/angular.js/issues/15953))
+- **angular-loader:** do not depend on "closure" globals that may not be available
+  ([a3226d](https://github.com/angular/angular.js/commit/a3226d01fadaf145713518dc5b8022b581c34e81),
+  [#15880](https://github.com/angular/angular.js/issues/15880),
+  [#15881](https://github.com/angular/angular.js/issues/15881))
+
+
+## New Features
+- **select:** expose info about selection state in controller
+  ([0b962d](https://github.com/angular/angular.js/commit/0b962d4881e98327a91c37f7317da557aa991663),
+  [#13172](https://github.com/angular/angular.js/issues/13172),
+  [#10127](https://github.com/angular/angular.js/issues/10127))
+- **$animate:** add support for `customFilter`
+  ([ab114a](https://github.com/angular/angular.js/commit/ab114af8508bdbdb1fa5fd1e070d08818d882e28),
+  [#14891](https://github.com/angular/angular.js/issues/14891))
+- **$compile:** overload `.component()` to accept object map of components
+  ([210112](https://github.com/angular/angular.js/commit/2101126ce72308d8fc468ca2411bb9972e614f79),
+  [#14579](https://github.com/angular/angular.js/issues/14579),
+  [#16062](https://github.com/angular/angular.js/issues/16062))
+- **$log:** log all parameters in IE 9, not just the first two.
+  ([3671a4](https://github.com/angular/angular.js/commit/3671a43be43d05b00c90dfb3a3f746c013139581))
+- **ngMock:** describe unflushed http requests
+  ([d9128e](https://github.com/angular/angular.js/commit/d9128e7b2371ab2bb5169ba854b21c78baa784d2),
+  [#10596](https://github.com/angular/angular.js/issues/10596),
+  [#15928](https://github.com/angular/angular.js/issues/15928))
+
+
+## Performance Improvements
+- **ngOptions:** prevent initial options repainting
+  ([ff52b1](https://github.com/angular/angular.js/commit/ff52b188a759f2cc7ee6ee78a8c646c2354a47eb),
+  [#15801](https://github.com/angular/angular.js/issues/15801),
+  [#15812](https://github.com/angular/angular.js/issues/15812),
+  [#16071](https://github.com/angular/angular.js/issues/16071))
+- **$animate:**
+  - avoid unnecessary computations if animations are globally disabled
+  ([ce5ffb](https://github.com/angular/angular.js/commit/ce5ffbf667464bd58eae4c4af0917eb2685f1f6a),
+  [#14914](https://github.com/angular/angular.js/issues/14914))
+  - do not retrieve `className` unless `classNameFilter` is used
+  ([275978](https://github.com/angular/angular.js/commit/27597887379a1904cd86832602e286894b449a75))
+
+
+
 <a name="1.6.4"></a>
 # 1.6.4 phenomenal-footnote (2017-03-31)
 
