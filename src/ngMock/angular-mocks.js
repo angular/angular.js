@@ -1382,7 +1382,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         var response = wrapped.response(method, url, data, headers, wrapped.params(url));
         xhr.$$respHeaders = response[2];
         callback(copy(response[0]), copy(response[1]), xhr.getAllResponseHeaders(),
-               copy(response[3] || ''), copy(response[4]));
+            copy(response[3] || ''), copy(response[4]));
       }
 
       function handleTimeout() {
