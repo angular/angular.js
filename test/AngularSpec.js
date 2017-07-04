@@ -620,6 +620,17 @@ describe('angular', function() {
       expect(dest).toEqual({a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}});
     });
 
+    it('should copy own non-enumerable properties keeping them non-enumerable', function() {
+      var getter = function() { return Math.random(); };
+      var source = {};
+      var dest;
+
+      Object.defineProperty(source, 'getter', {value: getter});
+      dest = copy(source);
+      expect(dest.getter).toBe(getter);
+      expect(dest.propertyIsEnumerable('getter')).toBe(false);
+    });
+
     they('should copy source and ignore max depth when maxDepth = $prop',
       [NaN, null, undefined, true, false, -1, 0], function(maxDepth) {
         var source = {a1: 1, b1: {b2: {b3: 1}}, c1: [1, {c2: 1}], d1: {d2: 1}};

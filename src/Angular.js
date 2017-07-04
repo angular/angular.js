@@ -915,6 +915,17 @@ function copy(source, destination, maxDepth) {
       for (key in source) {
         destination[key] = copyElement(source[key], maxDepth);
       }
+      // don't use Object.getOwnPropertyNames with RegExp to avoid copying RegExp lastIndex property
+    } else if (isObject(source) && typeof Object.getOwnPropertyNames === 'function' && !isRegExp(source)) {
+      Object.getOwnPropertyNames(source).forEach(function(key) {
+        var elementCopy = copyElement(source[key], maxDepth);
+
+        if (source.propertyIsEnumerable(key)) {
+          destination[key] = elementCopy;
+        } else {
+          Object.defineProperty(destination, key, {value: elementCopy});
+        }
+      });
     } else if (source && typeof source.hasOwnProperty === 'function') {
       // Slow path, which must rely on hasOwnProperty
       for (key in source) {
