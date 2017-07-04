@@ -26,13 +26,15 @@ var ZERO_CHAR = '0';
          angular.module('currencyExample', [])
            .controller('ExampleController', ['$scope', function($scope) {
              $scope.amount = 1234.56;
+             $scope.symbol = "GBP£";
            }]);
        </script>
        <div ng-controller="ExampleController">
          <input type="number" ng-model="amount" aria-label="amount"> <br>
          default currency symbol ($): <span id="currency-default">{{amount | currency}}</span><br>
          custom currency identifier (USD$): <span id="currency-custom">{{amount | currency:"USD$"}}</span><br>
-         no fractions (0): <span id="currency-no-fractions">{{amount | currency:"USD$":0}}</span>
+         no fractions (0): <span id="currency-no-fractions">{{amount | currency:"USD$":0}}</span><br>
+         from scope ({{symbol}}): <span id="currency-from-scope">{{amount | currency:symbol}}</span>
        </div>
      </file>
      <file name="protractor.js" type="protractor">
@@ -40,6 +42,7 @@ var ZERO_CHAR = '0';
          expect(element(by.id('currency-default')).getText()).toBe('$1,234.56');
          expect(element(by.id('currency-custom')).getText()).toBe('USD$1,234.56');
          expect(element(by.id('currency-no-fractions')).getText()).toBe('USD$1,235');
+         expect(element(by.id('currency-from-scope')).getText()).toBe('GBP£1,235.56');
        });
        it('should update', function() {
          if (browser.params.browser === 'safari') {
@@ -52,6 +55,7 @@ var ZERO_CHAR = '0';
          expect(element(by.id('currency-default')).getText()).toBe('-$1,234.00');
          expect(element(by.id('currency-custom')).getText()).toBe('-USD$1,234.00');
          expect(element(by.id('currency-no-fractions')).getText()).toBe('-USD$1,234');
+         expect(element(by.id('currency-from-scope')).getText()).toBe('-GBP£1,234');
        });
      </file>
    </example>
