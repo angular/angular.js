@@ -1343,8 +1343,8 @@ describe('ngMock', function() {
       hb.flush();
 
       expect(callback).toHaveBeenCalledTimes(2);
-      expect(callback.calls.argsFor(0)).toEqual([201, 'second', '', '']);
-      expect(callback.calls.argsFor(1)).toEqual([200, 'first', '', '']);
+      expect(callback.calls.argsFor(0)).toEqual([201, 'second', '', '', 'complete']);
+      expect(callback.calls.argsFor(1)).toEqual([200, 'first', '', '', 'complete']);
     });
 
 
@@ -1354,7 +1354,7 @@ describe('ngMock', function() {
         hb('GET', '/url1', undefined, callback);
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK', 'complete');
       });
 
       it('should default status code to 200', function() {
@@ -1377,7 +1377,19 @@ describe('ngMock', function() {
         hb('GET', '/url1', null, callback);
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val', 'OK', 'complete');
+      });
+
+      it('should default xhrStatus to complete', function() {
+        callback.and.callFake(function(status, response, headers, x, xhrStatus) {
+          expect(xhrStatus).toBe('complete');
+        });
+
+        hb.expect('GET', '/url1').respond('some-data');
+        hb('GET', '/url1', null, callback);
+
+        hb.flush();
+        expect(callback).toHaveBeenCalled();
       });
 
       it('should take function', function() {
@@ -1388,7 +1400,7 @@ describe('ngMock', function() {
         hb('GET', '/some?q=s', 'data', callback, {a: 'b'});
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some?q=s;data;a=b;q=s', 'Connection: keep-alive', 'Moved Permanently');
+        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some?q=s;data;a=b;q=s', 'Connection: keep-alive', 'Moved Permanently', undefined);
       });
 
       it('should decode query parameters in respond() function', function() {
@@ -1400,7 +1412,7 @@ describe('ngMock', function() {
         hb('GET', '/url?query=l%E2%80%A2ng%20string%20w%2F%20spec%5Eal%20char%24&id=1234&orderBy=-name', null, callback);
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;orderBy=-name;query=l•ng string w/ spec^al char$', '', '');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;orderBy=-name;query=l•ng string w/ spec^al char$', '', '', undefined);
       });
 
       it('should include regex captures in respond() params when keys provided', function() {
@@ -1412,7 +1424,7 @@ describe('ngMock', function() {
         hb('GET', '/1234/article/cool-angular-article', null, callback);
         hb.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;name=cool-angular-article', '', '');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'id=1234;name=cool-angular-article', '', '', undefined);
       });
 
       it('should default response headers to ""', function() {
@@ -1425,8 +1437,8 @@ describe('ngMock', function() {
         hb.flush();
 
         expect(callback).toHaveBeenCalledTimes(2);
-        expect(callback.calls.argsFor(0)).toEqual([200, 'first', '', '']);
-        expect(callback.calls.argsFor(1)).toEqual([200, 'second', '', '']);
+        expect(callback.calls.argsFor(0)).toEqual([200, 'first', '', '', 'complete']);
+        expect(callback.calls.argsFor(1)).toEqual([200, 'second', '', '', 'complete']);
       });
 
       it('should be able to override response of expect definition', function() {
@@ -1436,7 +1448,7 @@ describe('ngMock', function() {
 
         hb('GET', '/url1', null, callback);
         hb.flush();
-        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '', 'complete');
       });
 
       it('should be able to override response of when definition', function() {
@@ -1446,7 +1458,7 @@ describe('ngMock', function() {
 
         hb('GET', '/url1', null, callback);
         hb.flush();
-        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '', 'complete');
       });
 
       it('should be able to override response of expect definition with chaining', function() {
@@ -1455,7 +1467,7 @@ describe('ngMock', function() {
 
         hb('GET', '/url1', null, callback);
         hb.flush();
-        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '', 'complete');
       });
 
       it('should be able to override response of when definition with chaining', function() {
@@ -1464,7 +1476,7 @@ describe('ngMock', function() {
 
         hb('GET', '/url1', null, callback);
         hb.flush();
-        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'second', '', '', 'complete');
       });
     });
 
@@ -1657,7 +1669,7 @@ describe('ngMock', function() {
 
       canceler();  // simulate promise resolution
 
-      expect(callback).toHaveBeenCalledWith(-1, undefined, '');
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '', undefined, 'timeout');
       hb.verifyNoOutstandingExpectation();
       hb.verifyNoOutstandingRequest();
     });
@@ -1669,7 +1681,7 @@ describe('ngMock', function() {
       hb('GET', '/url1', null, callback, null, 200);
       $timeout.flush(300);
 
-      expect(callback).toHaveBeenCalledWith(-1, undefined, '');
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '', undefined, 'timeout');
       hb.verifyNoOutstandingExpectation();
       hb.verifyNoOutstandingRequest();
     }));
@@ -1831,7 +1843,7 @@ describe('ngMock', function() {
             hb[shortcut]('/foo').respond('bar');
             hb(method, '/foo', undefined, callback);
             hb.flush();
-            expect(callback).toHaveBeenCalledOnceWith(200, 'bar', '', '');
+            expect(callback).toHaveBeenCalledOnceWith(200, 'bar', '', '', 'complete');
           });
         });
       });
@@ -1846,7 +1858,7 @@ describe('ngMock', function() {
             hb[routeShortcut](this, '/route').respond('path');
             hb(this, '/route', undefined, callback);
             hb.flush();
-            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '', 'complete');
           }
         );
         they('should match colon delimited parameters in ' + routeShortcut + ' $prop method', methods,
@@ -1854,7 +1866,7 @@ describe('ngMock', function() {
             hb[routeShortcut](this, '/route/:id/path/:s_id').respond('path');
             hb(this, '/route/123/path/456', undefined, callback);
             hb.flush();
-            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '', 'complete');
           }
         );
         they('should ignore query param when matching in ' + routeShortcut + ' $prop method', methods,
@@ -1862,7 +1874,7 @@ describe('ngMock', function() {
             hb[routeShortcut](this, '/route/:id').respond('path');
             hb(this, '/route/123?q=str&foo=bar', undefined, callback);
             hb.flush();
-            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '');
+            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '', 'complete');
           }
         );
       });
@@ -2462,7 +2474,7 @@ describe('ngMockE2E', function() {
         $browser.defer.flush();
 
         expect(realHttpBackend).not.toHaveBeenCalled();
-        expect(callback).toHaveBeenCalledOnceWith(200, 'passThrough override', '', '');
+        expect(callback).toHaveBeenCalledOnceWith(200, 'passThrough override', '', '', 'complete');
       }));
 
       it('should pass through to an httpBackend that uses the same $browser service', inject(function($browser) {
