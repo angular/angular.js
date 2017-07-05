@@ -3,7 +3,7 @@
     "public": "build/docs",
     "rewrites": [
       {
-        "source": "**",
+        "source": "**/*!(.jpg|.jpeg|.gif|.png|.html|.js|.css|.svg|.ttf|.woff|.woff2|.eot)",
         "destination": "/index.html"
       }
     ]
