@@ -22,6 +22,7 @@ env:
   - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
   - LOGS_DIR=/tmp/angular-build/logs
   - BROWSER_PROVIDER_READY_FILE=/tmp/browsersprovider-tunnel-ready
+  - secure: oTBjhnOKhs0qDSKTf7fE4f6DYiNDPycvB7qfSF5QRIbJK/LK/J4UtFwetXuXj79HhUZG9qnoT+5e7lPaiaMlpsIKn9ann7ffqFWN1E8TMtpJF+AGigx3djYElwfgf5nEnFUFhwjFzvbfpZNnxVGgX5YbIZpe/WUbHkP4ffU0Wks=
 addons:
   apt:
     sources:
@@ -62,9 +63,8 @@ jobs:
       deploy:
         - provider: firebase
           skip_cleanup: true
-          project: google.com:angular-sites
           token:
-            secure: io09cbsw1CCEGg+N16MZ2MqnouRODqxRp8BF7U1IFYi/Otj7N9aSNc3bI+fCXkUnTcezp8OTEutAz6AcgbwkjK9OWUk3+BRdznWyRerKxepiGJGR7Db2lA6RvyaA4Q4e+/U94kjVWQ20uo9hwmLIpwWsB9FJF/r+G8PEBtFMuew=
+            secure: $FIREBASE_TOKEN
           on:
             repo: angular/angular.js
             # condition: $TRAVIS_BRANCH = chore-firebase
