@@ -1,5 +1,11 @@
 {
   "hosting": {
-    "public": "build/docs"
+    "public": "build/docs",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }
