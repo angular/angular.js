@@ -64,7 +64,7 @@ jobs:
           skip_cleanup: true
           project: google.com:angular-sites
           token:
-            secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
+            secure: io09cbsw1CCEGg+N16MZ2MqnouRODqxRp8BF7U1IFYi/Otj7N9aSNc3bI+fCXkUnTcezp8OTEutAz6AcgbwkjK9OWUk3+BRdznWyRerKxepiGJGR7Db2lA6RvyaA4Q4e+/U94kjVWQ20uo9hwmLIpwWsB9FJF/r+G8PEBtFMuew=
           on:
             repo: angular/angular.js
             # condition: $TRAVIS_BRANCH = chore-firebase
