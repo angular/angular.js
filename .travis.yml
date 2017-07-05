@@ -49,19 +49,17 @@ jobs:
     - stage: deploy
       script: grunt package && grunt compress:uploadBuild && echo $TRAVIS_BRANCH && echo $TRAVIS_TAG
       before_script: skip
+      before_deploy: |
+        function keep_alive() {
+          while true; do
+            echo -en "\a"
+            sleep 5
+          done
+        }
+        keep_alive &
       env:
         - JOB=deploy
       deploy:
-        - provider: gcs
-          access_key_id: GOOGLDB7W2J3LFHICF3R
-          secret_access_key:
-            secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
-          bucket: ng-i-1121e.appspot.com
-          local-dir: upload
-          skip_cleanup: true
-          detect_encoding: true # detects gzip compression and sets the correct metadata in gcs
-          on:
-            repo: angular/angular.js
         - provider: firebase
           skip_cleanup: true
           project: google.com:angular-sites
@@ -69,4 +67,18 @@ jobs:
             secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
           on:
             repo: angular/angular.js
+            # condition: $TRAVIS_BRANCH = chore-firebase
+            branch: chore-firebase
+        # - provider: gcs
+        #   access_key_id: GOOGLDB7W2J3LFHICF3R
+        #   secret_access_key:
+        #     secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
+        #   bucket: ng-i-1121e.appspot.com
+        #   local-dir: upload
+        #   skip_cleanup: true
+        #   detect_encoding: true # detects gzip compression and sets the correct metadata in gcs
+        #   on:
+        #     repo: angular/angular.js
+        #     branch: chore-firebase
+            # condition: $TRAVIS_TAG != on_failurese || ($TRAVIS_PR == false && $TRAVIS_BRANCH = master) || $TRAVIS_BRANCH = chore-firebase
 
