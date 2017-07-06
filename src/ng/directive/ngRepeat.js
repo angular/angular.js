@@ -216,7 +216,7 @@
  *     mapped to the same DOM element, which is not possible.)
  *
  *     <div class="alert alert-warning">
- *       <strong>Note:</strong> the `tracky by` expression must come last - after any filters, and the alias expression.
+ *       <strong>Note:</strong> the `track by` expression must come last - after any filters, and the alias expression.
  *     </div>
  *
  *     For example: `item in items` is equivalent to `item in items track by $id(item)`. This implies that the DOM elements
