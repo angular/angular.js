@@ -48,9 +48,16 @@ notifications:
 jobs:
   include:
     - stage: deploy
+      env:
+        - JOB=deploy
+        - DIST_TAG=""
       before_script: skip
-      # Work around the 10min Travis timeout. The firebase / gcs code deploy does not report
-      # back to the process
+      script:
+       - "./scripts/travis/build.sh"
+       - echo $SAUCE_ACCESS_KEY
+       - echo $DIST_TAG
+       - echo $TRAVIS_TAG
+      # Work around the 10min Travis timeout so the firebase / gcs code deploy can complete
       before_deploy: |
         function keep_alive() {
           while true; do
@@ -59,8 +66,6 @@ jobs:
           done
         }
         keep_alive &
-      env:
-        - JOB=deploy
       deploy:
         - provider: firebase
           skip_cleanup: true
@@ -68,7 +73,7 @@ jobs:
             secure: $FIREBASE_TOKEN
           on:
             repo: angular/angular.js
-            condition: $TRAVIS_TAG = '' && $DISTTAG = next
+            condition: $TRAVIS_TAG = '' && $( jq ".distTag" "package.json" | tr -d "\"[:space:]" ) = next
             all_branches: true
         - provider: gcs
           access_key_id: GOOGLDB7W2J3LFHICF3R
