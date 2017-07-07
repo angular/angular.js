@@ -49,7 +49,6 @@ if (!process.env.TRAVIS && !process.env.JENKINS_HOME) {
   }
 }
 
-
 module.exports = function(grunt) {
 
   // this loads all the node_modules that start with `grunt-` as plugins
@@ -388,6 +387,11 @@ module.exports = function(grunt) {
   grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'write', 'docs', 'copy', 'compress:build']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'eslint']);
   grunt.registerTask('default', ['package']);
+
+
+console.log(pkg.distTag);
+console.log(process.env.DIST_TAG);
+
 };
 
 

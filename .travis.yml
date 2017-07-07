@@ -48,7 +48,7 @@ notifications:
 jobs:
   include:
     - stage: deploy
-      script: grunt package && grunt compress:uploadBuild && echo $TRAVIS_BRANCH && echo $TRAVIS_TAG
+      script: grunt package && grunt compress:uploadBuild && echo "branch" && echo $TRAVIS_BRANCH && echo "pull request" && echo $TRAVIS_PULL_REQUEST && echo "tag" && echo $TRAVIS_TAG && echo "DIST_TAG" && echo $DIST_TAG
       before_script: skip
       before_deploy: |
         function keep_alive() {
@@ -67,18 +67,18 @@ jobs:
             secure: $FIREBASE_TOKEN
           on:
             repo: angular/angular.js
-            condition: $TRAVIS_BRANCH = chore-firebase
+            condition: $TRAVIS_TAG != '' && cat package.json | jq '.distTag' = latest
             all_branches: true
-        # - provider: gcs
-        #   access_key_id: GOOGLDB7W2J3LFHICF3R
-        #   secret_access_key:
-        #     secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
-        #   bucket: ng-i-1121e.appspot.com
-        #   local-dir: upload
-        #   skip_cleanup: true
-        #   detect_encoding: true # detects gzip compression and sets the correct metadata in gcs
-        #   on:
-        #     repo: angular/angular.js
-        #     branch: chore-firebase
-        #     condition: $TRAVIS_TAG != on_failurese || ($TRAVIS_PR == false && $TRAVIS_BRANCH = master) || $TRAVIS_BRANCH = chore-firebase
+        - provider: gcs
+          access_key_id: GOOGLDB7W2J3LFHICF3R
+          secret_access_key:
+            secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
+          bucket: code-angularjs-org-338b8.appspot.com
+          local-dir: upload
+          skip_cleanup: true
+          detect_encoding: true # detects gzip compression
+          on:
+            repo: angular/angular.js
+            all_branches: true
+            condition: $TRAVIS_TAG != '' || ($TRAVIS_PULL_REQUEST = false && $TRAVIS_BRANCH = master)
 
