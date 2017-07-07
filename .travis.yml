@@ -49,6 +49,8 @@ jobs:
   include:
     - stage: deploy
       before_script: skip
+      # Work around the 10min Travis timeout. The firebase / gcs code deploy does not report
+      # back to the process
       before_deploy: |
         function keep_alive() {
           while true; do

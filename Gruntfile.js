@@ -387,11 +387,6 @@ module.exports = function(grunt) {
   grunt.registerTask('package', ['bower', 'validate-angular-files', 'clean', 'buildall', 'minall', 'collect-errors', 'write', 'docs', 'copy', 'compress:build']);
   grunt.registerTask('ci-checks', ['ddescribe-iit', 'merge-conflict', 'eslint']);
   grunt.registerTask('default', ['package']);
-
-
-console.log(pkg.distTag);
-console.log(process.env.DIST_TAG);
-
 };
 
 
