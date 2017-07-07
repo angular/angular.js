@@ -5,6 +5,15 @@ set -e
 export BROWSER_STACK_ACCESS_KEY=`echo $BROWSER_STACK_ACCESS_KEY | rev`
 export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
 
+DISTTAG=$( cat package.json | jq '.distTag' )
+
+echo $TRAVIS_TAG
+echo $DISTTAG
+
+if [[ $DISTTAG = "next" ]]; then
+  echo "read from json";
+fi
+
 if [ "$JOB" == "ci-checks" ]; then
   grunt ci-checks
 elif [ "$JOB" == "unit" ]; then
