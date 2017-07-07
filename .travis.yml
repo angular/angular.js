@@ -67,8 +67,8 @@ jobs:
             secure: $FIREBASE_TOKEN
           on:
             repo: angular/angular.js
-            # condition: $TRAVIS_BRANCH = chore-firebase
-            branch: chore-firebase
+            condition: $TRAVIS_BRANCH = chore-firebase
+            all_branches: true
         # - provider: gcs
         #   access_key_id: GOOGLDB7W2J3LFHICF3R
         #   secret_access_key:
@@ -80,5 +80,5 @@ jobs:
         #   on:
         #     repo: angular/angular.js
         #     branch: chore-firebase
-            # condition: $TRAVIS_TAG != on_failurese || ($TRAVIS_PR == false && $TRAVIS_BRANCH = master) || $TRAVIS_BRANCH = chore-firebase
+        #     condition: $TRAVIS_TAG != on_failurese || ($TRAVIS_PR == false && $TRAVIS_BRANCH = master) || $TRAVIS_BRANCH = chore-firebase
 
