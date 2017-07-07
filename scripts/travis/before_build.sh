@@ -2,15 +2,6 @@
 
 set -e
 
-DISTTAG=$( cat package.json | jq '.distTag' | tr -d \" )
-
-echo $TRAVIS_TAG
-echo $DISTTAG
-
-if [[ $TRAVIS_TAG = '' && $DISTTAG = "next" ]]; then
-  echo "read from json";
-fi
-
 yarn global add grunt-cli@1.2.0
 
 mkdir -p $LOGS_DIR

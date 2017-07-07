@@ -48,7 +48,6 @@ notifications:
 jobs:
   include:
     - stage: deploy
-      script: grunt package && grunt compress:uploadBuild && echo "branch" && echo $TRAVIS_BRANCH && echo "pull request" && echo $TRAVIS_PULL_REQUEST && echo "tag" && echo $TRAVIS_TAG && echo "DIST_TAG" && echo $DIST_TAG
       before_script: skip
       before_deploy: |
         function keep_alive() {
@@ -67,7 +66,7 @@ jobs:
             secure: $FIREBASE_TOKEN
           on:
             repo: angular/angular.js
-            condition: $TRAVIS_TAG != '' && cat package.json | jq '.distTag' = latest
+            condition: $TRAVIS_TAG = '' && $DISTTAG = next
             all_branches: true
         - provider: gcs
           access_key_id: GOOGLDB7W2J3LFHICF3R

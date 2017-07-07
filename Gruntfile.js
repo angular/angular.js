@@ -326,7 +326,7 @@ module.exports = function(grunt) {
         dot: true,
         dest: dist + '/'
       },
-      uploadBuild: {
+      firebaseCodeDeploy: {
         options: {
           mode: 'gzip'
         },

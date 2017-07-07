@@ -5,15 +5,6 @@ set -e
 export BROWSER_STACK_ACCESS_KEY=`echo $BROWSER_STACK_ACCESS_KEY | rev`
 export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
 
-DISTTAG=$( cat package.json | jq '.distTag' )
-
-echo $TRAVIS_TAG
-echo $DISTTAG
-
-if [[ $DISTTAG = "next" ]]; then
-  echo "read from json";
-fi
-
 if [ "$JOB" == "ci-checks" ]; then
   grunt ci-checks
 elif [ "$JOB" == "unit" ]; then
@@ -40,6 +31,12 @@ elif [ "$JOB" == "e2e" ]; then
 
   export TARGET_SPECS="test/e2e/tests/**/*.js,$TARGET_SPECS"
   grunt test:travis-protractor --specs="$TARGET_SPECS"
+elif [ "$JOB" == "deploy" ]; then
+  # the DISTTAG is read by the deploy config
+  export DISTTAG=$( cat package.json | jq '.distTag' | tr -d \"[:space:] )
+
+  grunt package
+  grunt compress:firebaseCodeDeploy
 else
-  echo "Unknown job type. Please set JOB=ci-checks, JOB=unit or JOB=e2e-*."
+  echo "Unknown job type. Please set JOB=ci-checks, JOB=unit, JOB=deploy or JOB=e2e-*."
 fi
