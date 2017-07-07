@@ -5,38 +5,49 @@ set -e
 export BROWSER_STACK_ACCESS_KEY=`echo $BROWSER_STACK_ACCESS_KEY | rev`
 export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
 
-if [ "$JOB" == "ci-checks" ]; then
-  grunt ci-checks
-elif [ "$JOB" == "unit" ]; then
-  if [ "$BROWSER_PROVIDER" == "browserstack" ]; then
-    BROWSERS="BS_Chrome,BS_Safari,BS_Firefox,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9"
-  else
-    BROWSERS="SL_Chrome,SL_Firefox,SL_Safari_8,SL_Safari_9,SL_IE_9,SL_IE_10,SL_IE_11,SL_EDGE,SL_iOS"
-  fi
+case "$JOB" in
+  "ci-checks")
+    grunt ci-checks
+    ;;
+  "unit")
+    if [ "$BROWSER_PROVIDER" == "browserstack" ]; then
+      BROWSERS="BS_Chrome,BS_Safari,BS_Firefox,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9"
+    else
+      BROWSERS="SL_Chrome,SL_Firefox,SL_Safari_8,SL_Safari_9,SL_IE_9,SL_IE_10,SL_IE_11,SL_EDGE,SL_iOS"
+    fi
 
-  # grunt test:promises-aplus
-  # grunt test:unit --browsers="$BROWSERS" --reporters=dots
-  # grunt tests:docs --browsers="$BROWSERS" --reporters=dots
-elif [ "$JOB" == "docs-e2e" ]; then
-  grunt test:travis-protractor --specs="docs/app/e2e/**/*.scenario.js"
-elif [ "$JOB" == "e2e" ]; then
-  if [[ $TEST_TARGET == jquery* ]]; then
-    export USE_JQUERY=1
-  fi
+    grunt test:promises-aplus
+    grunt test:unit --browsers="$BROWSERS" --reporters=dots
+    grunt tests:docs --browsers="$BROWSERS" --reporters=dots
+    ;;
+  "docs-e2e")
+    grunt test:travis-protractor --specs="docs/app/e2e/**/*.scenario.js"
+    ;;
+  "e2e")
+    if [[ $TEST_TARGET == jquery* ]]; then
+      export USE_JQUERY=1
+    fi
 
-  export TARGET_SPECS="build/docs/ptore2e/**/default_test.js"
-  if [[ "$TEST_TARGET" == jquery* ]]; then
-    TARGET_SPECS="build/docs/ptore2e/**/jquery_test.js"
-  fi
+    export TARGET_SPECS="build/docs/ptore2e/**/default_test.js"
 
-  export TARGET_SPECS="test/e2e/tests/**/*.js,$TARGET_SPECS"
-  grunt test:travis-protractor --specs="$TARGET_SPECS"
-elif [ "$JOB" == "deploy" ]; then
-  # the DISTTAG is read by the deploy config
-  export DISTTAG=$( cat package.json | jq '.distTag' | tr -d \"[:space:] )
+    if [[ "$TEST_TARGET" == jquery* ]]; then
+      TARGET_SPECS="build/docs/ptore2e/**/jquery_test.js"
+    fi
 
-  grunt package
-  grunt compress:firebaseCodeDeploy
-else
-  echo "Unknown job type. Please set JOB=ci-checks, JOB=unit, JOB=deploy or JOB=e2e-*."
-fi
+    export TARGET_SPECS="test/e2e/tests/**/*.js,$TARGET_SPECS"
+    grunt test:travis-protractor --specs="$TARGET_SPECS"
+    ;;
+  "deploy")
+    # the DISTTAG is read by the deploy config
+    export DISTTAG=$( cmd < package.json | jq '.distTag' | tr -d \"[:space:] )
+
+    echo 'DISTTAG?'
+    echo $DISTTAG
+
+    grunt package
+    grunt compress:firebaseCodeDeploy
+    ;;
+  *)
+    echo "Unknown job type. Please set JOB=ci-checks, JOB=unit, JOB=deploy or JOB=e2e-*."
+    ;;
+esac
