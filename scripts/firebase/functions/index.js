@@ -1,3 +1,5 @@
+'use strict';
+
 const functions = require('firebase-functions');
 const gcs = require('@google-cloud/storage')();
 const path = require('path');
@@ -8,6 +10,7 @@ function sendStoredFile(request, response) {
   let filePathSegments = request.path.split('/').filter((segment) => {
     return segment !== '';
   });
+
   const version = filePathSegments[0];
   const isDocsPath = filePathSegments[1] === 'docs';
   const lastSegment = filePathSegments[filePathSegments.length - 1];
