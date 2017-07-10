@@ -4,7 +4,7 @@
     "redirects": [ {
       "source" : "/:version/docs",
       "destination" : "/:version/docs/index.html",
-      "type" : 302
+      "type" : 301
     }],
     "rewrites": [
       {

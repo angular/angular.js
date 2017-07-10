@@ -4,6 +4,7 @@ const functions = require('firebase-functions');
 const gcs = require('@google-cloud/storage')();
 const path = require('path');
 
+const gcsBucket = 'code-angularjs-org-338b8.appspot.com';
 const LOCAL_TMP_FOLDER = '/tmp/';
 
 function sendStoredFile(request, response) {
@@ -26,10 +27,9 @@ function sendStoredFile(request, response) {
 
   downloadPath = path.join.apply(null, filePathSegments);
 
-  const bucket = gcs.bucket('ng-i-1121e.appspot.com');
+  const bucket = gcs.bucket(gcsBucket);
 
   downloadAndSend().catch(error => {
-
     if (isDocsPath && error.code === 404) {
       fileName = 'index.html';
       filePathSegments = [version, 'docs', fileName];
