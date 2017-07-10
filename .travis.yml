@@ -13,9 +13,9 @@ env:
   matrix:
   - JOB=ci-checks
   - JOB=unit BROWSER_PROVIDER=saucelabs
-  # - JOB=docs-e2e BROWSER_PROVIDER=saucelabs
-  # - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
-  # - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
+  - JOB=docs-e2e BROWSER_PROVIDER=saucelabs
+  - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
+  - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
   global:
   - CXX=g++-4.8
   - SAUCE_USERNAME=angular-ci
@@ -50,14 +50,10 @@ jobs:
     - stage: deploy
       env:
         - JOB=deploy
-        - DIST_TAG=""
       before_script: skip
       script:
        - "./scripts/travis/build.sh"
-       - echo $SAUCE_ACCESS_KEY
-       - echo $DIST_TAG
-       - echo $TRAVIS_TAG
-      # Work around the 10min Travis timeout so the firebase / gcs code deploy can complete
+      # Work around the 10min Travis timeout so the code.angularjs firebase+gcs code deploy can complete
       before_deploy: |
         function keep_alive() {
           while true; do
@@ -73,18 +69,20 @@ jobs:
             secure: $FIREBASE_TOKEN
           on:
             repo: angular/angular.js
-            condition: $TRAVIS_TAG = '' && $( jq ".distTag" "package.json" | tr -d "\"[:space:]" ) = next
             all_branches: true
+            # deploy a new docs version when the commit is tagged on the "latest" npm version
+            condition: $TRAVIS_TAG != '' && $( jq ".distTag" "package.json" | tr -d "\"[:space:]" ) = latest
         - provider: gcs
+          skip_cleanup: true
           access_key_id: GOOGLDB7W2J3LFHICF3R
           secret_access_key:
             secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
           bucket: code-angularjs-org-338b8.appspot.com
           local-dir: upload
-          skip_cleanup: true
           detect_encoding: true # detects gzip compression
           on:
             repo: angular/angular.js
             all_branches: true
+            # upload the build when the commit is tagged or the branch is "master"
             condition: $TRAVIS_TAG != '' || ($TRAVIS_PULL_REQUEST = false && $TRAVIS_BRANCH = master)
 
