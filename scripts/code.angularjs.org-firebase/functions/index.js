@@ -55,10 +55,11 @@ function sendStoredFile(request, response) {
     return bucket.file(downloadPath).download({
       destination: `/tmp/${fileName}`
     }).then(() => {
-      return response.status(200).set({
-        'Content-Encoding': 'gzip',
-        'Cache-Control': 'public, max-age=300, s-maxage=600'
-      }).sendFile(`${LOCAL_TMP_FOLDER}${fileName}`);
+      return response.status(200)
+        .set({
+          'Cache-Control': 'public, max-age=300, s-maxage=600'
+        })
+        .sendFile(`${LOCAL_TMP_FOLDER}${fileName}`);
     });
   }
 }
