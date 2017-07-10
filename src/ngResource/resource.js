@@ -488,7 +488,7 @@ angular.module('ngResource', ['ng']).
      *       $resourceProvider.defaults.actions.update = {
      *         method: 'PUT'
      *       };
-     *     });
+     *     }]);
      * ```
      *
      * Or you can even overwrite the whole `actions` list and specify your own:
