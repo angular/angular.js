@@ -1293,7 +1293,7 @@ function $HttpProvider() {
               : defaultCache;
         if (isPostUrlencoded) {
           // Если это POST запрос, то к url прибавляем reqData
-          cachedUrl += '&' + reqData;
+          cachedUrl = buildUrl(cachedUrl, reqData);
         }
       }
 

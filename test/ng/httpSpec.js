@@ -1551,6 +1551,31 @@ describe('$http', function() {
         expect(callback.calls.mostRecent().args[0].data).toBe('content2');
       });
 
+      it('should cache POST request if Content-Type application/x-www-form-urlencoded', inject(function ($httpParamSerializerJQLike) {
+        $httpBackend.expect('POST', '/url').respond(200, 'content3');
+        $http({
+          method: 'POST',
+          url: '/url',
+          data: $httpParamSerializerJQLike({param1: 'param1value'}),
+          cache: cache,
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        });
+
+        $httpBackend.flush();
+
+        $http({
+          method: 'POST',
+          url: '/url',
+          data: $httpParamSerializerJQLike({param1: 'param1value'}),
+          cache: cache,
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+        }).then(callback);
+        $rootScope.$digest();
+
+        expect(callback).toHaveBeenCalledOnce();
+        expect(callback.calls.mostRecent().args[0].data).toBe('content3');
+      }));
+
 
       it('should not cache PUT request', function() {
         doFirstCacheRequest('PUT');
