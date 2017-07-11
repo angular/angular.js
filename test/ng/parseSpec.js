@@ -3232,6 +3232,74 @@ describe('parser', function() {
         });
 
         describe('interceptorFns', function() {
+          it('should only be passed the intercepted value', inject(function($parse) {
+            var args;
+            function interceptor(v) {
+              args = sliceArgs(arguments);
+              return v;
+            }
+
+            scope.$watch($parse('a', interceptor));
+
+            scope.a = 1;
+            scope.$digest();
+            expect(args).toEqual([1]);
+          }));
+
+          it('should only be passed the intercepted value when double-intercepted',
+              inject(function($parse) {
+            var args1;
+            function int1(v) {
+              args1 = sliceArgs(arguments);
+              return v + 2;
+            }
+            var args2;
+            function int2(v) {
+              args2 = sliceArgs(arguments);
+              return v + 4;
+            }
+
+            scope.$watch($parse($parse('a', int1), int2));
+
+            scope.a = 1;
+            scope.$digest();
+            expect(args1).toEqual([1]);
+            expect(args2).toEqual([3]);
+          }));
+
+          it('should support locals', inject(function($parse) {
+            var args;
+            function interceptor(v) {
+              args = sliceArgs(arguments);
+              return v + 4;
+            }
+
+            var exp = $parse('a + b', interceptor);
+            scope.a = 1;
+
+            expect(exp(scope, {b: 2})).toBe(7);
+            expect(args).toEqual([3]);
+          }));
+
+          it('should support locals when double-intercepted', inject(function($parse) {
+            var args1;
+            function int1(v) {
+              args1 = sliceArgs(arguments);
+              return v + 4;
+            }
+            var args2;
+            function int2(v) {
+              args2 = sliceArgs(arguments);
+              return v + 8;
+            }
+
+            var exp = $parse($parse('a + b', int1), int2);
+
+            scope.a = 1;
+            expect(exp(scope, {b: 2})).toBe(15);
+            expect(args1).toEqual([3]);
+            expect(args2).toEqual([7]);
+          }));
 
           it('should always be invoked if they are flagged as having $stateful',
               inject(function($parse) {
