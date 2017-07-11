@@ -97,7 +97,8 @@
   },
   "dependencies": {},
   "commitplease": {
-    "style": "angular"
+    "style": "angular",
+    "nohook": true
   },
   "config": {
     "commitizen": {

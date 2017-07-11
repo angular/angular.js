@@ -9,7 +9,10 @@ if [ "$JOB" == "ci-checks" ]; then
   grunt ci-checks
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then
     # validate commit messages of all commits in the PR
-    yarn run commitplease -- $TRAVIS_COMMIT_RANGE
+    # convert commit range to 2 dots, as commitplease uses `git log`.
+    # See https://github.com/travis-ci/travis-ci/issues/4596 for more info
+    echo "Validate commit messages in PR."
+    yarn run commitplease -- "${TRAVIS_COMMIT_RANGE/.../..}"
   fi
 elif [ "$JOB" == "unit" ]; then
   if [ "$BROWSER_PROVIDER" == "browserstack" ]; then
