@@ -132,7 +132,6 @@ function Browser(window, document, $log, $sniffer) {
     // setter
     if (url) {
       var sameState = lastHistoryState === state;
-
       // Don't change anything if previous and current URLs and states match. This also prevents
       // IE<10 from getting into redirect loop when in LocationHashbangInHtml5Url mode.
       // See https://github.com/angular/angular.js/commit/ffb2701
@@ -219,7 +218,7 @@ function Browser(window, document, $log, $sniffer) {
     var prevLastHistoryState = lastHistoryState;
     cacheState();
 
-    if (lastBrowserUrl === self.url() && prevLastHistoryState === cachedState) {
+    if (lastBrowserUrl.replace(/%27/g, '\'') === self.url() && prevLastHistoryState === cachedState) {
       return;
     }
 
@@ -228,6 +227,7 @@ function Browser(window, document, $log, $sniffer) {
     forEach(urlChangeListeners, function(listener) {
       listener(self.url(), cachedState);
     });
+
   }
 
   /**

@@ -879,6 +879,79 @@ describe('browser', function() {
         });
       });
 
+
+      it('apostrophes are supported in url with no history support, no html5Mode', function() {
+
+        setup({
+          history: false,
+          html5Mode: false
+        });
+
+        inject(function($rootScope, $location) {
+          /* all aphostrofes in url should be replaced */
+          fakeWindow.location.href = 'http://server/#!/param1=data%27s1&param2=data%27s2';
+          $rootScope.$digest();
+          expect($location.path()).toBe('/param1=data\'s1&param2=data\'s2');
+
+          /* validate that location.href could be updated */
+          fakeWindow.location.href = 'http://server/#!/data1=anotherValue%27s1&data2=anotherValue%27s2';
+          $rootScope.$digest();
+          expect($location.path()).toBe('/data1=anotherValue\'s1&data2=anotherValue\'s2');
+        });
+
+      });
+
+
+      it('apostrophes are supported in url with html5Mode and no history support', function() {
+        setup({
+          history: false,
+          html5Mode: true
+        });
+
+        inject(function($rootScope, $location) {
+
+          fakeWindow.location.href = 'http://server/#!/param1=data%27s1&param2=data%27s2';
+          $rootScope.$digest();
+          expect($location.path()).toBe('/param1=data\'s1&param2=data\'s2');
+
+          fakeWindow.location.href = 'http://server/#!/data1=anotherValue%27s1&data2=anotherValue%27s2';
+          $rootScope.$digest();
+          expect($location.path()).toBe('/data1=anotherValue\'s1&data2=anotherValue\'s2');
+        });
+
+      });
+
+      it('apostrophes are supported in url with history and no html5', function() {
+        setup({
+          history: true,
+          html5Mode: false
+        });
+        inject(function($rootScope, $location) {
+          fakeWindow.location.href = 'http://server/#!/param1=data%27s1&param2=data%27s2';
+          $rootScope.$digest();
+          expect($location.path()).toBe('/param1=data\'s1&param2=data\'s2');
+          fakeWindow.location.href = 'http://server/#!/data1=anotherValue%27s1&data2=anotherValue%27s2';
+          $rootScope.$digest();
+          expect($location.path()).toBe('/data1=anotherValue\'s1&data2=anotherValue\'s2');
+        });
+      });
+
+      it('apostrophes are supported in url with history and html5', function() {
+        setup({
+          history: true,
+          html5Mode: true
+        });
+        inject(function($rootScope, $location) {
+          fakeWindow.location.href = 'http://server/param1=data%27s1&param2=data%27s2';
+          $rootScope.$digest();
+          expect($location.path()).toBe('/param1=data\'s1&param2=data\'s2');
+          fakeWindow.location.href = 'http://server/data1=anotherValue%27s1&data2=anotherValue%27s2';
+          $rootScope.$digest();
+          expect($location.path()).toBe('/data1=anotherValue\'s1&data2=anotherValue\'s2');
+        });
+
+      });
+
     });
 
     it('should not reload the page on every $digest when the page will be reloaded due to url rewrite on load', function() {
