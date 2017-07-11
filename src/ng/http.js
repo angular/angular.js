@@ -1256,8 +1256,15 @@ function $HttpProvider() {
           cache,
           cachedResp,
           reqHeaders = config.headers,
-          isJsonp = lowercase(config.method) === 'jsonp',
-          url = config.url;
+          contentType = reqHeaders['Content-Type'],
+          lowercaseMethod = lowercase(config.method),
+          isJsonp = lowercaseMethod === 'jsonp',
+          isGet =  lowercaseMethod === 'get',
+          isPost = lowercaseMethod === 'post',
+          isPostUrlencoded = isPost && contentType && /application\/x-www-form-urlencoded/.test(contentType),
+          url = config.url,
+          // Save the source URL for using in the cache
+          cachedUrl = url;
 
       if (isJsonp) {
         // JSONP is a pretty sensitive operation where we're allowing a script to have full access to
@@ -1279,15 +1286,19 @@ function $HttpProvider() {
       promise.then(removePendingReq, removePendingReq);
 
       if ((config.cache || defaults.cache) && config.cache !== false &&
-          (config.method === 'GET' || config.method === 'JSONP')) {
+          (isGet || isJsonp || isPostUrlencoded)) {
         cache = isObject(config.cache) ? config.cache
             : isObject(/** @type {?} */ (defaults).cache)
               ? /** @type {?} */ (defaults).cache
               : defaultCache;
+        if (isPostUrlencoded) {
+          // Если это POST запрос, то к url прибавляем reqData
+          cachedUrl += '&' + reqData;
+        }
       }
 
       if (cache) {
-        cachedResp = cache.get(url);
+        cachedResp = cache.get(cachedUrl);
         if (isDefined(cachedResp)) {
           if (isPromiseLike(cachedResp)) {
             // cached request has already been sent, but there is no response yet
@@ -1302,7 +1313,7 @@ function $HttpProvider() {
           }
         } else {
           // put the promise for the non-transformed response into cache as a placeholder
-          cache.put(url, promise);
+          cache.put(cachedUrl, promise);
         }
       }
 
@@ -1357,10 +1368,10 @@ function $HttpProvider() {
       function done(status, response, headersString, statusText, xhrStatus) {
         if (cache) {
           if (isSuccess(status)) {
-            cache.put(url, [status, response, parseHeaders(headersString), statusText, xhrStatus]);
+            cache.put(cachedUrl, [status, response, parseHeaders(headersString), statusText, xhrStatus]);
           } else {
             // remove promise from the cache
-            cache.remove(url);
+            cache.remove(cachedUrl);
           }
         }
 
