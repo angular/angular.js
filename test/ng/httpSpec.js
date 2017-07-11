@@ -1467,7 +1467,6 @@ describe('$http', function() {
 
 
     describe('cache', function() {
-
       var cache;
 
       beforeEach(inject(function($cacheFactory) {
