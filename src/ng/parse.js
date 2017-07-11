@@ -1940,12 +1940,12 @@ function $ParseProvider() {
 
       function regularInterceptedExpression(scope, locals, assign, inputs) {
         var value = useInputs && inputs ? inputs[0] : parsedExpression(scope, locals, assign, inputs);
-        return interceptorFn(value, scope, locals);
+        return interceptorFn(value);
       }
 
       function oneTimeInterceptedExpression(scope, locals, assign, inputs) {
         var value = useInputs && inputs ? inputs[0] : parsedExpression(scope, locals, assign, inputs);
-        var result = interceptorFn(value, scope, locals);
+        var result = interceptorFn(value);
         // we only return the interceptor's result if the
         // initial value is defined (for bind-once)
         return isDone(value) ? result : value;
