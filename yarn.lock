@@ -1166,6 +1166,16 @@ commitizen@^2.3.0:
     shelljs "0.7.5"
     strip-json-comments "2.0.1"
 
+commitplease@^2.7.10:
+  version "2.7.10"
+  resolved "https://registry.yarnpkg.com/commitplease/-/commitplease-2.7.10.tgz#129af5abb365b46f25e652020c5d1548c947f163"
+  dependencies:
+    chalk "^1.1.1"
+    git-tools "^0.2.1"
+    ini "^1.3.4"
+    object-assign "^4.1.0"
+    semver "^5.1.0"
+
 commondir@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-0.0.1.tgz#89f00fdcd51b519c578733fec563e6a6da7f5be2"
@@ -2474,6 +2484,12 @@ getpass@^0.1.1:
   resolved "https://registry.yarnpkg.com/getpass/-/getpass-0.1.6.tgz#283ffd9fc1256840875311c1b60e8c40187110e6"
   dependencies:
     assert-plus "^1.0.0"
+
+git-tools@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/git-tools/-/git-tools-0.2.1.tgz#6e1846af2c0e91ab59258b48f9b53c1279b3b273"
+  dependencies:
+    spawnback "~1.0.0"
 
 glob-base@^0.3.0:
   version "0.3.0"
@@ -5911,6 +5927,10 @@ spawn-sync@^1.0.15:
   dependencies:
     concat-stream "^1.4.7"
     os-shim "^0.1.2"
+
+spawnback@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/spawnback/-/spawnback-1.0.0.tgz#f73662f7e54d95367eca74d6426c677dd7ea686f"
 
 spdx-correct@~1.0.0:
   version "1.0.2"
