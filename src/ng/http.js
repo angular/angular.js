@@ -1292,7 +1292,6 @@ function $HttpProvider() {
               ? /** @type {?} */ (defaults).cache
               : defaultCache;
         if (isPostUrlencoded) {
-          // Если это POST запрос, то к url прибавляем reqData
           cachedUrl = buildUrl(cachedUrl, reqData);
         }
       }
