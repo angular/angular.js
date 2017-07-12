@@ -7,6 +7,13 @@ export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
 
 if [ "$JOB" == "ci-checks" ]; then
   grunt ci-checks
+  if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then
+    # validate commit messages of all commits in the PR
+    # convert commit range to 2 dots, as commitplease uses `git log`.
+    # See https://github.com/travis-ci/travis-ci/issues/4596 for more info
+    echo "Validate commit messages in PR."
+    yarn run commitplease -- "${TRAVIS_COMMIT_RANGE/.../..}"
+  fi
 elif [ "$JOB" == "unit" ]; then
   if [ "$BROWSER_PROVIDER" == "browserstack" ]; then
     BROWSERS="BS_Chrome,BS_Safari,BS_Firefox,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9"

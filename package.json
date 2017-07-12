@@ -30,6 +30,7 @@
     "changez-angular": "^2.1.2",
     "cheerio": "^0.17.0",
     "commitizen": "^2.3.0",
+    "commitplease": "^2.7.10",
     "cross-spawn": "^4.0.0",
     "cz-conventional-changelog": "1.1.4",
     "dgeni": "^0.4.0",
@@ -95,6 +96,10 @@
     "stringmap": "^0.2.2"
   },
   "dependencies": {},
+  "commitplease": {
+    "style": "angular",
+    "nohook": true
+  },
   "config": {
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
