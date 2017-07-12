@@ -1551,7 +1551,7 @@ describe('$http', function() {
         expect(callback.calls.mostRecent().args[0].data).toBe('content2');
       });
 
-      it('should cache POST request if Content-Type application/x-www-form-urlencoded', inject(function ($httpParamSerializerJQLike) {
+      it('should cache POST request if Content-Type application/x-www-form-urlencoded', inject(function($httpParamSerializerJQLike) {
         $httpBackend.expect('POST', '/url').respond(200, 'content3');
         $http({
           method: 'POST',
