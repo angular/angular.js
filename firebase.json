@@ -2,22 +2,19 @@
   "hosting": {
     "public": "build/docs",
     "ignore": [
+      "/index.html",
       "/index-debug.html",
       "/index-jquery.html"
     ],
-    "redirects": [
+    "rewrites": [
       {
         "source": "/",
-        "destination": "/index-production.html",
-        "type": 301
+        "destination": "/index-production.html"
       },
       {
         "source": "/index.html",
-        "destination": "/index-production.html",
-        "type": 301
-      }
-    ],
-    "rewrites": [
+        "destination": "/index-production.html"
+      },
       {
         "source": "**/*!(.jpg|.jpeg|.gif|.png|.html|.js|.json|.css|.svg|.ttf|.woff|.woff2|.eot)",
         "destination": "/index-production.html"

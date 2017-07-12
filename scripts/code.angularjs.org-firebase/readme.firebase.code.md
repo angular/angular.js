@@ -8,3 +8,5 @@ in functions/index.js that serves the docs from the Firebase Google Cloud Storag
 
 The deployment to the Google Cloud Storage bucket happens automatically via Travis. See the travis.yml
 file in the repository root.
+
+See /readme.firebase.docs.md for the firebase deployment to docs.angularjs.org

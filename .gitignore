@@ -9,8 +9,7 @@ performance/temp*.html
 *~
 *.swp
 angular.js.tmproj
-/node_modules/
-/scripts/code.angularjs.org-firebase/functions/node_modules/
+node_modules/
 bower_components/
 angular.xcodeproj
 .idea

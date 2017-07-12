@@ -4,18 +4,25 @@ const functions = require('firebase-functions');
 const gcs = require('@google-cloud/storage')();
 const path = require('path');
 
-const gcsBucket = 'code-angularjs-org-338b8.appspot.com';
+const gcsBucketId = `${process.env.GCLOUD_PROJECT}.appspot.com`;
 const LOCAL_TMP_FOLDER = '/tmp/';
+
+const BROWSER_CACHE_DURATION = 300;
+const CDN_CACHE_DURATION = 600;
 
 function sendStoredFile(request, response) {
   let filePathSegments = request.path.split('/').filter((segment) => {
+    // Remove empty leading or trailing path parts
     return segment !== '';
   });
 
   const version = filePathSegments[0];
   const isDocsPath = filePathSegments[1] === 'docs';
   const lastSegment = filePathSegments[filePathSegments.length - 1];
-  let downloadPath;
+  const bucket = gcs.bucket(gcsBucketId);
+
+  let downloadSource;
+  let downloadDestination;
   let fileName;
 
   if (isDocsPath && filePathSegments.length === 2) {
@@ -25,16 +32,17 @@ function sendStoredFile(request, response) {
     fileName = lastSegment;
   }
 
-  downloadPath = path.join.apply(null, filePathSegments);
+  downloadSource = path.join.apply(null, filePathSegments);
+  downloadDestination = `${LOCAL_TMP_FOLDER}${fileName}`;
 
-  const bucket = gcs.bucket(gcsBucket);
-
-  downloadAndSend().catch(error => {
+  downloadAndSend(downloadSource, downloadDestination).catch(error => {
     if (isDocsPath && error.code === 404) {
       fileName = 'index.html';
       filePathSegments = [version, 'docs', fileName];
-      downloadPath = path.join.apply(null, filePathSegments);
-      return downloadAndSend();
+      downloadSource = path.join.apply(null, filePathSegments);
+      downloadDestination = `${LOCAL_TMP_FOLDER}${fileName}`;
+
+      return downloadAndSend(downloadSource, downloadDestination);
     }
 
     return Promise.reject(error);
@@ -51,15 +59,15 @@ function sendStoredFile(request, response) {
     return response.status(error.code).send(message);
   });
 
-  function downloadAndSend() {
-    return bucket.file(downloadPath).download({
-      destination: `/tmp/${fileName}`
+  function downloadAndSend(downloadSource, downloadDestination) {
+    return bucket.file(downloadSource).download({
+      destination: downloadDestination
     }).then(() => {
       return response.status(200)
         .set({
-          'Cache-Control': 'public, max-age=300, s-maxage=600'
+          'Cache-Control': `public, max-age=${BROWSER_CACHE_DURATION}, s-maxage=${CDN_CACHE_DURATION}`
         })
-        .sendFile(`${LOCAL_TMP_FOLDER}${fileName}`);
+        .sendFile(downloadDestination);
     });
   }
 }
