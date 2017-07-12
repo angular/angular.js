@@ -109,6 +109,9 @@ describe('sanitizeUri', function() {
       testUrl = 'ftp://foo.com/bar';
       expect(sanitizeImg(testUrl)).toBe('ftp://foo.com/bar');
 
+      testUrl = 'sftp://foo.com/bar';
+      expect(sanitizeImg(testUrl)).toBe('sftp://foo.com/bar');
+
       testUrl = 'file:///foo/bar.html';
       expect(sanitizeImg(testUrl)).toBe('file:///foo/bar.html');
     });
@@ -215,6 +218,9 @@ describe('sanitizeUri', function() {
 
       testUrl = 'ftp://foo/bar';
       expect(sanitizeHref(testUrl)).toBe('ftp://foo/bar');
+
+      testUrl = 'sftp://foo/bar';
+      expect(sanitizeHref(testUrl)).toBe('sftp://foo/bar');
 
       testUrl = 'mailto:foo@bar.com';
       expect(sanitizeHref(testUrl)).toBe('mailto:foo@bar.com');
