@@ -66,7 +66,8 @@ module.exports = function(grunt) {
 
   //If versionInfo.cdnVersion is null, then NO_REMOTE_REQUESTS. Log info
   if (versionInfo.cdnVersion == null) {
-	  console.log('Info:   No remote requests');
+	  throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?\n' +
+      'Perhaps you want to set the NG1_BUILD_NO_REMOTE_VERSION_REQUESTS environment variable?');
   }
 
   //config
