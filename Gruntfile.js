@@ -66,7 +66,7 @@ module.exports = function(grunt) {
 
   //If versionInfo.cdnVersion is null, then NO_REMOTE_REQUESTS. Log info
   if (versionInfo.cdnVersion == null) {
-	  console.log('NO_REMOTE_REQUESTS');
+	  console.log('Info:   No remote requests');
   }
 
   //config
