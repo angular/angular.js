@@ -192,7 +192,12 @@ function shallowClearAndCopy(src, dst) {
  *     [requestType](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType).
  *   - **`interceptor`** - `{Object=}` - The interceptor object has two optional methods -
  *     `response` and `responseError`. Both `response` and `responseError` interceptors get called
- *     with `http response` object. See {@link ng.$http $http interceptors}.
+ *     with `http response` object. See {@link ng.$http $http interceptors}. In addition, the
+ *     resource instance or array object is accessible by the `resource` property of the
+ *     `http response` object.
+ *     Keep in mind that the associated promise will be resolved with the value returned by the
+ *     response interceptor, if one is specified. The default response interceptor returns
+ *     `response.resource` (i.e. the resource instance or array).
  *   - **`hasBody`** - `{boolean}` - allows to specify if a request body should be included or not.
  *     If not specified only POST, PUT and PATCH requests will have a body.
  *
@@ -267,8 +272,7 @@ function shallowClearAndCopy(src, dst) {
  *     {@link ngRoute.$routeProvider resolve section of $routeProvider.when()} to defer view
  *     rendering until the resource(s) are loaded.
  *
- *     On failure, the promise is rejected with the {@link ng.$http http response} object, without
- *     the `resource` property.
+ *     On failure, the promise is rejected with the {@link ng.$http http response} object.
  *
  *     If an interceptor object was provided, the promise will instead be resolved with the value
  *     returned by the interceptor.
@@ -776,6 +780,9 @@ angular.module('ngResource', ['ng']).
               response.resource = value;
 
               return response;
+            }, function(response) {
+              response.resource = value;
+              return $q.reject(response);
             });
 
             promise = promise['finally'](function() {
