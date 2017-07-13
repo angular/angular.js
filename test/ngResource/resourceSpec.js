@@ -1603,6 +1603,177 @@ describe('basic usage', function() {
   });
 });
 
+describe('property decoration', function() {
+  var $httpBackend, $resource,
+      callback, errorCB;
+
+  beforeEach(module('ngResource'));
+
+  beforeEach(inject(function(_$httpBackend_, _$resource_) {
+    $httpBackend = _$httpBackend_;
+    $resource = _$resource_;
+  }));
+
+  beforeEach(function() {
+      callback = jasmine.createSpy('callback');
+      errorCB  = jasmine.createSpy('error');
+  });
+
+  it('should not decorate array', function() {
+    var result = [
+        { thing: 'value1' },
+        { thing: 'value2' }
+    ];
+    result.meta = 'data';
+
+    $httpBackend.expectGET('URL').respond({});
+    var models = $resource('URL', { }, {
+      query: {
+        method: 'GET',
+        isArray: true,
+        transformResponse: function() {
+          return result;
+        }
+      }
+    }).query();
+    $httpBackend.flush();
+
+    // Should have array and no metadata
+    expect(models[0]).toEqual(jasmine.objectContaining(result[0]));
+    expect(models[1]).toEqual(jasmine.objectContaining(result[1]));
+    expect(models.meta).toBeUndefined();
+  });
+
+  it('should decorate array', function() {
+    var result = [
+      { thing: 'value1' },
+      { thing: 'value2' }
+    ];
+    result.meta = 'data';
+
+    $httpBackend.expectGET('URL').respond({});
+    var models = $resource('URL', { }, {
+      query: {
+        method: 'GET',
+        isArray: true,
+        arrayDecorate: true,
+        transformResponse: function() {
+          return result;
+        }
+      }
+    }).query();
+    $httpBackend.flush();
+
+    // Should have array and metadata
+    expect(models[0]).toEqual(jasmine.objectContaining(result[0]));
+    expect(models[1]).toEqual(jasmine.objectContaining(result[1]));
+    expect(models.meta).toBe('data');
+  });
+
+  it('should not decorate on error', function() {
+    var model = {
+      untouched: true,
+      error: 'No Error'
+    };
+
+    model = new ($resource('URL', { }, {
+      save: {
+        method: 'POST'
+      }
+    }))(model);
+
+    // Should have the config we passed the constructor
+    expect(model.untouched).toBe(true);
+    expect(model.error).toBe('No Error');
+
+    $httpBackend.expectPOST('URL').respond(500, { error: 'An error occurred' });
+    model.$save(angular.noop, angular.noop);
+    $httpBackend.flush();
+
+    // Should have the same config as before; not decorated with props from response
+    expect(model.untouched).toBe(true);
+    expect(model.error).toBe('No Error');
+  });
+
+  it('should decorate on error', function() {
+    var model = {
+        untouched: true,
+        error: 'No Error'
+    };
+
+    model = new ($resource('URL', { }, {
+      save: {
+        method: 'POST',
+        errorDecorate: true
+      }
+    }))(model);
+
+    // Should have the config we passed the constructor
+    expect(model.untouched).toBe(true);
+    expect(model.error).toBe('No Error');
+
+    $httpBackend.expectPOST('URL').respond(500, { error: 'An error occurred' });
+
+    model.$save(callback, errorCB);
+    $httpBackend.flush();
+
+    // Should have the same config as before; decorated with props from response
+    expect(callback).not.toHaveBeenCalled();
+    expect(errorCB).toHaveBeenCalledOnce();
+    expect(model.untouched).toBe(true);
+    expect(model.error).toBe('An error occurred');
+  });
+
+  it('should not decorate array on error', function() {
+    var result = [];
+    result.meta = 'data';
+
+    $httpBackend.expectGET('URL').respond(500, { error: 'An error occurred' });
+    var models = $resource('URL', { }, {
+      query: {
+        method: 'GET',
+        isArray: true,
+        errorDecorate: true,
+        transformResponse: function() {
+          return result;
+        }
+      }
+    }).query(callback, errorCB);
+    $httpBackend.flush();
+
+    // Should have the same config as before; decorated with props from response
+    expect(callback).not.toHaveBeenCalled();
+    expect(errorCB).toHaveBeenCalledOnce();
+    expect(angular.isArray(models)).toBeTruthy();
+    expect(models.meta).toBeUndefined();
+  });
+
+  it('should decorate array on error', function() {
+    var result = [];
+    result.meta = 'data';
+
+    $httpBackend.expectGET('URL').respond(500, { error: 'An error occurred' });
+    var models = $resource('URL', { }, {
+      query: {
+        method: 'GET',
+        isArray: true,
+        arrayDecorate: true,
+        errorDecorate: true,
+        transformResponse: function() {
+          return result;
+        }
+      }
+    }).query(callback, errorCB);
+    $httpBackend.flush();
+
+    // Should have the same config as before; decorated with props from response
+    expect(callback).not.toHaveBeenCalled();
+    expect(errorCB).toHaveBeenCalledOnce();
+    expect(angular.isArray(models)).toBeTruthy();
+    expect(models.meta).toBe('data');
+  });
+});
+
 describe('extra params', function() {
   var $http;
   var $httpBackend;

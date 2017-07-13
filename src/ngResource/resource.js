@@ -195,6 +195,10 @@ function shallowClearAndCopy(src, dst) {
  *     with `http response` object. See {@link ng.$http $http interceptors}.
  *   - **`hasBody`** - `{boolean}` - allows to specify if a request body should be included or not.
  *     If not specified only POST, PUT and PATCH requests will have a body.
+ *   - **`arrayDecorate`** - `{boolean}` - Allows resource to be decorated by additional
+ *     non-array-indice object properties. Useful where a collection contains meta-data.
+ *   - **`errorDecorate`** - `{boolean}` - Allows resource to be decorated by properties of a
+ *     rejected response. Useful where request error returns useful error messages.
  *
  * @param {Object} options Hash with custom settings that should extend the
  *   default `$resourceProvider` behavior.  The supported options are:
@@ -744,39 +748,62 @@ angular.module('ngResource', ['ng']).
               extend({}, extractParams(data, action.params || {}), params),
               action.url);
 
-            var promise = $http(httpConfig).then(function(response) {
-              var data = response.data;
+            var promise = $http(httpConfig).then(
+              function(response) {
+                var data = response.data;
 
-              if (data) {
-                // Need to convert action.isArray to boolean in case it is undefined
-                if (isArray(data) !== (!!action.isArray)) {
-                  throw $resourceMinErr('badcfg',
-                      'Error in resource configuration for action `{0}`. Expected response to ' +
-                      'contain an {1} but got an {2} (Request: {3} {4})', name, action.isArray ? 'array' : 'object',
-                    isArray(data) ? 'array' : 'object', httpConfig.method, httpConfig.url);
-                }
-                if (action.isArray) {
-                  value.length = 0;
-                  forEach(data, function(item) {
-                    if (typeof item === 'object') {
-                      value.push(new Resource(item));
-                    } else {
-                      // Valid JSON values may be string literals, and these should not be converted
-                      // into objects. These items will not have access to the Resource prototype
-                      // methods, but unfortunately there
-                      value.push(item);
+                if (data) {
+                  // Need to convert action.isArray to boolean in case it is undefined
+                  if (isArray(data) !== (!!action.isArray)) {
+                    throw $resourceMinErr('badcfg',
+                        'Error in resource configuration for action `{0}`. Expected response to ' +
+                        'contain an {1} but got an {2} (Request: {3} {4})', name, action.isArray ? 'array' : 'object',
+                      isArray(data) ? 'array' : 'object', httpConfig.method, httpConfig.url);
+                  }
+                  if (action.isArray) {
+                    value.length = 0;
+                    // Decorate the array with the properties on the response data
+                    if (action.arrayDecorate) {
+                      for (var i in data) {
+                        if (data.hasOwnProperty(i) && angular.isUndefined(value[i]) && !/^[0-9]+$/.test(i)) {
+                          value[i] = data[i];
+                        }
+                      }
                     }
-                  });
-                } else {
-                  var promise = value.$promise;     // Save the promise
-                  shallowClearAndCopy(data, value);
-                  value.$promise = promise;         // Restore the promise
+                    forEach(data, function(item) {
+                      if (typeof item === 'object') {
+                        value.push(new Resource(item));
+                      } else {
+                        // Valid JSON values may be string literals, and these should not be converted
+                        // into objects. These items will not have access to the Resource prototype
+                        // methods, but unfortunately there
+                        value.push(item);
+                      }
+                    });
+                  } else {
+                    var promise = value.$promise;     // Save the promise
+                    shallowClearAndCopy(data, value);
+                    value.$promise = promise;         // Restore the promise
+                  }
                 }
-              }
-              response.resource = value;
+                response.resource = value;
 
-              return response;
-            });
+                return response;
+              },
+              function(response) {
+                // Decorate the existing object with the properties on the response data
+                if (response && action.errorDecorate && (!action.isArray || action.arrayDecorate)) {
+                  var data = response.data;
+                  for (var i in data) {
+                      if (data.hasOwnProperty(i) && !/^[0-9]+$/.test(i)) {
+                          value[i] = data[i];
+                      }
+                  }
+                  response.resource = value;
+                }
+                return $q.reject(response);
+              }
+            );
 
             promise = promise['finally'](function() {
               value.$resolved = true;
