@@ -1205,6 +1205,7 @@ describe('basic usage', function() {
       expect(callback).toHaveBeenCalledOnce();
 
       var response = callback.calls.mostRecent().args[0];
+      expect(response.resource).toBe(ccs);
       expect(response.status).toBe(404);
       expect(response.config).toBeDefined();
     });
