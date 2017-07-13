@@ -1,0 +1,10 @@
+{
+  "name": "functions-firebase-code.angularjs.org",
+  "description": "Cloud Functions to serve files from gcs to code.angularjs.org",
+  "dependencies": {
+    "@google-cloud/storage": "^1.1.1",
+    "firebase-admin": "^4.2.1",
+    "firebase-functions": "^0.5.9"
+  },
+  "private": true
+}
