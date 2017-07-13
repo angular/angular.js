@@ -10,7 +10,7 @@ cache:
 
 branches:
   except:
-    - /^g3_.*$/
+    - "/^g3_.*$/"
 
 env:
   matrix:
@@ -20,14 +20,15 @@ env:
     - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
   global:
-    - CXX=g++-4.8  # node 4 likes the G++ v4.8 compiler
+    # node 4 likes the G++ v4.8 compiler
+    # see https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
+    - CXX=g++-4.8
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/browsersprovider-tunnel-ready
+    - secure: oTBjhnOKhs0qDSKTf7fE4f6DYiNDPycvB7qfSF5QRIbJK/LK/J4UtFwetXuXj79HhUZG9qnoT+5e7lPaiaMlpsIKn9ann7ffqFWN1E8TMtpJF+AGigx3djYElwfgf5nEnFUFhwjFzvbfpZNnxVGgX5YbIZpe/WUbHkP4ffU0Wks=
 
-# node 4 likes the G++ v4.8 compiler
-# see https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
 addons:
   apt:
     sources:
@@ -37,20 +38,61 @@ addons:
 
 before_script:
   - du -sh ./node_modules ./bower_components/ || true
-  - ./scripts/travis/before_build.sh
-
+  - "./scripts/travis/before_build.sh"
 script:
-  - ./scripts/travis/build.sh
+  - "./scripts/travis/build.sh"
 
 after_script:
-  - ./scripts/travis/tear_down_browser_provider.sh
-  - ./scripts/travis/print_logs.sh
+  - "./scripts/travis/tear_down_browser_provider.sh"
+  - "./scripts/travis/print_logs.sh"
 
 notifications:
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/d2120f3f2bb39a4531b2
       - http://104.197.9.155:8484/hubot/travis/activity #hubot-server
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: always    # default: false
+    on_success: always # options: [always|never|change] default: always
+    on_failure: always # options: [always|never|change] default: always
+    on_start: always # default: false
+
+jobs:
+  include:
+    - stage: deploy
+      env:
+        - JOB=deploy
+      before_script: skip
+      script:
+        - "./scripts/travis/build.sh"
+      # Work around the 10min Travis timeout so the code.angularjs firebase+gcs code deploy can complete
+      before_deploy: |
+        function keep_alive() {
+          while true; do
+            echo -en "\a"
+            sleep 5
+          done
+        }
+        keep_alive &
+      deploy:
+        - provider: firebase
+          skip_cleanup: true
+          token:
+            secure: $FIREBASE_TOKEN
+          on:
+            repo: angular/angular.js
+            all_branches: true
+            # deploy a new docs version when the commit is tagged on the "latest" npm version
+            condition: $TRAVIS_TAG != '' && $( jq ".distTag" "package.json" | tr -d "\"[:space:]" ) = latest
+        - provider: gcs
+          skip_cleanup: true
+          access_key_id: GOOGLDB7W2J3LFHICF3R
+          secret_access_key:
+            secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
+          bucket: code-angularjs-org-338b8.appspot.com
+          local-dir: upload
+          detect_encoding: true # detects gzip compression
+          on:
+            repo: angular/angular.js
+            all_branches: true
+            # upload the build when the commit is tagged or the branch is "master"
+            condition: $TRAVIS_TAG != '' || ($TRAVIS_PULL_REQUEST = false && $TRAVIS_BRANCH = master)
+
