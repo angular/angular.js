@@ -405,8 +405,32 @@ function baseExtend(dst, objs, deep) {
 function extend(dst) {
   return baseExtend(dst, slice.call(arguments, 1), false);
 }
-
-
+/**
+ * Lets consider a SimpleController that looks like this using simple AngularJS code: 
+ */
+app.controller(‘SimpleController’, [ ‘$scope’, function($scope) {
+   $scope.firstName = ‘Vishal’;
+   $scope.lastName = ‘Sirohi’;
+   $scope.getFullName = function() { 
+       return $scope.firstName + ‘ ‘ + $scope.lastName; 
+   };
+}]);
+/**
+ * All the assignment to $scope to create member variables (models) and methods can look a lot better using angular.extend().
+ * Also all the assignments can be avoided. Here is how the code above will look like with angular.extend():
+ */
+ 
+ app.controller(‘SimpleController’, [ ‘$scope’, function($scope) {
+    angular.extend($scope, {
+        firstName: ‘Vishal’,
+        lastName: ‘Sirohi’,
+        getFullName : function() { 
+            return $scope.firstName + ‘ ‘ + $scope.lastName; 
+        }
+    });
+}]);
+ 
+ 
 /**
 * @ngdoc function
 * @name angular.merge
