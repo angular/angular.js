@@ -265,18 +265,21 @@ describe('ngClick (touch)', function() {
       expect($rootScope.tapped).toBe(true);
     }));
 
-    it('should click when target element is an SVG', inject(
-      function($rootScope, $compile, $rootElement) {
-        element = $compile('<svg ng-click="tapped = true"></svg>')($rootScope);
-        $rootElement.append(element);
-        $rootScope.$digest();
+    if (!/\bEdge\//.test(window.navigator.userAgent)) {
+      // Edge cannot blur svg elements
+      it('should click when target element is an SVG', inject(
+        function($rootScope, $compile, $rootElement) {
+          element = $compile('<svg ng-click="tapped = true"></svg>')($rootScope);
+          $rootElement.append(element);
+          $rootScope.$digest();
 
-        browserTrigger(element, 'touchstart');
-        browserTrigger(element, 'touchend');
-        browserTrigger(element, 'click', {x:1, y:1});
+          browserTrigger(element, 'touchstart');
+          browserTrigger(element, 'touchend');
+          browserTrigger(element, 'click', {x:1, y:1});
 
-        expect($rootScope.tapped).toEqual(true);
-    }));
+          expect($rootScope.tapped).toEqual(true);
+      }));
+    }
 
     describe('the clickbuster', function() {
       var element1, element2;
