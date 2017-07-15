@@ -823,7 +823,9 @@ angular.module('ngResource', ['ng']).
 
             function cancelRequest(value) {
               promise.catch(noop);
-              timeoutDeferred.resolve(value);
+              if (timeoutDeferred !== null) {
+                timeoutDeferred.resolve(value);
+              }
             }
           };
 
