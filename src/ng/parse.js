@@ -705,7 +705,7 @@ function findConstantAndWatchExpressions(ast, $filter, parentIsPure) {
       findConstantAndWatchExpressions(ast.property, $filter, astIsPure);
     }
     ast.constant = ast.object.constant && (!ast.computed || ast.property.constant);
-    ast.toWatch = [ast];
+    ast.toWatch = ast.constant ? [] : [ast];
     break;
   case AST.CallExpression:
     isStatelessFilter = ast.filter ? isStateless($filter, ast.callee.name) : false;
@@ -714,9 +714,7 @@ function findConstantAndWatchExpressions(ast, $filter, parentIsPure) {
     forEach(ast.arguments, function(expr) {
       findConstantAndWatchExpressions(expr, $filter, astIsPure);
       allConstants = allConstants && expr.constant;
-      if (!expr.constant) {
-        argsToWatch.push.apply(argsToWatch, expr.toWatch);
-      }
+      argsToWatch.push.apply(argsToWatch, expr.toWatch);
     });
     ast.constant = allConstants;
     ast.toWatch = isStatelessFilter ? argsToWatch : [ast];
@@ -733,9 +731,7 @@ function findConstantAndWatchExpressions(ast, $filter, parentIsPure) {
     forEach(ast.elements, function(expr) {
       findConstantAndWatchExpressions(expr, $filter, astIsPure);
       allConstants = allConstants && expr.constant;
-      if (!expr.constant) {
-        argsToWatch.push.apply(argsToWatch, expr.toWatch);
-      }
+      argsToWatch.push.apply(argsToWatch, expr.toWatch);
     });
     ast.constant = allConstants;
     ast.toWatch = argsToWatch;
@@ -746,17 +742,12 @@ function findConstantAndWatchExpressions(ast, $filter, parentIsPure) {
     forEach(ast.properties, function(property) {
       findConstantAndWatchExpressions(property.value, $filter, astIsPure);
       allConstants = allConstants && property.value.constant;
-      if (!property.value.constant) {
-        argsToWatch.push.apply(argsToWatch, property.value.toWatch);
-      }
+      argsToWatch.push.apply(argsToWatch, property.value.toWatch);
       if (property.computed) {
         findConstantAndWatchExpressions(property.key, $filter, astIsPure);
         allConstants = allConstants && property.key.constant;
-        if (!property.key.constant) {
-          argsToWatch.push.apply(argsToWatch, property.key.toWatch);
-        }
+        argsToWatch.push.apply(argsToWatch, property.key.toWatch);
       }
-
     });
     ast.constant = allConstants;
     ast.toWatch = argsToWatch;
