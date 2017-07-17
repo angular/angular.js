@@ -4009,6 +4009,11 @@ describe('parser', function() {
           expect($parse('5 != null').constant).toBe(true);
           expect($parse('{standard: 4/3, wide: 16/9}').constant).toBe(true);
           expect($parse('{[standard]: 4/3, wide: 16/9}').constant).toBe(false);
+          expect($parse('{["key"]: 1}').constant).toBe(true);
+          expect($parse('[0].length').constant).toBe(true);
+          expect($parse('[0][0]').constant).toBe(true);
+          expect($parse('{x: 1}.x').constant).toBe(true);
+          expect($parse('{x: 1}["x"]').constant).toBe(true);
         }));
 
         it('should not mark any expression involving variables or function calls as constant', inject(function($parse) {
