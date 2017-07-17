@@ -3805,35 +3805,55 @@ describe('parser', function() {
 
         it('should watch ES6 object computed property changes', function() {
           var count = 0;
-          var values = [];
+          var lastValue;
 
           scope.$watch('{[a]: true}', function(val) {
             count++;
-            values.push(val);
-          }, true);
+            lastValue = val;
+          });
 
           scope.$digest();
           expect(count).toBe(1);
-          expect(values[0]).toEqual({'undefined': true});
+          expect(lastValue).toEqual({'undefined': true});
 
           scope.$digest();
           expect(count).toBe(1);
-          expect(values[0]).toEqual({'undefined': true});
+          expect(lastValue).toEqual({'undefined': true});
 
           scope.a = true;
           scope.$digest();
           expect(count).toBe(2);
-          expect(values[1]).toEqual({'true': true});
+          expect(lastValue).toEqual({'true': true});
 
           scope.a = 'abc';
           scope.$digest();
           expect(count).toBe(3);
-          expect(values[2]).toEqual({'abc': true});
+          expect(lastValue).toEqual({'abc': true});
 
           scope.a = undefined;
           scope.$digest();
           expect(count).toBe(4);
-          expect(values[3]).toEqual({'undefined': true});
+          expect(lastValue).toEqual({'undefined': true});
+        });
+
+        it('should not shallow-watch ES6 object computed properties in case of stateful toString', function() {
+          var count = 0;
+          var lastValue;
+
+          scope.$watch('{[a]: true}', function(val) {
+            count++;
+            lastValue = val;
+          });
+
+          scope.a = {toString: function() { return this.b; }};
+          scope.a.b = 1;
+
+          //TODO: would be great if it didn't throw!
+          expect(function() { scope.$apply(); }).toThrowMinErr('$rootScope', 'infdig');
+          expect(lastValue).toEqual({1: true});
+
+          expect(function() { scope.$apply('a.b = 2'); }).toThrowMinErr('$rootScope', 'infdig');
+          expect(lastValue).toEqual({2: true});
         });
       });
 
