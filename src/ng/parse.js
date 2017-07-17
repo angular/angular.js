@@ -744,7 +744,8 @@ function findConstantAndWatchExpressions(ast, $filter, parentIsPure) {
       allConstants = allConstants && property.value.constant;
       argsToWatch.push.apply(argsToWatch, property.value.toWatch);
       if (property.computed) {
-        findConstantAndWatchExpressions(property.key, $filter, astIsPure);
+        //`{[key]: value}` implicitly does `key.toString()` which may be non-pure
+        findConstantAndWatchExpressions(property.key, $filter, /*parentIsPure=*/false);
         allConstants = allConstants && property.key.constant;
         argsToWatch.push.apply(argsToWatch, property.key.toWatch);
       }
