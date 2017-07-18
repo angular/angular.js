@@ -43,6 +43,7 @@ module.exports = function productionDeployment(getVersion) {
       'https://code.angularjs.org/snapshot/docs/js/all-versions-data.js',
       'js/pages-data.js',
       'js/nav-data.js',
+      'js/deployment-data-production.js',
       'js/docs.min.js'
     ],
     stylesheets: [

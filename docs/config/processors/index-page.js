@@ -35,7 +35,17 @@ module.exports = function generateIndexPagesProcessor() {
 
         indexDoc.id = 'index' + (deployment.name === 'default' ? '' : '-' + deployment.name);
 
+        var deploymentDoc = {
+          docType: 'deploymentData',
+          id: 'deployment-data-' + deployment.name,
+          template: 'angular-service.template.js',
+          ngModuleName: 'deployment',
+          serviceName: 'DEPLOYMENT',
+          serviceValue: deployment.name
+        };
+
         docs.push(indexDoc);
+        docs.push(deploymentDoc);
       });
     }
   };
