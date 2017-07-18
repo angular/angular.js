@@ -18,7 +18,7 @@
     </div>
   {% endfor %}
 
-    <iframe class="runnable-example-frame" src="{$ doc.example.deployments.default.outputPath $}" name="{$ doc.example.id $}"></iframe>
+    <iframe class="runnable-example-frame" ng-src="{{getExampleIndex('{$ doc.example.deployments.default.path $}')}}" name="{$ doc.example.id $}"></iframe>
   </div>
 </div>
 
