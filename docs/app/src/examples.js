@@ -18,7 +18,13 @@ angular.module('examples', [])
   return {
     restrict: 'C',
     scope : true,
-    controller : ['$scope', function($scope) {
+    controller : ['$scope', 'DEPLOYMENT', function($scope, DEPLOYMENT) {
+      var exampleIndexFile = (DEPLOYMENT === 'default' ? 'index' : 'index-' + DEPLOYMENT) + '.html';
+
+      $scope.getExampleIndex = function(basePath) {
+        return basePath + '/' + exampleIndexFile;
+      };
+
       $scope.setTab = function(index) {
         var tab = $scope.tabs[index];
         $scope.activeTabIndex = index;
