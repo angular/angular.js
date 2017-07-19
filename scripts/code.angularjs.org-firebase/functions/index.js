@@ -72,4 +72,38 @@ function sendStoredFile(request, response) {
   }
 }
 
+function deleteOldSnapshotZip(event) {
+  const object = event.data;
+
+  const bucketId = object.bucket;
+  const filePath = object.name;
+  const contentType = object.contentType;
+
+  const bucket = gcs.bucket(bucketId);
+
+  if (event.eventType === 'providers/cloud.storage/eventTypes/object.change' &&
+      contentType === 'application/zip' &&
+      filePath.startsWith('snapshot/')
+    ) {
+
+    bucket.getFiles({
+      prefix: 'snapshot/',
+      delimiter: '/',
+      autoPaginate: false
+    }).then(function(data) {
+      const files = data[0];
+
+      const oldZipFiles = files.filter(file => {
+        return file.metadata.name !== filePath && file.metadata.contentType === 'application/zip';
+      });
+
+      oldZipFiles.forEach(function(file) {
+        file.delete();
+      });
+
+    });
+  }
+}
+
 exports.sendStoredFile = functions.https.onRequest(sendStoredFile);
+exports.deleteOldSnapshotZip = functions.storage.object().onChange(deleteOldSnapshotZip);
