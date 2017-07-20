@@ -1907,7 +1907,7 @@ function $ParseProvider() {
         if (isDone(lastValue)) {
           scope.$$postDigest(unwatchIfDone);
         }
-        return post(lastValue, scope, locals);
+        return post(lastValue);
       }
     }
 

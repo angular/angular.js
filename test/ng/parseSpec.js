@@ -3246,6 +3246,20 @@ describe('parser', function() {
             expect(args).toEqual([1]);
           }));
 
+          it('should only be passed the intercepted value when wrapping one-time', inject(function($parse) {
+            var args;
+            function interceptor(v) {
+              args = sliceArgs(arguments);
+              return v;
+            }
+
+            scope.$watch($parse('::a', interceptor));
+
+            scope.a = 1;
+            scope.$digest();
+            expect(args).toEqual([1]);
+          }));
+
           it('should only be passed the intercepted value when double-intercepted',
               inject(function($parse) {
             var args1;
