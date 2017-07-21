@@ -34,7 +34,7 @@ module.exports = function productionDeployment(getVersion) {
       cdnUrl + '/angular-sanitize.min.js',
       cdnUrl + '/angular-touch.min.js',
       cdnUrl + '/angular-animate.min.js',
-      'components/marked-' + getVersion('marked') + '/lib/marked.js',
+      'components/marked-' + getVersion('marked') + '/marked.min.js',
       'js/angular-bootstrap/dropdown-toggle.min.js',
       'components/lunr-' + getVersion('lunr') + '/lunr.min.js',
       'components/google-code-prettify-' + getVersion('google-code-prettify') + '/src/prettify.js',
@@ -48,7 +48,6 @@ module.exports = function productionDeployment(getVersion) {
     ],
     stylesheets: [
       'components/bootstrap-' + getVersion('bootstrap') + '/css/bootstrap.min.css',
-      'components/open-sans-fontface-' + getVersion('open-sans-fontface') + '/open-sans.css',
       'css/prettify-theme.css',
       'css/angular-topnav.css',
       'css/docs.css',
