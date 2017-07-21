@@ -1,3 +1,37 @@
+@font-face {
+  font-family: 'Open Sans';
+  src: url("../components/open-sans-fontface-1.4.0/fonts/Regular/OpenSans-Regular.eot?v=1.1.0");
+  src: url("../components/open-sans-fontface-1.4.0/fonts/Regular/OpenSans-Regular.eot?#iefix&v=1.1.0") format("embedded-opentype"),
+    url("../components/open-sans-fontface-1.4.0/fonts/Regular/OpenSans-Regular.woff?v=1.1.0") format("woff"),
+    url("../components/open-sans-fontface-1.4.0/fonts/Regular/OpenSans-Regular.ttf?v=1.1.0") format("truetype"),
+    url("../components/open-sans-fontface-1.4.0/fonts/Regular/OpenSans-Regular.svg?v=1.1.0#OpenSansBold") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("../components/open-sans-fontface-1.4.0/fonts/Semibold/OpenSans-Semibold.eot?v=1.1.0");
+  src: url("../components/open-sans-fontface-1.4.0/fonts/Semibold/OpenSans-Semibold.eot?#iefix&v=1.1.0") format("embedded-opentype"),
+    url("../components/open-sans-fontface-1.4.0/fonts/Semibold/OpenSans-Semibold.woff?v=1.1.0") format("woff"),
+    url("../components/open-sans-fontface-1.4.0/fonts/Semibold/OpenSans-Semibold.ttf?v=1.1.0") format("truetype"),
+    url("../components/open-sans-fontface-1.4.0/fonts/Semibold/OpenSans-Semibold.svg?v=1.1.0#OpenSansBold") format("svg");
+  font-weight: 600;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url("../components/open-sans-fontface-1.4.0/fonts/Bold/OpenSans-Bold.eot?v=1.1.0");
+  src: url("../components/open-sans-fontface-1.4.0/fonts/Bold/OpenSans-Bold.eot?#iefix&v=1.1.0") format("embedded-opentype"),
+    url("../components/open-sans-fontface-1.4.0/fonts/Bold/OpenSans-Bold.woff?v=1.1.0") format("woff"),
+    url("../components/open-sans-fontface-1.4.0/fonts/Bold/OpenSans-Bold.ttf?v=1.1.0") format("truetype"),
+    url("../components/open-sans-fontface-1.4.0/fonts/Bold/OpenSans-Bold.svg?v=1.1.0#OpenSansBold") format("svg");
+  font-weight: bold;
+  font-style: normal;
+}
+
 html, body {
   position: relative;
   height: 100%;
