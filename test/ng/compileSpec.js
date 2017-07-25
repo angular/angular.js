@@ -169,6 +169,15 @@ describe('$compile', function() {
       inject();
     });
 
+    it('should allow strictComponentBindingsEnabled to be configured', function() {
+      module(function($compileProvider) {
+        expect($compileProvider.strictComponentBindingsEnabled()).toBe(false); // the default
+        $compileProvider.strictComponentBindingsEnabled(true);
+        expect($compileProvider.strictComponentBindingsEnabled()).toBe(true);
+      });
+      inject();
+    });
+
     it('should allow onChangesTtl to be configured', function() {
       module(function($compileProvider) {
         expect($compileProvider.onChangesTtl()).toBe(10); // the default
@@ -2546,6 +2555,16 @@ describe('$compile', function() {
               template: '<span></span>'
             };
           });
+          directive('prototypeMethodNameAsScopeVarD', function() {
+            return {
+              scope: {
+                'constructor': '<?',
+                'valueOf': '<'
+              },
+              restrict: 'AE',
+              template: '<span></span>'
+            };
+          });
           directive('watchAsScopeVar', function() {
             return {
               scope: {
@@ -2854,6 +2873,57 @@ describe('$compile', function() {
                 })
             );
 
+            it('should throw an error for undefined non-optional "=" bindings when ' +
+               'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-a></div>'
+                    )($rootScope);
+                  };
+                  expect(func).toThrowMinErr('$compile',
+                    'missingattr',
+                    'Attribute \'valueOf\' of \'prototypeMethodNameAs' +
+                    'ScopeVarA\' is non-optional and must be set!');
+                });
+            });
+
+            it('should not throw an error for set non-optional "=" bindings when ' +
+              'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-a constructor="constructor" value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+                  expect(func).not.toThrow();
+                });
+            });
+
+            it('should not throw an error for undefined optional "=" bindings when ' +
+               'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-a value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+                  expect(func).not.toThrow();
+                });
+            });
+
             it('should handle "@" bindings with same method names in Object.prototype correctly when not present', inject(
                 function($rootScope, $compile) {
                   var func = function() {
@@ -2891,6 +2961,57 @@ describe('$compile', function() {
                 })
             );
 
+            it('should throw an error for undefined non-optional "@" bindings when ' +
+               'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-b></div>'
+                    )($rootScope);
+                  };
+                  expect(func).toThrowMinErr('$compile',
+                    'missingattr',
+                    'Attribute \'valueOf\' of \'prototypeMethodNameAs' +
+                    'ScopeVarB\' is non-optional and must be set!');
+                });
+            });
+
+            it('should not throw an error for set non-optional "@" bindings when ' +
+              'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-b constructor="constructor" value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+                  expect(func).not.toThrow();
+                });
+            });
+
+            it('should not throw an error for undefined optional "@" bindings when ' +
+              'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-b value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+                  expect(func).not.toThrow();
+                });
+            });
+
             it('should handle "&" bindings with same method names in Object.prototype correctly when not present', inject(
                 function($rootScope, $compile) {
                   var func = function() {
@@ -2922,6 +3043,108 @@ describe('$compile', function() {
                   expect(element.isolateScope()['valueOf']()).toBe('valueOf');
                 })
             );
+
+            it('should throw an error for undefined non-optional "&" bindings when ' +
+               'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-c></div>'
+                    )($rootScope);
+                  };
+                  expect(func).toThrowMinErr('$compile',
+                                             'missingattr',
+                                             'Attribute \'valueOf\' of \'prototypeMethodNameAs' +
+                                             'ScopeVarC\' is non-optional and must be set!');
+                });
+            });
+
+            it('should not throw an error for set non-optional "&" bindings when ' +
+              'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-c constructor="constructor" value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+                  expect(func).not.toThrow();
+                });
+            });
+
+            it('should not throw an error for undefined optional "&" bindings when ' +
+              'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-c value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+                  expect(func).not.toThrow();
+                });
+            });
+
+            it('should throw an error for undefined non-optional "<" bindings when ' +
+               'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-d></div>'
+                    )($rootScope);
+                  };
+                  expect(func).toThrowMinErr('$compile',
+                                             'missingattr',
+                                             'Attribute \'valueOf\' of \'prototypeMethodNameAs' +
+                                             'ScopeVarD\' is non-optional and must be set!');
+                });
+            });
+
+            it('should not throw an error for set non-optional "<" bindings when ' +
+              'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-d constructor="constructor" value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+                  expect(func).not.toThrow();
+                });
+            });
+
+            it('should not throw an error for undefined optional "<" bindings when ' +
+              'strictComponentBindingsEnabled is true', function() {
+              module(function($compileProvider) {
+                $compileProvider.strictComponentBindingsEnabled(true);
+              });
+              inject(
+                function($rootScope, $compile) {
+                  var func = function() {
+                    element = $compile(
+                      '<div prototype-method-name-as-scope-var-d value-of="valueOf"></div>'
+                    )($rootScope);
+                  };
+                  expect(func).not.toThrow();
+                });
+            });
 
             it('should not throw exception when using "watch" as binding in Firefox', inject(
                 function($rootScope, $compile) {
