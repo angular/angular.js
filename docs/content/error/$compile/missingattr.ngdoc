@@ -1,0 +1,8 @@
+@ngdoc error
+@name $compile:missingattr
+@fullName Missing required attribute
+@description
+
+This error may occur only when `$compileProvider.strictComponentBindingsEnabled` is set to `true`.
+Then all attributes mentioned in `bindings` without `?` must be set. If one or more aren't set,
+the first one will throw an error.
