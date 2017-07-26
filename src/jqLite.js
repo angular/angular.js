@@ -420,13 +420,15 @@ function jqLiteHasClass(element, selector) {
 
 function jqLiteRemoveClass(element, cssClasses) {
   if (cssClasses && element.setAttribute) {
+    var existingClasses = (' ' + (element.getAttribute('class') || '') + ' ')
+                            .replace(/[\n\t]/g, ' ');
+
     forEach(cssClasses.split(' '), function(cssClass) {
-      element.setAttribute('class', trim(
-          (' ' + (element.getAttribute('class') || '') + ' ')
-          .replace(/[\n\t]/g, ' ')
-          .replace(' ' + trim(cssClass) + ' ', ' '))
-      );
+      cssClass = trim(cssClass);
+      existingClasses = existingClasses.replace(' ' + cssClass + ' ', ' ');
     });
+
+    element.setAttribute('class', trim(existingClasses));
   }
 }
 

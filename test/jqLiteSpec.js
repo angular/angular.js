@@ -914,6 +914,23 @@ describe('jqLite', function() {
       });
 
 
+      // JQLite specific implementation/performance tests
+      if (_jqLiteMode) {
+        it('should only get/set the attribute once when multiple classes added', function() {
+          var fakeElement = {
+            nodeType: 1,
+            setAttribute: jasmine.createSpy(),
+            getAttribute: jasmine.createSpy().and.returnValue('')
+          };
+          var jqA = jqLite(fakeElement);
+
+          jqA.addClass('foo bar baz');
+          expect(fakeElement.getAttribute).toHaveBeenCalledOnceWith('class');
+          expect(fakeElement.setAttribute).toHaveBeenCalledOnceWith('class', 'foo bar baz');
+        });
+      }
+
+
       it('should not add duplicate classes', function() {
         var jqA = jqLite(a);
         expect(a.className).toBe('');
@@ -1031,6 +1048,23 @@ describe('jqLite', function() {
         jqA.removeClass('foo baz noexistent');
         expect(a.className).toBe('bar');
       });
+
+
+      // JQLite specific implementation/performance tests
+      if (_jqLiteMode) {
+        it('should get/set the attribute once when removing multiple classes', function() {
+          var fakeElement = {
+            nodeType: 1,
+            setAttribute: jasmine.createSpy(),
+            getAttribute: jasmine.createSpy().and.returnValue('foo bar baz')
+          };
+          var jqA = jqLite(fakeElement);
+
+          jqA.removeClass('foo baz noexistent');
+          expect(fakeElement.getAttribute).toHaveBeenCalledOnceWith('class');
+          expect(fakeElement.setAttribute).toHaveBeenCalledOnceWith('class', 'bar');
+        });
+      }
     });
   });
 
