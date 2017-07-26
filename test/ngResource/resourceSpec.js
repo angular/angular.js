@@ -2115,13 +2115,10 @@ describe('cancelling requests', function() {
     var creditCard = CreditCard.get();
     var cancelRequest = creditCard.$cancelRequest;
 
-    creditCard.$promise.then(function(list) {
-        cancelRequest();
-    });
-
     $httpBackend.flush();
 
-    expect(creditCard.$cancelRequest).not.toThrow();
+    expect(cancelRequest).not.toBe(noop);
+    expect(cancelRequest).not.toThrow();
   });
 });
 
