@@ -42,6 +42,7 @@ function $HttpParamSerializerProvider() {
       var parts = [];
       forEachSorted(params, function(value, key) {
         if (value === null || isUndefined(value)) return;
+        if (typeof value === 'function') return;
         if (isArray(value)) {
           forEach(value, function(v) {
             parts.push(encodeUriQuery(key)  + '=' + encodeUriQuery(serializeValue(v)));
