@@ -2102,6 +2102,25 @@ describe('cancelling requests', function() {
 
     expect(creditCard.$cancelRequest).toBe(noop);
   });
+
+  it('should not break when calling old `$cancelRequest` after the response arrives', function() {
+    $httpBackend.whenGET('/CreditCard').respond({});
+
+    var CreditCard = $resource('/CreditCard', {}, {
+      get: {
+        method: 'GET',
+        cancellable: true
+      }
+    });
+
+    var creditCard = CreditCard.get();
+    var cancelRequest = creditCard.$cancelRequest;
+
+    $httpBackend.flush();
+
+    expect(cancelRequest).not.toBe(noop);
+    expect(cancelRequest).not.toThrow();
+  });
 });
 
 describe('configuring `cancellable` on the provider', function() {
