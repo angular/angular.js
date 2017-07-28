@@ -105,3 +105,10 @@ AngularJS has Dependency Injection, i.e. it takes care of providing all the nece
 to its controllers and services whenever required. This helps in making the AngularJS code ready for
 unit testing by making use of mock dependencies created and injected. This makes AngularJS more
 modular and easily testable thus in turn helping a team create more robust applications.
+
+#### Single Page Applications (SPA)
+AngularJS is the major JavaScript framework for building Single Page Applications. It has a set of
+ready-to-use modules to make the [process of creating SPA](https://tests4geeks.com/single-page-application-using-angularjs-tutorial/) very easy.
+Controller and model states are maintained within the client browser instead of sending requests to
+the server. Therefore, a page does not reload at any point in the process and new pages are capable
+of being generated without any interaction with a server.
