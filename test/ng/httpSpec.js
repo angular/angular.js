@@ -2346,7 +2346,7 @@ describe('$http param serializers', function() {
     });
 
     it('should NOT serialize functions', function() {
-      expect(defSer({foo: 'foov', bar: function() {}})).toEqual('bar=barv');
+      expect(defSer({foo: 'foov', bar: function() {}})).toEqual('foo=foov');
     });
 
   });
