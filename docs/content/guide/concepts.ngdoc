@@ -186,7 +186,7 @@ Right now, the `InvoiceController` contains all logic of our example. When the a
 is a good practice to move view-independent logic from the controller into a
 <a name="service">{@link services service}</a>, so it can be reused by other parts
 of the application as well. Later on, we could also change that service to load the exchange rates
-from the web, e.g. by calling the Yahoo Finance API, without changing the controller.
+from the web, e.g. by calling the [Fixer.io](http://fixer.io) exchange rate API, without changing the controller.
 
 Let's refactor our example and move the currency conversion into a service in another file:
 
@@ -300,7 +300,7 @@ to something shorter like `a`.
 
 ## Accessing the backend
 
-Let's finish our example by fetching the exchange rates from the Yahoo Finance API.
+Let's finish our example by fetching the exchange rates from the [Fixer.io](http://fixer.io) exchange rate API.
 The following example shows how this is done with AngularJS:
 
 <example name="guide-concepts-3" ng-app-included="true">
@@ -323,10 +323,6 @@ The following example shows how this is done with AngularJS:
   <file name="finance3.js">
     angular.module('finance3', [])
       .factory('currencyConverter', ['$http', function($http) {
-        var YAHOO_FINANCE_URL_PATTERN =
-              '//query.yahooapis.com/v1/public/yql?q=select * from ' +
-              'yahoo.finance.xchange where pair in ("PAIRS")&format=json&' +
-              'env=store://datatables.org/alltableswithkeys';
         var currencies = ['USD', 'EUR', 'CNY'];
         var usdToForeignRates = {};
 
@@ -335,15 +331,10 @@ The following example shows how this is done with AngularJS:
         };
 
         var refresh = function() {
-          var url = YAHOO_FINANCE_URL_PATTERN.
-                     replace('PAIRS', 'USD' + currencies.join('","USD'));
+          var url = 'https://api.fixer.io/latest?base=USD&symbols=' + currencies.join(",");
           return $http.get(url).then(function(response) {
-            var newUsdToForeignRates = {};
-            angular.forEach(response.data.query.results.rate, function(rate) {
-              var currency = rate.id.substring(3,6);
-              newUsdToForeignRates[currency] = window.parseFloat(rate.Rate);
-            });
-            usdToForeignRates = newUsdToForeignRates;
+            usdToForeignRates = response.data.rates;
+            usdToForeignRates['USD'] = 1;
           });
         };
 

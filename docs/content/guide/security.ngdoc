@@ -100,8 +100,7 @@ Protection from JSON Hijacking is provided if the server prefixes all JSON reque
 AngularJS will automatically strip the prefix before processing it as JSON.
 For more information please visit {@link $http#json-vulnerability-protection JSON Hijacking Protection}.
 
-Bear in mind that calling `$http.jsonp`, like in [our Yahoo! finance example](https://docs.angularjs.org/guide/concepts#accessing-the-backend),
-gives the remote server (and, if the request is not secured, any Man-in-the-Middle attackers)
+Bear in mind that calling `$http.jsonp` gives the remote server (and, if the request is not secured, any Man-in-the-Middle attackers)
 instant remote code execution in your application: the result of these requests is handed off
 to the browser as regular `<script>` tag.
 
