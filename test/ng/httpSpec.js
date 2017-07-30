@@ -2345,9 +2345,7 @@ describe('$http param serializers', function() {
       expect(jqrSer({someDate: new Date('2014-07-15T17:30:00.000Z')})).toEqual('someDate=2014-07-15T17:30:00.000Z');
     });
 
-    it('should NOT serialize functions', function() {
-      expect(defSer({foo: 'foov', bar: function() {}})).toEqual('foo=foov');
-    });
+    
 
   });
 
@@ -2355,6 +2353,10 @@ describe('$http param serializers', function() {
 
     it('should serialize arrays by repeating param name', function() {
       expect(defSer({a: 'b', foo: ['bar', 'baz']})).toEqual('a=b&foo=bar&foo=baz');
+    });
+    
+    it('should NOT serialize functions', function() {
+      expect(defSer({foo: 'foov', bar: function() {}})).toEqual('foo=foov');
     });
   });
 
