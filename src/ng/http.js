@@ -122,6 +122,9 @@ function $HttpParamSerializerJQLikeProvider() {
                 (topLevel ? '' : ']'));
           });
         } else {
+          if (isFunction(toSerialize)) {
+            toSerialize = toSerialize();
+          }
           parts.push(encodeUriQuery(prefix) + '=' +
               (toSerialize == null ? '' : encodeUriQuery(serializeValue(toSerialize))));
         }
