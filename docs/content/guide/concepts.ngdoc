@@ -186,7 +186,7 @@ Right now, the `InvoiceController` contains all logic of our example. When the a
 is a good practice to move view-independent logic from the controller into a
 <a name="service">{@link services service}</a>, so it can be reused by other parts
 of the application as well. Later on, we could also change that service to load the exchange rates
-from the web, e.g. by calling the <a href="http://fixer.io" title="fixer" target="_blank">Fixer.io</a> exchange rate API, without changing the controller.
+from the web, e.g. by calling the [Fixer.io](http://fixer.io) exchange rate API, without changing the controller.
 
 Let's refactor our example and move the currency conversion into a service in another file:
 
@@ -300,7 +300,7 @@ to something shorter like `a`.
 
 ## Accessing the backend
 
-Let's finish our example by fetching the exchange rates from the <a href="http://fixer.io" title="fixer" target="_blank">Fixer.io</a> exchange rate API.
+Let's finish our example by fetching the exchange rates from the [Fixer.io](http://fixer.io) exchange rate API.
 The following example shows how this is done with AngularJS:
 
 <example name="guide-concepts-3" ng-app-included="true">
