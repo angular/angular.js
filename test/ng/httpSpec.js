@@ -2364,15 +2364,39 @@ describe('$http param serializers', function() {
       expect(decodeURIComponent(jqrSer({a: 'b', foo: ['bar', 'baz']}))).toEqual('a=b&foo[]=bar&foo[]=baz');
     });
 
+    it('should serialize arrays with functions', function() {
+      expect(jqrSer({foo: [valueFn('bar')]})).toEqual('foo%5B%5D=bar'); // foo[]=bar
+    });
+
+    it('should serialize arrays with functions inside objects', function() {
+      expect(jqrSer({foo: {bar: [valueFn('baz')]}})).toEqual('foo%5Bbar%5D%5B%5D=baz'); // foo[bar][]=baz
+    });
+
     it('should serialize objects by repeating param name with [key] suffix', function() {
       expect(jqrSer({a: 'b', foo: {'bar': 'barv', 'baz': 'bazv'}})).toEqual('a=b&foo%5Bbar%5D=barv&foo%5Bbaz%5D=bazv');
                                                                            //a=b&foo[bar]=barv&foo[baz]=bazv
+    });
+
+    it('should serialize objects with function properties', function() {
+      expect(jqrSer({a: valueFn('b')})).toEqual('a=b');
+    });
+
+    it('should serialize objects with function properties returning an object', function() {
+      expect(jqrSer({a: valueFn({b: 'c'})})).toEqual('a=%7B%22b%22:%22c%22%7D'); //a={"b":"c"}
     });
 
     it('should serialize nested objects by repeating param name with [key] suffix', function() {
       expect(jqrSer({a: ['b', {c: 'd'}], e: {f: 'g', 'h': ['i', 'j']}})).toEqual(
          'a%5B%5D=b&a%5B1%5D%5Bc%5D=d&e%5Bf%5D=g&e%5Bh%5D%5B%5D=i&e%5Bh%5D%5B%5D=j');
          //a[]=b&a[1][c]=d&e[f]=g&e[h][]=i&e[h][]=j
+    });
+
+    it('should serialize nested objects with function properties', function() {
+      expect(jqrSer({foo: {bar: valueFn('barv')}})).toEqual('foo%5Bbar%5D=barv'); //foo[bar]=barv
+    });
+
+    it('should serialize nested objects with function properties returning an object', function() {
+      expect(jqrSer({foo: {bar: valueFn({bav: 'barv'})}})).toEqual('foo%5Bbar%5D=%7B%22bav%22:%22barv%22%7D'); //foo[bar]={"bav":"barv"}
     });
 
     it('should serialize objects inside array elements using their index', function() {
