@@ -1944,6 +1944,7 @@ function $ParseProvider() {
         return second(first(value));
       }
       chainedInterceptor.$stateful = first.$stateful || second.$stateful;
+      chainedInterceptor.$$pure = first.$$pure && second.$$pure;
 
       return chainedInterceptor;
     }
@@ -1979,14 +1980,18 @@ function $ParseProvider() {
       // If the expression itself has no inputs then use the full expression as an input.
       if (!interceptorFn.$stateful) {
         useInputs = !parsedExpression.inputs;
-        fn.inputs = (parsedExpression.inputs ? parsedExpression.inputs : [parsedExpression]).map(function(e) {
+        fn.inputs = parsedExpression.inputs ? parsedExpression.inputs : [parsedExpression];
+
+        if (!interceptorFn.$$pure) {
+          fn.inputs = fn.inputs.map(function(e) {
               // Remove the isPure flag of inputs when it is not absolute because they are now wrapped in a
-              // potentially non-pure interceptor function.
+              // non-pure interceptor function.
               if (e.isPure === PURITY_RELATIVE) {
                 return function depurifier(s) { return e(s); };
               }
               return e;
             });
+        }
       }
 
       return addWatchDelegate(fn);
