@@ -2381,7 +2381,7 @@ describe('$http param serializers', function() {
       expect(jqrSer({a: valueFn('b')})).toEqual('a=b');
     });
 
-    it('should serialize objects with function properties returning an object by serializing the returned object', function() {
+    it('should serialize objects with function properties returning an object', function() {
       expect(jqrSer({a: valueFn({b: 'c'})})).toEqual('a=%7B%22b%22:%22c%22%7D'); //a={"b":"c"}
     });
 
@@ -2395,7 +2395,7 @@ describe('$http param serializers', function() {
       expect(jqrSer({foo: {bar: valueFn('barv')}})).toEqual('foo%5Bbar%5D=barv'); //foo[bar]=barv
     });
 
-    it('should serialize nested objects with function properties returning an object by serializing the returned object', function() {
+    it('should serialize nested objects with function properties returning an object', function() {
       expect(jqrSer({foo: {bar: valueFn({bav: 'barv'})}})).toEqual('foo%5Bbar%5D=%7B%22bav%22:%22barv%22%7D'); //foo[bar]={"bav":"barv"}
     });
 
