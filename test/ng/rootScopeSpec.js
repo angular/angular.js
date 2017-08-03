@@ -2316,6 +2316,90 @@ describe('Scope', function() {
         }));
 
 
+        it('should call next listener after removing the current listener via its own handler', inject(function($rootScope) {
+          var listener1 = jasmine.createSpy('listener1').and.callFake(function() { remove1(); });
+          var remove1 = $rootScope.$on('abc', listener1);
+
+          var listener2 = jasmine.createSpy('listener2');
+          var remove2 = $rootScope.$on('abc', listener2);
+
+          var listener3 = jasmine.createSpy('listener3');
+          var remove3 = $rootScope.$on('abc', listener3);
+
+          $rootScope.$broadcast('abc');
+          expect(listener1).toHaveBeenCalled();
+          expect(listener2).toHaveBeenCalled();
+          expect(listener3).toHaveBeenCalled();
+
+          listener1.calls.reset();
+          listener2.calls.reset();
+          listener3.calls.reset();
+
+          $rootScope.$broadcast('abc');
+          expect(listener1).not.toHaveBeenCalled();
+          expect(listener2).toHaveBeenCalled();
+          expect(listener3).toHaveBeenCalled();
+        }));
+
+
+        it('should call all subsequent listeners when a previous listener is removed via a handler', inject(function($rootScope) {
+          var listener1 = jasmine.createSpy();
+          var remove1 = $rootScope.$on('abc', listener1);
+
+          var listener2 = jasmine.createSpy().and.callFake(remove1);
+          var remove2 = $rootScope.$on('abc', listener2);
+
+          var listener3 = jasmine.createSpy();
+          var remove3 = $rootScope.$on('abc', listener3);
+
+          $rootScope.$broadcast('abc');
+          expect(listener1).toHaveBeenCalled();
+          expect(listener2).toHaveBeenCalled();
+          expect(listener3).toHaveBeenCalled();
+
+          listener1.calls.reset();
+          listener2.calls.reset();
+          listener3.calls.reset();
+
+          $rootScope.$broadcast('abc');
+          expect(listener1).not.toHaveBeenCalled();
+          expect(listener2).toHaveBeenCalled();
+          expect(listener3).toHaveBeenCalled();
+        }));
+
+
+        it('should not call listener when removed by previous', inject(function($rootScope) {
+          var listener1 = jasmine.createSpy('listener1');
+          var remove1 = $rootScope.$on('abc', listener1);
+
+          var listener2 = jasmine.createSpy('listener2').and.callFake(function() { remove3(); });
+          var remove2 = $rootScope.$on('abc', listener2);
+
+          var listener3 = jasmine.createSpy('listener3');
+          var remove3 = $rootScope.$on('abc', listener3);
+
+          var listener4 = jasmine.createSpy('listener4');
+          var remove4 = $rootScope.$on('abc', listener4);
+
+          $rootScope.$broadcast('abc');
+          expect(listener1).toHaveBeenCalled();
+          expect(listener2).toHaveBeenCalled();
+          expect(listener3).not.toHaveBeenCalled();
+          expect(listener4).toHaveBeenCalled();
+
+          listener1.calls.reset();
+          listener2.calls.reset();
+          listener3.calls.reset();
+          listener4.calls.reset();
+
+          $rootScope.$broadcast('abc');
+          expect(listener1).toHaveBeenCalled();
+          expect(listener2).toHaveBeenCalled();
+          expect(listener3).not.toHaveBeenCalled();
+          expect(listener4).toHaveBeenCalled();
+        }));
+
+
         it('should decrement ancestor $$listenerCount entries', inject(function($rootScope) {
           var child1 = $rootScope.$new(),
               child2 = child1.$new(),
