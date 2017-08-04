@@ -386,6 +386,9 @@ describe('form', function() {
       doc = jqLite('<form ng-submit="submitMe()">' +
                      '<input type="submit" value="submit">' +
                    '</form>');
+      // Support: Chrome 60+ (on Windows)
+      // We need to add the form to the DOM in order for `submit` events to be properly fired.
+      window.document.body.appendChild(doc[0]);
 
       var assertPreventDefaultListener = function(e) {
         reloadPrevented = e.defaultPrevented || (e.returnValue === false);
@@ -420,15 +423,18 @@ describe('form', function() {
       inject(function($timeout) {
         doc = jqLite('<div>' +
                         '<form ng-submit="submitMe()">' +
-                          '<button ng-click="destroy()"></button>' +
+                          '<button type="submit" ng-click="destroy()"></button>' +
                         '</form>' +
                       '</div>');
+        // Support: Chrome 60+ (on Windows)
+        // We need to add the form to the DOM in order for `submit` events to be properly fired.
+        window.document.body.appendChild(doc[0]);
 
         var form = doc.find('form'),
             destroyed = false,
             nextTurn = false,
             submitted = false,
-            reloadPrevented;
+            reloadPrevented = 'never called';
 
         scope.destroy = function() {
           // yes, I know, scope methods should not do direct DOM manipulation, but I wanted to keep
@@ -465,6 +471,12 @@ describe('form', function() {
                                          // the event propagates there. we can fix this if we see
                                          // the issue in the wild, I'm not going to bother to do it
                                          // now. (i)
+
+          // Support: Chrome 60+ (on Windows)
+          // Chrome 60+ on Windows does not fire `submit` events when the form is not attached to
+          // the DOM. Verify that the `submit` listener was either never fired or (if fired) the
+          // reload was prevented.
+          expect(reloadPrevented).not.toBe(false);
 
           // prevent mem leak in test
           form[0].removeEventListener('submit', assertPreventDefaultListener);
