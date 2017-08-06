@@ -2922,84 +2922,137 @@ describe('ngOptions', function() {
     });
 
 
-    it('should not re-set the `selected` property if it already has the correct value', function() {
-      scope.values = [{name: 'A'}, {name: 'B'}];
-      createMultiSelect();
+    // Support: Safari 9
+    // This test relies defining a getter/setter `selected` property on either `<option>` elements
+    // or their prototype. Some browsers (including Safari 9) are very flakey when the
+    // getter/setter is not defined on the prototype (probably due to some bug). On Safari 9, the
+    // getter/setter that is already defined on the `<option>` element's prototype is not
+    // configurable, so we can't overwrite it with our spy.
+    if (!/\b9(?:\.\d+)+ safari/i.test(window.navigator.userAgent)) {
+      it('should not re-set the `selected` property if it already has the correct value', function() {
+        scope.values = [{name: 'A'}, {name: 'B'}];
+        createMultiSelect();
 
-      var options = element.find('option');
-      var optionsSetSelected = [];
-      var _selected = [];
+        var options = element.find('option');
+        var optionsSetSelected = [];
+        var _selected = [];
 
-      // Set up spies
-      forEach(options, function(option, i) {
-        optionsSetSelected[i] = jasmine.createSpy('optionSetSelected' + i);
-        _selected[i] = option.selected;
-        Object.defineProperty(option, 'selected', {
-          get: function() { return _selected[i]; },
-          set: optionsSetSelected[i].and.callFake(function(value) { _selected[i] = value; })
+        // Set up spies
+        var optionProto = Object.getPrototypeOf(options[0]);
+        var originalSelectedDescriptor = isFunction(Object.getOwnPropertyDescriptor) &&
+                                        Object.getOwnPropertyDescriptor(optionProto, 'selected');
+        var addSpiesOnProto = originalSelectedDescriptor && originalSelectedDescriptor.configurable;
+
+        forEach(options, function(option, i) {
+          var setSelected = function(value) { _selected[i] = value; };
+          optionsSetSelected[i] = jasmine.createSpy('optionSetSelected' + i).and.callFake(setSelected);
+          setSelected(option.selected);
         });
+
+        if (!addSpiesOnProto) {
+          forEach(options, function(option, i) {
+            Object.defineProperty(option, 'selected', {
+              get: function() { return _selected[i]; },
+              set: optionsSetSelected[i]
+            });
+          });
+        } else {
+          // Support: Firefox 54+
+          // We cannot use the above (simpler) method on all browsers because of Firefox 54+, which
+          // is very flaky when the getter/setter property is defined on the element itself and not
+          // the prototype. (Possibly the result of some (buggy?) optimization.)
+          var getSelected = function(index) { return _selected[index]; };
+          var setSelected = function(index, value) { optionsSetSelected[index](value); };
+          var getSelectedOriginal = function(option) {
+            return originalSelectedDescriptor.get.call(option);
+          };
+          var setSelectedOriginal = function(option, value) {
+            originalSelectedDescriptor.set.call(option, value);
+          };
+          var getIndexAndCall = function(option, foundFn, notFoundFn, value) {
+            for (var i = 0, ii = options.length; i < ii; ++i) {
+              if (options[i] === option) return foundFn(i, value);
+            }
+            return notFoundFn(option, value);
+          };
+
+          Object.defineProperty(optionProto, 'selected', {
+            get: function() {
+              return getIndexAndCall(this, getSelected, getSelectedOriginal);
+            },
+            set: function(value) {
+              return getIndexAndCall(this, setSelected, setSelectedOriginal, value);
+            }
+          });
+        }
+
+        // Select `optionA`
+        scope.$apply('selected = [values[0]]');
+
+        expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(true);
+        expect(optionsSetSelected[1]).not.toHaveBeenCalled();
+        expect(options[0].selected).toBe(true);
+        expect(options[1].selected).toBe(false);
+        optionsSetSelected[0].calls.reset();
+        optionsSetSelected[1].calls.reset();
+
+        // Select `optionB` (`optionA` remains selected)
+        scope.$apply('selected.push(values[1])');
+
+        expect(optionsSetSelected[0]).not.toHaveBeenCalled();
+        expect(optionsSetSelected[1]).toHaveBeenCalledOnceWith(true);
+        expect(options[0].selected).toBe(true);
+        expect(options[1].selected).toBe(true);
+        optionsSetSelected[0].calls.reset();
+        optionsSetSelected[1].calls.reset();
+
+        // Unselect `optionA` (`optionB` remains selected)
+        scope.$apply('selected.shift()');
+
+        expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(false);
+        expect(optionsSetSelected[1]).not.toHaveBeenCalled();
+        expect(options[0].selected).toBe(false);
+        expect(options[1].selected).toBe(true);
+        optionsSetSelected[0].calls.reset();
+        optionsSetSelected[1].calls.reset();
+
+        // Reselect `optionA` (`optionB` remains selected)
+        scope.$apply('selected.push(values[0])');
+
+        expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(true);
+        expect(optionsSetSelected[1]).not.toHaveBeenCalled();
+        expect(options[0].selected).toBe(true);
+        expect(options[1].selected).toBe(true);
+        optionsSetSelected[0].calls.reset();
+        optionsSetSelected[1].calls.reset();
+
+        // Unselect `optionB` (`optionA` remains selected)
+        scope.$apply('selected.shift()');
+
+        expect(optionsSetSelected[0]).not.toHaveBeenCalled();
+        expect(optionsSetSelected[1]).toHaveBeenCalledOnceWith(false);
+        expect(options[0].selected).toBe(true);
+        expect(options[1].selected).toBe(false);
+        optionsSetSelected[0].calls.reset();
+        optionsSetSelected[1].calls.reset();
+
+        // Unselect `optionA`
+        scope.$apply('selected.length = 0');
+
+        expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(false);
+        expect(optionsSetSelected[1]).not.toHaveBeenCalled();
+        expect(options[0].selected).toBe(false);
+        expect(options[1].selected).toBe(false);
+        optionsSetSelected[0].calls.reset();
+        optionsSetSelected[1].calls.reset();
+
+        // Support: Firefox 54+
+        // Restore `originalSelectedDescriptor`
+        if (addSpiesOnProto) {
+          Object.defineProperty(optionProto, 'selected', originalSelectedDescriptor);
+        }
       });
-
-      // Select `optionA`
-      scope.$apply('selected = [values[0]]');
-
-      expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(true);
-      expect(optionsSetSelected[1]).not.toHaveBeenCalled();
-      expect(options[0].selected).toBe(true);
-      expect(options[1].selected).toBe(false);
-      optionsSetSelected[0].calls.reset();
-      optionsSetSelected[1].calls.reset();
-
-      // Select `optionB` (`optionA` remains selected)
-      scope.$apply('selected.push(values[1])');
-
-      expect(optionsSetSelected[0]).not.toHaveBeenCalled();
-      expect(optionsSetSelected[1]).toHaveBeenCalledOnceWith(true);
-      expect(options[0].selected).toBe(true);
-      expect(options[1].selected).toBe(true);
-      optionsSetSelected[0].calls.reset();
-      optionsSetSelected[1].calls.reset();
-
-      // Unselect `optionA` (`optionB` remains selected)
-      scope.$apply('selected.shift()');
-
-      expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(false);
-      expect(optionsSetSelected[1]).not.toHaveBeenCalled();
-      expect(options[0].selected).toBe(false);
-      expect(options[1].selected).toBe(true);
-      optionsSetSelected[0].calls.reset();
-      optionsSetSelected[1].calls.reset();
-
-      // Reselect `optionA` (`optionB` remains selected)
-      scope.$apply('selected.push(values[0])');
-
-      expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(true);
-      expect(optionsSetSelected[1]).not.toHaveBeenCalled();
-      expect(options[0].selected).toBe(true);
-      expect(options[1].selected).toBe(true);
-      optionsSetSelected[0].calls.reset();
-      optionsSetSelected[1].calls.reset();
-
-      // Unselect `optionB` (`optionA` remains selected)
-      scope.$apply('selected.shift()');
-
-      expect(optionsSetSelected[0]).not.toHaveBeenCalled();
-      expect(optionsSetSelected[1]).toHaveBeenCalledOnceWith(false);
-      expect(options[0].selected).toBe(true);
-      expect(options[1].selected).toBe(false);
-      optionsSetSelected[0].calls.reset();
-      optionsSetSelected[1].calls.reset();
-
-      // Unselect `optionA`
-      scope.$apply('selected.length = 0');
-
-      expect(optionsSetSelected[0]).toHaveBeenCalledOnceWith(false);
-      expect(optionsSetSelected[1]).not.toHaveBeenCalled();
-      expect(options[0].selected).toBe(false);
-      expect(options[1].selected).toBe(false);
-      optionsSetSelected[0].calls.reset();
-      optionsSetSelected[1].calls.reset();
-    });
+    }
 
     if (window.MutationObserver) {
       //IE9 and IE10 do not support MutationObserver
