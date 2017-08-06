@@ -2512,7 +2512,7 @@ describe('ngMock', function() {
 
 describe('ngMockE2E', function() {
   describe('$httpBackend', function() {
-    var hb, realHttpBackend, realHttpBackendBrowser, callback;
+    var hb, realHttpBackend, $http, realHttpBackendBrowser, callback;
 
     beforeEach(function() {
       callback = jasmine.createSpy('callback');
@@ -2525,7 +2525,26 @@ describe('ngMockE2E', function() {
       module('ngMockE2E');
       inject(function($injector) {
         hb = $injector.get('$httpBackend');
+        $http = $injector.get('$http');
       });
+    });
+
+
+    it('should throw error when unexpected request - without error callback', function() {
+      expect(function() {
+        $http.get('/some').then(noop);
+
+        hb.verifyNoOutstandingRequest();
+      }).toThrowError('Unexpected request: GET /some\nNo more request expected');
+    });
+
+
+    it('should throw error when unexpected request - with error callback', function() {
+      expect(function() {
+        $http.get('/some').then(noop, noop);
+
+        hb.verifyNoOutstandingRequest();
+      }).toThrowError('Unexpected request: GET /some\nNo more request expected');
     });
 
 

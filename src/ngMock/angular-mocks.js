@@ -1438,10 +1438,16 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         return;
       }
     }
-    throw wasExpected ?
+    var error = wasExpected ?
         new Error('No response defined !') :
         new Error('Unexpected request: ' + method + ' ' + url + '\n' +
                   (expectation ? 'Expected ' + expectation : 'No more request expected'));
+
+    // In addition to be being converted to a rejection, this error also needs to be passed to
+    // the $exceptionHandler and be rethrown (so that the test fails).
+    error.$$passToExceptionHandler = true;
+
+    throw error;
   }
 
   /**
