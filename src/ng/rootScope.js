@@ -1273,7 +1273,10 @@ function $RootScopeProvider() {
         return function() {
           var indexOfListener = namedListeners.indexOf(listener);
           if (indexOfListener !== -1) {
-            namedListeners[indexOfListener] = null;
+            // Use delete in the hope of the browser deallocating the memory for the array entry,
+            // while not shifting the array indexes of other listeners.
+            // See issue https://github.com/angular/angular.js/issues/16135
+            delete namedListeners[indexOfListener];
             decrementListenerCount(self, 1, name);
           }
         };
