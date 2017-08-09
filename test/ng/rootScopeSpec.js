@@ -2438,6 +2438,21 @@ describe('Scope', function() {
         }));
 
 
+        // See issue https://github.com/angular/angular.js/issues/16135
+        it('should deallocate the listener array entry', inject(function($rootScope) {
+          var remove1 = $rootScope.$on('abc', noop);
+          $rootScope.$on('abc', noop);
+
+          expect($rootScope.$$listeners['abc'].length).toBe(2);
+          expect(0 in $rootScope.$$listeners['abc']).toBe(true);
+
+          remove1();
+
+          expect($rootScope.$$listeners['abc'].length).toBe(2);
+          expect(0 in $rootScope.$$listeners['abc']).toBe(false);
+        }));
+
+
         it('should call next listener after removing the current listener via its own handler', inject(function($rootScope) {
           var listener1 = jasmine.createSpy('listener1').and.callFake(function() { remove1(); });
           var remove1 = $rootScope.$on('abc', listener1);
