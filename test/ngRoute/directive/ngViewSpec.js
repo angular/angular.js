@@ -191,7 +191,7 @@ describe('ngView', function() {
     it('should use inline content route changes', function() {
       module(function($routeProvider) {
         $routeProvider.when('/foo', {template: '<div>{{1+3}}</div>'});
-        $routeProvider.when('/bar', {template: 'angular is da best'});
+        $routeProvider.when('/bar', {template: 'AngularJS is da best'});
         $routeProvider.when('/blank', {template: ''});
       });
 
@@ -204,7 +204,7 @@ describe('ngView', function() {
 
         $location.path('/bar');
         $rootScope.$digest();
-        expect(element.text()).toEqual('angular is da best');
+        expect(element.text()).toEqual('AngularJS is da best');
 
         $location.path('/blank');
         $rootScope.$digest();
