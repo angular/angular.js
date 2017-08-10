@@ -700,10 +700,10 @@ consolidating all the changes shown in the previous 1.6.0 release candidates.**
 - **feat($compile): set preAssignBindingsEnabled to false by default
   ([bcd0d4](https://github.com/angular/angular.js/commit/bcd0d4d896d0dfdd988ff4f849c1d40366125858))**:
 
-Previously, `$compileProvider.preAssignBindingsEnabled` was
-set to true by default. This means bindings were pre-assigned in component
-constructors. In Angular 1.5+ the place to put the initialization logic
-relying on bindings being present is the controller `$onInit` method.
+Previously, `$compileProvider.preAssignBindingsEnabled` was set to true by default. This means
+bindings were pre-assigned on component/directive controller instances (which made them available
+inside the constructors). In Angular 1.5+ the place to put the initialization logic relying on
+bindings being present is the controller's `$onInit` method.
 
 To migrate follow the example below:
 
