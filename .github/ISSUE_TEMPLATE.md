@@ -26,7 +26,7 @@ please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the 
 https://plnkr.co or similar (you can use this template as a starting point: http://plnkr.co/edit/tpl:yBpEi4).
 -->
 
-**Angular version:** 1.x.y
+**AngularJS version:** 1.x.y
 <!-- Check whether this is still an issue in the most recent stable or in the snapshot AngularJS version (https://code.angularjs.org/snapshot/) -->
 
 **Browser:** [all | Chrome XX | Firefox XX | Edge XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ]
