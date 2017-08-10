@@ -131,7 +131,7 @@
 
 
 ## Bug Fixes
-- **Angular:**
+- **AngularJS:**
   - do not auto-bootstrap if the `src` exists but is empty
   ([3536e8](https://github.com/angular/angular.js/commit/3536e83d8a085b02bd6dcec8324800b7e6c734e4))
   - do not auto bootstrap if the currentScript has been clobbered
@@ -702,7 +702,7 @@ consolidating all the changes shown in the previous 1.6.0 release candidates.**
 
 Previously, `$compileProvider.preAssignBindingsEnabled` was set to true by default. This means
 bindings were pre-assigned on component/directive controller instances (which made them available
-inside the constructors). In Angular 1.5+ the place to put the initialization logic relying on
+inside the constructors). In AngularJS 1.5+ the place to put the initialization logic relying on
 bindings being present is the controller's `$onInit` method.
 
 To migrate follow the example below:
@@ -1902,7 +1902,7 @@ validation), you can overwrite the built-in `step` validator with a custom direc
 # 1.5.9 timeturning-lockdown (2016-11-24)
 
 This is an interim release primarily to publish some security fixes, in particular a modification to
-ensure that Angular 1 can pass the linter checks for Mozilla add-ons.
+ensure that AngularJS can pass the linter checks for Mozilla add-ons.
 
 ## Security Fixes
 - **bootstrap:**
@@ -1990,7 +1990,7 @@ ensure that Angular 1 can pass the linter checks for Mozilla add-ons.
 
 Previously, `$compileProvider.preAssignBindingsEnabled` was
 set to true by default. This means bindings were pre-assigned in component
-constructors. In Angular 1.5+ the place to put the initialization logic
+constructors. In AngularJS 1.5+ the place to put the initialization logic
 relying on bindings being present is the controller `$onInit` method.
 
 To migrate follow the example below:
@@ -5116,12 +5116,12 @@ before the $parsers are applied. Previously, the modelValue
 
 This fixes issues where `input[date]` and `input[number]` cannot
 be validated because the viewValue string is parsed into
-`Date` and `Number` respectively (starting with Angular 1.3).
+`Date` and `Number` respectively (starting with AngularJS 1.3).
 It also brings the directives in line with HTML5 constraint
 validation, which validates against the input value.
 
 This change is unlikely to cause applications to fail, because even
-in Angular 1.2, the value that was validated by pattern could have
+in AngularJS 1.2, the value that was validated by pattern could have
 been manipulated by the $parsers, as all validation was done
 inside this pipeline.
 
@@ -5232,12 +5232,12 @@ before the $parsers are applied. Previously, the modelValue
 
 This fixes issues where `input[date]` and `input[number]` cannot
 be validated because the viewValue string is parsed into
-`Date` and `Number` respectively (starting with Angular 1.3).
+`Date` and `Number` respectively (starting with AngularJS 1.3).
 It also brings the directives in line with HTML5 constraint
 validation, which validates against the input value.
 
 This change is unlikely to cause applications to fail, because even
-in Angular 1.2, the value that was validated by pattern could have
+in AngularJS 1.2, the value that was validated by pattern could have
 been manipulated by the $parsers, as all validation was done
 inside this pipeline.
 
@@ -5451,7 +5451,7 @@ describe('$q.when', function() {
   it('should not need a call to $timeout.flush() to resolve already resolved promises',
       inject(function($q, $timeout) {
     $q.when('foo');
-    // In Angular 1.4.3 a call to `$timeout.flush();` was needed
+    // In AngularJS 1.4.3 a call to `$timeout.flush();` was needed
     $timeout.verifyNoPendingTasks();
   }));
 
@@ -6927,7 +6927,7 @@ it is now implemented in the ngOptions directive itself.
 the `select` directive will now use strict comparison of the `ngModel` scope value against `option`
 values to determine which option is selected. This means `Number` scope values will not be matched
 against numeric option strings.
-In Angular 1.3.x, setting `scope.x = 200` would select the `option` with the value 200 in the following `select`:
+In AngularJS 1.3.x, setting `scope.x = 200` would select the `option` with the value 200 in the following `select`:
 
 ```
 <select ng-model="x">
@@ -6936,7 +6936,7 @@ In Angular 1.3.x, setting `scope.x = 200` would select the `option` with the val
 </select>
 ```
 
-In Angular 1.4.x, the 'unknown option' will be selected.
+In AngularJS 1.4.x, the 'unknown option' will be selected.
 To remedy this, you can simply initialize the model as a string: `scope.x = '200'`, or if you want to
 keep the model as a `Number`, you can do the conversion via `$formatters` and `$parsers` on `ngModel`:
 
@@ -15510,7 +15510,7 @@ with the `$route` service
 
 ### Breaking changes
 - we now support ISO 8601 extended format datetime strings (YYYY-MM-DDTHH:mm:ss.SSSZ) as defined
-  in EcmaScript 5 throughout angular. This means that the following apis switched from
+  in EcmaScript 5 throughout AngularJS. This means that the following apis switched from
   YYYY-MM-DDTHH:mm:ssZ to YYYY-MM-DDTHH:mm:ss.SSSZ (note the added millis) when representing dates:
   - angular.Date.toString
   - angular.String.fromDate
