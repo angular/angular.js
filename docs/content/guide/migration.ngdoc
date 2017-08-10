@@ -75,8 +75,8 @@ commits for more info.
 - **$location** now uses `'!'` as the default hash-prefix for hash-bang URLs, instead of the empty
   string. ([Details](guide/migration#commit-aa077e8))
 
-- **$compile** will (by default) not pre-assign bindings on controller instances.
-  ([Details](guide/migration#commit-bcd0d4))
+- **$compile** will (by default) not pre-assign bindings on component/directive controller
+  instances. ([Details](guide/migration#commit-bcd0d4))
 
 - **http** imposes additional restrictions to **JSONP** requests for security reasons
   (see [details](guide/migration#migrate1.5to1.6-ng-services-$http) below):
@@ -412,14 +412,14 @@ if the option does not provide a value attribute.
 <major />
 <a name="commit-bcd0d4"></a>
 **Due to [bcd0d4](https://github.com/angular/angular.js/commit/bcd0d4d896d0dfdd988ff4f849c1d40366125858)**,
-pre-assigning bindings on controller instances is disabled by default. It is still possible to turn
-it back on, which should help during the migration. Pre-assigning bindings has been deprecated and
-will be removed in a future version, so we strongly recommend migrating your applications to not
-rely on it as soon as possible.
+pre-assigning bindings on component/directive controller instances is disabled by default, which
+means that they will no longer be available inside the constructors. It is still possible to turn it
+back on, which should help during the migration. Pre-assigning bindings has been deprecated and will
+be removed in a future version, so we strongly recommend migrating your applications to not rely on
+it as soon as possible.
 
 Initialization logic that relies on bindings being present should be put in the controller's
-`$onInit()` method, which is guaranteed to always be called _after_ the bindings have been
-assigned.
+`$onInit()` method, which is guaranteed to always be called _after_ the bindings have been assigned.
 
 Before:
 
