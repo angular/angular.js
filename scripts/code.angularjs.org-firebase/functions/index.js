@@ -175,31 +175,33 @@ function deleteOldSnapshotZip(event) {
   const bucketId = object.bucket;
   const filePath = object.name;
   const contentType = object.contentType;
+  const resourceState = object.resourceState;
 
   const bucket = gcs.bucket(bucketId);
 
-  if (event.eventType === 'providers/cloud.storage/eventTypes/object.change' &&
-      contentType === 'application/zip' &&
-      filePath.startsWith('snapshot/')
+  if (contentType !== 'application/zip' ||
+      !filePath.startsWith('snapshot/') ||
+      resourceState === 'not_exists' // Deletion event
     ) {
-
-    bucket.getFiles({
-      prefix: 'snapshot/',
-      delimiter: '/',
-      autoPaginate: false
-    }).then(function(data) {
-      const files = data[0];
-
-      const oldZipFiles = files.filter(file => {
-        return file.metadata.name !== filePath && file.metadata.contentType === 'application/zip';
-      });
-
-      oldZipFiles.forEach(function(file) {
-        file.delete();
-      });
-
-    });
+    return;
   }
+
+  bucket.getFiles({
+    prefix: 'snapshot/',
+    delimiter: '/',
+    autoPaginate: false
+  }).then(function(data) {
+    const files = data[0];
+
+    const oldZipFiles = files.filter(file => {
+      return file.metadata.name !== filePath && file.metadata.contentType === 'application/zip';
+    });
+
+    oldZipFiles.forEach(function(file) {
+      file.delete();
+    });
+
+  });
 }
 
 exports.sendStoredFile = functions.https.onRequest(sendStoredFile);
