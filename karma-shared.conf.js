@@ -10,7 +10,7 @@ module.exports = function(config, specificOptions) {
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 2,
     browserNoActivityTimeout: 30000,
-    reporters: ['spec'],
+    reporters: ['dots'],
     specReporter: {
       maxLogLines: 5,             // limit number of lines logged per test
       suppressErrorSummary: true, // do not print error summary
