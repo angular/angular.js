@@ -58,6 +58,10 @@ describe('linky', function() {
     expect(linky('HTTP://example.com')).toEqual('<a href="HTTP://example.com">HTTP://example.com</a>');
     expect(linky('HTTPS://www.example.com')).toEqual('<a href="HTTPS://www.example.com">HTTPS://www.example.com</a>');
     expect(linky('HTTPS://example.com')).toEqual('<a href="HTTPS://example.com">HTTPS://example.com</a>');
+    expect(linky('FTP://www.example.com')).toEqual('<a href="FTP://www.example.com">FTP://www.example.com</a>');
+    expect(linky('FTP://example.com')).toEqual('<a href="FTP://example.com">FTP://example.com</a>');
+    expect(linky('SFTP://www.example.com')).toEqual('<a href="SFTP://www.example.com">SFTP://www.example.com</a>');
+    expect(linky('SFTP://example.com')).toEqual('<a href="SFTP://example.com">SFTP://example.com</a>');
   });
 
   it('should handle www.', function() {
