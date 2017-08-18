@@ -1,3 +1,38 @@
+<a name="1.6.6"></a>
+# 1.6.6 interdimensional-cable (2017-08-18)
+
+
+## Bug Fixes
+- **$httpParamSerializer:** ignore functions
+  ([b51ded](https://github.com/angular/angular.js/commit/b51ded67366865f36c5781dd5d9b801488ec95ea),
+  [#16133](https://github.com/angular/angular.js/issues/16133))
+- **$resource:** do not throw when calling old `$cancelRequest()`
+  ([009ebe](https://github.com/angular/angular.js/commit/009ebec64c81d11b280c635167050e8906e191c6),
+  [#16037](https://github.com/angular/angular.js/issues/16037))
+- **$parse:**
+  - do not shallow-watch computed property keys
+  ([750465](https://github.com/angular/angular.js/commit/7504656a26202de591e4ac9674333254304edf8a))
+  - support constants in computed keys
+  ([9d6c3f](https://github.com/angular/angular.js/commit/9d6c3f3ec233279885e37a250d25860d5c15f716))
+- **$http:** do not throw error if `Content-Type` is not `application/json` but response is JSON-like
+  ([2e1163](https://github.com/angular/angular.js/commit/2e1163ef5cb56d1933e8ecd7b74020b9df9c6693),
+  [#16027](https://github.com/angular/angular.js/issues/16027),
+  [#16075](https://github.com/angular/angular.js/issues/16075))
+
+
+## New Features
+- **$compile:** add `strictComponentBindingsEnabled()` method
+  ([3ec181](https://github.com/angular/angular.js/commit/3ec1819b913c8edf0649e06217dbd5920f29f126),
+  [#16129](https://github.com/angular/angular.js/issues/16129))
+- **$resource:** add resource to response for error interceptors
+  ([9256db](https://github.com/angular/angular.js/commit/9256dbc4201343ce5cd63a9eadf98da4793f45af),
+  [#16109](https://github.com/angular/angular.js/issues/16109))
+- **$http:** allow differentiation between XHR completion, error, abort, timeout
+  ([5e2bc5](https://github.com/angular/angular.js/commit/5e2bc5bbf347a9dfadc08b1514b8be06fd550913),
+  [#15924](https://github.com/angular/angular.js/issues/15924),
+  [#15847](https://github.com/angular/angular.js/issues/15847))
+
+
 <a name="1.6.5"></a>
 # 1.6.5 toffee-salinization (2017-07-03)
 
