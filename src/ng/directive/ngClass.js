@@ -172,6 +172,14 @@ function classDirective(name, selector) {
  * attribute, when using the `ngClass` directive on the same element.
  * See {@link guide/interpolation#known-issues here} for more info.
  *
+ * @knownIssue
+ * You can also pass a function expression to this directive,
+ * `ng-class="$ctrl.doSomething()"`
+ * which should evalute to any of the three 
+ * possibilities mentioned above.
+ * however, this causes memory leaks and performance issuses, and not allowed in Angular.
+ * so its recommended to avoid using this type of expression
+ *
  * @animations
  * | Animation                        | Occurs                              |
  * |----------------------------------|-------------------------------------|
