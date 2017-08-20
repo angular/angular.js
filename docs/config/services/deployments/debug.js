@@ -26,7 +26,6 @@ module.exports = function debugDeployment(getVersion) {
       'js/all-versions-data.js',
       'js/pages-data.js',
       'js/nav-data.js',
-      'js/deployment-data-debug.js',
       'js/docs.js'
     ],
     stylesheets: [

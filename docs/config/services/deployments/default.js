@@ -26,7 +26,6 @@ module.exports = function defaultDeployment(getVersion) {
       'js/all-versions-data.js',
       'js/pages-data.js',
       'js/nav-data.js',
-      'js/deployment-data-default.js',
       'js/docs.min.js'
     ],
     stylesheets: [

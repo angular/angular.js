@@ -30,7 +30,6 @@ module.exports = function jqueryDeployment(getVersion) {
       'js/all-versions-data.js',
       'js/pages-data.js',
       'js/nav-data.js',
-      'js/deployment-data-jquery.js',
       'js/docs.min.js'
     ],
     stylesheets: [
