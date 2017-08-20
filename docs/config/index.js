@@ -112,10 +112,6 @@ module.exports = new Package('angularjs', [
     docTypes: ['indexPage'],
     pathTemplate: '.',
     outputPathTemplate: '${id}.html'
-  }, {
-    docTypes: ['deploymentData'],
-    pathTemplate: '.',
-    outputPathTemplate: 'js/${id}.js'
   });
 
   computePathsProcessor.pathTemplates.push({
@@ -129,14 +125,8 @@ module.exports = new Package('angularjs', [
     outputPathTemplate: 'partials/${area}/${moduleName}/${groupType}.html'
   });
 
-  computePathsProcessor.pathTemplates.push({
-    docTypes: ['example'],
-    pathTemplate: 'examples/${example.id}',
-    outputPathTemplate: 'examples/${example.id}/index${deploymentQualifier}.html'
-  });
-
   computeIdsProcessor.idTemplates.push({
-    docTypes: ['overview', 'tutorial', 'e2e-test', 'indexPage', 'deploymentData'],
+    docTypes: ['overview', 'tutorial', 'e2e-test', 'indexPage'],
     getId: function(doc) { return doc.fileInfo.baseName; },
     getAliases: function(doc) { return [doc.id]; }
   });
