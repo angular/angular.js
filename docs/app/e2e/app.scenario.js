@@ -49,6 +49,25 @@ describe('docs.angularjs.org', function() {
     });
 
 
+    it('should include the files for the embedded examples from the same domain', function() {
+      browser.get('build/docs/index-production.html#!api/ng/directive/ngClick');
+
+      var origin = browser.executeScript('return document.location.origin;');
+
+      var exampleIFrame = element(by.name('example-ng-click'));
+
+      // This is technically an implementation detail, but if this changes, then there's a good
+      // chance the deployment process changed
+      expect(exampleIFrame.getAttribute('src')).toContain('examples/example-ng-click/index.html');
+
+      browser.switchTo().frame('example-ng-click');
+
+      var scriptEl = element(by.tagName('script'));
+
+      // Ensure the included file is from the same domain
+      expect(scriptEl.getAttribute('src')).toContain(origin);
+    });
+
 
     it('should be resilient to trailing slashes', function() {
       browser.get('build/docs/index-production.html#!/api/ng/function/angular.noop/');
