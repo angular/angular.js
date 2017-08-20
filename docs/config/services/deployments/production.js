@@ -7,24 +7,24 @@ var angularCodeUrl = '//code.angularjs.org/';
 
 var cdnUrl = googleCdnUrl + versionInfo.cdnVersion;
 
-// The plnkr examples must use the code.angularjs.org repo for the snapshot,
-// and the cdn for the tagged version and, if the build is not tagged, the currentVersion.
-//
-// The currentVersion may not be available on the cdn (e.g. if built locally, or hasn't been pushed
-// yet). This will lead to a 404, but this is preferable to loading a version with which the example
-// might not work (possibly in subtle ways).
-var examplesCdnUrl = versionInfo.currentVersion.isSnapshot ?
+// The "examplesCdnUrl" here applies to the examples when they are opened in plnkr.co.
+// The embedded examples instead always include the files from the *default* deployment,
+// to ensure that the source files are always available.
+// The plnkr examples must always use the code.angularjs.org source files.
+// We cannot rely on the CDN files here, because they are not deployed by the time
+// docs.angularjs.org and code.angularjs.org need them.
+var examplesDependencyPath = versionInfo.currentVersion.isSnapshot ?
   (angularCodeUrl + 'snapshot') :
-  (googleCdnUrl + (versionInfo.currentVersion.version || versionInfo.currentVersion));
+  (angularCodeUrl + (versionInfo.currentVersion.version || versionInfo.currentVersion.version));
 
 module.exports = function productionDeployment(getVersion) {
   return {
     name: 'production',
     examples: {
       commonFiles: {
-        scripts: [examplesCdnUrl + '/angular.min.js']
+        scripts: [examplesDependencyPath + '/angular.min.js']
       },
-      dependencyPath: examplesCdnUrl + '/'
+      dependencyPath: examplesDependencyPath
     },
     scripts: [
       cdnUrl + '/angular.min.js',
