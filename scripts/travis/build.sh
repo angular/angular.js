@@ -48,8 +48,7 @@ case "$JOB" in
   "deploy")
     # we never deploy on Pull requests, so it's safe to skip the build here
     if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-      grunt package
-      grunt compress:firebaseCodeDeploy
+      grunt prepareFirebaseDeploy
     else
       echo "Skipping build because Travis has been triggered by Pull Request"
     fi
