@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "build/docs",
+    "public": "uploadDocs",
     "ignore": [
       "/index.html",
       "/index-debug.html",
@@ -16,7 +16,7 @@
         "destination": "/index-production.html"
       },
       {
-        "source": "**/*!(.jpg|.jpeg|.gif|.png|.html|.js|.json|.css|.svg|.ttf|.woff|.woff2|.eot)",
+        "source": "**/*!(.jpg|.jpeg|.gif|.png|.html|.js|.map|.json|.css|.svg|.ttf|.woff|.woff2|.eot)",
         "destination": "/index-production.html"
       }
     ]

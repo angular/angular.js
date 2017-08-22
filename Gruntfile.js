@@ -311,7 +311,29 @@ module.exports = function(grunt) {
     copy: {
       i18n: {
         files: [
-          { src: 'src/ngLocale/**', dest: 'build/i18n/', expand: true, flatten: true }
+          {
+            src: 'src/ngLocale/**',
+            dest: 'build/i18n/',
+            expand: true,
+            flatten: true
+          }
+        ]
+      },
+      deployFirebaseDocs: {
+        files: [
+          // The source files are needed by the embedded examples in the docs app.
+          {
+            src: 'build/angular*.{js.map,min.js}',
+            dest: 'uploadDocs/',
+            expand: true,
+            flatten: true
+          },
+          {
+            cwd: 'build/docs',
+            src: '**',
+            dest: 'uploadDocs/',
+            expand: true
+          }
         ]
       }
     },
@@ -326,14 +348,14 @@ module.exports = function(grunt) {
         dot: true,
         dest: dist + '/'
       },
-      firebaseCodeDeploy: {
+      deployFirebaseCode: {
         options: {
           mode: 'gzip'
         },
         src: ['**'],
         cwd: 'build',
         expand: true,
-        dest: 'upload/' + deployVersion + '/'
+        dest: 'uploadCode/' + deployVersion + '/'
       }
     },
 
@@ -427,13 +449,18 @@ module.exports = function(grunt) {
     'collect-errors',
     'write',
     'docs',
-    'copy',
+    'copy:i18n',
     'compress:build'
   ]);
   grunt.registerTask('ci-checks', [
     'ddescribe-iit',
     'merge-conflict',
     'eslint'
+  ]);
+  grunt.registerTask('prepareFirebaseDeploy', [
+    'package',
+    'compress:deployFirebaseCode',
+    'copy:deployFirebaseDocs'
   ]);
   grunt.registerTask('default', ['package']);
 };
