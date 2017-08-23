@@ -13,10 +13,8 @@ function $$RAFProvider() { //rAF
     var rafSupported = !!requestAnimationFrame;
     var raf = rafSupported
       ? function(fn) {
-          var id = requestAnimationFrame.bind($window, fn);
-          return function() {
-            cancelAnimationFrame.bind($window, id);
-          };
+          var id = requestAnimationFrame.call($window, fn);
+          return cancelAnimationFrame.bind($window, id);
         }
       : function(fn) {
           var timer = $timeout(fn, 16.66, false); // 1000 / 60 = 16.666
