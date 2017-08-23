@@ -13,9 +13,9 @@ function $$RAFProvider() { //rAF
     var rafSupported = !!requestAnimationFrame;
     var raf = rafSupported
       ? function(fn) {
-          var id = requestAnimationFrame(fn);
+          var id = requestAnimationFrame.bind($window, fn);
           return function() {
-            cancelAnimationFrame(id);
+            cancelAnimationFrame.bind($window, id);
           };
         }
       : function(fn) {
