@@ -1389,8 +1389,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * * `ng-binding` CSS class
    * * `ng-scope` and `ng-isolated-scope` CSS classes
    * * `$binding` data property containing an array of the binding expressions
-   * * `$scope`, `$isolateScope` or `$isolateScopeNoTemplate` data properties which are accessable via the
-   *   {@link angular.element#methods `scope()` or `isolateScope()` methods}.
+   * * Data properties used by the {@link angular.element#methods `scope()`/`isolateScope()` methods} to return
+   *   the element's scope.
    * * Placeholder comments will contain information about what directive and binding caused the placeholder.
    *   E.g. `<!-- ngIf: shouldShow() -->`
    *
