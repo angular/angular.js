@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "AM",
-      "PM"
+      "A.M.",
+      "G.M."
     ],
     "DAY": [
       "Sul",
@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "Gwener",
       "Sadorn"
     ],
+    "ERANAMES": [
+      "a-raok Jezuz-Krist",
+      "goude Jezuz-Krist"
+    ],
+    "ERAS": [
+      "a-raok J.K.",
+      "goude J.K."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Genver",
       "C\u02bchwevrer",
@@ -31,27 +40,45 @@ $provide.value("$locale", {
       "Kerzu"
     ],
     "SHORTDAY": [
-      "sul",
-      "lun",
-      "meu.",
-      "mer.",
-      "yaou",
-      "gwe.",
-      "sad."
+      "Sul",
+      "Lun",
+      "Meu.",
+      "Mer.",
+      "Yaou",
+      "Gwe.",
+      "Sad."
     ],
     "SHORTMONTH": [
-      "Gen",
-      "C\u02bchwe",
-      "Meur",
-      "Ebr",
+      "Gen.",
+      "C\u02bchwe.",
+      "Meur.",
+      "Ebr.",
       "Mae",
-      "Mezh",
-      "Goue",
+      "Mezh.",
+      "Goue.",
       "Eost",
-      "Gwen",
+      "Gwen.",
       "Here",
       "Du",
-      "Ker"
+      "Kzu."
+    ],
+    "STANDALONEMONTH": [
+      "Genver",
+      "C\u02bchwevrer",
+      "Meurzh",
+      "Ebrel",
+      "Mae",
+      "Mezheven",
+      "Gouere",
+      "Eost",
+      "Gwengolo",
+      "Here",
+      "Du",
+      "Kerzu"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "y MMMM d, EEEE",
     "longDate": "y MMMM d",
@@ -70,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,18 +108,18 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
-        "negSuf": "",
-        "posPre": "\u00a4\u00a0",
-        "posSuf": ""
+        "negPre": "-",
+        "negSuf": "\u00a0\u00a4",
+        "posPre": "",
+        "posSuf": "\u00a0\u00a4"
       }
     ]
   },
   "id": "br-fr",
-  "pluralCat": function (n, opt_precision) {  if (n % 10 == 1 && n % 100 != 11 && n % 100 != 71 && n % 100 != 91) {    return PLURAL_CATEGORY.ONE;  }  if (n % 10 == 2 && n % 100 != 12 && n % 100 != 72 && n % 100 != 92) {    return PLURAL_CATEGORY.TWO;  }  if ((n % 10 >= 3 && n % 10 <= 4 || n % 10 == 9) && (n % 100 < 10 || n % 100 > 19) && (n % 100 < 70 || n % 100 > 79) && (n % 100 < 90 || n % 100 > 99)) {    return PLURAL_CATEGORY.FEW;  }  if (n != 0 && n % 1000000 == 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "br_FR",
+  "pluralCat": function(n, opt_precision) {  if (n % 10 == 1 && n % 100 != 11 && n % 100 != 71 && n % 100 != 91) {    return PLURAL_CATEGORY.ONE;  }  if (n % 10 == 2 && n % 100 != 12 && n % 100 != 72 && n % 100 != 92) {    return PLURAL_CATEGORY.TWO;  }  if ((n % 10 >= 3 && n % 10 <= 4 || n % 10 == 9) && (n % 100 < 10 || n % 100 > 19) && (n % 100 < 70 || n % 100 > 79) && (n % 100 < 90 || n % 100 > 99)) {    return PLURAL_CATEGORY.FEW;  }  if (n != 0 && n % 1000000 == 0) {    return PLURAL_CATEGORY.MANY;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

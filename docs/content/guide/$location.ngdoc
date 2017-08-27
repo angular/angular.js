@@ -1,12 +1,13 @@
 @ngdoc overview
 @name  Using $location
+@sortOrder 500
 @description
 
 # What does it do?
 
-The `$location` service parses the URL in the browser address bar (based on the [window.location](https://developer.mozilla.org/en/window.location)) and makes the URL available to
-your application. Changes to the URL in the address bar are reflected into $location service and
-changes to $location are reflected into the browser address bar.
+The `$location` service parses the URL in the browser address bar (based on [`window.location`](https://developer.mozilla.org/en/window.location)) and makes the URL available to
+your application. Changes to the URL in the address bar are reflected into the `$location` service and
+changes to `$location` are reflected into the browser address bar.
 
 **The $location service:**
 
@@ -20,7 +21,7 @@ changes to $location are reflected into the browser address bar.
 - Represents the URL object as a set of methods (protocol, host, port, path, search, hash).
 
 
-## Comparing $location to window.location
+## Comparing `$location` to `window.location`
 
 <table class="table">
 <thead>
@@ -47,7 +48,7 @@ changes to $location are reflected into the browser address bar.
   </tr>
 
   <tr>
-    <td class="head">integration with angular application life-cycle</td>
+    <td class="head">integration with AngularJS application life-cycle</td>
     <td>none</td>
     <td>knows about all internal life-cycle phases, integrates with {@link ng.$rootScope.Scope#$watch $watch}, ...</td>
   </tr>
@@ -67,7 +68,7 @@ changes to $location are reflected into the browser address bar.
 </tbody>
 </table>
 
-## When should I use $location?
+## When should I use `$location`?
 Any time your application needs to react to a change in the current URL or if you want to change
 the current URL in the browser.
 
@@ -84,24 +85,37 @@ others customizing the configuration can enable new features.
 Once the `$location` service is instantiated, you can interact with it via jQuery-style getter and
 setter methods that allow you to get or change the current URL in the browser.
 
-## $location service configuration
+## `$location` service configuration
 
 To configure the `$location` service, retrieve the
 {@link ng.$locationProvider $locationProvider} and set the parameters as follows:
 
 
-- **html5Mode(mode)**: {boolean}<br />
-  `true` - see HTML5 mode<br />
-  `false` - see Hashbang mode<br />
-  default: `false`
+- **html5Mode(mode)**: `{boolean|Object}`<br />
+  `false` or `{enabled: false}` (default) -
+    see [Hashbang mode](guide/$location#hashbang-mode-default-mode-)<br />
+  `true` or `{enabled: true}` -
+    see [HTML5 mode](guide/$location#html5-mode)<br />
+  `{..., requireBase: true/false}` (only affects HTML5 mode) -
+    see [Relative links](guide/$location#relative-links)<br />
+  `{..., rewriteLinks: true/false/'string'}` (only affects HTML5 mode) -
+    see [HTML link rewriting](guide/$location#html-link-rewriting)<br />
+  Default:
+    ```j
+    {
+      enabled: false,
+      requireBase: true,
+      rewriteLinks: true
+    }
+    ```
 
-- **hashPrefix(prefix)**: {string}<br />
-  prefix used for Hashbang URLs (used in Hashbang mode or in legacy browser in Html5 mode)<br />
-  default: `""`
+- **hashPrefix(prefix)**: `{string}`<br />
+  Prefix used for Hashbang URLs (used in Hashbang mode or in legacy browsers in HTML5 mode).<br />
+  Default: `'!'`
 
 ### Example configuration
 ```js
-$locationProvider.html5Mode(true).hashPrefix('!');
+$locationProvider.html5Mode(true).hashPrefix('*');
 ```
 
 ## Getter and setter methods
@@ -163,7 +177,7 @@ encoded.
 
 `$location` service has two configuration modes which control the format of the URL in the browser
 address bar: **Hashbang mode** (the default) and the **HTML5 mode** which is based on using the
-HTML5 [History API](http://www.w3.org/TR/html5/history.html). Applications use the same API in
+[HTML5 History API](https://html.spec.whatwg.org/multipage/browsers.html#the-history-interface). Applications use the same API in
 both modes and the `$location` service will work with appropriate URL segments and browser APIs to
 facilitate the browser URL change and history management.
 
@@ -210,37 +224,41 @@ facilitate the browser URL change and history management.
 ## Hashbang mode (default mode)
 
 In this mode, `$location` uses Hashbang URLs in all browsers.
+AngularJS also does not intercept and rewrite links in this mode. I.e. links work
+as expected and also perform full page reloads when other parts of the url
+than the hash fragment was changed.
+
 
 ### Example
 
 ```js
-it('should show example', inject(
-  function($locationProvider) {
+it('should show example', function() {
+  module(function($locationProvider) {
     $locationProvider.html5Mode(false);
     $locationProvider.hashPrefix('!');
-  },
-  function($location) {
+  });
+  inject(function($location) {
     // open http://example.com/base/index.html#!/a
-    $location.absUrl() == 'http://example.com/base/index.html#!/a'
-    $location.path() == '/a'
+    expect($location.absUrl()).toBe('http://example.com/base/index.html#!/a');
+    expect($location.path()).toBe('/a');
 
-    $location.path('/foo')
-    $location.absUrl() == 'http://example.com/base/index.html#!/foo'
+    $location.path('/foo');
+    expect($location.absUrl()).toBe('http://example.com/base/index.html#!/foo');
 
-    $location.search() == {}
+    expect($location.search()).toEqual({});
     $location.search({a: 'b', c: true});
-    $location.absUrl() == 'http://example.com/base/index.html#!/foo?a=b&c'
+    expect($location.absUrl()).toBe('http://example.com/base/index.html#!/foo?a=b&c');
 
     $location.path('/new').search('x=y');
-    $location.absUrl() == 'http://example.com/base/index.html#!/new?x=y'
-  }
-));
+    expect($location.absUrl()).toBe('http://example.com/base/index.html#!/new?x=y');
+  });
+});
 ```
 
 ## HTML5 mode
 
 In HTML5 mode, the `$location` service getters and setters interact with the browser URL address
-through the HTML5 history API, which allows for use of regular URL path and search segments,
+through the HTML5 history API. This allows for use of regular URL path and search segments,
 instead of their hashbang equivalents. If the HTML5 History API is not supported by a browser, the
 `$location` service will fall back to using the hashbang URLs automatically. This frees you from
 having to worry about whether the browser displaying your app supports the history API  or not; the
@@ -249,56 +267,70 @@ having to worry about whether the browser displaying your app supports the histo
 - Opening a regular URL in a legacy browser -> redirects to a hashbang URL
 - Opening hashbang URL in a modern browser -> rewrites to a regular URL
 
+Note that in this mode, AngularJS intercepts all links (subject to the "Html link rewriting" rules below)
+and updates the url in a way that never performs a full page reload.
+
+
 ### Example
 
 ```js
-it('should show example', inject(
-  function($locationProvider) {
+it('should show example', function() {
+  module(function($locationProvider) {
     $locationProvider.html5Mode(true);
     $locationProvider.hashPrefix('!');
-  },
-  function($location) {
+  });
+  inject(function($location) {
     // in browser with HTML5 history support:
     // open http://example.com/#!/a -> rewrite to http://example.com/a
     // (replacing the http://example.com/#!/a history record)
-    $location.path() == '/a'
+    expect($location.path()).toBe('/a');
 
     $location.path('/foo');
-    $location.absUrl() == 'http://example.com/foo'
+    expect($location.absUrl()).toBe('http://example.com/foo');
 
-    $location.search() == {}
+    expect($location.search()).toEqual({});
     $location.search({a: 'b', c: true});
-    $location.absUrl() == 'http://example.com/foo?a=b&c'
+    expect($location.absUrl()).toBe('http://example.com/foo?a=b&c');
 
     $location.path('/new').search('x=y');
-    $location.url() == 'new?x=y'
-    $location.absUrl() == 'http://example.com/new?x=y'
+    expect($location.url()).toBe('/new?x=y');
+    expect($location.absUrl()).toBe('http://example.com/new?x=y');
+  });
+});
 
+it('should show example (when browser doesn\'t support HTML5 mode', function() {
+  module(function($provide, $locationProvider) {
+    $locationProvider.html5Mode(true);
+    $locationProvider.hashPrefix('!');
+    $provide.value('$sniffer', {history: false});
+  });
+  inject(initBrowser({ url: 'http://example.com/new?x=y', basePath: '/' }),
+    function($location) {
     // in browser without html5 history support:
     // open http://example.com/new?x=y -> redirect to http://example.com/#!/new?x=y
     // (again replacing the http://example.com/new?x=y history item)
-    $location.path() == '/new'
-    $location.search() == {x: 'y'}
+    expect($location.path()).toBe('/new');
+    expect($location.search()).toEqual({x: 'y'});
 
     $location.path('/foo/bar');
-    $location.path() == '/foo/bar'
-    $location.url() == '/foo/bar?x=y'
-    $location.absUrl() == 'http://example.com/#!/foo/bar?x=y'
-  }
-));
+    expect($location.path()).toBe('/foo/bar');
+    expect($location.url()).toBe('/foo/bar?x=y');
+    expect($location.absUrl()).toBe('http://example.com/#!/foo/bar?x=y');
+  });
+});
 ```
 
 ### Fallback for legacy browsers
 
 For browsers that support the HTML5 history API, `$location` uses the HTML5 history API to write
-path and search. If the history API is not supported by a browser, `$location` supplies a Hasbang
+path and search. If the history API is not supported by a browser, `$location` supplies a Hashbang
 URL. This frees you from having to worry about whether the browser viewing your app supports the
 history API  or not; the `$location` service makes this transparent to you.
 
-### Html link rewriting
+### HTML link rewriting
 
-When you use HTML5 history API mode, you will need different links in different browsers, but all you
-have to do is specify regular URL links, such as: `<a href="/some?foo=bar">link</a>`
+When you use HTML5 history API mode, you will not need special hashbang links. All you have to do
+is specify regular URL links, such as: `<a href="/some?foo=bar">link</a>`
 
 When a user clicks on this link,
 
@@ -313,32 +345,55 @@ reload to the original link.
   Example: `<a href="/ext/link?a=b" target="_self">link</a>`
 - Absolute links that go to a different domain<br>
   Example: `<a href="http://angularjs.org/">link</a>`
-- Links starting with '/' that lead to a different base path when base is defined<br>
+- Links starting with '/' that lead to a different base path<br>
   Example: `<a href="/not-my-base/link">link</a>`
 
-When running Angular in the root of a domain, along side perhaps a normal application in the same
-directory, the "otherwise" route handler will try to handle all the URLs, including ones that map
-to static files.
+If `mode.rewriteLinks` is set to `false` in the `mode` configuration object passed to
+`$locationProvider.html5Mode()`, the browser will perform a full page reload for every link.
+`mode.rewriteLinks` can also be set to a string, which will enable link rewriting only on anchor
+elements that have the given attribute.
 
-To prevent this, you can set your base href for the app to `<base href=".">` and then prefix links
-to URLs that should be handled with `.`. Now, links to locations, which are not to be routed by Angular,
-are not prefixed with `.` and will not be intercepted by the `otherwise` rule in your `$routeProvider`.
+For example, if `mode.rewriteLinks` is set to `'internal-link'`:
+- `<a href="/some/path" internal-link>link</a>` will be rewritten
+- `<a href="/some/path">link</a>` will perform a full page reload
+
+Note that [attribute name normalization](guide/directive#normalization) does not apply here, so
+`'internalLink'` will **not** match `'internal-link'`.
+
+
+### Relative links
+
+Be sure to check all relative links, images, scripts etc. AngularJS requires you to specify the url
+base in the head of your main html file (`<base href="/my-base/index.html">`) unless `html5Mode.requireBase`
+is set to `false` in the html5Mode definition object passed to `$locationProvider.html5Mode()`. With
+that, relative urls will always be resolved to this base url, even if the initial url of the
+document was different.
+
+There is one exception: Links that only contain a hash fragment (e.g. `<a href="#target">`)
+will only change `$location.hash()` and not modify the url otherwise. This is useful for scrolling
+to anchors on the same page without needing to know on which page the user currently is.
 
 
 ### Server side
 
 Using this mode requires URL rewriting on server side, basically you have to rewrite all your links
-to entry point of your application (e.g. index.html)
+to entry point of your application (e.g. index.html). Requiring a `<base>` tag is also important for
+this case, as it allows AngularJS to differentiate between the part of the url that is the application
+base and the path that should be handled by the application.
 
-### Relative links
+### Base href constraints
 
-Be sure to check all relative links, images, scripts etc. You must either specify the url base in
-the head of your main html file (`<base href="/my-base">`) or you must use absolute urls
-(starting with `/`) everywhere because relative urls will be resolved to absolute urls using the
-initial absolute url of the document, which is often different from the root of the application.
+The `$location` service is not able to function properly if the current URL is outside the URL given
+as the base href. This can have subtle confusing consequences...
 
-Running Angular apps with the History API enabled from document root is strongly encouraged as it
-takes care of all relative link issues.
+Consider a base href set as follows: `<base href="/base/">` (i.e. the application exists in the "folder"
+called `/base`). The URL `/base` is actually outside the application (it refers to the `base` file found
+in the root `/` folder).
+
+If you wish to be able to navigate to the application via a URL such as `/base` then you should ensure that
+you server is setup to redirect such requests to `/base/`.
+
+See https://github.com/angular/angular.js/issues/14018 for more information.
 
 ### Sending links among different browsers
 
@@ -350,15 +405,15 @@ legacy browsers and hashbang links in modern browser:
 
 ### Example
 
-Here you can see two `$location` instances, both in **Html5 mode**, but on different browsers, so
-that you can see the differences. These `$location` services are connected to a fake browsers. Each
-input represents address bar of the browser.
+Here you can see two `$location` instances that show the difference between **Html5 mode** and **Html5 Fallback mode**.
+Note that to simulate different levels of browser support, the `$location` instances are connected to
+a fakeBrowser service, which you don't have to set up in actual projects.
 
-Note that when you type hashbang url into first browser (or vice versa) it doesn't rewrite /
+Note that when you type hashbang url into the first browser (or vice versa) it doesn't rewrite /
 redirect to regular / hashbang url, as this conversion happens only during parsing the initial URL
 = on page reload.
 
-In these examples we use `<base href="/base/index.html" />`
+In these examples we use `<base href="/base/index.html" />`. The inputs represent the address bar of the browser.
 
 #### Browser in HTML5 mode
 <example module="html5-mode" name="location-html5-mode">
@@ -383,15 +438,16 @@ In these examples we use `<base href="/base/index.html" />`
   <file name="app.js">
    angular.module('html5-mode', ['fake-browser', 'address-bar'])
 
+   // Configure the fakeBrowser. Do not set these values in actual projects.
    .constant('initUrl', 'http://www.example.com/base/path?a=b#h')
    .constant('baseHref', '/base/index.html')
    .value('$sniffer', { history: true })
 
-   .controller("LocationController", function($scope, $location) {
+   .controller('LocationController', function($scope, $location) {
      $scope.$location = {};
-     angular.forEach("protocol host port path search hash".split(" "), function(method){
-      $scope.$location[method] = function(){
-        var result = $location[method].call($location);
+     angular.forEach('protocol host port path search hash'.split(' '), function(method) {
+      $scope.$location[method] = function() {
+        var result = $location[method]();
         return angular.isObject(result) ? angular.toJson(result) : result;
       };
      });
@@ -438,8 +494,8 @@ In these examples we use `<base href="/base/index.html" />`
    .directive('ngAddressBar', function($browser, $timeout) {
       return {
         template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
-        link: function(scope, element, attrs){
-          var input = element.children("input"), delay;
+        link: function(scope, element, attrs) {
+          var input = element.children('input'), delay;
 
           input.on('keypress keyup keydown', function(event) {
                   delay = (!delay ? $timeout(fireUrlChange, 250) : null);
@@ -466,50 +522,50 @@ In these examples we use `<base href="/base/index.html" />`
         url = 'http://www.example.com/base/path?a=b#h';
 
 
-    it("should show fake browser info on load", function(){
+    it("should show fake browser info on load", function() {
       expect(addressBar.getAttribute('value')).toBe(url);
 
-      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
-      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
-      expect(element(by.binding('$location.port')).getText()).toBe('80');
-      expect(element(by.binding('$location.path')).getText()).toBe('/path');
-      expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
-      expect(element(by.binding('$location.hash')).getText()).toBe('h');
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/path');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('h');
 
     });
 
-    it("should change $location accordingly", function(){
+    it("should change $location accordingly", function() {
       var navigation = element.all(by.css("#navigation a"));
 
       navigation.get(0).click();
 
       expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/first?a=b");
 
-      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
-      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
-      expect(element(by.binding('$location.port')).getText()).toBe('80');
-      expect(element(by.binding('$location.path')).getText()).toBe('/first');
-      expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
-      expect(element(by.binding('$location.hash')).getText()).toBe('');
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/first');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('');
 
 
       navigation.get(1).click();
 
       expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/sec/ond?flag#hash");
 
-      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
-      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
-      expect(element(by.binding('$location.port')).getText()).toBe('80');
-      expect(element(by.binding('$location.path')).getText()).toBe('/sec/ond');
-      expect(element(by.binding('$location.search')).getText()).toBe('{"flag":true}');
-      expect(element(by.binding('$location.hash')).getText()).toBe('hash');
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/sec/ond');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"flag":true}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('hash');
     });
 
   </file>
 
 </example>
 
-####Browser in HTML5 Fallback mode (Hashbang mode)
+#### Browser in HTML5 Fallback mode (Hashbang mode)
 <example module="hashbang-mode" name="location-hashbang-mode">
   <file name="index.html">
     <div ng-controller="LocationController">
@@ -532,6 +588,7 @@ In these examples we use `<base href="/base/index.html" />`
   <file name="app.js">
     angular.module('hashbang-mode', ['fake-browser', 'address-bar'])
 
+    // Configure the fakeBrowser. Do not set these values in actual projects.
     .constant('initUrl', 'http://www.example.com/base/index.html#!/path?a=b#h')
     .constant('baseHref', '/base/index.html')
     .value('$sniffer', { history: false })
@@ -540,11 +597,11 @@ In these examples we use `<base href="/base/index.html" />`
       $locationProvider.html5Mode(true).hashPrefix('!');
     })
 
-    .controller("LocationController", function($scope, $location) {
+    .controller('LocationController', function($scope, $location) {
       $scope.$location = {};
-      angular.forEach("protocol host port path search hash".split(" "), function(method){
-        $scope.$location[method] = function(){
-          var result = $location[method].call($location);
+      angular.forEach('protocol host port path search hash'.split(' '), function(method) {
+        $scope.$location[method] = function() {
+          var result = $location[method]();
           return angular.isObject(result) ? angular.toJson(result) : result;
         };
       });
@@ -591,8 +648,8 @@ In these examples we use `<base href="/base/index.html" />`
    .directive('ngAddressBar', function($browser, $timeout) {
       return {
         template: 'Address: <input id="addressBar" type="text" style="width: 400px" >',
-        link: function(scope, element, attrs){
-          var input = element.children("input"), delay;
+        link: function(scope, element, attrs) {
+          var input = element.children('input'), delay;
 
           input.on('keypress keyup keydown', function(event) {
                   delay = (!delay ? $timeout(fireUrlChange, 250) : null);
@@ -618,43 +675,43 @@ In these examples we use `<base href="/base/index.html" />`
     var addressBar = element(by.css("#addressBar")),
          url = 'http://www.example.com/base/index.html#!/path?a=b#h';
 
-    it("should show fake browser info on load", function(){
+    it("should show fake browser info on load", function() {
       expect(addressBar.getAttribute('value')).toBe(url);
 
-      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
-      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
-      expect(element(by.binding('$location.port')).getText()).toBe('80');
-      expect(element(by.binding('$location.path')).getText()).toBe('/path');
-      expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
-      expect(element(by.binding('$location.hash')).getText()).toBe('h');
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/path');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('h');
 
     });
 
-    it("should change $location accordingly", function(){
+    it("should change $location accordingly", function() {
       var navigation = element.all(by.css("#navigation a"));
 
       navigation.get(0).click();
 
       expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/index.html#!/first?a=b");
 
-      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
-      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
-      expect(element(by.binding('$location.port')).getText()).toBe('80');
-      expect(element(by.binding('$location.path')).getText()).toBe('/first');
-      expect(element(by.binding('$location.search')).getText()).toBe('{"a":"b"}');
-      expect(element(by.binding('$location.hash')).getText()).toBe('');
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/first');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"a":"b"}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('');
 
 
       navigation.get(1).click();
 
       expect(addressBar.getAttribute('value')).toBe("http://www.example.com/base/index.html#!/sec/ond?flag#hash");
 
-      expect(element(by.binding('$location.protocol')).getText()).toBe('http');
-      expect(element(by.binding('$location.host')).getText()).toBe('www.example.com');
-      expect(element(by.binding('$location.port')).getText()).toBe('80');
-      expect(element(by.binding('$location.path')).getText()).toBe('/sec/ond');
-      expect(element(by.binding('$location.search')).getText()).toBe('{"flag":true}');
-      expect(element(by.binding('$location.hash')).getText()).toBe('hash');
+      expect(element(by.binding('$location.protocol()')).getText()).toBe('http');
+      expect(element(by.binding('$location.host()')).getText()).toBe('www.example.com');
+      expect(element(by.binding('$location.port()')).getText()).toBe('80');
+      expect(element(by.binding('$location.path()')).getText()).toBe('/sec/ond');
+      expect(element(by.binding('$location.search()')).getText()).toBe('{"flag":true}');
+      expect(element(by.binding('$location.hash()')).getText()).toBe('hash');
 
     });
   </file>
@@ -671,14 +728,14 @@ use a lower level API, {@link ng.$window $window.location.href}.
 
 ## Using $location outside of the scope life-cycle
 
-`$location` knows about Angular's {@link ng.$rootScope.Scope scope} life-cycle. When a URL changes in
+`$location` knows about AngularJS's {@link ng.$rootScope.Scope scope} life-cycle. When a URL changes in
 the browser it updates the `$location` and calls `$apply` so that all
 {@link ng.$rootScope.Scope#$watch $watchers} /
 {@link ng.$compile.directive.Attributes#$observe $observers} are notified.
 When you change the `$location` inside the `$digest` phase everything is ok; `$location` will
 propagate this change into browser and will notify all the {@link ng.$rootScope.Scope#$watch $watchers} /
 {@link ng.$compile.directive.Attributes#$observe $observers}.
-When you want to change the `$location` from outside Angular (for example, through a DOM Event or
+When you want to change the `$location` from outside AngularJS (for example, through a DOM Event or
 during testing) - you must call `$apply` to propagate the changes.
 
 ## $location.path() and ! or / prefixes
@@ -687,7 +744,7 @@ A path should always begin with forward slash (`/`); the `$location.path()` sett
 forward slash if it is missing.
 
 Note that the `!` prefix in the hashbang mode is not part of `$location.path()`; it is actually
-hashPrefix.
+`hashPrefix`.
 
 ## Crawling your app
 
@@ -712,7 +769,7 @@ ng.$rootScope.Scope scope} life-cycle. This means it's your responsibility to ca
 ```js
 describe('serviceUnderTest', function() {
   beforeEach(module(function($provide) {
-    $provide.factory('serviceUnderTest', function($location){
+    $provide.factory('serviceUnderTest', function($location) {
       // whatever it does...
     });
   });
@@ -730,7 +787,7 @@ describe('serviceUnderTest', function() {
 
 # Migrating from earlier AngularJS releases
 
-In earlier releases of Angular, `$location` used `hashPath` or `hashSearch` to process path and
+In earlier releases of AngularJS, `$location` used `hashPath` or `hashSearch` to process path and
 search methods. With this release, the `$location` service processes path and search methods and
 then uses the information it obtains to compose hashbang URLs (such as
 `http://server.com/#!/path?search=a`), when necessary.
@@ -763,8 +820,8 @@ then uses the information it obtains to compose hashbang URLs (such as
     </tr>
 
     <tr class="head">
-      <td>Navigation outside the app</td>
-      <td>Use lower level API</td>
+      <th>Navigation outside the app</td>
+      <th>Use lower level API</td>
     </tr>
 
     <tr>
@@ -778,8 +835,8 @@ then uses the information it obtains to compose hashbang URLs (such as
     </tr>
 
     <tr class="head">
-      <td>Read access</td>
-      <td>Change to</td>
+      <th>Read access</td>
+      <th>Change to</td>
     </tr>
 
     <tr>
@@ -811,7 +868,7 @@ then uses the information it obtains to compose hashbang URLs (such as
 Because `$location` uses getters/setters, you can use `ng-model-options="{ getterSetter: true }"`
 to bind it to `ngModel`:
 
-<example module="locationExample">
+<example module="locationExample" name="location-two-way-binding">
 <file name="index.html">
 <div ng-controller="LocationController">
   <input type="text" ng-model="locationPath" ng-model-options="{ getterSetter: true }" />
@@ -820,7 +877,7 @@ to bind it to `ngModel`:
 <file name="script.js">
 angular.module('locationExample', [])
   .controller('LocationController', ['$scope', '$location', function($scope, $location) {
-    $scope.locationPath = function (newLocation) {
+    $scope.locationPath = function(newLocation) {
       return $location.path(newLocation);
     };
   }]);
@@ -829,7 +886,4 @@ angular.module('locationExample', [])
 
 # Related API
 
-* {@link ng.$location $location API}
-
-
-
+* {@link ng.$location `$location` API}

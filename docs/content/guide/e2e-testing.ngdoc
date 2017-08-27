@@ -1,34 +1,34 @@
-@workInProgress
 @ngdoc overview
 @name  E2E Testing
+@sortOrder 420
 @description
 
 # E2E Testing
 
 <div class="alert alert-danger">
-**Note:** In the past, end to end testing could be done with a deprecated tool called
-[Angular Scenario Runner](http://code.angularjs.org/1.2.16/docs/guide/e2e-testing). That tool
+**Note:** In the past, end-to-end testing could be done with a deprecated tool called
+[AngularJS Scenario Runner](http://code.angularjs.org/1.2.16/docs/guide/e2e-testing). That tool
 is now in maintenance mode.
 </div>
 
 As applications grow in size and complexity, it becomes unrealistic to rely on manual testing to
 verify the correctness of new features, catch bugs and notice regressions. Unit tests
 are the first line of defense for catching bugs, but sometimes issues come up with integration
-between components which can't be captured in a unit test. End to end tests are made to find
+between components which can't be captured in a unit test. End-to-end tests are made to find
 these problems.
 
 We have built [Protractor](https://github.com/angular/protractor), an end
 to end test runner which simulates user interactions that will help you verify the health of your
-Angular application.
+AngularJS application.
 
 ## Using Protractor
 
-Protractor is a [Node.js](http://nodejs.org) program, and runs end to end tests that are also
+Protractor is a [Node.js](http://nodejs.org) program, and runs end-to-end tests that are also
 written in JavaScript and run with node. Protractor uses [WebDriver](https://code.google.com/p/selenium/wiki/GettingStarted)
 to control browsers and simulate user actions.
 
-For more information on Protractor, view [getting started](https://github.com/angular/protractor/blob/master/docs/getting-started.md)
-or the [api docs](https://github.com/angular/protractor/blob/master/docs/api.md).
+For more information on Protractor, view [getting started](http://angular.github.io/protractor/#/getting-started)
+or the [api docs](http://angular.github.io/protractor/#/api).
 
 Protractor uses [Jasmine](http://jasmine.github.io/1.3/introduction.html) for its test syntax.
 As in unit testing, a test file is comprised of one or
@@ -76,8 +76,8 @@ filter the list of items.
 
 ## Example
 See the [angular-seed](https://github.com/angular/angular-seed) project for more examples, or look
-at the embedded examples in the Angular documentation (For example, [$http](http://docs.angularjs.org/api/ng/service/$http)
-has an end to end test in the example under the `protractor.js` tag).
+at the embedded examples in the AngularJS documentation (For example, {@link $http $http}
+has an end-to-end test in the example under the `protractor.js` tag).
 
 ## Caveats
 

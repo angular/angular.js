@@ -9,9 +9,9 @@ describe('Binder', function() {
   }
 
   beforeEach(function() {
-    this.compileToHtml = function (content) {
+    this.compileToHtml = function(content) {
       var html;
-      inject(function($rootScope, $compile){
+      inject(function($rootScope, $compile) {
         content = jqLite(content);
         $compile(content)($rootScope);
         html = sortedHtml(content);
@@ -62,7 +62,7 @@ describe('Binder', function() {
   }));
 
   it('InputTypeButtonActionExecutesInScope2', inject(function($rootScope, $compile) {
-    var log = "";
+    var log = '';
     element = $compile('<input type="image" ng-click="action()">')($rootScope);
     $rootScope.action = function() {
       log += 'click;';
@@ -168,7 +168,7 @@ describe('Binder', function() {
   }));
 
   it('IfAttrBindingThrowsErrorDecorateTheAttribute', function() {
-    module(function($exceptionHandlerProvider){
+    module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
     });
     inject(function($rootScope, $exceptionHandler, $compile) {
@@ -186,7 +186,7 @@ describe('Binder', function() {
 
       $rootScope.error['throw'] =  function() { return 'X';};
       $rootScope.$apply();
-      expect(errorLogs.length).toMatch(0);
+      expect(errorLogs.length).toMatch('0');
     });
   });
 
@@ -202,21 +202,21 @@ describe('Binder', function() {
     $rootScope.$apply();
 
     expect(sortedHtml(element)).toBe(
-        '<div>'+
+        '<div>' +
           '<!-- ngRepeat: m in model -->' +
-          '<div name="a" ng-repeat="m in model">'+
+          '<div name="a" ng-repeat="m in model">' +
             '<!-- ngRepeat: i in m.item -->' +
-            '<ul name="a1" ng-repeat="i in m.item"></ul>'+
+            '<ul name="a1" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
-            '<ul name="a2" ng-repeat="i in m.item"></ul>'+
+            '<ul name="a2" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
-          '</div>'+
+          '</div>' +
           '<!-- end ngRepeat: m in model -->' +
-          '<div name="b" ng-repeat="m in model">'+
+          '<div name="b" ng-repeat="m in model">' +
             '<!-- ngRepeat: i in m.item -->' +
-            '<ul name="b1" ng-repeat="i in m.item"></ul>'+
+            '<ul name="b1" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
-            '<ul name="b2" ng-repeat="i in m.item"></ul>'+
+            '<ul name="b2" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
           '</div>' +
           '<!-- end ngRepeat: m in model -->' +
@@ -224,7 +224,7 @@ describe('Binder', function() {
   }));
 
   it('HideBindingExpression', inject(function($rootScope, $compile) {
-    element = $compile('<div ng-hide="hidden == 3"/>')($rootScope);
+    element = $compile('<div ng-hide="hidden === 3"/>')($rootScope);
 
     $rootScope.hidden = 3;
     $rootScope.$apply();
@@ -344,7 +344,7 @@ describe('Binder', function() {
   }));
 
   it('ActionOnAHrefThrowsError', function() {
-    module(function($exceptionHandlerProvider){
+    module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
     });
     inject(function($rootScope, $exceptionHandler, $compile) {
@@ -357,21 +357,21 @@ describe('Binder', function() {
     });
   });
 
-  it('ShoulIgnoreVbNonBindable', inject(function($rootScope, $compile) {
+  it('ShouldIgnoreVbNonBindable', inject(function($rootScope, $compile) {
     element = $compile(
-      "<div>{{a}}" +
-        "<div ng-non-bindable>{{a}}</div>" +
-        "<div ng-non-bindable=''>{{b}}</div>" +
-        "<div ng-non-bindable='true'>{{c}}</div>" +
-      "</div>")($rootScope);
+      '<div>{{a}}' +
+        '<div ng-non-bindable>{{a}}</div>' +
+        '<div ng-non-bindable=\'\'>{{b}}</div>' +
+        '<div ng-non-bindable=\'true\'>{{c}}</div>' +
+      '</div>')($rootScope);
     $rootScope.a = 123;
     $rootScope.$apply();
     expect(element.text()).toBe('123{{a}}{{b}}{{c}}');
   }));
 
-  it('ShouldTemplateBindPreElements', inject(function ($rootScope, $compile) {
+  it('ShouldTemplateBindPreElements', inject(function($rootScope, $compile) {
     element = $compile('<pre>Hello {{name}}!</pre>')($rootScope);
-    $rootScope.name = "World";
+    $rootScope.name = 'World';
     $rootScope.$apply();
 
     expect(sortedHtml(element)).toBe('<pre>Hello World!</pre>');
@@ -426,15 +426,15 @@ describe('Binder', function() {
   it('ItShouldRepeatOnHashes', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="(k,v) in {a:0,b:1}" ng-bind=\"k + v\"></li>' +
+        '<li ng-repeat="(k,v) in {a:0,b:1}" ng-bind="k + v"></li>' +
       '</ul>')($rootScope);
     $rootScope.$apply();
     expect(sortedHtml(element)).toBe(
         '<ul>' +
           '<!-- ngRepeat: (k,v) in {a:0,b:1} -->' +
-          '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">a0</li>' +
+          '<li ng-bind="k + v" ng-repeat="(k,v) in {a:0,b:1}">a0</li>' +
           '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
-          '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">b1</li>' +
+          '<li ng-bind="k + v" ng-repeat="(k,v) in {a:0,b:1}">b1</li>' +
           '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
         '</ul>');
   }));
@@ -442,7 +442,7 @@ describe('Binder', function() {
   it('ItShouldFireChangeListenersBeforeUpdate', inject(function($rootScope, $compile) {
     element = $compile('<div ng-bind="name"></div>')($rootScope);
     $rootScope.name = '';
-    $rootScope.$watch('watched', function () {
+    $rootScope.$watch('watched', function() {
       $rootScope.name = 123;
     });
     $rootScope.watched = 'change';

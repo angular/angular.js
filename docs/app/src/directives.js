@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('directives', [])
 
 /**
@@ -28,5 +30,21 @@ angular.module('directives', [])
       element.html(window.prettyPrintOne(html, lang, linenums));
     }
   };
-});
+})
 
+.directive('scrollYOffsetElement', ['$anchorScroll', function($anchorScroll) {
+  return function(scope, element) {
+    $anchorScroll.yOffset = element;
+  };
+}])
+
+.directive('table', function() {
+  return {
+    restrict: 'E',
+    link: function(scope, element, attrs) {
+      if (!attrs['class']) {
+        element.addClass('table table-bordered table-striped code-table');
+      }
+    }
+  };
+});

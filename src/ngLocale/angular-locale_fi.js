@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "perjantaina",
       "lauantaina"
     ],
+    "ERANAMES": [
+      "ennen Kristuksen syntym\u00e4\u00e4",
+      "j\u00e4lkeen Kristuksen syntym\u00e4n"
+    ],
+    "ERAS": [
+      "eKr.",
+      "jKr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "tammikuuta",
       "helmikuuta",
@@ -58,18 +67,36 @@ $provide.value("$locale", {
       "la"
     ],
     "SHORTMONTH": [
-      "tammikuuta",
-      "helmikuuta",
-      "maaliskuuta",
-      "huhtikuuta",
-      "toukokuuta",
-      "kes\u00e4kuuta",
-      "hein\u00e4kuuta",
-      "elokuuta",
-      "syyskuuta",
-      "lokakuuta",
-      "marraskuuta",
-      "joulukuuta"
+      "tammik.",
+      "helmik.",
+      "maalisk.",
+      "huhtik.",
+      "toukok.",
+      "kes\u00e4k.",
+      "hein\u00e4k.",
+      "elok.",
+      "syysk.",
+      "lokak.",
+      "marrask.",
+      "jouluk."
+    ],
+    "STANDALONEMONTH": [
+      "tammikuu",
+      "helmikuu",
+      "maaliskuu",
+      "huhtikuu",
+      "toukokuu",
+      "kes\u00e4kuu",
+      "hein\u00e4kuu",
+      "elokuu",
+      "syyskuu",
+      "lokakuu",
+      "marraskuu",
+      "joulukuu"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "cccc d. MMMM y",
     "longDate": "d. MMMM y",
@@ -88,7 +115,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -100,7 +126,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -112,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "fi",
-  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "fi",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

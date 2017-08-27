@@ -1,0 +1,183 @@
+{
+  "root": true,
+  "extends": "../.eslintrc-browser.json",
+
+  "env": {
+    "jasmine": true
+  },
+
+  "rules": {
+    // Some rules are not that important in tests and conflict with
+    // Jasmine or would make it easier to write some tests; we disable
+    // those ones here.
+    "no-invalid-this": "off",
+    "no-throw-literal": "off",
+    "no-unused-vars": "off"
+  },
+
+  "globals": {
+    /* browser */
+    "ArrayBuffer": false,
+    "Uint8Array": false,
+
+    /* auto/injector.js */
+    "createInjector": false,
+
+    /* angular.js */
+    "angular": false,
+    "minErrConfig": false,
+    "errorHandlingConfig": false,
+    "msie": false,
+    "jqLite": false,
+    "jQuery": false,
+    "slice": false,
+    "push": false,
+    "toString": false,
+    "ngMinErr": false,
+    "_angular": false,
+    "angularModule": false,
+    "nodeName_": false,
+    "uid": false,
+    "toDebugString": false,
+    "serializeObject": false,
+
+    "lowercase": false,
+    "uppercase": false,
+    "manualLowercase": false,
+    "manualUppercase": false,
+    "isArrayLike": false,
+    "forEach": false,
+    "reverseParams": false,
+    "nextUid": false,
+    "setHashKey": false,
+    "extend": false,
+    "merge": false,
+    "toInt": false,
+    "inherit": false,
+    "noop": false,
+    "identity": false,
+    "valueFn": false,
+    "isUndefined": false,
+    "isDefined": false,
+    "isObject": false,
+    "isString": false,
+    "isNumber": false,
+    "isNumberNaN": false,
+    "isDate": false,
+    "isError": false,
+    "isArray": false,
+    "isFunction": false,
+    "isRegExp": false,
+    "isWindow": false,
+    "isScope": false,
+    "isFile": false,
+    "isBlob": false,
+    "isBoolean": false,
+    "trim": false,
+    "isElement": false,
+    "isPromiseLike": false,
+    "makeMap": false,
+    "map": false,
+    "includes": false,
+    "arrayRemove": false,
+    "copy": false,
+    "shallowCopy": false,
+    "equals": false,
+    "csp": false,
+    "jq": false,
+    "concat": false,
+    "sliceArgs": false,
+    "bind": false,
+    "toJsonReplacer": false,
+    "toJson": false,
+    "fromJson": false,
+    "startingTag": false,
+    "tryDecodeURIComponent": false,
+    "parseKeyValue": false,
+    "toKeyValue": false,
+    "encodeUriSegment": false,
+    "encodeUriQuery": false,
+    "angularInit": false,
+    "bootstrap": false,
+    "snake_case": false,
+    "bindJQuery": false,
+    "assertArg": false,
+    "assertArgFn": false,
+    "assertNotHasOwnProperty": false,
+    "getter": false,
+    "getBlockNodes": false,
+    "createMap": false,
+    "VALIDITY_STATE_PROPERTY": true,
+    "allowAutoBootstrap": false,
+    "isAutoBootstrapAllowed": false,
+
+    /* AngularPublic.js */
+    "version": false,
+    "publishExternalAPI": false,
+
+    /* minerr.js */
+    "minErr": false,
+
+    /* loader.js */
+    "setupModuleLoader": false,
+
+    /* jqLite.js */
+    "BOOLEAN_ATTR": false,
+    "jqNextId": false,
+    "kebabToCamel": false,
+    "fnCamelCaseReplace": false,
+    "jqLitePatchJQueryRemove": false,
+    "JQLite": false,
+    "jqLiteClone": false,
+    "jqLiteDealoc": false,
+    "jqLiteOff": false,
+    "jqLiteRemoveData": false,
+    "jqLiteExpandoStore": false,
+    "jqLiteData": false,
+    "jqLiteHasClass": false,
+    "jqLiteRemoveClass": false,
+    "jqLiteAddClass": false,
+    "jqLiteAddNodes": false,
+    "jqLiteController": false,
+    "jqLiteInheritedData": false,
+    "getBooleanAttrName": false,
+    "createEventHandler": false,
+    "JQLitePrototype": false,
+    "jqLiteDocumentLoaded": false,
+
+    /* apis.js */
+    "hashKey": false,
+    "NgMapShim": false,
+
+    /* urlUtils.js */
+    "urlResolve": false,
+    "urlIsSameOrigin": false,
+    "urlIsSameOriginAsBaseUrl": true,
+
+    /* karma */
+    "dump": false,
+    "they": false,
+    "fthey": false,
+    "xthey": false,
+    "assertCompareNodes": false,
+
+    /* testabilityPatch / matchers */
+    "inject": false,
+    "module": false,
+    "dealoc": false,
+    "_jQuery": false,
+    "_jqLiteMode": false,
+    "sortedHtml": false,
+    "childrenTagsOf": false,
+    "assertHidden": false,
+    "assertVisible": false,
+    "provideLog": false,
+    "spyOnlyCallsWithArgs": false,
+    "createMockStyleSheet": false,
+    "browserSupportsCssAnimations": false,
+    "browserTrigger": false,
+    "jqLiteCacheSize": false,
+    "createAsync": false,
+    "support": false
+  }
+}

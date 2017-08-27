@@ -1,0 +1,51 @@
+@ngdoc error
+@name filter:notarray
+@fullName Not an array
+@description
+
+This error occurs when {@link ng.filter filter} is not used with an array:
+```html
+<input ng-model="search">
+<div ng-repeat="(key, value) in myObj | filter:search">
+  {{ key }} : {{ value }}
+</div>
+```
+
+Filter must be used with an array so a subset of items can be returned.
+The array can be initialized asynchronously and therefore null or undefined won't throw this error.
+
+To filter an object by the value of its properties you can create your own custom filter:
+```js
+angular.module('customFilter',[])
+  .filter('custom', function() {
+    return function(input, search) {
+      if (!input) return input;
+      if (!search) return input;
+      var expected = ('' + search).toLowerCase();
+      var result = {};
+      angular.forEach(input, function(value, key) {
+        var actual = ('' + value).toLowerCase();
+        if (actual.indexOf(expected) !== -1) {
+          result[key] = value;
+        }
+      });
+      return result;
+    }
+  });
+```
+That can be used as:
+```html
+<input ng-model="search">
+<div ng-repeat="(key, value) in myObj | custom:search">
+  {{ key }} : {{ value }}
+</div>
+```
+
+You could as well convert the object to an array using a filter such as
+[toArrayFilter](https://github.com/petebacondarwin/angular-toArrayFilter):
+```html
+<input ng-model="search">
+<div ng-repeat="item in myObj | toArray:false | filter:search">
+  {{ item }}
+</div>
+```

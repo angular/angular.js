@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "[AM]",
-      "[PM]"
+      "\u092e.\u092a\u0942.",
+      "\u092e.\u0909."
     ],
     "DAY": [
       "\u0930\u0935\u093f\u0935\u093e\u0930",
@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u0936\u0941\u0915\u094d\u0930\u0935\u093e\u0930",
       "\u0936\u0928\u093f\u0935\u093e\u0930"
     ],
+    "ERANAMES": [
+      "\u0908\u0938\u0935\u0940\u0938\u0928\u092a\u0942\u0930\u094d\u0935",
+      "\u0908\u0938\u0935\u0940\u0938\u0928"
+    ],
+    "ERAS": [
+      "\u0907. \u0938. \u092a\u0942.",
+      "\u0907. \u0938."
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "\u091c\u093e\u0928\u0947\u0935\u093e\u0930\u0940",
       "\u092b\u0947\u092c\u094d\u0930\u0941\u0935\u093e\u0930\u0940",
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "\u0928\u094b\u0935\u094d\u0939\u0947\u0902",
       "\u0921\u093f\u0938\u0947\u0902"
     ],
+    "STANDALONEMONTH": [
+      "\u091c\u093e\u0928\u0947\u0935\u093e\u0930\u0940",
+      "\u092b\u0947\u092c\u094d\u0930\u0941\u0935\u093e\u0930\u0940",
+      "\u092e\u093e\u0930\u094d\u091a",
+      "\u090f\u092a\u094d\u0930\u093f\u0932",
+      "\u092e\u0947",
+      "\u091c\u0942\u0928",
+      "\u091c\u0941\u0932\u0948",
+      "\u0911\u0917\u0938\u094d\u091f",
+      "\u0938\u092a\u094d\u091f\u0947\u0902\u092c\u0930",
+      "\u0911\u0915\u094d\u091f\u094b\u092c\u0930",
+      "\u0928\u094b\u0935\u094d\u0939\u0947\u0902\u092c\u0930",
+      "\u0921\u093f\u0938\u0947\u0902\u092c\u0930"
+    ],
+    "WEEKENDRANGE": [
+      6,
+      6
+    ],
     "fullDate": "EEEE, d MMMM, y",
     "longDate": "d MMMM, y",
     "medium": "d MMM, y h:mm:ss a",
@@ -68,9 +95,8 @@ $provide.value("$locale", {
     "GROUP_SEP": ",",
     "PATTERNS": [
       {
-        "gSize": 3,
+        "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,11 +108,10 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "mr",
-  "pluralCat": function (n, opt_precision) {  var i = n | 0;  if (i == 0 || n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "mr",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  if (i == 0 || n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

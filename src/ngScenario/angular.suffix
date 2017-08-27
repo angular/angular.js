@@ -2,7 +2,7 @@ bindJQuery();
 publishExternalAPI(angular);
 
 var $runner = new angular.scenario.Runner(window),
-    scripts = document.getElementsByTagName('script'),
+    scripts = window.document.getElementsByTagName('script'),
     script = scripts[scripts.length - 1],
     config = {};
 
@@ -14,9 +14,9 @@ angular.forEach(script.attributes, function(attr) {
 });
 
 if (config.autotest) {
-  JQLite(document).ready(function() {
+  JQLite(function() {
     angular.scenario.setUpAndRun(config);
   });
 }
-})(window, document);
+})(window);
 

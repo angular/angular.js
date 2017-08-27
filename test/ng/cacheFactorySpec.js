@@ -17,7 +17,7 @@ describe('$cacheFactory', function() {
   it('should complain if the cache id is being reused', inject(function($cacheFactory) {
     $cacheFactory('cache1');
     expect(function() { $cacheFactory('cache1'); }).
-      toThrowMinErr("$cacheFactory", "iid", "CacheId 'cache1' is already taken!");
+      toThrowMinErr('$cacheFactory', 'iid', 'CacheId \'cache1\' is already taken!');
   }));
 
 
@@ -108,7 +108,7 @@ describe('$cacheFactory', function() {
       }));
 
 
-      it("should return value from put", inject(function($cacheFactory) {
+      it('should return value from put', inject(function($cacheFactory) {
         var obj = {};
         expect(cache.put('k1', obj)).toBe(obj);
       }));
@@ -133,6 +133,19 @@ describe('$cacheFactory', function() {
         expect(cache.info().size).toBe(0);
       }));
 
+      it('should only decrement size when an element is actually removed via remove', inject(function($cacheFactory) {
+        cache.put('foo', 'bar');
+        expect(cache.info().size).toBe(1);
+
+        cache.remove('undefined');
+        expect(cache.info().size).toBe(1);
+
+        cache.remove('hasOwnProperty');
+        expect(cache.info().size).toBe(1);
+
+        cache.remove('foo');
+        expect(cache.info().size).toBe(0);
+      }));
 
       it('should return cache id', inject(function($cacheFactory) {
         expect(cache.info().id).toBe('test');
@@ -164,7 +177,7 @@ describe('$cacheFactory', function() {
         cache.put('foo', 'bar');
         cache.destroy();
 
-        expect(function() { cache.get('foo'); } ).toThrow();
+        expect(function() { cache.get('foo'); }).toThrow();
         expect(function() { cache.get('neverexisted'); }).toThrow();
         expect(function() { cache.put('foo', 'bar'); }).toThrow();
 
@@ -181,7 +194,7 @@ describe('$cacheFactory', function() {
       var cache = $cacheFactory('cache1', {capacity: 5});
       expect(cache.info().size).toBe(0);
 
-      for (var i=0; i<5; i++) {
+      for (var i = 0; i < 5; i++) {
         cache.put('id' + i, i);
       }
 

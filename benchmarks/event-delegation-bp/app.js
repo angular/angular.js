@@ -1,3 +1,5 @@
+'use strict';
+
 var app = angular.module('eventDelegationBenchmark', []);
 
 app.directive('noopDir', function() {
@@ -5,7 +7,7 @@ app.directive('noopDir', function() {
     compile: function($element, $attrs) {
       return function($scope, $element) {
         return 1;
-      }
+      };
     }
   };
 });
@@ -13,12 +15,12 @@ app.directive('noopDir', function() {
 app.directive('nativeClick', ['$parse', function($parse) {
   return {
     compile: function($element, $attrs) {
-      var expr = $parse($attrs.tstEvent);
+      $parse($attrs.tstEvent);
       return function($scope, $element) {
         $element[0].addEventListener('click', function() {
           console.log('clicked');
         }, false);
-      }
+      };
     }
   };
 }]);
@@ -26,13 +28,12 @@ app.directive('nativeClick', ['$parse', function($parse) {
 app.directive('dlgtClick', function() {
   return {
     compile: function($element, $attrs) {
-      var evt = $attrs.dlgtClick;
       // We don't setup the global event listeners as the costs are small and one time only...
     }
   };
 });
 
-app.controller('DataController', function($rootScope) {
+app.controller('DataController', function DataController($rootScope) {
   this.ngRepeatCount = 1000;
   this.rows = [];
   var self = this;
@@ -47,8 +48,8 @@ app.controller('DataController', function($rootScope) {
       self.rows = oldRows;
       if (self.rows.length !== self.ngRepeatCount) {
         self.rows = [];
-        for (var i=0; i<self.ngRepeatCount; i++) {
-          self.rows.push('row'+i);
+        for (var i = 0; i < self.ngRepeatCount; i++) {
+          self.rows.push('row' + i);
         }
       }
       $rootScope.$apply();

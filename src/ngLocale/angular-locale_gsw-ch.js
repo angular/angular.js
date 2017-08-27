@@ -4,8 +4,8 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "vorm.",
-      "nam."
+      "am Vormittag",
+      "am Namittag"
     ],
     "DAY": [
       "Sunntig",
@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "Friitig",
       "Samschtig"
     ],
+    "ERANAMES": [
+      "v. Chr.",
+      "n. Chr."
+    ],
+    "ERAS": [
+      "v. Chr.",
+      "n. Chr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Januar",
       "Februar",
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "Nov",
       "Dez"
     ],
+    "STANDALONEMONTH": [
+      "Januar",
+      "Februar",
+      "M\u00e4rz",
+      "April",
+      "Mai",
+      "Juni",
+      "Juli",
+      "Auguscht",
+      "Sept\u00e4mber",
+      "Oktoober",
+      "Nov\u00e4mber",
+      "Dez\u00e4mber"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d. MMMM y",
     "longDate": "d. MMMM y",
     "medium": "dd.MM.y HH:mm:ss",
@@ -70,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +108,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "gsw-ch",
-  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "gsw_CH",
+  "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

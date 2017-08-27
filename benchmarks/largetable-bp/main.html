@@ -8,15 +8,20 @@
       Large table rendered with AngularJS
       </p>
 
-      <div>none: <input type=radio ng-model="benchmarkType" value="none"></div>
-      <div>baseline binding: <input type=radio ng-model="benchmarkType" value="baselineBinding"></div>
-      <div>baseline interpolation: <input type=radio ng-model="benchmarkType" value="baselineInterpolation"></div>
-      <div>ngBind: <input type=radio ng-model="benchmarkType" value="ngBind"></div>
-      <div>interpolation: <input type=radio ng-model="benchmarkType" value="interpolation"></div>
-      <div>ngBind + fnInvocation: <input type=radio ng-model="benchmarkType" value="ngBindFn"></div>
-      <div>interpolation + fnInvocation: <input type=radio ng-model="benchmarkType" value="interpolationFn"></div>
-      <div>ngBind + filter: <input type=radio ng-model="benchmarkType" value="ngBindFilter"></div>
-      <div>ngBind + filter: <input type=radio ng-model="benchmarkType" value="interpolationFilter"></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="none">none: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="baselineBinding">baseline binding: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="baselineInterpolation">baseline interpolation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngBind">ngBind: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngBindOnce">ngBindOnce: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="interpolation">interpolation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="bindOnceInterpolation">interpolation + bind-once: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="interpolationAttr">attribute interpolation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngBindFn">ngBind + fnInvocation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="interpolationFn">interpolation + fnInvocation: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngBindFilter">ngBind + filter: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="interpolationFilter">interpolation + filter: </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngModelConstName">ngModel (const name): </label></div>
+      <div><label><input type="radio" ng-model="benchmarkType" value="ngModelInterpName">ngModel (interp name): </label></div>
 
       <ng-switch on="benchmarkType">
         <baseline-binding-table ng-switch-when="baselineBinding">
@@ -26,13 +31,35 @@
         <div ng-switch-when="ngBind">
           <h2>baseline binding</h2>
           <div ng-repeat="row in data">
-            <span ng-repeat="column in row"><span ng-bind="column.i"></span>:<span ng-bind="column.j"></span>|</span>
+            <span ng-repeat="column in row">
+              <span ng-bind="column.i"></span>:<span ng-bind="column.j"></span>|
+            </span>
+          </div>
+        </div>
+        <div ng-switch-when="ngBindOnce">
+          <h2>baseline binding once</h2>
+          <div ng-repeat="row in ::data">
+            <span ng-repeat="column in ::row">
+              <span ng-bind="::column.i"></span>:<span ng-bind="::column.j"></span>|
+            </span>
           </div>
         </div>
         <div ng-switch-when="interpolation">
           <h2>baseline interpolation</h2>
           <div ng-repeat="row in data">
             <span ng-repeat="column in row">{{column.i}}:{{column.j}}|</span>
+          </div>
+        </div>
+        <div ng-switch-when="bindOnceInterpolation">
+          <h2>baseline one-time interpolation</h2>
+          <div ng-repeat="row in ::data">
+            <span ng-repeat="column in ::row">{{::column.i}}:{{::column.j}}|</span>
+          </div>
+        </div>
+        <div ng-switch-when="interpolationAttr">
+          <h2>attribute interpolation</h2>
+          <div ng-repeat="row in data">
+            <span ng-repeat="column in row" i="{{column.i}}" j="{{column.j}}">i,j attrs</span>
           </div>
         </div>
         <div ng-switch-when="ngBindFn">
@@ -57,6 +84,20 @@
           <h2>interpolation with filter</h2>
           <div ng-repeat="row in data">
             <span ng-repeat="column in row">{{column.i | noop}}:{{column.j | noop}}|</span>
+          </div>
+        </div>
+        <div ng-switch-when="ngModelConstName">
+          <h2>ngModel (const name)</h2>
+          <div ng-repeat="row in data">
+            <input type="text" ng-model="row.i" name="constName" />
+            <input type="text" ng-model="row.j" />
+          </div>
+        </div>
+        <div ng-switch-when="ngModelInterpName">
+          <h2>ngModel (interp name)</h2>
+          <div ng-repeat="(rowIdx, row) in data">
+            <input type="text" ng-model="row.i" name="input-{{rowIdx}}" />
+            <input type="text" ng-model="row.j" name="input2-{{rowIdx}}" />
           </div>
         </div>
       </ng-switch>

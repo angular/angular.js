@@ -34,7 +34,53 @@ $provide.value("$locale", {
       "divendres",
       "dissabte"
     ],
+    "ERANAMES": [
+      "abans de Crist",
+      "despr\u00e9s de Crist"
+    ],
+    "ERAS": [
+      "aC",
+      "dC"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
+      "de gener",
+      "de febrer",
+      "de mar\u00e7",
+      "d\u2019abril",
+      "de maig",
+      "de juny",
+      "de juliol",
+      "d\u2019agost",
+      "de setembre",
+      "d\u2019octubre",
+      "de novembre",
+      "de desembre"
+    ],
+    "SHORTDAY": [
+      "dg.",
+      "dl.",
+      "dt.",
+      "dc.",
+      "dj.",
+      "dv.",
+      "ds."
+    ],
+    "SHORTMONTH": [
+      "gen.",
+      "febr.",
+      "mar\u00e7",
+      "abr.",
+      "maig",
+      "juny",
+      "jul.",
+      "ag.",
+      "set.",
+      "oct.",
+      "nov.",
+      "des."
+    ],
+    "STANDALONEMONTH": [
       "gener",
       "febrer",
       "mar\u00e7",
@@ -48,33 +94,14 @@ $provide.value("$locale", {
       "novembre",
       "desembre"
     ],
-    "SHORTDAY": [
-      "dg.",
-      "dl.",
-      "dt.",
-      "dc.",
-      "dj.",
-      "dv.",
-      "ds."
-    ],
-    "SHORTMONTH": [
-      "gen.",
-      "feb.",
-      "mar\u00e7",
-      "abr.",
-      "maig",
-      "juny",
-      "jul.",
-      "ag.",
-      "set.",
-      "oct.",
-      "nov.",
-      "des."
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM 'de' y",
     "longDate": "d MMMM 'de' y",
-    "medium": "dd/MM/y H:mm:ss",
-    "mediumDate": "dd/MM/y",
+    "medium": "d MMM y H:mm:ss",
+    "mediumDate": "d MMM y",
     "mediumTime": "H:mm:ss",
     "short": "d/M/yy H:mm",
     "shortDate": "d/M/yy",
@@ -88,7 +115,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -100,7 +126,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -112,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ca-es-valencia",
-  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "ca_ES_VALENCIA",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

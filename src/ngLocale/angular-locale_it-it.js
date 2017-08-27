@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "venerd\u00ec",
       "sabato"
     ],
+    "ERANAMES": [
+      "avanti Cristo",
+      "dopo Cristo"
+    ],
+    "ERAS": [
+      "a.C.",
+      "d.C."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "gennaio",
       "febbraio",
@@ -71,10 +80,28 @@ $provide.value("$locale", {
       "nov",
       "dic"
     ],
+    "STANDALONEMONTH": [
+      "gennaio",
+      "febbraio",
+      "marzo",
+      "aprile",
+      "maggio",
+      "giugno",
+      "luglio",
+      "agosto",
+      "settembre",
+      "ottobre",
+      "novembre",
+      "dicembre"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE d MMMM y",
-    "longDate": "dd MMMM y",
-    "medium": "dd/MMM/y HH:mm:ss",
-    "mediumDate": "dd/MMM/y",
+    "longDate": "d MMMM y",
+    "medium": "dd MMM y HH:mm:ss",
+    "mediumDate": "dd MMM y",
     "mediumTime": "HH:mm:ss",
     "short": "dd/MM/yy HH:mm",
     "shortDate": "dd/MM/yy",
@@ -88,7 +115,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -100,7 +126,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -112,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "it-it",
-  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "it_IT",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

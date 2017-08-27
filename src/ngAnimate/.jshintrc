@@ -1,8 +1,0 @@
-{
-  "extends": "../../.jshintrc-base",
-  "maxlen": false, /* ngAnimate docs contain wide tables */
-  "browser": true,
-  "globals": {
-    "angular": false
-  }
-}

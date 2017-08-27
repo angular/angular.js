@@ -22,7 +22,7 @@ ul.doc-example > li.doc-example-heading {
 span.nojsfiddle {
   float: right;
   font-size: 14px;
-  margin-right:10px;
+  margin-right: 10px;
   margin-top: 10px;
 }
 
@@ -42,7 +42,7 @@ form.jsfiddle button {
   color: #7989D6;
   border-color: #7989D6;
   -moz-border-radius: 8px;
-  -webkit-border-radius:8px;
+  -webkit-border-radius: 8px;
   border-radius: 8px;
 }
 
@@ -56,7 +56,7 @@ li.doc-example-live {
 }
 
 div.syntaxhighlighter {
-  padding-bottom: 1px !important; /* fix to remove unnecessary scrollbars http://is.gd/gSMgC */
+  padding-bottom: 1px !important; /* fix to remove unnecessary scrollbars */
 }
 
 /* TABS - tutorial environment navigation */

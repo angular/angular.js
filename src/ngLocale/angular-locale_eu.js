@@ -16,19 +16,28 @@ $provide.value("$locale", {
       "ostirala",
       "larunbata"
     ],
+    "ERANAMES": [
+      "K.a.",
+      "Kristo ondoren"
+    ],
+    "ERAS": [
+      "K.a.",
+      "K.o."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
-      "urtarrilak",
-      "otsailak",
-      "martxoak",
-      "apirilak",
-      "maiatzak",
-      "ekainak",
-      "uztailak",
-      "abuztuak",
-      "irailak",
-      "urriak",
-      "azaroak",
-      "abenduak"
+      "urtarrila",
+      "otsaila",
+      "martxoa",
+      "apirila",
+      "maiatza",
+      "ekaina",
+      "uztaila",
+      "abuztua",
+      "iraila",
+      "urria",
+      "azaroa",
+      "abendua"
     ],
     "SHORTDAY": [
       "ig.",
@@ -53,13 +62,31 @@ $provide.value("$locale", {
       "aza.",
       "abe."
     ],
+    "STANDALONEMONTH": [
+      "urtarrila",
+      "Otsaila",
+      "Martxoa",
+      "Apirila",
+      "Maiatza",
+      "Ekaina",
+      "Uztaila",
+      "Abuztua",
+      "Iraila",
+      "Urria",
+      "Azaroa",
+      "Abendua"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "y('e')'ko' MMMM d, EEEE",
     "longDate": "y('e')'ko' MMMM d",
     "medium": "y MMM d HH:mm:ss",
     "mediumDate": "y MMM d",
     "mediumTime": "HH:mm:ss",
-    "short": "y-MM-dd HH:mm",
-    "shortDate": "y-MM-dd",
+    "short": "yy/M/d HH:mm",
+    "shortDate": "yy/M/d",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
@@ -70,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +108,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "eu",
-  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "eu",
+  "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

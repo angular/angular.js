@@ -1,0 +1,26 @@
+{% import "lib/macros.html" as lib -%}
+{% extends "api/api.template.html" %}
+
+{% block additional %}
+  <h2>Usage</h2>
+  <h3>In HTML Template Binding</h3>
+  {% if doc.usage %}
+    {$ doc.usage | code $}
+  {% else %}
+    {% code -%}
+    {{ {$ doc.name $}_expression | {$ doc.name $}
+      {%- for param in doc.params %}{% if not loop.first %} : {$ param.name $}{% endif %}{% endfor -%}
+    }}
+    {%- endcode %}
+  {% endif %}
+
+  <h3>In JavaScript</h3>
+  {% code -%}
+    {%- set sep = joiner(', ') -%}
+    $filter('{$ doc.name $}')({% for param in doc.params %}{$ sep() $}{$ param.name $}{% endfor -%})
+  {%- endcode %}
+
+  {% include "lib/params.template.html" %}
+  {% include "lib/this.template.html" %}
+  {% include "lib/returns.template.html" %}
+{% endblock %}

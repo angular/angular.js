@@ -3,7 +3,7 @@
 @fullName The sequence *** is not a valid pattern wildcard
 @description
 
-The strings in {@link ng.$sceDelegateProvider#resourceUrlWhitelist
+The strings in {@link $sceDelegateProvider#resourceUrlWhitelist
 $sceDelegateProvider.resourceUrlWhitelist} and {@link
-api/ng.$sceDelegateProvider#resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist} may not
+$sceDelegateProvider#resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist} may not
 contain the undefined sequence `***`.  Only `*` and `**` wildcard patterns are defined.

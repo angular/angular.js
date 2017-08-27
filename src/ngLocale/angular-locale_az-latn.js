@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "c\u00fcm\u0259",
       "\u015f\u0259nb\u0259"
     ],
+    "ERANAMES": [
+      "eram\u0131zdan \u0259vv\u0259l",
+      "yeni era"
+    ],
+    "ERAS": [
+      "e.\u0259.",
+      "y.e."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "yanvar",
       "fevral",
@@ -36,7 +45,7 @@ $provide.value("$locale", {
       "\u00c7.A.",
       "\u00c7.",
       "C.A.",
-      "C",
+      "C.",
       "\u015e."
     ],
     "SHORTMONTH": [
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "noy",
       "dek"
     ],
+    "STANDALONEMONTH": [
+      "Yanvar",
+      "Fevral",
+      "Mart",
+      "Aprel",
+      "May",
+      "\u0130yun",
+      "\u0130yul",
+      "Avqust",
+      "Sentyabr",
+      "Oktyabr",
+      "Noyabr",
+      "Dekabr"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "d MMMM y, EEEE",
     "longDate": "d MMMM y",
     "medium": "d MMM y HH:mm:ss",
@@ -63,14 +90,13 @@ $provide.value("$locale", {
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "man.",
+    "CURRENCY_SYM": "\u20bc",
     "DECIMAL_SEP": ",",
     "GROUP_SEP": ".",
     "PATTERNS": [
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,11 +108,10 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "az-latn",
-  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "az_Latn",
+  "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

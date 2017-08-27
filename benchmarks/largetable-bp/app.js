@@ -1,4 +1,12 @@
+'use strict';
+
 var app = angular.module('largetableBenchmark', []);
+
+app.config(function($compileProvider) {
+  if ($compileProvider.debugInfoEnabled) {
+    $compileProvider.debugInfoEnabled(false);
+  }
+});
 
 app.filter('noop', function() {
   return function(input) {
@@ -6,21 +14,23 @@ app.filter('noop', function() {
   };
 });
 
-app.controller('DataController', function($scope, $rootScope) {
+app.controller('DataController', function DataController($scope, $rootScope) {
   var totalRows = 1000;
   var totalColumns = 20;
 
   var data = $scope.data = [];
   $scope.digestDuration = '?';
-  $scope.numberOfBindings = totalRows*totalColumns*2 + totalRows + 1;
+  $scope.numberOfBindings = totalRows * totalColumns * 2 + totalRows + 1;
   $scope.numberOfWatches = '?';
 
+  /** @this */
   function iGetter() { return this.i; }
+  /** @this */
   function jGetter() { return this.j; }
 
-  for (var i=0; i<totalRows; i++) {
+  for (var i = 0; i < totalRows; i++) {
     data[i] = [];
-    for (var j=0; j<totalColumns; j++) {
+    for (var j = 0; j < totalColumns; j++) {
       data[i][j] = {
         i: i, j: j,
         iFn: iGetter,
@@ -58,14 +68,13 @@ app.controller('DataController', function($scope, $rootScope) {
   });
 });
 
-var fn = function() { return 'x'};
-
 
 app.directive('baselineBindingTable', function() {
   return {
     restrict: 'E',
-    link: function ($scope, $element) {
+    link: function($scope, $element) {
       var i, j, row, cell, comment;
+      var document = window.document;
       var template = document.createElement('span');
       template.setAttribute('ng-repeat', 'foo in foos');
       template.classList.add('ng-scope');
@@ -98,8 +107,9 @@ app.directive('baselineBindingTable', function() {
 app.directive('baselineInterpolationTable', function() {
   return {
     restrict: 'E',
-    link: function ($scope, $element) {
+    link: function($scope, $element) {
       var i, j, row, cell, comment;
+      var document = window.document;
       var template = document.createElement('span');
       template.setAttribute('ng-repeat', 'foo in foos');
       template.classList.add('ng-scope');

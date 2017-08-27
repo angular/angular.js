@@ -1,0 +1,8 @@
+@ngdoc error
+@name $interpolate:wantstring
+@fullName Expected the beginning of a string
+@description
+
+We expected to see the beginning of a string (either a single quote or a double
+quote character) in the expression but it was not found.  The expression is
+invalid.  If this is incorrect, please file an issue on github.

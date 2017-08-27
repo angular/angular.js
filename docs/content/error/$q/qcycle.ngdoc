@@ -1,0 +1,23 @@
+@ngdoc error
+@name $q:qcycle
+@fullName Cannot resolve a promise with itself
+@description
+
+Occurs when resolving a promise with itself as the value, including returning the promise in a
+function passed to `then`. The A+ 1.1 spec mandates that this behavior throw a TypeError.
+https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+
+```
+var promise = $q.defer().promise;
+
+//bad
+promise.then(function (val) {
+  //Cannot return self
+  return promise;
+});
+
+//good
+promise.then(function (val) {
+  return 'some other value';
+});
+```

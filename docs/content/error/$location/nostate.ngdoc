@@ -1,0 +1,8 @@
+@ngdoc error
+@name $location:nostate
+@fullName History API state support is available only in HTML5 mode and only in browsers supporting HTML5 History API
+@description
+
+This error occurs when the {@link ng.$location#state $location.state} method is used when {@link ng.$locationProvider#html5Mode $locationProvider.html5Mode} is not turned on or the browser used doesn't support the HTML5 History API (for example, IE9 or Android 2.3).
+
+To avoid this error, either drop support for those older browsers or avoid using this method.

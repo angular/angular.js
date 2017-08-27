@@ -1,0 +1,324 @@
+@ngdoc tutorial
+@name 13 - REST and Custom Services
+@step 13
+@description
+
+<ul doc-tutorial-nav="13"></ul>
+
+
+In this step, we will change the way our application fetches data.
+
+* We define a custom service that represents a [RESTful][restful] client. Using this client we can
+  make requests for data to the server in an easier way, without having to deal with the lower-level
+  {@link ng.$http $http} API, HTTP methods and URLs.
+
+
+<div doc-tutorial-reset="13"></div>
+
+
+## Dependencies
+
+The RESTful functionality is provided by AngularJS in the {@link ngResource ngResource} module, which
+is distributed separately from the core AngularJS framework.
+
+Since we are using [Bower][bower] to install client-side dependencies, this step updates the
+`bower.json` configuration file to include the new dependency:
+
+<br />
+**`bower.json`:**
+
+```
+{
+  "name": "angular-phonecat",
+  "description": "A starter project for AngularJS",
+  "version": "0.0.0",
+  "homepage": "https://github.com/angular/angular-phonecat",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "1.5.x",
+    "angular-mocks": "1.5.x",
+    "angular-resource": "1.5.x",
+    "angular-route": "1.5.x",
+    "bootstrap": "3.3.x"
+  }
+}
+```
+
+The new dependency `"angular-resource": "1.5.x"` tells bower to install a version of the
+angular-resource module that is compatible with version 1.5.x of AngularJS. We must tell bower to
+download and install this dependency.
+
+```
+npm install
+```
+
+<div class="alert alert-info">
+  **Note:** If you have bower installed globally, you can run `bower install`, but for this project
+  we have preconfigured `npm install` to run bower for us.
+</div>
+
+<div class="alert alert-warning">
+  **Warning:** If a new version of AngularJS has been released since you last ran `npm install`, then
+  you may have a problem with the `bower install` due to a conflict between the versions of
+  angular.js that need to be installed. If you run into this issue, simply delete your
+  `app/bower_components` directory and then run `npm install`.
+</div>
+
+
+## Service
+
+We create our own service to provide access to the phone data on the server. We will put the service
+in its own module, under `core`, so we can explicitly declare its dependency on `ngResource`:
+
+<br />
+**`app/core/phone/phone.module.js`:**
+
+```js
+angular.module('core.phone', ['ngResource']);
+```
+
+<br />
+**`app/core/phone/phone.service.js`:**
+
+```js
+  angular.
+    module('core.phone').
+    factory('Phone', ['$resource',
+      function($resource) {
+        return $resource('phones/:phoneId.json', {}, {
+          query: {
+            method: 'GET',
+            params: {phoneId: 'phones'},
+            isArray: true
+          }
+        });
+      }
+    ]);
+```
+
+We used the {@link angular.Module module API} to register a custom service using a factory function.
+We passed in the name of the service &mdash; `'Phone'` &mdash; and the factory function. The factory
+function is similar to a controller's constructor in that both can declare dependencies to be
+injected via function arguments. The `Phone` service declares a dependency on the `$resource`
+service, provided by the `ngResource` module.
+
+The {@link ngResource.$resource $resource} service makes it easy to create a [RESTful][restful]
+client with just a few lines of code. This client can then be used in our application, instead of
+the lower-level {@link ng.$http $http} service.
+
+<br />
+**`app/core/core.module.js`:**
+
+```js
+angular.module('core', ['core.phone']);
+```
+
+We need to add the `core.phone` module as a dependency of the `core` module.
+
+
+## Template
+
+Our custom resource service will be defined in `app/core/phone/phone.service.js`, so we need to
+include this file and the associated `.module.js` file in our layout template. Additionally, we also
+need to load the `angular-resource.js` file, which contains the `ngResource` module:
+
+<br />
+**`app/index.html`:**
+
+```html
+<head>
+  ...
+  <script src="bower_components/angular-resource/angular-resource.js"></script>
+  ...
+  <script src="core/phone/phone.module.js"></script>
+  <script src="core/phone/phone.service.js"></script>
+  ...
+</head>
+```
+
+
+## Component Controllers
+
+We can now simplify our component controllers (`PhoneListController` and `PhoneDetailController`) by
+factoring out the lower-level `$http` service, replacing it with the new `Phone` service. AngularJS's
+`$resource` service is easier to use than `$http` for interacting with data sources exposed as
+RESTful resources. It is also easier now to understand what the code in our controllers is doing.
+
+<br />
+**`app/phone-list/phone-list.module.js`:**
+
+```js
+angular.module('phoneList', ['core.phone']);
+```
+
+<br />
+**`app/phone-list/phone-list.component.js`:**
+
+```js
+  angular.
+    module('phoneList').
+    component('phoneList', {
+      templateUrl: 'phone-list/phone-list.template.html',
+      controller: ['Phone',
+        function PhoneListController(Phone) {
+          this.phones = Phone.query();
+          this.orderProp = 'age';
+        }
+      ]
+    });
+```
+
+<br />
+**`app/phone-detail/phone-detail.module.js`:**
+
+```js
+angular.module('phoneDetail', [
+  'ngRoute',
+  'core.phone'
+]);
+```
+
+<br />
+**`app/phone-detail/phone-detail.component.js`:**
+
+```js
+  angular.
+    module('phoneDetail').
+    component('phoneDetail', {
+      templateUrl: 'phone-detail/phone-detail.template.html',
+      controller: ['$routeParams', 'Phone',
+        function PhoneDetailController($routeParams, Phone) {
+          var self = this;
+          self.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
+            self.setImage(phone.images[0]);
+          });
+
+          self.setImage = function setImage(imageUrl) {
+            self.mainImageUrl = imageUrl;
+          };
+        }
+      ]
+    });
+```
+
+Notice how in `PhoneListController` we replaced:
+
+```js
+$http.get('phones/phones.json').then(function(response) {
+  self.phones = response.data;
+});
+```
+
+with just:
+
+```js
+this.phones = Phone.query();
+```
+
+This is a simple and declarative statement that we want to query for all phones.
+
+An important thing to notice in the code above is that we don't pass any callback functions, when
+invoking methods of our `Phone` service. Although it looks as if the results were returned
+synchronously, that is not the case at all. What is returned synchronously is a "future" — an
+object, which will be filled with data, when the XHR response is received. Because of the
+data-binding in AngularJS, we can use this future and bind it to our template. Then, when the data
+arrives, the view will be updated automatically.
+
+Sometimes, relying on the future object and data-binding alone is not sufficient to do everything
+we require, so in these cases, we can add a callback to process the server response. The
+`phoneDetail` component's controller illustrates this by setting the `mainImageUrl` in a callback.
+
+
+## Testing
+
+Because we are now using the {@link ngResource ngResource} module, it is necessary to update the
+Karma configuration file with angular-resource.
+
+<br />
+**`karma.conf.js`:**
+
+```js
+    files: [
+      'bower_components/angular/angular.js',
+      'bower_components/angular-resource/angular-resource.js',
+      ...
+    ],
+```
+
+We have added a unit test to verify that our new service is issuing HTTP requests and returns the
+expected "future" objects/arrays.
+
+The {@link ngResource.$resource $resource} service augments the response object with extra methods
+&mdash; e.g. for updating and deleting the resource &mdash; and properties (some of which are only
+meant to be accessed by AngularJS). If we were to use Jasmine's standard `.toEqual()` matcher, our
+tests would fail, because the test values would not match the responses exactly.
+
+To solve the  problem, we instruct Jasmine to use a [custom equality tester][jasmine-equality] for
+comparing objects. We specify {@link angular.equals angular.equals} as our equality tester, which
+ignores functions and `$`-prefixed properties, such as those added by the `$resource` service.<br />
+(Remember that AngularJS uses the `$` prefix for its proprietary API.)
+
+<br />
+**`app/core/phone/phone.service.spec.js`:**
+
+```js
+describe('Phone', function() {
+  ...
+  var phonesData = [...];
+
+  // Add a custom equality tester before each test
+  beforeEach(function() {
+    jasmine.addCustomEqualityTester(angular.equals);
+  });
+
+  // Load the module that contains the `Phone` service before each test
+  ...
+
+  // Instantiate the service and "train" `$httpBackend` before each test
+  ...
+
+  // Verify that there are no outstanding expectations or requests after each test
+  afterEach(function () {
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest();
+  });
+
+  it('should fetch the phones data from `/phones/phones.json`', function() {
+    var phones = Phone.query();
+
+    expect(phones).toEqual([]);
+
+    $httpBackend.flush();
+    expect(phones).toEqual(phonesData);
+  });
+
+});
+```
+
+Here we are using `$httpBackend`'s
+{@link ngMock.$httpBackend#verifyNoOutstandingExpectation verifyNoOutstandingExpectation()} and
+{@link ngMock.$httpBackend#verifyNoOutstandingExpectation verifyNoOutstandingRequest()} methods to
+verify that all expected requests have been sent and that no extra request is scheduled for later.
+
+Note that we have also modified our component tests to use the custom matcher when appropriate.
+
+You should now see the following output in the Karma tab:
+
+```
+Chrome 49.0: Executed 5 of 5 SUCCESS (0.123 secs / 0.104 secs)
+```
+
+
+# Summary
+
+Now that we have seen how to build a custom service as a RESTful client, we are ready for
+{@link step_14 step 14} to learn how to enhance the user experience with animations.
+
+
+<ul doc-tutorial-nav="13"></ul>
+
+
+[bower]: http://bower.io/
+[jasmine-equality]: https://jasmine.github.io/2.4/custom_equality.html
+[restful]: https://en.wikipedia.org/wiki/Representational_State_Transfer

@@ -16,11 +16,20 @@ $provide.value("$locale", {
       "\u0c36\u0c41\u0c15\u0c4d\u0c30\u0c35\u0c3e\u0c30\u0c02",
       "\u0c36\u0c28\u0c3f\u0c35\u0c3e\u0c30\u0c02"
     ],
+    "ERANAMES": [
+      "\u0c15\u0c4d\u0c30\u0c40\u0c38\u0c4d\u0c24\u0c41 \u0c2a\u0c42\u0c30\u0c4d\u0c35\u0c02",
+      "\u0c15\u0c4d\u0c30\u0c40\u0c38\u0c4d\u0c24\u0c41 \u0c36\u0c15\u0c02"
+    ],
+    "ERAS": [
+      "\u0c15\u0c4d\u0c30\u0c40\u0c2a\u0c42",
+      "\u0c15\u0c4d\u0c30\u0c40\u0c36"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "\u0c1c\u0c28\u0c35\u0c30\u0c3f",
       "\u0c2b\u0c3f\u0c2c\u0c4d\u0c30\u0c35\u0c30\u0c3f",
       "\u0c2e\u0c3e\u0c30\u0c4d\u0c1a\u0c3f",
-      "\u0c0e\u0c2a\u0c4d\u0c30\u0c3f\u0c32\u0c4d",
+      "\u0c0f\u0c2a\u0c4d\u0c30\u0c3f\u0c32\u0c4d",
       "\u0c2e\u0c47",
       "\u0c1c\u0c42\u0c28\u0c4d",
       "\u0c1c\u0c41\u0c32\u0c48",
@@ -53,10 +62,28 @@ $provide.value("$locale", {
       "\u0c28\u0c35\u0c02",
       "\u0c21\u0c3f\u0c38\u0c46\u0c02"
     ],
-    "fullDate": "d MMMM y EEEE",
-    "longDate": "d MMMM y",
-    "medium": "d MMM y h:mm:ss a",
-    "mediumDate": "d MMM y",
+    "STANDALONEMONTH": [
+      "\u0c1c\u0c28\u0c35\u0c30\u0c3f",
+      "\u0c2b\u0c3f\u0c2c\u0c4d\u0c30\u0c35\u0c30\u0c3f",
+      "\u0c2e\u0c3e\u0c30\u0c4d\u0c1a\u0c3f",
+      "\u0c0f\u0c2a\u0c4d\u0c30\u0c3f\u0c32\u0c4d",
+      "\u0c2e\u0c47",
+      "\u0c1c\u0c42\u0c28\u0c4d",
+      "\u0c1c\u0c41\u0c32\u0c48",
+      "\u0c06\u0c17\u0c38\u0c4d\u0c1f\u0c41",
+      "\u0c38\u0c46\u0c2a\u0c4d\u0c1f\u0c46\u0c02\u0c2c\u0c30\u0c4d",
+      "\u0c05\u0c15\u0c4d\u0c1f\u0c4b\u0c2c\u0c30\u0c4d",
+      "\u0c28\u0c35\u0c02\u0c2c\u0c30\u0c4d",
+      "\u0c21\u0c3f\u0c38\u0c46\u0c02\u0c2c\u0c30\u0c4d"
+    ],
+    "WEEKENDRANGE": [
+      6,
+      6
+    ],
+    "fullDate": "d, MMMM y, EEEE",
+    "longDate": "d MMMM, y",
+    "medium": "d MMM, y h:mm:ss a",
+    "mediumDate": "d MMM, y",
     "mediumTime": "h:mm:ss a",
     "short": "dd-MM-yy h:mm a",
     "shortDate": "dd-MM-yy",
@@ -68,9 +95,8 @@ $provide.value("$locale", {
     "GROUP_SEP": ",",
     "PATTERNS": [
       {
-        "gSize": 3,
+        "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -80,13 +106,12 @@ $provide.value("$locale", {
         "posSuf": ""
       },
       {
-        "gSize": 3,
+        "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "te-in",
-  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "te_IN",
+  "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

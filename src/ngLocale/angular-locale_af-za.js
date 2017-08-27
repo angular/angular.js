@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "Vrydag",
       "Saterdag"
     ],
+    "ERANAMES": [
+      "voor Christus",
+      "na Christus"
+    ],
+    "ERAS": [
+      "v.C.",
+      "n.C."
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "Januarie",
       "Februarie",
@@ -31,36 +40,54 @@ $provide.value("$locale", {
       "Desember"
     ],
     "SHORTDAY": [
-      "So",
-      "Ma",
-      "Di",
-      "Wo",
-      "Do",
-      "Vr",
-      "Sa"
+      "So.",
+      "Ma.",
+      "Di.",
+      "Wo.",
+      "Do.",
+      "Vr.",
+      "Sa."
     ],
     "SHORTMONTH": [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
+      "Jan.",
+      "Feb.",
+      "Mrt.",
+      "Apr.",
       "Mei",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Des"
+      "Jun.",
+      "Jul.",
+      "Aug.",
+      "Sep.",
+      "Okt.",
+      "Nov.",
+      "Des."
     ],
-    "fullDate": "EEEE dd MMMM y",
+    "STANDALONEMONTH": [
+      "Januarie",
+      "Februarie",
+      "Maart",
+      "April",
+      "Mei",
+      "Junie",
+      "Julie",
+      "Augustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
+    "fullDate": "EEEE, dd MMMM y",
     "longDate": "dd MMMM y",
-    "medium": "dd MMM y h:mm:ss a",
+    "medium": "dd MMM y HH:mm:ss",
     "mediumDate": "dd MMM y",
-    "mediumTime": "h:mm:ss a",
-    "short": "y-MM-dd h:mm a",
+    "mediumTime": "HH:mm:ss",
+    "short": "y-MM-dd HH:mm",
     "shortDate": "y-MM-dd",
-    "shortTime": "h:mm a"
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "R",
@@ -70,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,11 +108,10 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "af-za",
-  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "af_ZA",
+  "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

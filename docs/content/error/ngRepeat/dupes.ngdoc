@@ -15,7 +15,7 @@ For example the issue can be triggered by this *invalid* code:
 
 To resolve this error either ensure that the items in the collection have unique identity or use the `track by` syntax to specify how to track the association between models and DOM.
 
-To resolve the example above can be resolved by using `track by $index`, which will cause the items to be keyed by their position in the array instead of their value:
+The example above can be resolved by using `track by $index`, which will cause the items to be keyed by their position in the array instead of their value:
 
 ```
 <div ng-repeat="value in [4, 4] track by $index"></div>

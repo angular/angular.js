@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "vineri",
       "s\u00e2mb\u0103t\u0103"
     ],
+    "ERANAMES": [
+      "\u00eenainte de Hristos",
+      "dup\u0103 Hristos"
+    ],
+    "ERAS": [
+      "\u00ee.Hr.",
+      "d.Hr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "ianuarie",
       "februarie",
@@ -49,13 +58,13 @@ $provide.value("$locale", {
       "decembrie"
     ],
     "SHORTDAY": [
-      "Dum",
-      "Lun",
-      "Mar",
-      "Mie",
-      "Joi",
-      "Vin",
-      "S\u00e2m"
+      "dum.",
+      "lun.",
+      "mar.",
+      "mie.",
+      "joi",
+      "vin.",
+      "s\u00e2m."
     ],
     "SHORTMONTH": [
       "ian.",
@@ -70,6 +79,24 @@ $provide.value("$locale", {
       "oct.",
       "nov.",
       "dec."
+    ],
+    "STANDALONEMONTH": [
+      "ianuarie",
+      "februarie",
+      "martie",
+      "aprilie",
+      "mai",
+      "iunie",
+      "iulie",
+      "august",
+      "septembrie",
+      "octombrie",
+      "noiembrie",
+      "decembrie"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
@@ -88,7 +115,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -100,7 +126,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -112,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ro",
-  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v != 0 || n == 0 || n != 1 && n % 100 >= 1 && n % 100 <= 19) {    return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "ro",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  if (vf.v != 0 || n == 0 || n != 1 && n % 100 >= 1 && n % 100 <= 19) {    return PLURAL_CATEGORY.FEW;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

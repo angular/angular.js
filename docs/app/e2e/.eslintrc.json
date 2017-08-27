@@ -1,0 +1,28 @@
+{
+  "root": true,
+  "extends": "../../../.eslintrc-node.json",
+
+
+  "env": {
+    "jasmine": true,
+    "protractor": true
+  },
+
+  "globals": {
+    /* testabilityPatch / matchers */
+    "inject": false,
+    "module": false,
+    "dealoc": false,
+    "_jQuery": false,
+    "_jqLiteMode": false,
+    "sortedHtml": false,
+    "childrenTagsOf": false,
+    "assertHidden": false,
+    "assertVisible": false,
+    "provideLog": false,
+    "spyOnlyCallsWithArgs": false,
+    "createMockStyleSheet": false,
+    "browserTrigger": false,
+    "jqLiteCacheSize": false
+  }
+}

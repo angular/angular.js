@@ -1,6 +1,6 @@
 # Triage new issues/PRs on github
 
-This document shows the steps the Angular team is using to triage issues.
+This document shows the steps the AngularJS team is using to triage issues.
 The labels are used later on for [planning releases](#assigning-work).
 
 
@@ -20,13 +20,12 @@ The following is done automatically so you don't have to worry about it:
 This process based on the idea of minimizing user pain
 [from this blog post](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html).
 
-1. Open the list of [non triaged issues](https://github.com/angular/angular.js/issues?direction=desc&milestone=none&page=1&sort=created&state=open)
+1. Open the list of [non triaged issues](https://github.com/angular/angular.js/issues?q=is%3Aopen+sort%3Acreated-desc+no%3Amilestone)
     * Sort by submit date, with the newest issues first
     * You don't have to do issues in order; feel free to pick and choose issues as you please.
     * You can triage older issues as well
     * Triage to your heart's content
 1. Assign yourself: Pick an issue that is not assigned to anyone and assign it to you
-
 1. Understandable? - verify if the description of the request is clear.
     * If not, [close it][] according to the instructions below and go to the last step.
 1. Duplicate?
@@ -36,7 +35,6 @@ This process based on the idea of minimizing user pain
     * Label `Type: Bug`
     * Reproducible? - Steps to reproduce the bug are clear. If they are not, ask for a clarification. If there's no reply after a week, [close it][].
     * Reproducible on master? - <http://code.angularjs.org/snapshot/>
-
 1. Non bugs:
     * Label `Type: Feature`, `Type: Chore`, or `Type: Perf`
     * Belongs in core? – Often new features should be implemented as a third-party module rather than an addition to the core.
@@ -47,19 +45,22 @@ This process based on the idea of minimizing user pain
 1. Label `frequency: *` – How often does this issue come up? How many developers does this affect? Chose just one of the following:
     * low - obscure issue affecting a handful of developers
     * moderate - impacts a common usage pattern
-    * high - impacts most or all Angular apps
+    * high - impacts most or all AngularJS apps
 1. Label `severity: *` - How bad is the issue? Chose just one of the following:
     * security issue
     * regression
     * memory leak
-    * broken expected use - it's hard or impossible for a developer using Angular to accomplish something that Angular should be able to do
+    * broken expected use - it's hard or impossible for a developer using AngularJS to accomplish something that AngularJS should be able to do
     * confusing - unexpected or inconsistent behavior; hard-to-debug
     * inconvenience - causes ugly/boilerplate code in apps
 1. Label `component: *`
     * In rare cases, it's ok to have multiple components.
-1. Label `PRs plz!` - These issues are good targets for PRs from the open source community. Apply to issues where the problem and solution are well defined in the comments, and it's not too complex.
+1. Label `PRs plz!` - These issues are good targets for PRs from the open source community. In addition to applying this label, you must:
+    * Leave a comment explaining the problem and solution so someone can easily finish it.
+    * Assign the issue to yourself.
+    * Give feedback on PRs addressing this issue.
+    * You are responsible for mentoring contributors helping with this issue.
 1. Label `origin: google` for issues from Google
-
 1. Assign a milestone:
    * Backlog - triaged fixes and features, should be the default choice
    * Current 1.x.y milestone (e.g. 1.3.0-beta-2) - regressions and urgent bugs only
@@ -94,7 +95,7 @@ You can mention him in the relevant thread like this: `@btford`.
 
 > Thanks for submitting this issue!
 > Unfortunately, we don't think this functionality belongs in core.
-> The good news is that you could easily implement this as a third-party module and publish it on Bower and/or npm.
+> The good news is that you could easily implement this as a third-party module and publish it on Bower and/or to the npm repository.
 
 
 ## Assigning Work

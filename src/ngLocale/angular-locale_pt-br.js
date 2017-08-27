@@ -1,37 +1,6 @@
 'use strict';
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
-function getDecimals(n) {
-  n = n + '';
-  var i = n.indexOf('.');
-  return (i == -1) ? 0 : n.length - i - 1;
-}
-
-function getVF(n, opt_precision) {
-  var v = opt_precision;
-
-  if (undefined === v) {
-    v = Math.min(getDecimals(n), 3);
-  }
-
-  var base = Math.pow(10, v);
-  var f = ((n * base) | 0) % base;
-  return {v: v, f: f};
-}
-
-function getWT(v, f) {
-  if (f === 0) {
-    return {w: 0, t: 0};
-  }
-
-  while ((f % 10) === 0) {
-    f /= 10;
-    v--;
-  }
-
-  return {w: v, t: f};
-}
-
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
@@ -47,6 +16,15 @@ $provide.value("$locale", {
       "sexta-feira",
       "s\u00e1bado"
     ],
+    "ERANAMES": [
+      "antes de Cristo",
+      "depois de Cristo"
+    ],
+    "ERAS": [
+      "a.C.",
+      "d.C."
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "janeiro",
       "fevereiro",
@@ -84,13 +62,31 @@ $provide.value("$locale", {
       "nov",
       "dez"
     ],
+    "STANDALONEMONTH": [
+      "janeiro",
+      "fevereiro",
+      "mar\u00e7o",
+      "abril",
+      "maio",
+      "junho",
+      "julho",
+      "agosto",
+      "setembro",
+      "outubro",
+      "novembro",
+      "dezembro"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d 'de' MMMM 'de' y",
     "longDate": "d 'de' MMMM 'de' y",
-    "medium": "dd/MM/y HH:mm:ss",
-    "mediumDate": "dd/MM/y",
+    "medium": "d 'de' MMM 'de' y HH:mm:ss",
+    "mediumDate": "d 'de' MMM 'de' y",
     "mediumTime": "HH:mm:ss",
-    "short": "dd/MM/yy HH:mm",
-    "shortDate": "dd/MM/yy",
+    "short": "dd/MM/y HH:mm",
+    "shortDate": "dd/MM/y",
     "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
@@ -101,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -113,11 +108,10 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -125,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "pt-br",
-  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  var wt = getWT(vf.v, vf.f);  if (i == 1 && vf.v == 0 || i == 0 && wt.t == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "pt_BR",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  if (i >= 0 && i <= 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

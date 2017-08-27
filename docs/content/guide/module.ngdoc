@@ -1,5 +1,6 @@
 @ngdoc overview
 @name  Modules
+@sortOrder 320
 @description
 
 # What is a Module?
@@ -12,7 +13,7 @@ services, filters, directives, etc.
 Most applications have a main method that instantiates and wires together the different parts of
 the application.
 
-Angular apps don't have a main method. Instead modules declaratively specify how an application
+AngularJS apps don't have a main method. Instead modules declaratively specify how an application
 should be bootstrapped. There are several advantages to this approach:
 
   * The declarative process is easier to understand.
@@ -26,7 +27,7 @@ should be bootstrapped. There are several advantages to this approach:
 
 I'm in a hurry. How do I get a Hello World module working?
 
-<example ng-app-included="true">
+<example ng-app-included="true" name="module-hello-world">
   <file name="index.html">
     <div ng-app="myApp">
       <div>
@@ -50,7 +51,7 @@ I'm in a hurry. How do I get a Hello World module working?
 
   <file name="protractor.js" type="protractor">
     it('should add Hello to the name', function() {
-      expect(element(by.binding("{{ 'World' | greet }}")).getText()).toEqual('Hello, World!');
+      expect(element(by.binding("'World' | greet")).getText()).toEqual('Hello, World!');
     });
   </file>
 </example>
@@ -74,13 +75,12 @@ that you break your application to multiple modules like this:
   * And an application level module which depends on the above modules and contains any
     initialization code.
 
-We've also
-[written a document](http://blog.angularjs.org/2014/02/an-angularjs-style-guide-and-best.html)
-on how we organize large apps at Google.
+You can find a community [style guide](https://github.com/johnpapa/angular-styleguide) to help
+yourself when application grows.
 
 The above is a suggestion. Tailor it to your needs.
 
-<example module='xmpl'>
+<example module='xmpl' name="module-suggested-layout">
   <file name="index.html">
     <div ng-controller="XmplController">
       {{ greeting }}
@@ -120,7 +120,7 @@ The above is a suggestion. Tailor it to your needs.
         user.load('World');
       })
 
-      .controller('XmplController', function($scope, greeter, user){
+      .controller('XmplController', function($scope, greeter, user) {
         $scope.greeting = greeter.greet(user.name);
       });
 
@@ -128,7 +128,7 @@ The above is a suggestion. Tailor it to your needs.
 
   <file name="protractor.js" type="protractor">
     it('should add Hello to the name', function() {
-      expect(element(by.binding("{{ greeting }}")).getText()).toEqual('Bonjour World!');
+      expect(element(by.binding("greeting")).getText()).toEqual('Bonjour World!');
     });
   </file>
 
@@ -139,7 +139,7 @@ The above is a suggestion. Tailor it to your needs.
 # Module Loading & Dependencies
 
 A module is a collection of configuration and run blocks which get applied to the application
-during the bootstrap process. In its simplest form the module consist of collection of two kinds
+during the bootstrap process. In its simplest form the module consists of a collection of two kinds
 of blocks:
 
   1. **Configuration blocks** - get executed during the provider registrations and configuration
@@ -189,21 +189,21 @@ angular.module('myModule', []).
 ```
 
 <div class="alert alert-info">
-When bootstrapping, first Angular applies all constant definitions.
-Then Angular applies configuration blocks in the same order they were registered.
+When bootstrapping, first AngularJS applies all constant definitions.
+Then AngularJS applies configuration blocks in the same order they were registered.
 </div>
 
 ## Run Blocks
 
-Run blocks are the closest thing in Angular to the main method. A run block is the code which
-needs to run to kickstart the application. It is executed after all of the service have been
+Run blocks are the closest thing in AngularJS to the main method. A run block is the code which
+needs to run to kickstart the application. It is executed after all of the services have been
 configured and the injector has been created. Run blocks typically contain code which is hard
 to unit-test, and for this reason should be declared in isolated modules, so that they can be
 ignored in the unit-tests.
 
 ## Dependencies
 
-Modules can list other modules as their dependencies. Depending on a module implies that required
+Modules can list other modules as their dependencies. Depending on a module implies that the required
 module needs to be loaded before the requiring module is loaded. In other words the configuration
 blocks of the required modules execute before the configuration blocks of the requiring module.
 The same is true for the run blocks. Each module can only be loaded once, even if multiple other
@@ -213,7 +213,7 @@ modules require it.
 
 Modules are a way of managing $injector configuration, and have nothing to do with loading of
 scripts into a VM. There are existing projects which deal with script loading, which may be used
-with Angular. Because modules do nothing at load time they can be loaded into the VM in any order
+with AngularJS. Because modules do nothing at load time they can be loaded into the VM in any order
 and thus script loaders can take advantage of this property and parallelize the loading process.
 
 ## Creation versus Retrieval
@@ -242,7 +242,7 @@ Small, structured modules help keep unit tests concise and focused.
 
 <div class="did you know...">
 Each module can only be loaded once per injector.
-Usually an Angular app has only one injector and modules are only loaded once.
+Usually an AngularJS app has only one injector and modules are only loaded once.
 Each test has its own injector and modules are loaded multiple times.
 </div>
 

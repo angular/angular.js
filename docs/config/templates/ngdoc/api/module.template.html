@@ -1,0 +1,105 @@
+{% extends "base.template.html" %}
+{% import "lib/deprecated.html" as x %}
+
+{% block content %}
+<h1>
+  {% if doc.title %}{$ doc.title | marked $}{% else %}{$ doc.name | code $}{% endif %}
+</h1>
+
+{$ x.deprecatedBlock(doc) $}
+
+<h2>Installation</h2>
+{% if doc.installation or doc.installation == '' %}
+  {$ doc.installation | marked $}
+{% else %}
+
+  <p>First, get the file:</p>
+  <ul>
+    <li>
+      <a href="https://developers.google.com/speed/libraries/devguide#angularjs">Google CDN</a> e.g.
+      {% code %}"//ajax.googleapis.com/ajax/libs/angularjs/X.Y.Z/{$ doc.packageFile $}"{% endcode %}
+    </li>
+    <li>
+      <a href="https://www.npmjs.com/">NPM</a> e.g.
+      {% code %}npm install --save {$ doc.packageName $}@X.Y.Z{% endcode %}
+      or
+      {% code %}yarn add {$ doc.packageName $}@X.Y.Z{% endcode %}
+    </li>
+    <li>
+      <a href="http://bower.io">Bower</a> e.g.
+      {% code %}bower install {$ doc.packageName $}#X.Y.Z{% endcode %}
+    </li>
+    <li>
+      <a href="https://code.angularjs.org/">code.angularjs.org</a>
+      (discouraged for production use) e.g.
+      {% code %}"//code.angularjs.org/X.Y.Z/{$ doc.packageFile $}"{% endcode %}
+    </li>
+  </ul>
+  <p>where X.Y.Z is the AngularJS version you are running.</p>
+
+  <p>Then, include {$ doc.packageFile | code $} in your HTML:</p>
+
+  {% code %}
+      <script src="path/to/angular.js"></script>
+      <script src="path/to/{$ doc.packageFile $}"></script>
+  {% endcode %}
+
+  <p>Finally, load the module in your application by adding it as a dependent module:</p>
+  {% code %}
+    angular.module('app', ['{$ doc.name $}']);
+  {% endcode %}
+
+  <p>With that you&apos;re ready to get started!</p>
+{% endif %}
+
+{$ doc.description | marked $}
+
+{% if doc.knownIssueDocs %}
+<div class="known-issues">
+  <h2 id="known-issues">Known Issues</h2>
+  <table class="definition-table">
+  <tr><th>Name</th><th>Description</th></tr>
+  {% for issueDoc in doc.knownIssueDocs -%}
+  <tr>
+    <td>{$ issueDoc.id | link(issueDoc.name, issueDoc) $}</td>
+    <td>
+    {% for issue in issueDoc.knownIssues -%}
+      {$ issue | marked $} {% if not loop.last %}<hr>{% endif %}
+    {% endfor -%}
+    </td>
+  </tr>
+  {% endfor -%}
+  </table>
+</div>
+{% endif %}
+
+
+{% if doc.componentGroups.length %}
+<div class="component-breakdown">
+  <h2>Module Components</h2>
+  {% for componentGroup in doc.componentGroups %}
+  <div>
+    <h3 class="component-heading" id="{$ componentGroup.groupType | dashCase $}">{$ componentGroup.groupType | title $}</h3>
+    <table class="definition-table">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      {% for component in componentGroup.components %}
+      <tr>
+        <td>{$ component.id | link(component.name, component) $}</td>
+        <td>{$ component.description | firstParagraph | marked $}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if doc.usage %}
+  <h2>Usage</h2>
+  {$ doc.usage | marked $}
+{% endif %}
+
+{% endblock %}

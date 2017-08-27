@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\uae08\uc694\uc77c",
       "\ud1a0\uc694\uc77c"
     ],
+    "ERANAMES": [
+      "\uae30\uc6d0\uc804",
+      "\uc11c\uae30"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "1\uc6d4",
       "2\uc6d4",
@@ -53,6 +62,24 @@ $provide.value("$locale", {
       "11\uc6d4",
       "12\uc6d4"
     ],
+    "STANDALONEMONTH": [
+      "1\uc6d4",
+      "2\uc6d4",
+      "3\uc6d4",
+      "4\uc6d4",
+      "5\uc6d4",
+      "6\uc6d4",
+      "7\uc6d4",
+      "8\uc6d4",
+      "9\uc6d4",
+      "10\uc6d4",
+      "11\uc6d4",
+      "12\uc6d4"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "y\ub144 M\uc6d4 d\uc77c EEEE",
     "longDate": "y\ub144 M\uc6d4 d\uc77c",
     "medium": "y. M. d. a h:mm:ss",
@@ -70,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,11 +108,10 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ko",
-  "pluralCat": function (n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "ko",
+  "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

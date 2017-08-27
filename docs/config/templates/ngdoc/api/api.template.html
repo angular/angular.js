@@ -1,0 +1,62 @@
+{% extends "base.template.html" %}
+{% import "lib/deprecated.html" as x -%}
+
+{% block content %}
+
+<a href='https://github.com/{$ git.info.owner $}/{$ git.info.repo $}/tree/{$ git.version.isSnapshot and 'master' or git.version.raw $}/{$ doc.fileInfo.projectRelativePath $}#L{$ doc.startingLine $}' class='view-source pull-right btn btn-primary'>
+  <i class="glyphicon glyphicon-zoom-in">&nbsp;</i>View Source
+</a>
+
+{% block header %}
+<header class="api-profile-header">
+  <h1 class="api-profile-header-heading">{$ doc.name $}</h1>
+  <ol class="api-profile-header-structure naked-list step-list">
+    {% block related_components %}{% endblock %}
+    <li>
+      - {$ doc.docType $} in module <a href="{$ doc.moduleDoc.path $}">{$ doc.moduleDoc.name $}</a>
+    </li>
+  </ol>
+</header>
+{% endblock %}
+
+{$ x.deprecatedBlock(doc) $}
+
+{% block description %}
+<div class="api-profile-description">
+  {$ doc.description | marked $}
+</div>
+{% endblock %}
+
+{% if doc.knownIssues %}
+<h2 id="known-issues">Known Issues</h2>
+{% for issue in doc.knownIssues -%}
+<div class="known-issue">
+  {$ issue | marked $}
+</div>
+{% endfor -%}
+{% endif %}
+
+<div>
+  {% block dependencies %}
+  {%- if doc.requires %}
+  <h2 id="dependencies">Dependencies</h2>
+  <ul>
+    {% for require in doc.requires %}<li>{$ require | link $}</li>{% endfor %}
+  </ul>
+  {% endif -%}
+  {% endblock %}
+
+  {% block additional %}
+  {% endblock %}
+
+  {% block examples %}
+  {%- if doc.examples %}
+  <h2 id="example">Examples</h2>
+  {%- for example in doc.examples -%}
+    {$ example | marked $}
+  {%- endfor -%}
+  {% endif -%}
+  {% endblock %}
+</div>
+
+{% endblock %}

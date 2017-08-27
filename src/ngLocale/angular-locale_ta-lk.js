@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u0bb5\u0bc6\u0bb3\u0bcd\u0bb3\u0bbf",
       "\u0b9a\u0ba9\u0bbf"
     ],
+    "ERANAMES": [
+      "\u0b95\u0bbf\u0bb1\u0bbf\u0bb8\u0bcd\u0ba4\u0bc1\u0bb5\u0bc1\u0b95\u0bcd\u0b95\u0bc1 \u0bae\u0bc1\u0ba9\u0bcd",
+      "\u0b85\u0ba9\u0bcd\u0ba9\u0bcb \u0b9f\u0bcb\u0bae\u0bbf\u0ba9\u0bbf"
+    ],
+    "ERAS": [
+      "\u0b95\u0bbf.\u0bae\u0bc1.",
+      "\u0b95\u0bbf.\u0baa\u0bbf."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u0b9c\u0ba9\u0bb5\u0bb0\u0bbf",
       "\u0baa\u0bbf\u0baa\u0bcd\u0bb0\u0bb5\u0bb0\u0bbf",
@@ -31,13 +40,13 @@ $provide.value("$locale", {
       "\u0b9f\u0bbf\u0b9a\u0bae\u0bcd\u0baa\u0bb0\u0bcd"
     ],
     "SHORTDAY": [
-      "\u0b9e\u0bbe",
-      "\u0ba4\u0bbf",
-      "\u0b9a\u0bc6",
-      "\u0baa\u0bc1",
-      "\u0bb5\u0bbf",
-      "\u0bb5\u0bc6",
-      "\u0b9a"
+      "\u0b9e\u0bbe\u0baf\u0bbf.",
+      "\u0ba4\u0bbf\u0b99\u0bcd.",
+      "\u0b9a\u0bc6\u0bb5\u0bcd.",
+      "\u0baa\u0bc1\u0ba4.",
+      "\u0bb5\u0bbf\u0baf\u0bbe.",
+      "\u0bb5\u0bc6\u0bb3\u0bcd.",
+      "\u0b9a\u0ba9\u0bbf"
     ],
     "SHORTMONTH": [
       "\u0b9c\u0ba9.",
@@ -53,24 +62,41 @@ $provide.value("$locale", {
       "\u0ba8\u0bb5.",
       "\u0b9f\u0bbf\u0b9a."
     ],
+    "STANDALONEMONTH": [
+      "\u0b9c\u0ba9\u0bb5\u0bb0\u0bbf",
+      "\u0baa\u0bbf\u0baa\u0bcd\u0bb0\u0bb5\u0bb0\u0bbf",
+      "\u0bae\u0bbe\u0bb0\u0bcd\u0b9a\u0bcd",
+      "\u0b8f\u0baa\u0bcd\u0bb0\u0bb2\u0bcd",
+      "\u0bae\u0bc7",
+      "\u0b9c\u0bc2\u0ba9\u0bcd",
+      "\u0b9c\u0bc2\u0bb2\u0bc8",
+      "\u0b86\u0b95\u0bb8\u0bcd\u0b9f\u0bcd",
+      "\u0b9a\u0bc6\u0baa\u0bcd\u0b9f\u0bae\u0bcd\u0baa\u0bb0\u0bcd",
+      "\u0b85\u0b95\u0bcd\u0b9f\u0bcb\u0baa\u0bb0\u0bcd",
+      "\u0ba8\u0bb5\u0bae\u0bcd\u0baa\u0bb0\u0bcd",
+      "\u0b9f\u0bbf\u0b9a\u0bae\u0bcd\u0baa\u0bb0\u0bcd"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM, y",
     "longDate": "d MMMM, y",
-    "medium": "d MMM, y h:mm:ss a",
+    "medium": "d MMM, y HH:mm:ss",
     "mediumDate": "d MMM, y",
-    "mediumTime": "h:mm:ss a",
-    "short": "d-M-yy h:mm a",
-    "shortDate": "d-M-yy",
-    "shortTime": "h:mm a"
+    "mediumTime": "HH:mm:ss",
+    "short": "d/M/yy HH:mm",
+    "shortDate": "d/M/yy",
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
-    "CURRENCY_SYM": "\u20b9",
+    "CURRENCY_SYM": "Rs",
     "DECIMAL_SEP": ".",
     "GROUP_SEP": ",",
     "PATTERNS": [
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,11 +108,10 @@ $provide.value("$locale", {
       {
         "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ta-lk",
-  "pluralCat": function (n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "ta_LK",
+  "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

@@ -16,6 +16,8 @@ Reserved names include:
   - `this`
   - `undefined`
   - `$parent`
+  - `$id`
+  - `$root`
   - `$even`
   - `$odd`
   - `$first`

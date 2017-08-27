@@ -3,7 +3,7 @@
 describe('$exceptionHandler', function() {
   /* global $ExceptionHandlerProvider:false */
   it('should log errors with single argument', function() {
-    module(function($provide){
+    module(function($provide) {
       $provide.provider('$exceptionHandler', $ExceptionHandlerProvider);
     });
     inject(function($log, $exceptionHandler) {
@@ -14,7 +14,7 @@ describe('$exceptionHandler', function() {
 
 
   it('should log errors with multiple arguments', function() {
-    module(function($provide){
+    module(function($provide) {
       $provide.provider('$exceptionHandler', $ExceptionHandlerProvider);
     });
     inject(function($log, $exceptionHandler) {

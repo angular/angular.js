@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "Jumaat",
       "Sabtu"
     ],
+    "ERANAMES": [
+      "S.M.",
+      "TM"
+    ],
+    "ERAS": [
+      "S.M.",
+      "TM"
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "Januari",
       "Februari",
@@ -47,16 +56,34 @@ $provide.value("$locale", {
       "Mei",
       "Jun",
       "Jul",
-      "Ogos",
+      "Ogo",
       "Sep",
       "Okt",
       "Nov",
       "Dis"
     ],
+    "STANDALONEMONTH": [
+      "Januari",
+      "Februari",
+      "Mac",
+      "April",
+      "Mei",
+      "Jun",
+      "Julai",
+      "Ogos",
+      "September",
+      "Oktober",
+      "November",
+      "Disember"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
-    "medium": "dd/MM/yyyy h:mm:ss a",
-    "mediumDate": "dd/MM/yyyy",
+    "medium": "d MMM y h:mm:ss a",
+    "mediumDate": "d MMM y",
     "mediumTime": "h:mm:ss a",
     "short": "d/MM/yy h:mm a",
     "shortDate": "d/MM/yy",
@@ -70,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,18 +108,18 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00a4",
-        "negSuf": ")",
+        "negPre": "-\u00a4",
+        "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
       }
     ]
   },
   "id": "ms-my",
-  "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "ms_MY",
+  "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

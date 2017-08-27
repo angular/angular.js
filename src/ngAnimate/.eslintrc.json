@@ -1,0 +1,84 @@
+{
+  "rules": {
+    "maxlen": "off", /* ngAnimate docs contain wide tables */
+    "new-cap": "off"
+  },
+
+  "globals": {
+    /* ng helpers */
+    "copy": true,
+    "extend": true,
+    "forEach": true,
+    "isArray": true,
+    "isDefined": true,
+    "isElement": true,
+    "isFunction": true,
+    "isObject": true,
+    "isString": true,
+    "isUndefined": true,
+    "jqLite": true,
+    "noop": true,
+
+    /* ngAnimate constants */
+    "COMMENT_NODE": true,
+    "ELEMENT_NODE": true,
+    "NG_ANIMATE_CLASSNAME": true,
+    "NG_ANIMATE_CHILDREN_DATA": true,
+
+    /* ngAnimate className constants */
+    "ADD_CLASS_SUFFIX": true,
+    "REMOVE_CLASS_SUFFIX": true,
+    "EVENT_CLASS_PREFIX": true,
+    "ACTIVE_CLASS_SUFFIX": true,
+    "PREPARE_CLASS_SUFFIX": true,
+
+    /* ngAnimate CSS constants */
+    "ANIMATION_DELAY_PROP": true,
+    "ANIMATION_DURATION_PROP": true,
+    "ANIMATION_ITERATION_COUNT_KEY": true,
+    "ANIMATION_PROP": true,
+    "ANIMATIONEND_EVENT": true,
+    "DELAY_KEY": true,
+    "DURATION_KEY": true,
+    "PROPERTY_KEY": true,
+    "SAFE_FAST_FORWARD_DURATION_VALUE": true,
+    "TIMING_KEY": true,
+    "TRANSITION_DELAY_PROP": true,
+    "TRANSITION_DURATION_PROP": true,
+    "TRANSITION_PROP": true,
+    "TRANSITIONEND_EVENT": true,
+
+    /* ngAnimate helpers */
+    "applyAnimationClassesFactory": false,
+    "applyAnimationFromStyles": false,
+    "applyAnimationStyles": false,
+    "applyAnimationToStyles": false,
+    "applyGeneratedPreparationClasses": false,
+    "applyInlineStyle": false,
+    "assertArg": false,
+    "blockKeyframeAnimations": false,
+    "blockTransitions": false,
+    "clearGeneratedClasses": false,
+    "concatWithSpace": false,
+    "extractElementNode": false,
+    "getDomNode": false,
+    "mergeAnimationDetails": false,
+    "mergeClasses": false,
+    "packageStyles": false,
+    "pendClasses": false,
+    "prepareAnimationOptions": false,
+    "removeFromArray": false,
+    "stripCommentsFromElement": false,
+
+    /* ngAnimate directives/services */
+    "ngAnimateSwapDirective": true,
+    "$$rAFSchedulerFactory": true,
+    "$$AnimateChildrenDirective": true,
+    "$$AnimateQueueProvider": true,
+    "$$AnimationProvider": true,
+    "$AnimateCssProvider": true,
+    "$$AnimateCssDriverProvider": true,
+    "$$AnimateJsProvider": true,
+    "$$AnimateJsDriverProvider": true
+  }
+}

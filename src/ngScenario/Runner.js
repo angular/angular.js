@@ -21,7 +21,7 @@ angular.scenario.Runner = function($window) {
     beforeEach: this.beforeEach,
     afterEach: this.afterEach
   };
-  angular.forEach(this.api, angular.bind(this, function(fn, key) {
+  angular.forEach(this.api, angular.bind(this, /** @this */ function(fn, key) {
     this.$window[key] = angular.bind(this, fn);
   }));
 };
@@ -36,8 +36,9 @@ angular.scenario.Runner.prototype.emit = function(eventName) {
   var self = this;
   var args = Array.prototype.slice.call(arguments, 1);
   eventName = eventName.toLowerCase();
-  if (!this.listeners[eventName])
+  if (!this.listeners[eventName]) {
     return;
+  }
   angular.forEach(this.listeners[eventName], function(listener) {
     listener.apply(self, args);
   });
@@ -65,7 +66,7 @@ angular.scenario.Runner.prototype.on = function(eventName, listener) {
  */
 angular.scenario.Runner.prototype.describe = function(name, body) {
   var self = this;
-  this.currentDescribe.describe(name, function() {
+  this.currentDescribe.describe(name, /** @this */ function() {
     var parentDescribe = self.currentDescribe;
     self.currentDescribe = this;
     try {
@@ -86,7 +87,7 @@ angular.scenario.Runner.prototype.describe = function(name, body) {
  */
 angular.scenario.Runner.prototype.ddescribe = function(name, body) {
   var self = this;
-  this.currentDescribe.ddescribe(name, function() {
+  this.currentDescribe.ddescribe(name, /** @this */ function() {
     var parentDescribe = self.currentDescribe;
     self.currentDescribe = this;
     try {
@@ -157,8 +158,9 @@ angular.scenario.Runner.prototype.createSpecRunner_ = function(scope) {
 
   // Export all the methods to child scope manually as now we don't mess controllers with scopes
   // TODO(vojta): refactor scenario runner so that these objects are not tightly coupled as current
-  for (var name in Cls.prototype)
+  for (var name in Cls.prototype) {
     child[name] = angular.bind(child, Cls.prototype[name]);
+  }
 
   Cls.call(child);
   return child;
@@ -213,7 +215,7 @@ angular.scenario.Runner.prototype.run = function(application) {
         return scope.dsl[key].apply(scope, arguments);
       };
     });
-    runner.run(spec, function() {
+    runner.run(spec, /** @this */ function() {
       runner.$destroy();
       specDone.apply(this, arguments);
     });

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script for updating the Angular bower repos from current local build.
+# Script for updating the AngularJS bower repos from current local build.
 
 echo "#################################"
 echo "#### Update bower ###############"
@@ -14,20 +14,9 @@ function init {
   TMP_DIR=$(resolveDir ../../tmp)
   BUILD_DIR=$(resolveDir ../../build)
   NEW_VERSION=$(cat $BUILD_DIR/version.txt)
-  REPOS=(
-    angular
-    angular-animate
-    angular-cookies
-    angular-i18n
-    angular-loader
-    angular-mocks
-    angular-route
-    angular-resource
-    angular-sanitize
-    angular-scenario
-    angular-touch
-    angular-messages
-  )
+  PROJECT_DIR=$(resolveDir ../..)
+  # get the dist-tag for this release from a custom property (distTag) in package.json
+  DIST_TAG=$(readJsonProp "$PROJECT_DIR/package.json" "distTag")
 }
 
 
@@ -38,7 +27,7 @@ function prepare {
   for repo in "${REPOS[@]}"
   do
     echo "-- Cloning bower-$repo"
-    git clone git@github.com:angular/bower-$repo.git $TMP_DIR/bower-$repo
+    git clone git@github.com:angular/bower-$repo.git $TMP_DIR/bower-$repo --depth=1
   done
 
 
@@ -63,6 +52,21 @@ function prepare {
 
 
   #
+  # Run local precommit script if there is one
+  #
+  for repo in "${REPOS[@]}"
+  do
+    if [ -f $TMP_DIR/bower-$repo/precommit.sh ]
+      then
+        echo "-- Running precommit.sh script for bower-$repo"
+        cd $TMP_DIR/bower-$repo
+        $TMP_DIR/bower-$repo/precommit.sh
+        cd $SCRIPT_DIR
+    fi
+  done
+
+
+  #
   # update bower.json
   # tag each repo
   #
@@ -72,6 +76,8 @@ function prepare {
     cd $TMP_DIR/bower-$repo
     replaceJsonProp "bower.json" "version" ".*" "$NEW_VERSION"
     replaceJsonProp "bower.json" "angular.*" ".*" "$NEW_VERSION"
+    replaceJsonProp "package.json" "version" ".*" "$NEW_VERSION"
+    replaceJsonProp "package.json" "angular.*" ".*" "$NEW_VERSION"
 
     git add -A
 
@@ -89,8 +95,16 @@ function publish {
     cd $TMP_DIR/bower-$repo
     git push origin master
     git push origin v$NEW_VERSION
+
+    # don't publish every build to the npm repository
+    if [ "${NEW_VERSION/+sha}" = "$NEW_VERSION" ] ; then
+      echo "-- Publishing to the npm repository as $DIST_TAG"
+      npm publish --tag=$DIST_TAG
+    fi
+
     cd $SCRIPT_DIR
   done
 }
 
+source $(dirname $0)/repos.inc
 source $(dirname $0)/../utils.inc

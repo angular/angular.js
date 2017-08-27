@@ -14,4 +14,5 @@ curl "$I18N_BASE/currency.js" > closure/currencySymbols.js
 curl "$I18N_BASE/datetimesymbols.js" > closure/datetimeSymbols.js
 curl "$I18N_BASE/datetimesymbolsext.js" > closure/datetimeSymbolsExt.js
 curl "$I18N_BASE/numberformatsymbols.js" > closure/numberSymbols.js
+curl "$I18N_BASE/numberformatsymbolsext.js" > closure/numberSymbolsExt.js
 curl "$I18N_BASE/pluralrules.js" > closure/pluralRules.js

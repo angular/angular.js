@@ -22,8 +22,8 @@ function getVF(n, opt_precision) {
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "\u0642\u0628\u0644 \u062f\u0648\u067e\u06c1\u0631",
-      "\u0628\u0639\u062f \u062f\u0648\u067e\u06c1\u0631"
+      "AM",
+      "PM"
     ],
     "DAY": [
       "\u0627\u062a\u0648\u0627\u0631",
@@ -34,6 +34,15 @@ $provide.value("$locale", {
       "\u062c\u0645\u0639\u06c1",
       "\u06c1\u0641\u062a\u06c1"
     ],
+    "ERANAMES": [
+      "\u0642\u0628\u0644 \u0645\u0633\u06cc\u062d",
+      "\u0639\u06cc\u0633\u0648\u06cc"
+    ],
+    "ERAS": [
+      "\u0642\u0628\u0644 \u0645\u0633\u06cc\u062d",
+      "\u0639\u06cc\u0633\u0648\u06cc"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "\u062c\u0646\u0648\u0631\u06cc",
       "\u0641\u0631\u0648\u0631\u06cc",
@@ -71,10 +80,28 @@ $provide.value("$locale", {
       "\u0646\u0648\u0645\u0628\u0631",
       "\u062f\u0633\u0645\u0628\u0631"
     ],
+    "STANDALONEMONTH": [
+      "\u062c\u0646\u0648\u0631\u06cc",
+      "\u0641\u0631\u0648\u0631\u06cc",
+      "\u0645\u0627\u0631\u0686",
+      "\u0627\u067e\u0631\u06cc\u0644",
+      "\u0645\u0626\u06cc",
+      "\u062c\u0648\u0646",
+      "\u062c\u0648\u0644\u0627\u0626\u06cc",
+      "\u0627\u06af\u0633\u062a",
+      "\u0633\u062a\u0645\u0628\u0631",
+      "\u0627\u06a9\u062a\u0648\u0628\u0631",
+      "\u0646\u0648\u0645\u0628\u0631",
+      "\u062f\u0633\u0645\u0628\u0631"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "EEEE\u060c d MMMM\u060c y",
     "longDate": "d MMMM\u060c y",
-    "medium": "d MMM\u060c y h:mm:ss a",
-    "mediumDate": "d MMM\u060c y",
+    "medium": "y MMM d h:mm:ss a",
+    "mediumDate": "y MMM d",
     "mediumTime": "h:mm:ss a",
     "short": "d/M/yy h:mm a",
     "shortDate": "d/M/yy",
@@ -88,7 +115,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -98,20 +124,20 @@ $provide.value("$locale", {
         "posSuf": ""
       },
       {
-        "gSize": 3,
+        "gSize": 2,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
-        "negSuf": "\u200e",
-        "posPre": "\u00a4",
-        "posSuf": "\u200e"
+        "negPre": "-\u00a4\u00a0",
+        "negSuf": "",
+        "posPre": "\u00a4\u00a0",
+        "posSuf": ""
       }
     ]
   },
   "id": "ur",
-  "pluralCat": function (n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "ur",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

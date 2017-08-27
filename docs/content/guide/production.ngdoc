@@ -1,0 +1,112 @@
+@ngdoc overview
+@name  Running in Production
+@sortOrder 540
+@description
+
+# Running an AngularJS App in Production
+
+There are a few things you might consider when running your AngularJS application in production.
+
+
+## Disabling Debug Data
+
+By default AngularJS attaches information about binding and scopes to DOM nodes,
+and adds CSS classes to data-bound elements:
+
+- As a result of `ngBind`, `ngBindHtml` or `{{...}}` interpolations, binding data and CSS class
+`ng-binding` are attached to the corresponding element.
+
+- Where the compiler has created a new scope, the scope and either `ng-scope` or `ng-isolated-scope`
+CSS class are attached to the corresponding element. These scope references can then be accessed via
+`element.scope()` and `element.isolateScope()`.
+
+- Placeholder comments for structural directives will contain information about what directive
+and binding caused the placeholder. E.g. `<!-- ngIf: shouldShow() -->`.
+
+Tools like [Protractor](https://github.com/angular/protractor) and
+[Batarang](https://github.com/angular/angularjs-batarang) need this information to run,
+but you can disable this in production for a significant performance boost with:
+
+```js
+myApp.config(['$compileProvider', function ($compileProvider) {
+  $compileProvider.debugInfoEnabled(false);
+}]);
+```
+
+If you wish to debug an application with this information then you should open up a debug
+console in the browser then call this method directly in this console:
+
+```js
+angular.reloadWithDebugInfo();
+```
+
+The page should reload and the debug information should now be available.
+
+For more see the docs pages on {@link ng.$compileProvider#debugInfoEnabled `$compileProvider`}
+and {@link angular.reloadWithDebugInfo `angular.reloadWithDebugInfo`}.
+
+## Strict DI Mode
+
+Using strict di mode in your production application will throw errors when an injectable
+function is not
+{@link di#dependency-annotation annotated explicitly}. Strict di mode is intended to help
+you make sure that your code will work when minified. However, it also will force you to
+make sure that your injectable functions are explicitly annotated which will improve
+angular's performance when injecting dependencies in your injectable functions because it
+doesn't have to dynamically discover a function's dependencies. It is recommended to
+automate the explicit annotation via a tool like
+[ng-annotate](https://github.com/olov/ng-annotate) when you deploy to production (and enable
+strict di mode)
+
+To enable strict di mode, you have two options:
+
+```html
+<div ng-app="myApp" ng-strict-di>
+  <!-- your app here -->
+</div>
+```
+
+or
+
+```js
+angular.bootstrap(document, ['myApp'], {
+  strictDi: true
+});
+```
+
+For more information, see the
+{@link di#using-strict-dependency-injection DI Guide}.
+
+
+## Disable comment and css class directives
+
+By default AngularJS compiles and executes all directives inside comments and element classes.
+In order to perform this task, the AngularJS compiler must look for directives by:
+
+- Parse all your application element classes.
+
+- Parse all your application html comments.
+
+Nowadays most of the AngularJS projects are using only element and attribute directives,
+and in such projects there is no need to compile comments and classes.
+
+If you are sure that your project only uses element and attribute directives,
+and you are not using any 3rd party library that uses
+directives inside element classes or html comments,
+you can disable the compilation of directives on element classes and comments
+for the whole application.
+This results in a compilation performance gain,
+as the compiler does not have to check comments and element classes looking for directives.
+
+To disable comment and css class directives use the `$compileProvider`:
+
+```
+$compileProvider.commentDirectivesEnabled(false);
+$compileProvider.cssClassDirectivesEnabled(false);
+```
+
+For more see the docs pages on
+{@link ng.$compileProvider#commentDirectivesEnabled `$compileProvider.commentDirectivesEnabled`}
+and
+{@link ng.$compileProvider#cssClassDirectivesEnabled `$compileProvider.cssClassDirectivesEnabled`}.
+

@@ -1,0 +1,60 @@
+{% macro typeList(types) -%}
+{% for typeName in types %}<a href="" class="{$ typeName | typeClass $}">{$ typeName | escape $}</a>{% endfor %}
+{%- endmacro -%}
+
+{%- macro paramTable(params) %}
+<table class="variables-matrix input-arguments">
+  <thead>
+    <tr>
+      <th>Param</th>
+      <th>Type</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for param in params %}
+    <tr>
+      <td>
+        {$ param.name $}
+        {% if param.alias %}| {$ param.alias $}{% endif %}
+        {% if param.optional %}<div><em>(optional)</em></div>{% endif %}
+      </td>
+      <td>
+        {$ typeList(param.typeList) $}
+      </td>
+      <td>
+        {$ param.description | marked $}
+        {% if param.defaultValue %}<p><em>(default: {$ param.defaultValue $})</em></p>{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro -%}
+
+
+{%- macro directiveParam(name, type, join, sep) %}
+  {%- if type.optional %}[{% endif -%}
+  {$ name | dashCase $}{$ join $}{$ type.name $}{$ sep $}
+  {%- if type.optional %}]{% endif -%}
+{% endmacro -%}
+
+{%- macro functionSyntax(fn) %}
+  {%- set sep = joiner(', ') -%}
+  {% marked -%}
+    `{$ fn.name $}({%- for param in fn.params %}{$ sep() $}
+    {%- if param.type.optional %}[{% endif -%}
+    {$ param.name $}
+    {%- if param.type.optional %}]{% endif -%}
+    {% endfor %});`
+  {%- endmarked %}
+{% endmacro -%}
+
+{%- macro typeInfo(fn) -%}
+<table class="variables-matrix return-arguments">
+  <tr>
+    <td>{$ typeList(fn.typeList) $}</td>
+    <td>{$ fn.description | marked $}</td>
+  </tr>
+</table>
+{%- endmacro -%}

@@ -106,8 +106,8 @@ angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line)
  */
 angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior, line) {
   var self = this;
-  var NG = /\[ng\\\:/;
-  return this.addFuture(name, function(done) {
+  var NG = /\[ng\\:/;
+  return this.addFuture(name, /** @this */ function(done) {
     this.application.executeAction(function($window, $document) {
 
       //TODO(esprehn): Refactor this so it doesn't need to be in here.
@@ -120,11 +120,12 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
         });
         var result = $document.find(selector);
         if (selector.match(NG)) {
-          angular.forEach(['[ng-','[data-ng-','[x-ng-'], function(value, index){
+          angular.forEach(['[ng-','[data-ng-','[x-ng-'], function(value, index) {
             result = result.add(selector.replace(NG, value), $document);
           });
         }
         if (!result.length) {
+          // eslint-disable-next-line no-throw-literal
           throw {
             type: 'selector',
             message: 'Selector ' + selector + ' did not match any elements.'
@@ -136,7 +137,7 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
 
       try {
         behavior.call(self, $window, $document, done);
-      } catch(e) {
+      } catch (e) {
         if (e.type && e.type === 'selector') {
           done(e.message);
         } else {

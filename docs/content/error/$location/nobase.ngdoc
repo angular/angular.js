@@ -1,0 +1,63 @@
+@ngdoc error
+@name $location:nobase
+@fullName $location in HTML5 mode requires a &lt;base&gt; tag to be present!
+@description
+
+If you configure {@link ng.$location `$location`} to use
+{@link $locationProvider `html5Mode`} (`history.pushState`), you need to specify the base URL for the application with a [`<base href="">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) tag or configure
+`$locationProvider` to not require a base tag by passing a definition object with
+`requireBase:false` to `$locationProvider.html5Mode()`:
+
+```javascript
+$locationProvider.html5Mode({
+  enabled: true,
+  requireBase: false
+});
+```
+
+Note that removing the requirement for a `<base>` tag will have adverse side effects when resolving
+relative paths with `$location` in IE9.
+
+The base URL is then used to resolve all relative URLs throughout the application regardless of the
+entry point into the app.
+
+If you are deploying your app into the root context (e.g. `https://myapp.com/`), set the base URL to `/`:
+
+```html
+<head>
+  <base href="/">
+  ...
+</head>
+```
+
+If you are deploying your app into a sub-context (e.g. `https://myapp.com/subapp/`), set the base URL to the
+URL of the subcontext:
+
+```html
+<head>
+  <base href="/subapp/">
+  ...
+</head>
+```
+
+Before AngularJS 1.3 we didn't have this hard requirement and it was easy to write apps that worked
+when deployed in the root context but were broken when moved to a sub-context because in the
+sub-context all absolute urls would resolve to the root context of the app. To prevent this,
+use relative URLs throughout your app:
+
+```html
+<!-- wrong: -->
+<a href="/userProfile">User Profile</a>
+
+
+<!-- correct: -->
+<a href="userProfile">User Profile</a>
+
+```
+
+Additionally, if you want to support [browsers that don't have the `history.pushState`
+API](http://caniuse.com/#feat=history), the fallback mechanism provided by `$location`
+won't work well without specifying the base url of the application.
+
+In order to make it easier to migrate from hashbang mode to html5 mode, we require that the base
+URL is always specified when `$location`'s `html5mode` is enabled.

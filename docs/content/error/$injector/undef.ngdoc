@@ -1,0 +1,33 @@
+@ngdoc error
+@name $injector:undef
+@fullName Undefined Value
+@description
+
+This error results from registering a factory which does not return a value (or whose return value is undefined).
+
+The following is an example of a factory which will throw this error upon injection:
+
+```js
+angular.module("badModule", []).
+  factory("badFactory", function() {
+    doLotsOfThings();
+    butDontReturnAValue();
+  });
+```
+
+In order to prevent the error, return a value of some sort, such as an object which exposes an API for working
+with the injected object.
+
+```js
+angular.module("goodModule", []).
+  factory("goodFactory", function() {
+    doLotsOfThings();
+    butDontReturnAValue();
+
+    return {
+        doTheThing: function methodThatDoesAThing() {
+        }
+    };
+  });
+```
+

@@ -39,11 +39,13 @@ angular.scenario.output = angular.scenario.output || function(name, fn) {
  */
 angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
   angular.scenario.dsl[name] = function() {
-    /* jshint -W040 *//* The dsl binds `this` for us when calling chained functions */
+    // The dsl binds `this` for us when calling chained functions
+    /** @this */
     function executeStatement(statement, args) {
       var result = statement.apply(this, args);
-      if (angular.isFunction(result) || result instanceof angular.scenario.Future)
+      if (angular.isFunction(result) || result instanceof angular.scenario.Future) {
         return result;
+      }
       var self = this;
       var chain = angular.extend({}, result);
       angular.forEach(chain, function(value, name) {
@@ -58,7 +60,7 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
       return chain;
     }
     var statement = fn.apply(this, arguments);
-    return function() {
+    return /** @this */ function() {
       return executeStatement.call(this, statement, arguments);
     };
   };
@@ -103,7 +105,7 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
  */
 angular.scenario.setUpAndRun = function(config) {
   var href = window.location.href;
-  var body = _jQuery(document.body);
+  var body = _jQuery(window.document.body);
   var output = [];
   var objModel = new angular.scenario.ObjectModel($runner);
 
@@ -112,7 +114,7 @@ angular.scenario.setUpAndRun = function(config) {
   }
 
   angular.forEach(angular.scenario.output, function(fn, name) {
-    if (!output.length || indexOf(output,name) != -1) {
+    if (!output.length || output.indexOf(name) !== -1) {
       var context = body.append('<div></div>').find('div:last');
       context.attr('id', name);
       fn.call({}, context, $runner, objModel);
@@ -141,6 +143,7 @@ angular.scenario.setUpAndRun = function(config) {
       console.log(formatException(error));
     } else {
       // Do something for IE
+      // eslint-disable-next-line no-alert
       alert(error);
     }
   });
@@ -217,10 +220,10 @@ function callerFile(offset) {
     if (line) {
       if (line.indexOf('@') !== -1) {
         // Firefox
-        line = line.substring(line.indexOf('@')+1);
+        line = line.substring(line.indexOf('@') + 1);
       } else {
         // Chrome
-        line = line.substring(line.indexOf('(')+1).replace(')', '');
+        line = line.substring(line.indexOf('(') + 1).replace(')', '');
       }
     }
 
@@ -238,7 +241,7 @@ function callerFile(offset) {
  *
  * To work around this we instead use our own handler that fires a real event.
  */
-(function(fn){
+(function(fn) {
   // We need a handle to the original trigger function for input tests.
   var parentTrigger = fn._originalTrigger = fn.trigger;
   fn.trigger = function(type) {
@@ -268,12 +271,12 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
       bindSelector = '.ng-binding:visible';
   if (angular.isString(bindExp)) {
     bindExp = bindExp.replace(/\s/g, '');
-    match = function (actualExp) {
+    match = function(actualExp) {
       if (actualExp) {
         actualExp = actualExp.replace(/\s/g, '');
-        if (actualExp == bindExp) return true;
+        if (actualExp === bindExp) return true;
         if (actualExp.indexOf(bindExp) === 0) {
-          return actualExp.charAt(bindExp.length) == '|';
+          return actualExp.charAt(bindExp.length) === '|';
         }
       }
     };
@@ -292,7 +295,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
   }
 
   function push(value) {
-    if (value === undefined) {
+    if (angular.isUndefined(value)) {
       value = '';
     } else if (typeof value !== 'string') {
       value = angular.toJson(value);
@@ -300,14 +303,11 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
     result.push('' + value);
   }
 
-  selection.each(function() {
+  selection.each(/* @this Node */ function() {
     var element = windowJquery(this),
         bindings;
-    if (bindings = element.data('$binding')) {
-      if (!angular.isArray(bindings)) {
-        bindings = [bindings];
-      }
-      for(var expressions = [], binding, j=0, jj=bindings.length;  j<jj; j++) {
+    if ((bindings = element.data('$binding'))) {
+      for (var expressions = [], binding, j = 0, jj = bindings.length; j < jj; j++) {
         binding = bindings[j];
 
         if (binding.expressions) {
@@ -317,7 +317,7 @@ _jQuery.fn.bindings = function(windowJquery, bindExp) {
         }
         for (var scope, expression, i = 0, ii = expressions.length; i < ii; i++) {
           expression = expressions[i];
-          if(match(expression)) {
+          if (match(expression)) {
             scope = scope || element.scope();
             push(scope.$eval(expression));
           }

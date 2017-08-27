@@ -1,0 +1,6 @@
+@ngdoc error
+@name $interpolate:reqendinterp
+@fullName Unterminated interpolation
+@description
+
+The interpolation text does not have an ending `endSymbol` ("}}" by default) and is unterminated.
