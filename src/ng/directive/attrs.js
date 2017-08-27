@@ -205,14 +205,14 @@
  * @example
     <example name="ng-checked">
       <file name="index.html">
-        <label>Check me to check both: <input type="checkbox" ng-model="master"></label><br/>
-        <input id="checkSlave" type="checkbox" ng-checked="master" aria-label="Slave input">
+        <label>Check me to check both: <input type="checkbox" ng-model="leader"></label><br/>
+        <input id="checkFollower" type="checkbox" ng-checked="leader" aria-label="Follower input">
       </file>
       <file name="protractor.js" type="protractor">
         it('should check both checkBoxes', function() {
-          expect(element(by.id('checkSlave')).getAttribute('checked')).toBeFalsy();
-          element(by.model('master')).click();
-          expect(element(by.id('checkSlave')).getAttribute('checked')).toBeTruthy();
+          expect(element(by.id('checkFollower')).getAttribute('checked')).toBeFalsy();
+          element(by.model('leader')).click();
+          expect(element(by.id('checkFollower')).getAttribute('checked')).toBeTruthy();
         });
       </file>
     </example>
