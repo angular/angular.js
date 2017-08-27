@@ -1761,26 +1761,26 @@ describe('jqLite', function() {
 
     it('should deregister specific listener for multiple types separated by spaces', function() {
       var aElem = jqLite(a),
-          masterSpy = jasmine.createSpy('master'),
+          leaderSpy = jasmine.createSpy('leader'),
           extraSpy = jasmine.createSpy('extra');
 
-      aElem.on('click', masterSpy);
+      aElem.on('click', leaderSpy);
       aElem.on('click', extraSpy);
-      aElem.on('mouseover', masterSpy);
+      aElem.on('mouseover', leaderSpy);
 
       browserTrigger(a, 'click');
       browserTrigger(a, 'mouseover');
-      expect(masterSpy).toHaveBeenCalledTimes(2);
+      expect(leaderSpy).toHaveBeenCalledTimes(2);
       expect(extraSpy).toHaveBeenCalledOnce();
 
-      masterSpy.calls.reset();
+      leaderSpy.calls.reset();
       extraSpy.calls.reset();
 
-      aElem.off('click mouseover', masterSpy);
+      aElem.off('click mouseover', leaderSpy);
 
       browserTrigger(a, 'click');
       browserTrigger(a, 'mouseover');
-      expect(masterSpy).not.toHaveBeenCalled();
+      expect(leaderSpy).not.toHaveBeenCalled();
       expect(extraSpy).toHaveBeenCalledOnce();
     });
 
