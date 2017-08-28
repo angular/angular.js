@@ -1,0 +1,15 @@
+{
+  "description": "Test extension for angular.js",
+  "manifest_version": 2,
+  "name": "Angular test",
+  "version": "1.0",
+  "content_scripts": [
+    {
+      "matches": ["https://www.google.ch/*"],
+      "js": [
+	"angular.js",
+	"test.js"]
+    }
+  ]
+
+}
