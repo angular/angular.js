@@ -979,6 +979,14 @@ describe('$http', function() {
         $http({method: 'JSONP', url: $sce.trustAsResourceUrl('/url'), params: {a: 'b'}});
       });
 
+      it('should error if the URL contains more than one `?` query indicator', function() {
+        var error;
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?a=b?c=d')})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error).toEqualMinErr('$http', 'badjsonp');
+      });
+
       it('should error if the URL contains a JSON_CALLBACK parameter', function() {
         var error;
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?callback=JSON_CALLBACK')})
@@ -987,7 +995,19 @@ describe('$http', function() {
         expect(error).toEqualMinErr('$http', 'badjsonp');
 
         error = undefined;
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?callback=JSON_C%41LLBACK')})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error).toEqualMinErr('$http', 'badjsonp');
+
+        error = undefined;
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?other=JSON_CALLBACK')})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error).toEqualMinErr('$http', 'badjsonp');
+
+        error = undefined;
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?other=JSON_C%41LLBACK')})
             .catch(function(e) { error = e; });
         $rootScope.$digest();
         expect(error).toEqualMinErr('$http', 'badjsonp');
@@ -1007,6 +1027,23 @@ describe('$http', function() {
         expect(error).toEqualMinErr('$http', 'badjsonp');
       });
 
+      it('should allow encoded params that look like they contain the value JSON_CALLBACK or the configured callback key', function() {
+        var error;
+        error = undefined;
+        $httpBackend.expect('JSONP', 'http://example.org/path?other=JSON_C%2541LLBACK&callback=JSON_CALLBACK').respond('');
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {other: 'JSON_C%41LLBACK'}})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error).toBeUndefined();
+
+        error = undefined;
+        $httpBackend.expect('JSONP', 'http://example.org/path?c%2561llback=evilThing&callback=JSON_CALLBACK').respond('');
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {'c%61llback': 'evilThing'}})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error).toBeUndefined();
+      });
+
       it('should error if there is already a param matching the jsonpCallbackParam key', function() {
         var error;
         $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {callback: 'evilThing'}})
@@ -1015,7 +1052,19 @@ describe('$http', function() {
         expect(error).toEqualMinErr('$http', 'badjsonp');
 
         error = undefined;
+        $http({ method: 'JSONP', url: $sce.trustAsResourceUrl('http://example.org/path?c%61llback=evilThing')})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error).toEqualMinErr('$http', 'badjsonp');
+
+        error = undefined;
         $http({ method: 'JSONP', jsonpCallbackParam: 'cb', url: $sce.trustAsResourceUrl('http://example.org/path'), params: {cb: 'evilThing'}})
+            .catch(function(e) { error = e; });
+        $rootScope.$digest();
+        expect(error).toEqualMinErr('$http', 'badjsonp');
+
+        error = undefined;
+        $http({ method: 'JSONP', jsonpCallbackParam: 'cb', url: $sce.trustAsResourceUrl('http://example.org/path?c%62=evilThing')})
             .catch(function(e) { error = e; });
         $rootScope.$digest();
         expect(error).toEqualMinErr('$http', 'badjsonp');
