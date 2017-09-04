@@ -805,6 +805,12 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
         event.stopPropagation();
         var ev = event.originalEvent || event;
 
+        if (ev.target !== node) {
+          // Since TransitionEvent / AnimationEvent bubble up,
+          // we have to ignore events by finished child animations
+          return;
+        }
+
         // we now always use `Date.now()` due to the recent changes with
         // event.timeStamp in Firefox, Webkit and Chrome (see #13494 for more info)
         var timeStamp = ev.$manualTimeStamp || Date.now();
