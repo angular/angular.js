@@ -532,6 +532,60 @@ describe('ngAnimate $animateCss', function() {
           assertAnimationComplete(true);
         }));
 
+        it('should not close a transition when a child element fires the transitionend event',
+          inject(function($animateCss) {
+
+          ss.addPossiblyPrefixedRule('.ng-enter', 'transition:4s linear all;');
+          ss.addPossiblyPrefixedRule('.non-angular-animation', 'transition:5s linear all;');
+
+          var child = angular.element('<div class="non-angular-animation"></div>');
+          element.append(child);
+
+          var animator = $animateCss(element, options);
+          animator.start();
+          triggerAnimationStartFrame();
+
+          browserTrigger(child, 'transitionend', {
+            timeStamp: Date.now(),
+            elapsedTime: 5,
+            bubbles: true
+          });
+
+          transitionProgress(element, 1);
+
+          assertAnimationComplete(false);
+
+          transitionProgress(element, 4);
+          assertAnimationComplete(true);
+        }));
+
+        it('should not close a keyframe animation when a child element fires the animationend event',
+          inject(function($animateCss) {
+
+          ss.addPossiblyPrefixedRule('.ng-enter', 'animation:animation 4s;');
+          ss.addPossiblyPrefixedRule('.non-angular-animation', 'animation:animation 5s;');
+
+          var child = angular.element('<div class="non-angular-animation"></div>');
+          element.append(child);
+
+          var animator = $animateCss(element, options);
+          animator.start();
+          triggerAnimationStartFrame();
+
+          browserTrigger(child, 'animationend', {
+            timeStamp: Date.now(),
+            elapsedTime: 5,
+            bubbles: true
+          });
+
+          keyframeProgress(element, 1);
+
+          assertAnimationComplete(false);
+
+          keyframeProgress(element, 4);
+          assertAnimationComplete(true);
+        }));
+
         it('should use the highest keyframe duration value detected in the CSS class', inject(function($animateCss) {
           ss.addPossiblyPrefixedRule('.ng-enter', 'animation:animation 1s, animation 2s, animation 3s;');
 
