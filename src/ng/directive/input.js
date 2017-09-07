@@ -1101,7 +1101,7 @@ var inputType = {
    * @param {string=} step Sets the `step` validation to ensure that the value entered matches the `step`
    *                  Can be interpolated.
    * @param {expression=} ngChange AngularJS expression to be executed when the ngModel value changes due
-   *                  to user interaction with the input element.
+   *                      to user interaction with the input element.
    * @param {expression=} ngChecked If the expression is truthy, then the `checked` attribute will be set on the
    *                      element. **Note** : `ngChecked` should not be used alongside `ngModel`.
    *                      Checkout {@link ng.directive:ngChecked ngChecked} for usage.
