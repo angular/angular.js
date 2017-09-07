@@ -6,7 +6,7 @@
  * @kind function
  *
  * @description
- * Finds links in text input and turns them into html links. Supports `http/https/ftp/mailto` and
+ * Finds links in text input and turns them into html links. Supports `http/https/ftp/sftp/mailto` and
  * plain email address links.
  *
  * Requires the {@link ngSanitize `ngSanitize`} module to be installed.
