@@ -270,7 +270,8 @@ describe('HTML', function() {
 
   // See https://github.com/cure53/DOMPurify/blob/a992d3a75031cb8bb032e5ea8399ba972bdf9a65/src/purify.js#L439-L449
   it('should not allow JavaScript execution when creating inert document', inject(function($sanitize) {
-    var doc = $sanitize('<svg><g onload="window.xxx = 100"></g></svg>');
+    $sanitize('<svg><g onload="window.xxx = 100"></g></svg>');
+
     expect(window.xxx).toBe(undefined);
     delete window.xxx;
   }));
