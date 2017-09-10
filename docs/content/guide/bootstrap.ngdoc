@@ -144,7 +144,7 @@ This is the sequence that your code should follow:
 
 ## Things to keep in mind
 
-There a few things to keep in mind regardless of automatic or manual bootstrapping:
+There are a few things to keep in mind regardless of automatic or manual bootstrapping:
 
 - While it's possible to bootstrap more than one AngularJS application per page, we don't actively
   test against this scenario. It's possible that you'll run into problems, especially with complex apps, so
