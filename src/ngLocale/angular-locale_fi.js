@@ -67,18 +67,18 @@ $provide.value("$locale", {
       "la"
     ],
     "SHORTMONTH": [
-      "tammikuuta",
-      "helmikuuta",
-      "maaliskuuta",
-      "huhtikuuta",
-      "toukokuuta",
-      "kes\u00e4kuuta",
-      "hein\u00e4kuuta",
-      "elokuuta",
-      "syyskuuta",
-      "lokakuuta",
-      "marraskuuta",
-      "joulukuuta"
+      "tammik.",
+      "helmik.",
+      "maalisk.",
+      "huhtik.",
+      "toukok.",
+      "kes\u00e4k.",
+      "hein\u00e4k.",
+      "elok.",
+      "syysk.",
+      "lokak.",
+      "marrask.",
+      "jouluk."
     ],
     "STANDALONEMONTH": [
       "tammikuu",

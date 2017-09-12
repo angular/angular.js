@@ -15,6 +15,9 @@
     "splice": false,
     "push": false,
     "toString": false,
+    "minErrConfig": false,
+    "errorHandlingConfig": false,
+    "isValidObjectMaxDepth": false,
     "ngMinErr": false,
     "_angular": false,
     "angularModule": false,
@@ -47,6 +50,7 @@
     "isNumber": false,
     "isNumberNaN": false,
     "isDate": false,
+    "isError": false,
     "isArray": false,
     "isFunction": false,
     "isRegExp": false,
@@ -66,6 +70,7 @@
     "arrayRemove": false,
     "copy": false,
     "shallowCopy": false,
+    "simpleCompare": false,
     "equals": false,
     "csp": false,
     "concat": false,
@@ -123,7 +128,7 @@
     "BOOLEAN_ATTR": false,
     "ALIASED_ATTR": false,
     "jqNextId": false,
-    "camelCase": false,
+    "fnCamelCaseReplace": false,
     "jqLitePatchJQueryRemove": false,
     "JQLite": false,
     "jqLiteClone": false,
@@ -150,17 +155,21 @@
 
     /* apis.js */
     "hashKey": false,
-    "HashMap": false,
+    "NgMap": false,
 
     /* urlUtils.js */
     "urlResolve": false,
     "urlIsSameOrigin": false,
+    "urlIsSameOriginAsBaseUrl": false,
 
     /* ng/controller.js */
     "identifierForController": false,
 
     /* ng/compile.js */
     "directiveNormalize": false,
+
+    /* ng/q.js */
+    "markQExceptionHandled": false,
 
     /* ng/directive/directives.js */
     "ngDirective": false,

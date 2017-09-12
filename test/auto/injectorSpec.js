@@ -1,6 +1,35 @@
 'use strict';
 
-/* globals support: false */
+describe('injector.modules', function() {
+    it('should expose the loaded module info on the instance injector', function() {
+      var test1 = angular.module('test1', ['test2']).info({ version: '1.1' });
+      var test2 = angular.module('test2', []).info({ version: '1.2' });
+      module('test1');
+      inject(['$injector', function($injector) {
+        expect(Object.keys($injector.modules)).toEqual(['ng', 'ngLocale', 'ngMock', 'test1', 'test2']);
+        expect($injector.modules['test1'].info()).toEqual({ version: '1.1' });
+        expect($injector.modules['test2'].info()).toEqual({ version: '1.2' });
+      }]);
+    });
+
+    it('should expose the loaded module info on the provider injector', function() {
+      var providerInjector;
+      var test1 = angular.module('test1', ['test2']).info({ version: '1.1' });
+      var test2 = angular.module('test2', [])
+        .info({ version: '1.2' })
+        .provider('test', ['$injector', function($injector) {
+          providerInjector = $injector;
+          return { $get: function() {} };
+        }]);
+      module('test1');
+      // needed to ensure that the provider blocks are executed
+      inject();
+
+      expect(Object.keys(providerInjector.modules)).toEqual(['ng', 'ngLocale', 'ngMock', 'test1', 'test2']);
+      expect(providerInjector.modules['test1'].info()).toEqual({ version: '1.1' });
+      expect(providerInjector.modules['test2'].info()).toEqual({ version: '1.2' });
+    });
+});
 
 describe('injector', function() {
   var providers;
@@ -46,14 +75,13 @@ describe('injector', function() {
   it('should resolve dependency graph and instantiate all services just once', function() {
     var log = [];
 
-//          s1
-//        /  | \
-//       /  s2  \
-//      /  / | \ \
-//     /s3 < s4 > s5
-//    //
-//   s6
-
+    //          s1
+    //        /  | \
+    //       /  s2  \
+    //      /  / | \ \
+    //     /s3 < s4 > s5
+    //    //
+    //   s6
 
     providers('s1', function() { log.push('s1'); return {}; }, {$inject: ['s2', 's5', 's6']});
     providers('s2', function() { log.push('s2'); return {}; }, {$inject: ['s3', 's4', 's5']});
@@ -124,7 +152,7 @@ describe('injector', function() {
     expect($injector).not.toBe(providerInjector);
   }));
 
-  it('should have an false strictDi property', inject(function($injector) {
+  it('should have a false strictDi property', inject(function($injector) {
     expect($injector.strictDi).toBe(false);
   }));
 
@@ -192,7 +220,7 @@ describe('injector', function() {
 
 
     it('should create $inject', function() {
-      var extraParans = angular.noop;
+      var extraParams = angular.noop;
       /* eslint-disable space-before-function-paren */
       // keep the multi-line to make sure we can handle it
       function $f_n0 /*
@@ -203,7 +231,7 @@ describe('injector', function() {
                  function(a, b) {}
                  */
           _c,
-          /* {some type} */ d) { extraParans(); }
+          /* {some type} */ d) { extraParams(); }
       /* eslint-enable */
       expect(annotate($f_n0)).toEqual(['$a', 'b_', '_c',  'd']);
       expect($f_n0.$inject).toEqual(['$a', 'b_', '_c',  'd']);
@@ -255,16 +283,16 @@ describe('injector', function() {
 
 
     describe('es6', function() {
-      if (support.ES6Function) {
+      if (support.shorthandMethods) {
         // The functions are generated using `eval` as just having the ES6 syntax can break some browsers.
-        it('should be possible to annotate functions that are declared using ES6 syntax', function() {
+        it('should be possible to annotate shorthand methods', function() {
           // eslint-disable-next-line no-eval
           expect(annotate(eval('({ fn(x) { return; } })').fn)).toEqual(['x']);
         });
       }
 
 
-      if (support.fatArrow) {
+      if (support.fatArrows) {
         it('should create $inject for arrow functions', function() {
           // eslint-disable-next-line no-eval
           expect(annotate(eval('(a, b) => a'))).toEqual(['a', 'b']);
@@ -272,7 +300,7 @@ describe('injector', function() {
       }
 
 
-      if (support.fatArrow) {
+      if (support.fatArrows) {
         it('should create $inject for arrow functions with no parenthesis', function() {
           // eslint-disable-next-line no-eval
           expect(annotate(eval('a => a'))).toEqual(['a']);
@@ -280,19 +308,11 @@ describe('injector', function() {
       }
 
 
-      if (support.fatArrow) {
+      if (support.fatArrows) {
         it('should take args before first arrow', function() {
           // eslint-disable-next-line no-eval
           expect(annotate(eval('a => b => b'))).toEqual(['a']);
         });
-
-        // Support: Chrome 50-51 only
-        // TODO (gkalpak): Remove when Chrome v52 is released.
-        // it('should be able to inject fat-arrow function', function() {
-        //   inject(($injector) => {
-        //     expect($injector).toBeDefined();
-        //   });
-        // });
       }
 
       if (support.classes) {
@@ -305,39 +325,24 @@ describe('injector', function() {
           expect(instance.aVal()).toEqual('a-value');
         });
 
-        if (/chrome/.test(window.navigator.userAgent)) {
-          they('should detect ES6 classes regardless of whitespace/comments ($prop)', [
-            'class Test {}',
-            'class Test{}',
-            'class //<--ES6 stuff\nTest {}',
-            'class//<--ES6 stuff\nTest {}',
-            'class {}',
-            'class{}',
-            'class //<--ES6 stuff\n {}',
-            'class//<--ES6 stuff\n {}',
-            'class/* Test */{}',
-            'class /* Test */ {}'
-          ], function(classDefinition) {
-            // eslint-disable-next-line no-eval
-            var Clazz = eval('(' + classDefinition + ')');
-            var instance = injector.invoke(Clazz);
+        they('should detect ES6 classes regardless of whitespace/comments ($prop)', [
+          'class Test {}',
+          'class Test{}',
+          'class //<--ES6 stuff\nTest {}',
+          'class//<--ES6 stuff\nTest {}',
+          'class {}',
+          'class{}',
+          'class //<--ES6 stuff\n {}',
+          'class//<--ES6 stuff\n {}',
+          'class/* Test */{}',
+          'class /* Test */ {}'
+        ], function(classDefinition) {
+          // eslint-disable-next-line no-eval
+          var Clazz = eval('(' + classDefinition + ')');
+          var instance = injector.invoke(Clazz);
 
-            expect(instance).toEqual(jasmine.any(Clazz));
-          });
-        }
-
-        // Support: Chrome 50-51 only
-        // TODO (gkalpak): Remove when Chrome v52 is released.
-        // it('should be able to invoke classes', function() {
-        //   class Test {
-        //     constructor($injector) {
-        //       this.$injector = $injector;
-        //     }
-        //   }
-        //   var instance = injector.invoke(Test, null, null, 'Test');
-
-        //   expect(instance.$injector).toBe(injector);
-        // });
+          expect(instance).toEqual(jasmine.any(Clazz));
+        });
       }
     });
 
@@ -418,7 +423,7 @@ describe('injector', function() {
       expect(function() {
         createInjector(['IDontExist'], {});
       }).toThrowMinErr('$injector', 'modulerr',
-        /\[\$injector:nomod\] Module 'IDontExist' is not available! You either misspelled the module name or forgot to load it/);
+        /\[\$injector:nomod] Module 'IDontExist' is not available! You either misspelled the module name or forgot to load it/);
     });
 
 
@@ -782,7 +787,7 @@ describe('injector', function() {
           createInjector([
             {}
           ], {});
-        }).toThrowMinErr('$injector', 'modulerr', /Failed to instantiate module \{\} due to:\n.*\[ng:areq\] Argument 'module' is not a function, got Object/);
+        }).toThrowMinErr('$injector', 'modulerr', /Failed to instantiate module \{\} due to:\n.*\[ng:areq] Argument 'module' is not a function, got Object/);
       });
 
 
@@ -944,7 +949,7 @@ describe('injector', function() {
     });
 
 
-    it('should throw usefull error on wrong argument type]', function() {
+    it('should throw useful error on wrong argument type]', function() {
       expect(function() {
         $injector.invoke({});
       }).toThrowMinErr('ng', 'areq', 'Argument \'fn\' is not a function, got Object');
@@ -1062,7 +1067,7 @@ describe('injector', function() {
         createInjector([function($provide) {
           $provide.value('name', 'angular');
         }, instanceLookupInModule]);
-      }).toThrowError(/\[\$injector:unpr] Unknown provider: name/);
+      }).toThrowMinErr('$injector', 'modulerr', '[$injector:unpr] Unknown provider: name');
     });
   });
 });

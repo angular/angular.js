@@ -35,11 +35,11 @@ $provide.value("$locale", {
       "\u0634\u0646\u0628\u0647"
     ],
     "ERANAMES": [
-      "\u0642.\u0645.",
-      "\u0645."
+      "\u0644\u0647 \u0645\u06cc\u0644\u0627\u062f \u0685\u062e\u0647 \u0648\u0693\u0627\u0646\u062f\u06d0",
+      "\u0644\u0647 \u0645\u06cc\u0644\u0627\u062f \u0685\u062e\u0647 \u0648\u0631\u0648\u0633\u062a\u0647"
     ],
     "ERAS": [
-      "\u0642.\u0645.",
+      "\u0644\u0647 \u0645\u06cc\u0644\u0627\u062f \u0648\u0693\u0627\u0646\u062f\u06d0",
       "\u0645."
     ],
     "FIRSTDAYOFWEEK": 5,
@@ -48,7 +48,7 @@ $provide.value("$locale", {
       "\u0641\u0628\u0631\u0648\u0631\u064a",
       "\u0645\u0627\u0631\u0686",
       "\u0627\u067e\u0631\u06cc\u0644",
-      "\u0645\u06cc",
+      "\u0645\u06cd",
       "\u062c\u0648\u0646",
       "\u062c\u0648\u0644\u0627\u06cc",
       "\u0627\u06ab\u0633\u062a",
@@ -71,7 +71,7 @@ $provide.value("$locale", {
       "\u0641\u0628\u0631\u0648\u0631\u064a",
       "\u0645\u0627\u0631\u0686",
       "\u0627\u067e\u0631\u06cc\u0644",
-      "\u0645\u06cc",
+      "\u0645\u06cd",
       "\u062c\u0648\u0646",
       "\u062c\u0648\u0644\u0627\u06cc",
       "\u0627\u06ab\u0633\u062a",
@@ -85,7 +85,7 @@ $provide.value("$locale", {
       "\u0641\u0628\u0631\u0648\u0631\u064a",
       "\u0645\u0627\u0631\u0686",
       "\u0627\u067e\u0631\u06cc\u0644",
-      "\u0645\u06cc",
+      "\u0645\u06cd",
       "\u062c\u0648\u0646",
       "\u062c\u0648\u0644\u0627\u06cc",
       "\u0627\u06ab\u0633\u062a",
@@ -100,8 +100,8 @@ $provide.value("$locale", {
     ],
     "fullDate": "EEEE \u062f y \u062f MMMM d",
     "longDate": "\u062f y \u062f MMMM d",
-    "medium": "d MMM y H:mm:ss",
-    "mediumDate": "d MMM y",
+    "medium": "y MMM d H:mm:ss",
+    "mediumDate": "y MMM d",
     "mediumTime": "H:mm:ss",
     "short": "y/M/d H:mm",
     "shortDate": "y/M/d",
@@ -126,8 +126,8 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 0,
+        "minFrac": 0,
         "minInt": 1,
         "negPre": "-",
         "negSuf": "\u00a0\u00a4",

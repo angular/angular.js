@@ -31,12 +31,12 @@ function xthey(msg, vals, spec) {
 }
 
 function browserSupportsCssAnimations() {
-  // Support: IE < 10
-  // Only IE10+ support keyframes / transitions
+  // Support: IE 9 only
+  // Only IE 10+ support keyframes / transitions
   return !(window.document.documentMode < 10);
 }
 
-function createMockStyleSheet(doc, prefix) {
+function createMockStyleSheet(doc) {
   doc = doc ? doc[0] : window.document;
 
   var node = doc.createElement('style');
@@ -57,13 +57,17 @@ function createMockStyleSheet(doc, prefix) {
     },
 
     addPossiblyPrefixedRule: function(selector, styles) {
-      if (prefix) {
-        var prefixedStyles = styles.split(/\s*;\s*/g).map(function(style) {
-          return !style ? '' : prefix + style;
+      // Support: Android <5, Blackberry Browser 10, default Chrome in Android 4.4.x
+      // Mentioned browsers need a -webkit- prefix for transitions & animations.
+      var prefixedStyles = styles.split(/\s*;\s*/g)
+        .filter(function(style) {
+          return style && /^(?:transition|animation)\b/.test(style);
+        })
+        .map(function(style) {
+          return '-webkit-' + style;
         }).join('; ');
 
-        this.addRule(selector, prefixedStyles);
-      }
+      this.addRule(selector, prefixedStyles);
 
       this.addRule(selector, styles);
     },

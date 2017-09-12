@@ -23,8 +23,8 @@ To that end, we will explain why and how we:
 
 <div class="alert alert-info">
   We will keep it short, not going into great detail on every good practice and convention. These
-  principles are explained in great detail in the [Angular Style Guide][styleguide], which also
-  contains many more techniques for effectively organizing Angular codebases.
+  principles are explained in great detail in the [AngularJS Style Guide][styleguide], which also
+  contains many more techniques for effectively organizing AngularJS codebases.
 </div>
 
 
@@ -34,14 +34,14 @@ To that end, we will explain why and how we:
 ## One Feature per File
 
 It might be tempting, for the sake of simplicity, to put everything in one file, or have one file
-per type; e.g. all controllers is one file, all components in another file, all services in a third
+per type; e.g. all controllers in one file, all components in another file, all services in a third
 file, and so on.
 This might seem to work well in the beginning, but as our application grows it becomes a burden to
 maintain. As we add more and more features, our files will get bigger and bigger and it will be
 difficult to navigate and find the code we are looking for.
 
 Instead we should put each feature/entity in its own file. Each stand-alone controller will be
-defined in its own file, each component will be defined in each own file, etc.
+defined in its own file, each component will be defined in its own file, etc.
 
 Luckily, we don't need to change anything with respect to that guideline in our code, since we have
 already defined our `phoneList` component in its own `phone-list.component.js` file. Good job!
@@ -54,7 +54,7 @@ We will keep this in mind though, as we add more features.
 So, now that we learned we should put everything in its own file, our `app/` directory will soon be
 full with dozens of files and specs (remember we keep our unit test files next to the corresponding
 source code files). What's more important, logically related files will not be grouped together; it
-will be really difficult of locate all files related to a specific section of the application and
+will be really difficult to locate all files related to a specific section of the application and
 make a change or fix a bug.
 
 So, what shall we do?
@@ -166,7 +166,7 @@ angular.module('phonecatApp', [
 ]);
 ```
 
-By passing `phoneList` inside the dependencies array when defining the `phonecatApp` module, Angular
+By passing `phoneList` inside the dependencies array when defining the `phonecatApp` module, AngularJS
 will make all entities registered on `phoneList` available on `phonecatApp` as well.
 
 <div class="alert alert-info">
@@ -182,7 +182,7 @@ will make all entities registered on `phoneList` available on `phonecatApp` as w
 
 <div class="alert alert-warning">
   Note that files defining a module (i.e. `.module.js`) need to be included before other files that
-  add features (e.g. components, controllers, services, filters) to that module. 
+  add features (e.g. components, controllers, services, filters) to that module.
 </div>
 
 
@@ -219,7 +219,7 @@ angular.
   });
 ```
 
-At runtime, when Angular needs to create an instance of the `phoneList` component, it will make an
+At runtime, when AngularJS needs to create an instance of the `phoneList` component, it will make an
 HTTP request to get the template from `app/phone-list/phone-list.template.html`.
 
 <div class="alert alert-info">
@@ -231,7 +231,7 @@ HTTP request to get the template from `app/phone-list/phone-list.template.html`.
 <div class="alert alert-warning">
   <p>
     Using an external template like this, will result in more HTTP requests to the server (one for
-    each external template). Although Angular takes care not to make extraneous requests (e.g.
+    each external template). Although AngularJS takes care not to make extraneous requests (e.g.
     fetching the templates lazily, caching the results, etc), additional requests do have a cost
     (especially on mobile devices and data-plan connections).
   </p>
@@ -239,7 +239,7 @@ HTTP request to get the template from `app/phone-list/phone-list.template.html`.
     Luckily, there are ways to avoid the extra costs (while still keeping your templates external).
     A detailed discussion of the subject is outside the scope of this tutorial, but you can take a
     look at the {@link ng.$templateRequest $templateRequest} and
-    {@link ng.$templateCache $templateCache} services for more info on how Angular manages external
+    {@link ng.$templateCache $templateCache} services for more info on how AngularJS manages external
     templates.
   </p>
 </div>

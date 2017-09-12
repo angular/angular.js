@@ -215,7 +215,7 @@ describe('browser', function() {
   });
 
   describe('outstanding requests', function() {
-    it('should process callbacks immedietly with no outstanding requests', function() {
+    it('should process callbacks immediately with no outstanding requests', function() {
       var callback = jasmine.createSpy('callback');
       browser.notifyWhenNoOutstandingRequests(callback);
       expect(callback).toHaveBeenCalled();
@@ -224,7 +224,7 @@ describe('browser', function() {
 
 
   describe('defer', function() {
-    it('should execute fn asynchroniously via setTimeout', function() {
+    it('should execute fn asynchronously via setTimeout', function() {
       var callback = jasmine.createSpy('deferred');
 
       browser.defer(callback);
@@ -381,11 +381,6 @@ describe('browser', function() {
       var state = { any: 'foo' };
       expect(browser.url('http://any.com', false, state).url('http://any.com', false, state)).toBe(browser);
       expect(browser.url('http://any.com', true, state).url('http://any.com', true, state)).toBe(browser);
-    });
-
-    it('should decode single quotes to work around FF bug 407273', function() {
-      fakeWindow.location.href = 'http://ff-bug/?single%27quote';
-      expect(browser.url()).toBe('http://ff-bug/?single\'quote');
     });
 
     it('should not set URL when the URL is already set', function() {
@@ -805,7 +800,7 @@ describe('browser', function() {
       });
     }
 
-    describe('update $location when it was changed outside of Angular in sync ' +
+    describe('update $location when it was changed outside of AngularJS in sync ' +
        'before $digest was called', function() {
 
       it('should work with no history support, no html5Mode', function() {
@@ -924,12 +919,12 @@ describe('browser', function() {
 
       inject(function($location, $rootScope) {
 
-        // Change the hash within Angular and check that we don't infinitely digest
+        // Change the hash within AngularJS and check that we don't infinitely digest
         $location.hash('newHash');
         expect(function() { $rootScope.$digest(); }).not.toThrow();
         expect($location.absUrl()).toEqual('http://server/#newHash');
 
-        // Now change the hash from outside Angular and check that $location updates correctly
+        // Now change the hash from outside AngularJS and check that $location updates correctly
         fakeWindow.location.hash = '#otherHash';
 
         // simulate next tick - since this browser doesn't update synchronously

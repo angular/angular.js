@@ -1,0 +1,11 @@
+@ngdoc error
+@name $sanitize:elclob
+@fullName Failed to sanitize html because the element is clobbered
+@description
+
+This error occurs when `$sanitize` sanitizer is unable to traverse the HTML because one or more of the elements in the
+HTML have been "clobbered". This could be a sign that the payload contains code attempting to cause a DoS attack on the
+browser.
+
+Typically clobbering breaks the `nextSibling` property on an element so that it points to one of its child nodes. This
+makes it impossible to walk the HTML tree without getting stuck in an infinite loop, which causes the browser to freeze.

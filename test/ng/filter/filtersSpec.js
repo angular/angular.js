@@ -504,6 +504,10 @@ describe('filters', function() {
       expect(date(morning, 'yy/xxx')).toEqual('10/xxx');
     });
 
+    it('should allow newlines in format', function() {
+      expect(date(midnight, 'EEE\nMMM d\'\n\'yy/xxx\n')).toEqual('Fri\nSep 3\n10/xxx\n');
+    });
+
     it('should support various iso8061 date strings with timezone as input', function() {
       var format = 'yyyy-MM-dd ss';
 

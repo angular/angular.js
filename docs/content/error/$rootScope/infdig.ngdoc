@@ -4,7 +4,7 @@
 @description
 
 This error occurs when the application's model becomes unstable and each `$digest` cycle triggers a state change and subsequent `$digest` cycle.
-Angular detects this situation and prevents an infinite loop from causing the browser to become unresponsive.
+AngularJS detects this situation and prevents an infinite loop from causing the browser to become unresponsive.
 
 For example, the situation can occur by setting up a watch on a path and subsequently updating the same path when the value changes.
 
@@ -26,7 +26,7 @@ $scope.getUsers = function() {
 };
 ```
 
-Since `getUsers()` returns a new array, Angular determines that the model is different on each `$digest`
+Since `getUsers()` returns a new array, AngularJS determines that the model is different on each `$digest`
 cycle, resulting in the error.  The solution is to return the same array object if the elements have
 not changed:
 

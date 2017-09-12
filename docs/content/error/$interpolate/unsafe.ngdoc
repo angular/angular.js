@@ -7,4 +7,4 @@ You have attempted to use a MessageFormat extension in your interpolation expres
 
 Read more about secure contexts at {@link ng.$sce Strict Contextual Escaping
 (SCE)} and about the MessageFormat extensions at {@link
-guide/i18n#MessageFormat Angular i18n MessageFormat}.
+guide/i18n#MessageFormat AngularJS i18n MessageFormat}.

@@ -63,7 +63,7 @@ now-familiar double-curly brace binding in the `href` attribute values. In step 
 the element attribute.
 
 We also added phone images next to each record using an image tag with the {@link ngSrc ngSrc}
-directive. That directive prevents the browser from treating the Angular `{{ expression }}` markup
+directive. That directive prevents the browser from treating the AngularJS `{{ expression }}` markup
 literally, and initiating a request to an invalid URL (`http://localhost:8000/{{phone.imageUrl}}`),
 which it would have done if we had only specified an attribute binding in a regular `src` attribute
 (`<img src="{{phone.imageUrl}}">`). Using the `ngSrc` directive, prevents the browser from making an
@@ -104,14 +104,14 @@ You can now rerun `npm run protractor` to see the tests run.
   making an extraneous request to `%7B%7Bphone.imageUrl%7D%7D` (or `{{phone.imageUrl}}`).
 
   The issue here is that the browser will fire a request for that invalid image address as soon as
-  it hits the `<img>` tag, which is before Angular has a chance to evaluate the expression and
+  it hits the `<img>` tag, which is before AngularJS has a chance to evaluate the expression and
   inject the valid address.
 
 
 # Summary
 
-Now that you have added phone images and links, go to {@link step_09 step 9} to learn about Angular
-layout templates and how Angular makes it easy to create applications that have multiple views.
+Now that you have added phone images and links, go to {@link step_09 step 9} to learn about AngularJS
+layout templates and how AngularJS makes it easy to create applications that have multiple views.
 
 
 <ul doc-tutorial-nav="8"></ul>

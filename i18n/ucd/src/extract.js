@@ -9,18 +9,18 @@ var propertiesToExtract = {'IDS': 'Y', 'IDC': 'Y'};
 
 function main() {
   extractValues(
-    fs.createReadStream('./ucd/src/ucd.all.flat.xml.gz').pipe(zlib.createGunzip()),
+    fs.createReadStream(__dirname + '/ucd.all.flat.xml.gz').pipe(zlib.createGunzip()),
     propertiesToExtract,
     writeFile);
 
   function writeFile(validRanges) {
     var code = generateCode(validRanges);
     try {
-      fs.lstatSync('../src/ngParseExt');
+      fs.lstatSync(__dirname + '/../../../src/ngParseExt');
     } catch (e) {
-      fs.mkdirSync('../src/ngParseExt');
+      fs.mkdirSync(__dirname + '/../../../src/ngParseExt');
     }
-    fs.writeFile('../src/ngParseExt/ucd.js', code);
+    fs.writeFile(__dirname + '/../../../src/ngParseExt/ucd.js', code);
   }
 }
 

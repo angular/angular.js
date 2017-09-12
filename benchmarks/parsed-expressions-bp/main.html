@@ -17,12 +17,6 @@
         </li>
 
         <li>
-          <input type="radio" ng-model="expressionType" value="constructorPath" id="constructorPath">
-          <label for="constructorPath">Constructor Paths</label>
-          ($parse special cases "constructor" for security)
-        </li>
-
-        <li>
           <input type="radio" ng-model="expressionType" value="fieldAccess" id="fieldAccess">
           <label for="fieldAccess">Field Accessors</label>
         </li>
@@ -66,6 +60,16 @@
           <input type="radio" ng-model="expressionType" value="arrayLiterals" id="arrayLiterals">
           <label for="arrayLiterals">Array Literals</label>
         </li>
+
+        <li>
+          <input type="radio" ng-model="expressionType" value="watchCollection" id="watchCollection">
+          <label for="watchCollection">$watchCollection</label>
+        </li>
+
+        <li>
+          <input type="radio" ng-model="expressionType" value="watchCollectionLiterals" id="watchCollectionLiterals">
+          <label for="watchCollectionLiterals">$watchCollection Literals</label>
+        </li>
       </ul>
 
       <!--
@@ -86,17 +90,6 @@
           <span bm-pe-watch="row.date0"></span>
           <span bm-pe-watch="row.obj"></span>
           <span bm-pe-watch="row.keys"></span>
-        </li>
-
-        <li ng-switch-when="constructorPath" ng-repeat="(rowIdx, row) in ::data">
-          <span bm-pe-watch="row.index"></span>
-          <span bm-pe-watch="row.constructor.index"></span>
-          <span bm-pe-watch="row.constructor.index"></span>
-          <span bm-pe-watch="row.constructor.index"></span>
-          <span bm-pe-watch="row.constructor.constructor.index"></span>
-          <span bm-pe-watch="row.constructor.constructor.index"></span>
-          <span bm-pe-watch="row.constructor.constructor.constructor.index"></span>
-          <span bm-pe-watch="row.constructor.constructor.constructor.index"></span>
         </li>
 
         <li ng-switch-when="complexPath" ng-repeat="(rowIdx, row) in ::data">
@@ -215,27 +208,44 @@
         </li>
 
         <li ng-switch-when="objectLiterals" ng-repeat="(rowIdx, row) in ::data">
-          <span bm-pe-watch-literal="{foo: rowIdx}"></span>
-          <span bm-pe-watch-literal="{foo: row, bar: rowIdx}"></span>
-          <span bm-pe-watch-literal="{0: row, 1: rowIdx, 2: 3}"></span>
-          <span bm-pe-watch-literal="{str: 'foo', num: rowIdx, b: true}"></span>
-          <span bm-pe-watch-literal="{a: {b: {c: {d: {e: {f: rowIdx}}}}}}"></span>
-          <span bm-pe-watch-literal="{a: rowIdx, b: 1, c: 2, d: 3, e: 4, f: 5, g: rowIdx, h: 6, i: 7, j: 8, k: rowIdx}"></span>
+          <span bm-pe-watch="{foo: rowIdx}"></span>
+          <span bm-pe-watch="{foo: row, bar: rowIdx}"></span>
+          <span bm-pe-watch="{0: row, 1: rowIdx, 2: 3}"></span>
+          <span bm-pe-watch="{str: 'foo', num: rowIdx, b: true}"></span>
+          <span bm-pe-watch="{a: {b: {c: {d: {e: {f: rowIdx}}}}}}"></span>
+          <span bm-pe-watch="{a: rowIdx, b: 1, c: 2, d: 3, e: 4, f: 5, g: rowIdx, h: 6, i: 7, j: 8, k: rowIdx}"></span>
         </li>
 
         <li ng-switch-when="arrayLiterals" ng-repeat="(rowIdx, row) in ::data">
-          <span bm-pe-watch-literal="[rowIdx]"></span>
-          <span bm-pe-watch-literal="[rowIdx, 0]"></span>
-          <span bm-pe-watch-literal="[rowIdx, 0, 1]"></span>
-          <span bm-pe-watch-literal="[rowIdx, 0, 1, 2]"></span>
-          <span bm-pe-watch-literal="[rowIdx, 0, 1, 2, 3]"></span>
-          <span bm-pe-watch-literal="[[], [rowIdx], [], [], [3], [[[]]]]"></span>
-          <span bm-pe-watch-literal="[rowIdx, undefined, null, true, false]"></span>
-          <span bm-pe-watch-literal="[[][0], [0][0], [][rowIdx]]"></span>
-          <span bm-pe-watch-literal="[0, rowIdx]"></span>
-          <span bm-pe-watch-literal="[0, 1, rowIdx]"></span>
-          <span bm-pe-watch-literal="[0, 1, 2, rowIdx]"></span>
-          <span bm-pe-watch-literal="[0, 1, 2, 3, rowIdx]"></span>
+          <span bm-pe-watch="[rowIdx]"></span>
+          <span bm-pe-watch="[rowIdx, 0]"></span>
+          <span bm-pe-watch="[rowIdx, 0, 1]"></span>
+          <span bm-pe-watch="[rowIdx, 0, 1, 2]"></span>
+          <span bm-pe-watch="[rowIdx, 0, 1, 2, 3]"></span>
+          <span bm-pe-watch="[[], [rowIdx], [], [], [3], [[[]]]]"></span>
+          <span bm-pe-watch="[rowIdx, undefined, null, true, false]"></span>
+          <span bm-pe-watch="[[][0], [0][0], [][rowIdx]]"></span>
+          <span bm-pe-watch="[0, rowIdx]"></span>
+          <span bm-pe-watch="[0, 1, rowIdx]"></span>
+          <span bm-pe-watch="[0, 1, 2, rowIdx]"></span>
+          <span bm-pe-watch="[0, 1, 2, 3, rowIdx]"></span>
+        </li>
+
+        <li ng-switch-when="watchCollection" ng-repeat="(rowIdx, row) in data">
+          <span bm-pe-watch-collection="data"></span>
+          <span bm-pe-watch-collection="row.keys"></span>
+          <span bm-pe-watch-collection="thisProbablyDoesntHaveAValue"></span>
+        </li>
+
+        <li ng-switch-when="watchCollectionLiterals" ng-repeat="(rowIdx, row) in ::data">
+          <span bm-pe-watch-collection="[rowIdx, row]"></span>
+          <span bm-pe-watch-collection="[rowIdx, row, num0, str0, date0, obj, g, h, i, j, k, l, m, n, o, p]"></span>
+          <span bm-pe-watch-collection="{a: rowIdx, b: row, c: num0, d: str0, e: date0, f: obj, g: g, h: h, i: i, j: j, k: k, l: l, m: m, n: n, o: o, p: p}"></span>
+
+          <!-- primitive/valueOf-compatible -->
+          <span bm-pe-watch-collection="[rowIdx, row]"></span>
+          <span bm-pe-watch-collection="[rowIdx, num0, str0, date0, date1, h, i, j, k, l, m, n, o, p]"></span>
+          <span bm-pe-watch-collection="{a: rowIdx, c: num0, d: str0, e: date0, g: date1, h: h, i: i, j: j, k: k, l: l, m: m, n: n, o: o, p: p}"></span>
         </li>
       </ul>
     </div>

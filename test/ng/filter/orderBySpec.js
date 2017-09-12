@@ -266,7 +266,7 @@ describe('Filter: orderBy', function() {
 
 
     describe('(built-in comparator)', function() {
-      it('should compare numbers numarically', function() {
+      it('should compare numbers numerically', function() {
         var items = [100, 3, 20];
         var expr = null;
         var sorted = [3, 20, 100];
@@ -451,11 +451,24 @@ describe('Filter: orderBy', function() {
             return (isNerd1 && isNerd2) ? 0 : (isNerd1) ? -1 : 1;
           }
 
-          // No "nerd"; alpabetical order
+          // No "nerd"; alphabetical order
           return (v1 === v2) ? 0 : (v1 < v2) ? -1 : 1;
         };
 
         expect(orderBy(items, expr, reverse, comparator)).toEqual(sorted);
+      });
+
+      it('should use the default comparator to break ties on a provided comparator', function() {
+        // Some list that won't be sorted "naturally", i.e. should sort to ['a', 'B', 'c']
+        var items = ['c', 'a', 'B'];
+        var expr = null;
+        function comparator() {
+          return 0;
+        }
+        var reversed = ['B', 'a', 'c'];
+
+        expect(orderBy(items, expr, false, comparator)).toEqual(items);
+        expect(orderBy(items, expr, true, comparator)).toEqual(reversed);
       });
     });
 

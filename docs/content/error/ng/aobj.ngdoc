@@ -1,0 +1,7 @@
+@ngdoc error
+@name ng:aobj
+@fullName Invalid Argument
+@description
+
+The argument passed should be an object. Check the value that was passed to the function where
+this error was thrown.

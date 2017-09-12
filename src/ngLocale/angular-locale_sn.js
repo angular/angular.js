@@ -36,7 +36,7 @@ $provide.value("$locale", {
     ],
     "ERANAMES": [
       "Kristo asati auya",
-      "Kristo ashaya"
+      "mugore ramambo vedu"
     ],
     "ERAS": [
       "BC",
@@ -60,10 +60,10 @@ $provide.value("$locale", {
     "SHORTDAY": [
       "Svo",
       "Muv",
-      "Chip",
-      "Chit",
-      "Chin",
-      "Chis",
+      "Chp",
+      "Cht",
+      "Chn",
+      "Chs",
       "Mug"
     ],
     "SHORTMONTH": [
@@ -77,7 +77,7 @@ $provide.value("$locale", {
       "Nya",
       "Gun",
       "Gum",
-      "Mb",
+      "Mbu",
       "Zvi"
     ],
     "STANDALONEMONTH": [
@@ -98,14 +98,14 @@ $provide.value("$locale", {
       5,
       6
     ],
-    "fullDate": "EEEE, d MMMM y",
-    "longDate": "d MMMM y",
-    "medium": "d MMM y h:mm:ss a",
-    "mediumDate": "d MMM y",
-    "mediumTime": "h:mm:ss a",
-    "short": "dd/MM/y h:mm a",
-    "shortDate": "dd/MM/y",
-    "shortTime": "h:mm a"
+    "fullDate": "y MMMM d, EEEE",
+    "longDate": "y MMMM d",
+    "medium": "y MMM d HH:mm:ss",
+    "mediumDate": "y MMM d",
+    "mediumTime": "HH:mm:ss",
+    "short": "y-MM-dd HH:mm",
+    "shortDate": "y-MM-dd",
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "$",

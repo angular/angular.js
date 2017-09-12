@@ -7,34 +7,34 @@
 
 <div class="alert alert-warning">
 **Note:** AngularJS 1.3 has dropped support for IE8. Read more about it on
-[our blog](http://blog.angularjs.org/2013/12/angularjs-13-new-release-approaches.html).
+[our blog](https://blog.angularjs.org/2013/12/angularjs-13-new-release-approaches.html).
 AngularJS 1.2 will continue to support IE8, but the core team does not plan to spend time
 addressing issues specific to IE8 or earlier.
 </div>
 
 This document describes the Internet Explorer (IE) idiosyncrasies when dealing with custom HTML
-attributes and tags. Read this document if you are planning on deploying your Angular application
+attributes and tags. Read this document if you are planning on deploying your AngularJS application
 on IE.
 
 The project currently supports and will attempt to fix bugs for IE9 and above. The continuous
 integration server runs all the tests against IE9, IE10, and IE11. See
 [Travis CI](https://travis-ci.org/angular/angular.js) and
-[ci.angularjs.org](http://ci.angularjs.org).
+[ci.angularjs.org](https://ci.angularjs.org).
 
 We do not run tests on IE8 and below. A subset of the AngularJS functionality may work on these
 browsers, but it is up to you to test and decide whether it works for your particular app.
 
 
-To ensure your Angular application works on IE please consider:
+To ensure your AngularJS application works on IE please consider:
 
-1. Use `ng-style` tags instead of `style="{{ someCss }}"`. The latter works in Chrome and Firefox
-   but does not work in Internet Explorer <= 11 (the most recent version at time of writing).
+1. Use `ng-style` tags instead of `style="{{ someCss }}"`. The latter works in Chrome, Firefox,
+   Safari and Edge but does not work in Internet Explorer (even 11).
 2. For the `type` attribute of buttons, use `ng-attr-type` tags instead of
    `type="{{ someExpression }}"`. If using the latter, Internet Explorer overwrites the expression
-   with `type="submit"` before Angular has a chance to interpolate it.
+   with `type="submit"` before AngularJS has a chance to interpolate it.
 3. For the `value` attribute of progress, use `ng-attr-value` tags instead of
    `value="{{ someExpression}}"`. If using the latter, Internet Explorer overwrites the expression
-   with `value="0"` before Angular has a chance to interpolate it.
+   with `value="0"` before AngularJS has a chance to interpolate it.
 4. For the `placeholder` attribute of textarea, use `ng-attr-placeholder` tags instead
    of `placeholder="{{ someExpression }}"`. If using the latter, Internet Explorer will error
    on accessing the `nodeValue` on a parentless `TextNode` in Internet Explorer 10 & 11

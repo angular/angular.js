@@ -4,63 +4,63 @@ var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
-      "\u202eAM\u202c",
-      "\u202ePM\u202c"
+      "\u061c\u202eAM\u202c\u061c",
+      "\u061c\u202ePM\u202c\u061c"
     ],
     "DAY": [
-      "\u202eSunday\u202c",
-      "\u202eMonday\u202c",
-      "\u202eTuesday\u202c",
-      "\u202eWednesday\u202c",
-      "\u202eThursday\u202c",
-      "\u202eFriday\u202c",
-      "\u202eSaturday\u202c"
+      "\u061c\u202eSunday\u202c\u061c",
+      "\u061c\u202eMonday\u202c\u061c",
+      "\u061c\u202eTuesday\u202c\u061c",
+      "\u061c\u202eWednesday\u202c\u061c",
+      "\u061c\u202eThursday\u202c\u061c",
+      "\u061c\u202eFriday\u202c\u061c",
+      "\u061c\u202eSaturday\u202c\u061c"
     ],
     "ERANAMES": [
-      "\u202eBefore\u202c \u202eChrist\u202c",
-      "\u202eAnno\u202c \u202eDomini\u202c"
+      "\u061c\u202eBefore\u202c\u061c \u061c\u202eChrist\u202c\u061c",
+      "\u061c\u202eAnno\u202c\u061c \u061c\u202eDomini\u202c\u061c"
     ],
     "ERAS": [
-      "\u202eBC\u202c",
-      "\u202eAD\u202c"
+      "\u061c\u202eBC\u202c\u061c",
+      "\u061c\u202eAD\u202c\u061c"
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
-      "\u202eJanuary\u202c",
-      "\u202eFebruary\u202c",
-      "\u202eMarch\u202c",
-      "\u202eApril\u202c",
-      "\u202eMay\u202c",
-      "\u202eJune\u202c",
-      "\u202eJuly\u202c",
-      "\u202eAugust\u202c",
-      "\u202eSeptember\u202c",
-      "\u202eOctober\u202c",
-      "\u202eNovember\u202c",
-      "\u202eDecember\u202c"
+      "\u061c\u202eJanuary\u202c\u061c",
+      "\u061c\u202eFebruary\u202c\u061c",
+      "\u061c\u202eMarch\u202c\u061c",
+      "\u061c\u202eApril\u202c\u061c",
+      "\u061c\u202eMay\u202c\u061c",
+      "\u061c\u202eJune\u202c\u061c",
+      "\u061c\u202eJuly\u202c\u061c",
+      "\u061c\u202eAugust\u202c\u061c",
+      "\u061c\u202eSeptember\u202c\u061c",
+      "\u061c\u202eOctober\u202c\u061c",
+      "\u061c\u202eNovember\u202c\u061c",
+      "\u061c\u202eDecember\u202c\u061c"
     ],
     "SHORTDAY": [
-      "\u202eSun\u202c",
-      "\u202eMon\u202c",
-      "\u202eTue\u202c",
-      "\u202eWed\u202c",
-      "\u202eThu\u202c",
-      "\u202eFri\u202c",
-      "\u202eSat\u202c"
+      "\u061c\u202eSun\u202c\u061c",
+      "\u061c\u202eMon\u202c\u061c",
+      "\u061c\u202eTue\u202c\u061c",
+      "\u061c\u202eWed\u202c\u061c",
+      "\u061c\u202eThu\u202c\u061c",
+      "\u061c\u202eFri\u202c\u061c",
+      "\u061c\u202eSat\u202c\u061c"
     ],
     "SHORTMONTH": [
-      "\u202eJan\u202c",
-      "\u202eFeb\u202c",
-      "\u202eMar\u202c",
-      "\u202eApr\u202c",
-      "\u202eMay\u202c",
-      "\u202eJun\u202c",
-      "\u202eJul\u202c",
-      "\u202eAug\u202c",
-      "\u202eSep\u202c",
-      "\u202eOct\u202c",
-      "\u202eNov\u202c",
-      "\u202eDec\u202c"
+      "\u061c\u202eJan\u202c\u061c",
+      "\u061c\u202eFeb\u202c\u061c",
+      "\u061c\u202eMar\u202c\u061c",
+      "\u061c\u202eApr\u202c\u061c",
+      "\u061c\u202eMay\u202c\u061c",
+      "\u061c\u202eJun\u202c\u061c",
+      "\u061c\u202eJul\u202c\u061c",
+      "\u061c\u202eAug\u202c\u061c",
+      "\u061c\u202eSep\u202c\u061c",
+      "\u061c\u202eOct\u202c\u061c",
+      "\u061c\u202eNov\u202c\u061c",
+      "\u061c\u202eDec\u202c\u061c"
     ],
     "STANDALONEMONTH": [
       "\u064a\u0646\u0627\u064a\u0631",
@@ -91,8 +91,8 @@ $provide.value("$locale", {
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u00a3",
-    "DECIMAL_SEP": "\u066b",
-    "GROUP_SEP": "\u066c",
+    "DECIMAL_SEP": ".",
+    "GROUP_SEP": ",",
     "PATTERNS": [
       {
         "gSize": 3,

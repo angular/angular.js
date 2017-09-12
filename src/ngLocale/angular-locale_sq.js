@@ -17,12 +17,12 @@ $provide.value("$locale", {
       "e shtun\u00eb"
     ],
     "ERANAMES": [
-      "para er\u00ebs s\u00eb re",
-      "er\u00ebs s\u00eb re"
+      "para Krishtit",
+      "mbas Krishtit"
     ],
     "ERAS": [
-      "p.e.r.",
-      "e.r."
+      "p.K.",
+      "mb.K."
     ],
     "FIRSTDAYOFWEEK": 0,
     "MONTH": [
@@ -49,18 +49,18 @@ $provide.value("$locale", {
       "Sht"
     ],
     "SHORTMONTH": [
-      "Jan",
-      "Shk",
-      "Mar",
-      "Pri",
-      "Maj",
-      "Qer",
-      "Kor",
-      "Gsh",
-      "Sht",
-      "Tet",
-      "N\u00ebn",
-      "Dhj"
+      "jan",
+      "shk",
+      "mar",
+      "pri",
+      "maj",
+      "qer",
+      "kor",
+      "gsh",
+      "sht",
+      "tet",
+      "n\u00ebn",
+      "dhj"
     ],
     "STANDALONEMONTH": [
       "Janar",

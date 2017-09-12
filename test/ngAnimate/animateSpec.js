@@ -168,7 +168,7 @@ describe('animations', function() {
       inject(function($animate, $rootScope) {
         $animate.enter(element, parent);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         expect(element[0].parentNode).toEqual(parent[0]);
 
         hidden = false;
@@ -188,7 +188,7 @@ describe('animations', function() {
 
         $animate.enter(element, parent);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         element.addClass('only-allow-this-animation');
 
@@ -208,7 +208,7 @@ describe('animations', function() {
 
         $animate.enter(svgElement, parent);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         svgElement.attr('class', 'element only-allow-this-animation-svg');
 
@@ -255,29 +255,41 @@ describe('animations', function() {
       });
     });
 
-    it('should throw a minErr if a regex value is used which partially contains or fully matches the `ng-animate` CSS class', function() {
+    it('should throw a minErr if a regex value is used which partially contains or fully matches the `ng-animate` CSS class',
       module(function($animateProvider) {
-        assertError(/ng-animate/, true);
-        assertError(/first ng-animate last/, true);
-        assertError(/ng-animate-special/, false);
-        assertError(/first ng-animate-special last/, false);
-        assertError(/first ng-animate ng-animate-special last/, true);
+        expect(setFilter(/ng-animate/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/first ng-animate last/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/first ng-animate ng-animate-special last/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/(ng-animate)/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/(foo|ng-animate|bar)/)).toThrowMinErr('$animate', 'nongcls');
+        expect(setFilter(/(foo|)ng-animate(|bar)/)).toThrowMinErr('$animate', 'nongcls');
 
-        function assertError(regex, bool) {
-          var expectation = expect(function() {
+        expect(setFilter(/ng-animater/)).not.toThrow();
+        expect(setFilter(/my-ng-animate/)).not.toThrow();
+        expect(setFilter(/first ng-animater last/)).not.toThrow();
+        expect(setFilter(/first my-ng-animate last/)).not.toThrow();
+
+        function setFilter(regex) {
+          return function() {
             $animateProvider.classNameFilter(regex);
-          });
-
-          var message = '$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "ng-animate" CSS class.';
-
-          if (bool) {
-            expectation.toThrowMinErr('$animate', 'nongcls', message);
-          } else {
-            expectation.not.toThrowMinErr('$animate', 'nongcls', message);
-          }
+          };
         }
-      });
-    });
+      })
+    );
+
+    it('should clear the `classNameFilter` if a disallowed RegExp is passed',
+      module(function($animateProvider) {
+        var validRegex = /no-ng-animate/;
+        var invalidRegex = /no ng-animate/;
+
+        $animateProvider.classNameFilter(validRegex);
+        expect($animateProvider.classNameFilter()).toEqual(validRegex);
+
+        // eslint-disable-next-line no-empty
+        try { $animateProvider.classNameFilter(invalidRegex); } catch (err) {}
+        expect($animateProvider.classNameFilter()).toBeNull();
+      })
+    );
 
     it('should complete the leave DOM operation in case the classNameFilter fails', function() {
       module(function($animateProvider) {
@@ -290,8 +302,186 @@ describe('animations', function() {
         $animate.leave(element);
         $rootScope.$digest();
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         expect(element[0].parentNode).toBeFalsy();
+      });
+    });
+
+    it('should not try to match the `classNameFilter` RegExp if animations are globally disabled',
+      function() {
+        var regex = /foo/;
+        var regexTestSpy = spyOn(regex, 'test').and.callThrough();
+
+        module(function($animateProvider) {
+          $animateProvider.classNameFilter(regex);
+        });
+
+        inject(function($animate) {
+          $animate.addClass(element, 'foo');
+          expect(regexTestSpy).toHaveBeenCalled();
+
+          regexTestSpy.calls.reset();
+          $animate.enabled(false);
+          $animate.addClass(element, 'bar');
+          expect(regexTestSpy).not.toHaveBeenCalled();
+
+          regexTestSpy.calls.reset();
+          $animate.enabled(true);
+          $animate.addClass(element, 'baz');
+          expect(regexTestSpy).toHaveBeenCalled();
+        });
+      }
+    );
+
+    describe('customFilter()', function() {
+      it('should be `null` by default', module(function($animateProvider) {
+        expect($animateProvider.customFilter()).toBeNull();
+      }));
+
+      it('should clear the `customFilter` if no function is passed',
+        module(function($animateProvider) {
+          $animateProvider.customFilter(angular.noop);
+          expect($animateProvider.customFilter()).toEqual(jasmine.any(Function));
+
+          $animateProvider.customFilter(null);
+          expect($animateProvider.customFilter()).toBeNull();
+
+          $animateProvider.customFilter(angular.noop);
+          expect($animateProvider.customFilter()).toEqual(jasmine.any(Function));
+
+          $animateProvider.customFilter({});
+          expect($animateProvider.customFilter()).toBeNull();
+        })
+      );
+
+      it('should only perform animations for which the function returns a truthy value',
+        function() {
+          var animationsAllowed = false;
+
+          module(function($animateProvider) {
+            $animateProvider.customFilter(function() { return animationsAllowed; });
+          });
+
+          inject(function($animate, $rootScope) {
+            $animate.enter(element, parent);
+            $rootScope.$digest();
+            expect(capturedAnimation).toBeNull();
+
+            $animate.leave(element, parent);
+            $rootScope.$digest();
+            expect(capturedAnimation).toBeNull();
+
+            animationsAllowed = true;
+
+            $animate.enter(element, parent);
+            $rootScope.$digest();
+            expect(capturedAnimation).not.toBeNull();
+
+            capturedAnimation = null;
+
+            $animate.leave(element, parent);
+            $rootScope.$digest();
+            expect(capturedAnimation).not.toBeNull();
+          });
+        }
+      );
+
+      it('should only perform animations for which the function returns a truthy value (SVG)',
+        function() {
+          var animationsAllowed = false;
+
+          module(function($animateProvider) {
+            $animateProvider.customFilter(function() { return animationsAllowed; });
+          });
+
+          inject(function($animate, $compile, $rootScope) {
+            var svgElement = $compile('<svg class="element"></svg>')($rootScope);
+
+            $animate.enter(svgElement, parent);
+            $rootScope.$digest();
+            expect(capturedAnimation).toBeNull();
+
+            $animate.leave(svgElement, parent);
+            $rootScope.$digest();
+            expect(capturedAnimation).toBeNull();
+
+            animationsAllowed = true;
+
+            $animate.enter(svgElement, parent);
+            $rootScope.$digest();
+            expect(capturedAnimation).not.toBeNull();
+
+            capturedAnimation = null;
+
+            $animate.leave(svgElement, parent);
+            $rootScope.$digest();
+            expect(capturedAnimation).not.toBeNull();
+          });
+        }
+      );
+
+      it('should pass the DOM element, event name and options to the filter function', function() {
+        var filterFn = jasmine.createSpy('filterFn');
+        var options = {};
+
+        module(function($animateProvider) {
+          $animateProvider.customFilter(filterFn);
+        });
+
+        inject(function($animate, $rootScope) {
+          $animate.enter(element, parent, null, options);
+          expect(filterFn).toHaveBeenCalledOnceWith(element[0], 'enter', options);
+
+          filterFn.calls.reset();
+
+          $animate.leave(element);
+          expect(filterFn).toHaveBeenCalledOnceWith(element[0], 'leave', jasmine.any(Object));
+        });
+      });
+
+      it('should complete the DOM operation even if filtered out', function() {
+        module(function($animateProvider) {
+          $animateProvider.customFilter(function() { return false; });
+        });
+
+        inject(function($animate, $rootScope) {
+          expect(element.parent()[0]).toBeUndefined();
+
+          $animate.enter(element, parent);
+          $rootScope.$digest();
+
+          expect(capturedAnimation).toBeNull();
+          expect(element.parent()[0]).toBe(parent[0]);
+
+          $animate.leave(element);
+          $rootScope.$digest();
+
+          expect(capturedAnimation).toBeNull();
+          expect(element.parent()[0]).toBeUndefined();
+        });
+      });
+
+      it('should not execute the function if animations are globally disabled', function() {
+        var customFilterSpy = jasmine.createSpy('customFilterFn');
+
+        module(function($animateProvider) {
+          $animateProvider.customFilter(customFilterSpy);
+        });
+
+        inject(function($animate) {
+          $animate.addClass(element, 'foo');
+          expect(customFilterSpy).toHaveBeenCalled();
+
+          customFilterSpy.calls.reset();
+          $animate.enabled(false);
+          $animate.addClass(element, 'bar');
+          expect(customFilterSpy).not.toHaveBeenCalled();
+
+          customFilterSpy.calls.reset();
+          $animate.enabled(true);
+          $animate.addClass(element, 'baz');
+          expect(customFilterSpy).toHaveBeenCalled();
+        });
       });
     });
 
@@ -314,9 +504,9 @@ describe('animations', function() {
 
         $animate.enter(element, parent);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should disable all animations on the given element',
@@ -328,15 +518,15 @@ describe('animations', function() {
         expect($animate.enabled(element)).toBeFalsy();
 
         $animate.addClass(element, 'red');
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.enabled(element, true);
         expect($animate.enabled(element)).toBeTruthy();
 
         $animate.addClass(element, 'blue');
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
         expect(capturedAnimation).toBeTruthy();
       }));
@@ -347,14 +537,14 @@ describe('animations', function() {
         $animate.enabled(parent, false);
 
         $animate.enter(element, parent);
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.enabled(parent, true);
 
         $animate.enter(element, parent);
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
         expect(capturedAnimation).toBeTruthy();
       }));
@@ -370,11 +560,11 @@ describe('animations', function() {
 
         $animate.addClass(element, 'red');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.addClass(child, 'red');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.enabled(element, true);
 
@@ -402,7 +592,7 @@ describe('animations', function() {
       $rootScope.items = [1,2,3,4,5];
       $rootScope.$digest();
 
-      expect(capturedAnimation).toBeFalsy();
+      expect(capturedAnimation).toBeNull();
     }));
 
     it('should not attempt to perform an animation on a text node element',
@@ -414,7 +604,7 @@ describe('animations', function() {
       $animate.addClass(textNode, 'some-class');
       $rootScope.$digest();
 
-      expect(capturedAnimation).toBeFalsy();
+      expect(capturedAnimation).toBeNull();
     }));
 
     it('should not attempt to perform an animation on an empty jqLite collection',
@@ -426,7 +616,7 @@ describe('animations', function() {
         $animate.addClass(emptyNode, 'some-class');
         $rootScope.$digest();
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       })
     );
 
@@ -439,7 +629,7 @@ describe('animations', function() {
 
       $animate.leave(textNode);
       $rootScope.$digest();
-      expect(capturedAnimation).toBeFalsy();
+      expect(capturedAnimation).toBeNull();
       expect(textNode[0].parentNode).not.toBe(parentNode);
     }));
 
@@ -455,9 +645,31 @@ describe('animations', function() {
 
       $animate.leave(commentNode);
       $rootScope.$digest();
-      expect(capturedAnimation).toBeFalsy();
+      expect(capturedAnimation).toBeNull();
       expect(commentNode[0].parentNode).not.toBe(parentNode);
     }));
+
+    it('enter() should animate a transcluded clone with `templateUrl`', function() {
+      module(function($compileProvider) {
+        $compileProvider.directive('foo', function() {
+          return {templateUrl: 'foo.html'};
+        });
+      });
+
+      inject(function($animate, $compile, $rootScope, $templateCache) {
+        parent.append(jqLite('<foo ng-if="showFoo"></foo>'));
+        $templateCache.put('foo.html', '<div>FOO</div>');
+        $compile(parent)($rootScope);
+
+        expect(capturedAnimation).toBeNull();
+
+        $rootScope.$apply('showFoo = true');
+
+        expect(parent.text()).toBe('parentFOO');
+        expect(capturedAnimation[0].html()).toBe('<div>FOO</div>');
+        expect(capturedAnimation[1]).toBe('enter');
+      });
+    });
 
     it('enter() should issue an enter animation and fire the DOM operation right away before the animation kicks off', inject(function($animate, $rootScope) {
       expect(parent.children().length).toBe(0);
@@ -667,13 +879,13 @@ describe('animations', function() {
 
         $animate.removeClass(element, 'something-to-remove');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         element.addClass('something-to-add');
 
         $animate.addClass(element, 'something-to-add');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
     });
 
@@ -689,7 +901,7 @@ describe('animations', function() {
           parent.append(element);
           $animate.animate(element, null, toStyle);
           $rootScope.$digest();
-          expect(capturedAnimation).toBeFalsy();
+          expect(capturedAnimation).toBeNull();
         });
       });
 
@@ -700,7 +912,7 @@ describe('animations', function() {
         parent.append(element);
         $animate.animate(element, fromStyle);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should perform an animation if only from styles are provided as well as any valid classes',
@@ -712,7 +924,7 @@ describe('animations', function() {
         var options = { removeClass: 'goop' };
         $animate.animate(element, fromStyle, null, null, options);
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         fromStyle = { color: 'blue' };
         options = { addClass: 'goop' };
@@ -816,11 +1028,11 @@ describe('animations', function() {
 
         var elm1 = $compile('<div class="animated"></div>')($rootScope);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $animate.addClass(elm1, 'klass2');
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should skip animations if the element is attached to the $rootElement, but not apart of the body',
@@ -834,22 +1046,22 @@ describe('animations', function() {
         newParent.append($rootElement);
         $rootElement.append(elm1);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $animate.addClass(elm1, 'klass2');
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should skip the animation if the element is removed from the DOM before the post digest kicks in',
         inject(function($animate, $rootScope) {
 
         $animate.enter(element, parent);
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         element.remove();
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should be blocked when there is an ongoing structural parent animation occurring',
@@ -857,7 +1069,7 @@ describe('animations', function() {
 
         parent.append(element);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $animate.move(parent, parent2);
         $rootScope.$digest();
 
@@ -867,7 +1079,7 @@ describe('animations', function() {
 
         $animate.addClass(element, 'blue');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('should disable all child animations for atleast one turn when a structural animation is issued',
@@ -917,7 +1129,7 @@ describe('animations', function() {
 
         parent.append(element);
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $animate.addClass(parent, 'rogers');
         $rootScope.$digest();
 
@@ -940,7 +1152,7 @@ describe('animations', function() {
           $animate.addClass(element, 'rumlow');
           $animate.move(parent, null, parent2);
 
-          expect(capturedAnimation).toBeFalsy();
+          expect(capturedAnimation).toBeNull();
           expect(capturedAnimationHistory.length).toBe(0);
           $rootScope.$digest();
 
@@ -1193,12 +1405,12 @@ describe('animations', function() {
         inject(function($animate, $rootScope) {
 
         $animate.enter(element, parent);
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.addClass(element, 'red');
         expect(element).not.toHaveClass('red');
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
         $rootScope.$digest();
 
         expect(capturedAnimation[1]).toBe('enter');
@@ -1227,7 +1439,7 @@ describe('animations', function() {
         $animate.removeClass(element, 'red');
         $rootScope.$digest();
 
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.addClass(element, 'blue');
         $rootScope.$digest();
@@ -1344,7 +1556,7 @@ describe('animations', function() {
         $animate.removeClass(element, 'four');
 
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
       }));
 
       it('but not skip the animation if it is a structural animation and if there are no classes to be animated',
@@ -1385,7 +1597,7 @@ describe('animations', function() {
         expect(capturedAnimation[1]).toBe('leave');
 
         // $$hashKey causes comparison issues
-        expect(element.parent()[0]).toEqual(parent[0]);
+        expect(element.parent()[0]).toBe(parent[0]);
 
         options = capturedAnimation[2];
         expect(options.addClass).toEqual('pink');
@@ -1632,7 +1844,7 @@ describe('animations', function() {
 
         $animate.addClass(animateElement, 'red');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         // Pin the element to the app root to enable animations
         $animate.pin(pinElement, $rootElement);
@@ -1676,13 +1888,13 @@ describe('animations', function() {
 
         $animate.addClass(animateElement, 'red');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.pin(pinElement, pinTargetElement);
 
         $animate.addClass(animateElement, 'blue');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         dealoc(pinElement);
       });
@@ -1720,7 +1932,7 @@ describe('animations', function() {
 
         $animate.addClass(animateElement, 'blue');
         $rootScope.$digest();
-        expect(capturedAnimation).toBeFalsy();
+        expect(capturedAnimation).toBeNull();
 
         $animate.enabled(pinHostElement, true);
 
@@ -2174,7 +2386,7 @@ describe('animations', function() {
       }
     }));
 
-    it('should use RAF if there are detected callbacks within the hierachy of the element being animated',
+    it('should use RAF if there are detected callbacks within the hierarchy of the element being animated',
       inject(function($animate, $rootScope, $rootElement, $$rAF) {
 
       var runner;
@@ -2437,7 +2649,6 @@ describe('animations', function() {
 
         return function($rootElement, $q, $animate, $$AnimateRunner, $document) {
           defaultFakeAnimationRunner = new $$AnimateRunner();
-          $animate.enabled(true);
 
           element = jqLite('<div class="element">element</div>');
           parent = jqLite('<div class="parent1">parent</div>');
@@ -2445,7 +2656,6 @@ describe('animations', function() {
 
           $rootElement.append(parent);
           $rootElement.append(parent2);
-          jqLite($document[0].body).append($rootElement);
         };
       }));
 

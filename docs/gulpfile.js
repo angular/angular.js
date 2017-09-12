@@ -1,10 +1,8 @@
 'use strict';
 
 var gulp = require('gulp');
-var log = require('gulp-util').log;
 var concat = require('gulp-concat');
 var eslint = require('gulp-eslint');
-var bower = require('bower');
 var Dgeni = require('dgeni');
 var merge = require('event-stream').merge;
 var path = require('canonical-path');
@@ -18,7 +16,6 @@ var rename = require('gulp-rename');
 // See clean and bower for async tasks, and see assets and doc-gen for dependent tasks below
 
 var outputFolder = '../build/docs';
-var bowerFolder = 'bower_components';
 
 var src = 'app/src/**/*.js';
 var ignoredFiles = '!src/angular.bind.js';
@@ -55,27 +52,16 @@ var getMergedEslintConfig = function(filepath) {
   };
 };
 
-var copyComponent = function(component, pattern, sourceFolder, packageFile) {
+var copyComponent = function(component, pattern, base, sourceFolder, packageFile) {
   pattern = pattern || '/**/*';
-  sourceFolder = sourceFolder || bowerFolder;
-  packageFile = packageFile || 'bower.json';
+  base = base || '';
+  sourceFolder = sourceFolder || '../node_modules';
+  packageFile = packageFile || 'package.json';
   var version = require(path.resolve(sourceFolder, component, packageFile)).version;
   return gulp
-    .src(sourceFolder + '/' + component + pattern)
+    .src(sourceFolder + '/' + component + pattern, {base: sourceFolder + '/' + component + '/' + base})
     .pipe(gulp.dest(outputFolder + '/components/' + component + '-' + version));
 };
-
-
-gulp.task('bower', function() {
-  var bowerTask = bower.commands.install();
-  bowerTask.on('log', function(result) {
-    log('bower:', result.id, result.data.endpoint.name);
-  });
-  bowerTask.on('error', function(error) {
-    log(error);
-  });
-  return bowerTask;
-});
 
 
 gulp.task('build-app', function() {
@@ -94,7 +80,7 @@ gulp.task('build-app', function() {
 });
 
 
-gulp.task('assets', ['bower'], function() {
+gulp.task('assets', function() {
   var JS_EXT = /\.js$/;
   return merge(
     gulp.src(['img/**/*']).pipe(gulp.dest(outputFolder + '/img')),
@@ -111,17 +97,19 @@ gulp.task('assets', ['bower'], function() {
             .pipe(gulp.dest(outputFolder));
         }
       })),
-    copyComponent('bootstrap', '/dist/**/*'),
-    copyComponent('open-sans-fontface'),
-    copyComponent('lunr.js', '/*.js'),
-    copyComponent('google-code-prettify'),
-    copyComponent('jquery', '/dist/*.js'),
-    copyComponent('marked', '/**/*.js', '../node_modules', 'package.json')
+    copyComponent('bootstrap', '/dist/css/bootstrap?(.min).css', 'dist'),
+    copyComponent('bootstrap', '/dist/fonts/*', 'dist'),
+    copyComponent('open-sans-fontface', '/fonts/{Regular,Semibold,Bold}/*'),
+    copyComponent('lunr', '/lunr?(.min).js'),
+    copyComponent('google-code-prettify', '/**/{lang-css,prettify}.js'),
+    copyComponent('jquery', '/dist/jquery.js', 'dist'),
+    copyComponent('marked', '/lib/marked.js'),
+    copyComponent('marked', '/marked.min.js')
   );
 });
 
 
-gulp.task('doc-gen', ['bower'], function() {
+gulp.task('doc-gen', function() {
   var dgeni = new Dgeni([require('./config')]);
   return dgeni.generate().catch(function() {
     process.exit(1);

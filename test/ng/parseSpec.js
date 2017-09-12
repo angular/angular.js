@@ -591,7 +591,7 @@ describe('parser', function() {
     });
 
 
-    it('should not confuse `this`, `$locals`, `undefined`, `true`, `false`, `null` when used as identfiers', function() {
+    it('should not confuse `this`, `$locals`, `undefined`, `true`, `false`, `null` when used as identifiers', function() {
       forEach(['this', '$locals', 'undefined', 'true', 'false', 'null'], function(identifier) {
         expect(createAst('foo.' + identifier)).toEqual(
           {
@@ -701,7 +701,7 @@ describe('parser', function() {
     });
 
 
-    it('should associate binary operators with the same precendence left-to-right', function() {
+    it('should associate binary operators with the same precedence left-to-right', function() {
       var operatorsByPrecedence = [['*', '/', '%'], ['+', '-'], ['<', '>', '<=', '>='], ['==','!=','===','!==']];
       forEach(operatorsByPrecedence, function(operators) {
         forEach(operators, function(op1) {
@@ -733,7 +733,7 @@ describe('parser', function() {
     });
 
 
-    it('should give higher prcedence to member calls than to unary expressions', function() {
+    it('should give higher precedence to member calls than to unary expressions', function() {
       forEach(['!', '+', '-'], function(operator) {
         expect(createAst(operator + 'foo()')).toEqual(
           {
@@ -1867,6 +1867,8 @@ describe('parser', function() {
         expect(scope.$eval('+\'1\'')).toEqual(+'1');
         expect(scope.$eval('-\'1\'')).toEqual(-'1');
         expect(scope.$eval('+undefined')).toEqual(0);
+
+        // Note: don't change toEqual to toBe as toBe collapses 0 & -0.
         expect(scope.$eval('-undefined')).toEqual(-0);
         expect(scope.$eval('+null')).toEqual(+null);
         expect(scope.$eval('-null')).toEqual(-null);
@@ -2129,6 +2131,20 @@ describe('parser', function() {
         expect(scope.b).toEqual(234);
       });
 
+      it('should throw with invalid left-val in assignments', function() {
+        expect(function() { scope.$eval('1 = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('{} = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('[] = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('true = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('(a=b) = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('(1<2) = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('(1+2) = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('!v = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('this = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('+v = 1'); }).toThrowMinErr('$parse', 'lval');
+        expect(function() { scope.$eval('(1?v1:v2) = 1'); }).toThrowMinErr('$parse', 'lval');
+      });
+
       it('should evaluate assignments in ternary operator', function() {
         scope.$eval('a = 1 ? 2 : 3');
         expect(scope.a).toBe(2);
@@ -2166,8 +2182,9 @@ describe('parser', function() {
         expect(scope.$eval('getter()()')).toBe(33);
       });
 
+      // Support: IE 9 only
       // There is no "strict mode" in IE9
-      if (!msie || msie > 9) {
+      if (msie !== 9) {
         it('should set no context to functions returned by other functions', function() {
           scope.getter = function() { return function() { expect(this).toBeUndefined(); }; };
           scope.$eval('getter()()');
@@ -2620,25 +2637,6 @@ describe('parser', function() {
           expect(log).toEqual('');
         }));
 
-        it('should work with expensive checks', inject(function($parse, $rootScope, log) {
-          var fn = $parse('::foo', null, true);
-          $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
-
-          $rootScope.$digest();
-          expect($rootScope.$$watchers.length).toBe(1);
-
-          $rootScope.foo = 'bar';
-          $rootScope.$digest();
-          expect($rootScope.$$watchers.length).toBe(0);
-          expect(log).toEqual('bar');
-          log.reset();
-
-          $rootScope.foo = 'man';
-          $rootScope.$digest();
-          expect($rootScope.$$watchers.length).toBe(0);
-          expect(log).toEqual('');
-        }));
-
         it('should have a stable value if at the end of a $digest it has a defined value', inject(function($parse, $rootScope, log) {
           var fn = $parse('::foo');
           $rootScope.$watch(fn, function(value, old) { if (value !== old) log(value); });
@@ -2690,82 +2688,86 @@ describe('parser', function() {
             expect($parse('::    ').literal).toBe(true);
           }));
 
-          it('should only become stable when all the properties of an object have defined values', inject(function($parse, $rootScope, log) {
-            var fn = $parse('::{foo: foo, bar: bar}');
-            $rootScope.$watch(fn, function(value) { log(value); }, true);
+          [true, false].forEach(function(isDeep) {
+            describe(isDeep ? 'deepWatch' : 'watch', function() {
+              it('should only become stable when all the properties of an object have defined values', inject(function($parse, $rootScope, log) {
+                var fn = $parse('::{foo: foo, bar: bar}');
+                $rootScope.$watch(fn, function(value) { log(value); }, isDeep);
 
-            expect(log.empty()).toEqual([]);
-            expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([]);
+                expect($rootScope.$$watchers.length).toBe(1);
 
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([{foo: undefined, bar: undefined}]);
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([{foo: undefined, bar: undefined}]);
 
-            $rootScope.foo = 'foo';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([{foo: 'foo', bar: undefined}]);
+                $rootScope.foo = 'foo';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([{foo: 'foo', bar: undefined}]);
 
-            $rootScope.foo = 'foobar';
-            $rootScope.bar = 'bar';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(0);
-            expect(log.empty()).toEqual([{foo: 'foobar', bar: 'bar'}]);
+                $rootScope.foo = 'foobar';
+                $rootScope.bar = 'bar';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(0);
+                expect(log.empty()).toEqual([{foo: 'foobar', bar: 'bar'}]);
 
-            $rootScope.foo = 'baz';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(0);
-            expect(log.empty()).toEqual([]);
-          }));
+                $rootScope.foo = 'baz';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(0);
+                expect(log.empty()).toEqual([]);
+              }));
 
-          it('should only become stable when all the elements of an array have defined values', inject(function($parse, $rootScope, log) {
-            var fn = $parse('::[foo,bar]');
-            $rootScope.$watch(fn, function(value) { log(value); }, true);
+              it('should only become stable when all the elements of an array have defined values', inject(function($parse, $rootScope, log) {
+                var fn = $parse('::[foo,bar]');
+                $rootScope.$watch(fn, function(value) { log(value); }, isDeep);
 
-            expect(log.empty()).toEqual([]);
-            expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([]);
+                expect($rootScope.$$watchers.length).toBe(1);
 
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([[undefined, undefined]]);
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([[undefined, undefined]]);
 
-            $rootScope.foo = 'foo';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([['foo', undefined]]);
+                $rootScope.foo = 'foo';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([['foo', undefined]]);
 
-            $rootScope.foo = 'foobar';
-            $rootScope.bar = 'bar';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(0);
-            expect(log.empty()).toEqual([['foobar', 'bar']]);
+                $rootScope.foo = 'foobar';
+                $rootScope.bar = 'bar';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(0);
+                expect(log.empty()).toEqual([['foobar', 'bar']]);
 
-            $rootScope.foo = 'baz';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(0);
-            expect(log.empty()).toEqual([]);
-          }));
+                $rootScope.foo = 'baz';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(0);
+                expect(log.empty()).toEqual([]);
+              }));
 
-          it('should only become stable when all the elements of an array have defined values at the end of a $digest', inject(function($parse, $rootScope, log) {
-            var fn = $parse('::[foo]');
-            $rootScope.$watch(fn, function(value) { log(value); }, true);
-            $rootScope.$watch('foo', function() { if ($rootScope.foo === 'bar') {$rootScope.foo = undefined; } });
+              it('should only become stable when all the elements of an array have defined values at the end of a $digest', inject(function($parse, $rootScope, log) {
+                var fn = $parse('::[foo]');
+                $rootScope.$watch(fn, function(value) { log(value); }, isDeep);
+                $rootScope.$watch('foo', function() { if ($rootScope.foo === 'bar') {$rootScope.foo = undefined; } });
 
-            $rootScope.foo = 'bar';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(2);
-            expect(log.empty()).toEqual([['bar'], [undefined]]);
+                $rootScope.foo = 'bar';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(2);
+                expect(log.empty()).toEqual([['bar'], [undefined]]);
 
-            $rootScope.foo = 'baz';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log.empty()).toEqual([['baz']]);
+                $rootScope.foo = 'baz';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log.empty()).toEqual([['baz']]);
 
-            $rootScope.bar = 'qux';
-            $rootScope.$digest();
-            expect($rootScope.$$watchers.length).toBe(1);
-            expect(log).toEqual([]);
-          }));
+                $rootScope.bar = 'qux';
+                $rootScope.$digest();
+                expect($rootScope.$$watchers.length).toBe(1);
+                expect(log).toEqual([]);
+              }));
+            });
+          });
         });
       });
 
@@ -2815,232 +2817,943 @@ describe('parser', function() {
           expect(bCalled).toBe(true);
         });
 
-        it('should not invoke filters unless the input/arguments change', function() {
-          var filterCalled = false;
-          $filterProvider.register('foo', valueFn(function(input) {
-            filterCalled = true;
-            return input;
+        describe('filters', function() {
+
+          it('should not be invoked unless the input/arguments change', function() {
+            var filterCalled = false;
+            $filterProvider.register('foo', valueFn(function(input) {
+              filterCalled = true;
+              return input;
+            }));
+
+            scope.$watch('a | foo:b:1');
+            scope.a = 0;
+            scope.$digest();
+            expect(filterCalled).toBe(true);
+
+            filterCalled = false;
+            scope.$digest();
+            expect(filterCalled).toBe(false);
+
+            scope.a++;
+            scope.$digest();
+            expect(filterCalled).toBe(true);
+          });
+
+          it('should always be invoked if they are marked as having $stateful', function() {
+            var filterCalled = false;
+            $filterProvider.register('foo', valueFn(extend(function(input) {
+              filterCalled = true;
+              return input;
+            }, {$stateful: true})));
+
+            scope.$watch('a | foo:b:1');
+            scope.a = 0;
+            scope.$digest();
+            expect(filterCalled).toBe(true);
+
+            filterCalled = false;
+            scope.$digest();
+            expect(filterCalled).toBe(true);
+          });
+
+          it('should be treated as constant when input are constant', inject(function($parse) {
+            var filterCalls = 0;
+            $filterProvider.register('foo', valueFn(function(input) {
+              filterCalls++;
+              return input;
+            }));
+
+            var parsed = $parse('{x: 1} | foo:1');
+
+            expect(parsed.constant).toBe(true);
+
+            var watcherCalls = 0;
+            scope.$watch(parsed, function(input) {
+              expect(input).toEqual({x:1});
+              watcherCalls++;
+            });
+
+            scope.$digest();
+            expect(filterCalls).toBe(1);
+            expect(watcherCalls).toBe(1);
+
+            scope.$digest();
+            expect(filterCalls).toBe(1);
+            expect(watcherCalls).toBe(1);
           }));
 
-          scope.$watch('a | foo:b:1');
-          scope.a = 0;
-          scope.$digest();
-          expect(filterCalled).toBe(true);
+          describe('with non-primitive input', function() {
 
-          filterCalled = false;
-          scope.$digest();
-          expect(filterCalled).toBe(false);
+            describe('that does NOT support valueOf()', function() {
 
-          scope.a++;
-          scope.$digest();
-          expect(filterCalled).toBe(true);
+              it('should always be reevaluated', inject(function($parse) {
+                var filterCalls = 0;
+                $filterProvider.register('foo', valueFn(function(input) {
+                  filterCalls++;
+                  return input;
+                }));
+
+                var parsed = $parse('obj | foo');
+                var obj = scope.obj = {};
+
+                var watcherCalls = 0;
+                scope.$watch(parsed, function(input) {
+                  expect(input).toBe(obj);
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(filterCalls).toBe(2);
+                expect(watcherCalls).toBe(1);
+
+                scope.$digest();
+                expect(filterCalls).toBe(3);
+                expect(watcherCalls).toBe(1);
+              }));
+
+              it('should always be reevaluated in literals', inject(function($parse) {
+                $filterProvider.register('foo', valueFn(function(input) {
+                  return input.b > 0;
+                }));
+
+                scope.$watch('[(a | foo)]', function() {});
+
+                // Would be great if filter-output was checked for changes and this didn't throw...
+                expect(function() { scope.$apply('a = {b: 1}'); }).toThrowMinErr('$rootScope', 'infdig');
+              }));
+
+              it('should always be reevaluated when passed literals', inject(function($parse) {
+                scope.$watch('[a] | filter', function() {});
+
+                scope.$apply('a = 1');
+
+                // Would be great if filter-output was checked for changes and this didn't throw...
+                expect(function() { scope.$apply('a = {}'); }).toThrowMinErr('$rootScope', 'infdig');
+              }));
+            });
+
+            describe('that does support valueOf()', function() {
+
+              it('should not be reevaluated',
+                  inject(function($parse) {
+                var filterCalls = 0;
+                $filterProvider.register('foo', valueFn(function(input) {
+                  filterCalls++;
+                  expect(input instanceof Date).toBe(true);
+                  return input;
+                }));
+
+                var parsed = $parse('date | foo:a');
+                var date = scope.date = new Date();
+
+                var watcherCalls = 0;
+                scope.$watch(parsed, function(input) {
+                  expect(input).toBe(date);
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(filterCalls).toBe(1);
+                expect(watcherCalls).toBe(1);
+
+                scope.$digest();
+                expect(filterCalls).toBe(1);
+                expect(watcherCalls).toBe(1);
+              }));
+
+              it('should not be reevaluated in literals', inject(function($parse) {
+                var filterCalls = 0;
+                $filterProvider.register('foo', valueFn(function(input) {
+                  filterCalls++;
+                  return input;
+                }));
+
+                scope.date = new Date(1234567890123);
+
+                var watcherCalls = 0;
+                scope.$watch('[(date | foo)]', function(input) {
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(filterCalls).toBe(1);
+                expect(watcherCalls).toBe(1);
+
+                scope.$digest();
+                expect(filterCalls).toBe(1);
+                expect(watcherCalls).toBe(1);
+              }));
+
+              it('should be reevaluated when valueOf() changes', inject(function($parse) {
+                var filterCalls = 0;
+                $filterProvider.register('foo', valueFn(function(input) {
+                  filterCalls++;
+                  expect(input instanceof Date).toBe(true);
+                  return input;
+                }));
+
+                var parsed = $parse('date | foo:a');
+                var date = scope.date = new Date();
+
+                var watcherCalls = 0;
+                scope.$watch(parsed, function(input) {
+                  expect(input).toBe(date);
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(filterCalls).toBe(1);
+                expect(watcherCalls).toBe(1);
+
+                date.setYear(1901);
+
+                scope.$digest();
+                expect(filterCalls).toBe(2);
+                expect(watcherCalls).toBe(1);
+              }));
+
+              it('should be reevaluated in literals when valueOf() changes', inject(function($parse) {
+                var filterCalls = 0;
+                $filterProvider.register('foo', valueFn(function(input) {
+                  filterCalls++;
+                  return input;
+                }));
+
+                scope.date = new Date(1234567890123);
+
+                var watcherCalls = 0;
+                scope.$watch('[(date | foo)]', function(input) {
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(filterCalls).toBe(1);
+                expect(watcherCalls).toBe(1);
+
+                scope.date.setTime(1234567890);
+
+                scope.$digest();
+                expect(filterCalls).toBe(2);
+                expect(watcherCalls).toBe(2);
+              }));
+
+              it('should not be reevaluated when the instance changes but valueOf() does not', inject(function($parse) {
+                var filterCalls = 0;
+                $filterProvider.register('foo', valueFn(function(input) {
+                  filterCalls++;
+                  return input;
+                }));
+
+                scope.date = new Date(1234567890123);
+
+                var watcherCalls = 0;
+                scope.$watch($parse('[(date | foo)]'), function(input) {
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+                expect(filterCalls).toBe(1);
+
+                scope.date = new Date(1234567890123);
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+                expect(filterCalls).toBe(1);
+              }));
+            });
+
+            it('should not be reevaluated when input is simplified via unary operators', inject(function($parse) {
+              var filterCalls = 0;
+              $filterProvider.register('foo', valueFn(function(input) {
+                filterCalls++;
+                return input;
+              }));
+
+              scope.obj = {};
+
+              var watcherCalls = 0;
+              scope.$watch('!obj | foo:!obj', function(input) {
+                watcherCalls++;
+              });
+
+              scope.$digest();
+              expect(filterCalls).toBe(1);
+              expect(watcherCalls).toBe(1);
+
+              scope.$digest();
+              expect(filterCalls).toBe(1);
+              expect(watcherCalls).toBe(1);
+            }));
+
+            it('should not be reevaluated when input is simplified via non-plus/concat binary operators', inject(function($parse) {
+              var filterCalls = 0;
+              $filterProvider.register('foo', valueFn(function(input) {
+                filterCalls++;
+                return input;
+              }));
+
+              scope.obj = {};
+
+              var watcherCalls = 0;
+              scope.$watch('1 - obj | foo:(1 * obj)', function(input) {
+                watcherCalls++;
+              });
+
+              scope.$digest();
+              expect(filterCalls).toBe(1);
+              expect(watcherCalls).toBe(1);
+
+              scope.$digest();
+              expect(filterCalls).toBe(1);
+              expect(watcherCalls).toBe(1);
+            }));
+
+            it('should be reevaluated when input is simplified via plus/concat', inject(function($parse) {
+              var filterCalls = 0;
+              $filterProvider.register('foo', valueFn(function(input) {
+                filterCalls++;
+                return input;
+              }));
+
+              scope.obj = {};
+
+              var watcherCalls = 0;
+              scope.$watch('1 + obj | foo', function(input) {
+                watcherCalls++;
+              });
+
+              scope.$digest();
+              expect(filterCalls).toBe(2);
+              expect(watcherCalls).toBe(1);
+
+              scope.$digest();
+              expect(filterCalls).toBe(3);
+              expect(watcherCalls).toBe(1);
+            }));
+
+            it('should reevaluate computed member expressions', inject(function($parse) {
+              var toStringCalls = 0;
+
+              scope.obj = {};
+              scope.key = {
+                toString: function() {
+                  toStringCalls++;
+                  return 'foo';
+                }
+              };
+
+              var watcherCalls = 0;
+              scope.$watch('obj[key]', function(input) {
+                watcherCalls++;
+              });
+
+              scope.$digest();
+              expect(toStringCalls).toBe(2);
+              expect(watcherCalls).toBe(1);
+
+              scope.$digest();
+              expect(toStringCalls).toBe(3);
+              expect(watcherCalls).toBe(1);
+            }));
+
+            it('should be reevaluated with input created with null prototype', inject(function($parse) {
+              var filterCalls = 0;
+              $filterProvider.register('foo', valueFn(function(input) {
+                filterCalls++;
+                return input;
+              }));
+
+              var parsed = $parse('obj | foo');
+              var obj = scope.obj = Object.create(null);
+
+              var watcherCalls = 0;
+              scope.$watch(parsed, function(input) {
+                expect(input).toBe(obj);
+                watcherCalls++;
+              });
+
+              scope.$digest();
+              expect(filterCalls).toBe(2);
+              expect(watcherCalls).toBe(1);
+
+              scope.$digest();
+              expect(filterCalls).toBe(3);
+              expect(watcherCalls).toBe(1);
+            }));
+          });
+
+          describe('with primitive input', function() {
+
+            it('should not be reevaluated when passed literals', inject(function($parse) {
+              var filterCalls = 0;
+              $filterProvider.register('foo', valueFn(function(input) {
+                filterCalls++;
+                return input;
+              }));
+
+              var watcherCalls = 0;
+              scope.$watch('[a] | foo', function(input) {
+                watcherCalls++;
+              });
+
+              scope.$apply('a = 1');
+              expect(filterCalls).toBe(1);
+              expect(watcherCalls).toBe(1);
+
+              scope.$apply('a = 2');
+              expect(filterCalls).toBe(2);
+              expect(watcherCalls).toBe(2);
+            }));
+
+            it('should not be reevaluated in literals', inject(function($parse) {
+              var filterCalls = 0;
+              $filterProvider.register('foo', valueFn(function(input) {
+                filterCalls++;
+                return input;
+              }));
+
+              scope.prim = 1234567890123;
+
+              var watcherCalls = 0;
+              scope.$watch('[(prim | foo)]', function(input) {
+                watcherCalls++;
+              });
+
+              scope.$digest();
+              expect(filterCalls).toBe(1);
+              expect(watcherCalls).toBe(1);
+
+              scope.$digest();
+              expect(filterCalls).toBe(1);
+              expect(watcherCalls).toBe(1);
+            }));
+          });
         });
 
-        it('should invoke filters if they are marked as having $stateful', function() {
-          var filterCalled = false;
-          $filterProvider.register('foo', valueFn(extend(function(input) {
-            filterCalled = true;
-            return input;
-          }, {$stateful: true})));
+        describe('interceptorFns', function() {
+          it('should only be passed the intercepted value', inject(function($parse) {
+            var args;
+            function interceptor(v) {
+              args = sliceArgs(arguments);
+              return v;
+            }
 
-          scope.$watch('a | foo:b:1');
-          scope.a = 0;
-          scope.$digest();
-          expect(filterCalled).toBe(true);
+            scope.$watch($parse('a', interceptor));
 
-          filterCalled = false;
-          scope.$digest();
-          expect(filterCalled).toBe(true);
+            scope.a = 1;
+            scope.$digest();
+            expect(args).toEqual([1]);
+          }));
+
+          it('should only be passed the intercepted value when wrapping one-time', inject(function($parse) {
+            var args;
+            function interceptor(v) {
+              args = sliceArgs(arguments);
+              return v;
+            }
+
+            scope.$watch($parse('::a', interceptor));
+
+            scope.a = 1;
+            scope.$digest();
+            expect(args).toEqual([1]);
+          }));
+
+          it('should only be passed the intercepted value when double-intercepted',
+              inject(function($parse) {
+            var args1;
+            function int1(v) {
+              args1 = sliceArgs(arguments);
+              return v + 2;
+            }
+            var args2;
+            function int2(v) {
+              args2 = sliceArgs(arguments);
+              return v + 4;
+            }
+
+            scope.$watch($parse($parse('a', int1), int2));
+
+            scope.a = 1;
+            scope.$digest();
+            expect(args1).toEqual([1]);
+            expect(args2).toEqual([3]);
+          }));
+
+          it('should support locals', inject(function($parse) {
+            var args;
+            function interceptor(v) {
+              args = sliceArgs(arguments);
+              return v + 4;
+            }
+
+            var exp = $parse('a + b', interceptor);
+            scope.a = 1;
+
+            expect(exp(scope, {b: 2})).toBe(7);
+            expect(args).toEqual([3]);
+          }));
+
+          it('should support locals when double-intercepted', inject(function($parse) {
+            var args1;
+            function int1(v) {
+              args1 = sliceArgs(arguments);
+              return v + 4;
+            }
+            var args2;
+            function int2(v) {
+              args2 = sliceArgs(arguments);
+              return v + 8;
+            }
+
+            var exp = $parse($parse('a + b', int1), int2);
+
+            scope.a = 1;
+            expect(exp(scope, {b: 2})).toBe(15);
+            expect(args1).toEqual([3]);
+            expect(args2).toEqual([7]);
+          }));
+
+          it('should always be invoked if they are flagged as having $stateful',
+              inject(function($parse) {
+            var called = false;
+            function interceptor() {
+              called = true;
+            }
+            interceptor.$stateful = true;
+
+            scope.$watch($parse('a', interceptor));
+            scope.a = 0;
+            scope.$digest();
+            expect(called).toBe(true);
+
+            called = false;
+            scope.$digest();
+            expect(called).toBe(true);
+
+            scope.a++;
+            called = false;
+            scope.$digest();
+            expect(called).toBe(true);
+          }));
+
+          it('should always be invoked if flagged as $stateful when wrapping one-time',
+              inject(function($parse) {
+
+            var interceptorCalls = 0;
+            function interceptor() {
+              interceptorCalls++;
+              return 123;
+            }
+            interceptor.$stateful = true;
+
+            scope.$watch($parse('::a', interceptor));
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+          }));
+
+          it('should always be invoked if flagged as $stateful when wrapping one-time with inputs',
+              inject(function($parse) {
+
+            $filterProvider.register('identity', valueFn(identity));
+
+            var interceptorCalls = 0;
+            function interceptor() {
+              interceptorCalls++;
+              return 123;
+            }
+            interceptor.$stateful = true;
+
+            scope.$watch($parse('::a | identity', interceptor));
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+          }));
+
+          it('should always be invoked if flagged as $stateful when wrapping one-time literal',
+              inject(function($parse) {
+
+            var interceptorCalls = 0;
+            function interceptor() {
+              interceptorCalls++;
+              return 123;
+            }
+            interceptor.$stateful = true;
+
+            scope.$watch($parse('::[a]', interceptor));
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+
+            interceptorCalls = 0;
+            scope.$digest();
+            expect(interceptorCalls).not.toBe(0);
+          }));
+
+          it('should not be invoked unless the input changes', inject(function($parse) {
+            var called = false;
+            function interceptor(v) {
+              called = true;
+              return v;
+            }
+            scope.$watch($parse('a', interceptor));
+            scope.$watch($parse('a + b', interceptor));
+            scope.a = scope.b = 0;
+            scope.$digest();
+            expect(called).toBe(true);
+
+            called = false;
+            scope.$digest();
+            expect(called).toBe(false);
+
+            scope.a++;
+            scope.$digest();
+            expect(called).toBe(true);
+          }));
+
+          it('should always be invoked if inputs are non-primitive', inject(function($parse) {
+            var called = false;
+            function interceptor(v) {
+              called = true;
+              return v.sub;
+            }
+
+            scope.$watch($parse('[o]', interceptor));
+            scope.o = {sub: 1};
+
+            called = false;
+            scope.$digest();
+            expect(called).toBe(true);
+
+            called = false;
+            scope.$digest();
+            expect(called).toBe(true);
+          }));
+
+          it('should not be invoked unless the input.valueOf() changes even if the instance changes', inject(function($parse) {
+            var called = false;
+            function interceptor(v) {
+              called = true;
+              return v;
+            }
+            scope.$watch($parse('a', interceptor));
+            scope.a = new Date();
+            scope.$digest();
+            expect(called).toBe(true);
+
+            called = false;
+            scope.a = new Date(scope.a.valueOf());
+            scope.$digest();
+            expect(called).toBe(false);
+          }));
+
+          it('should be invoked if input.valueOf() changes even if the instance does not', inject(function($parse) {
+            var called = false;
+            function interceptor(v) {
+              called = true;
+              return v;
+            }
+            scope.$watch($parse('a', interceptor));
+            scope.a = new Date();
+            scope.$digest();
+            expect(called).toBe(true);
+
+            called = false;
+            scope.a.setTime(scope.a.getTime() + 1);
+            scope.$digest();
+            expect(called).toBe(true);
+          }));
+
+          it('should be invoked when the expression is `undefined`', inject(function($parse) {
+            var called = false;
+            function interceptor(v) {
+              called = true;
+              return v;
+            }
+            scope.$watch($parse(undefined, interceptor));
+            scope.$digest();
+            expect(called).toBe(true);
+          }));
+
+          it('should not affect when a one-time binding becomes stable', inject(function($parse) {
+            scope.$watch($parse('::x'));
+            scope.$watch($parse('::x', identity));
+            scope.$watch($parse('::x', function() { return 1; }));  //interceptor that returns non-undefined
+
+            scope.$digest();
+            expect(scope.$$watchersCount).toBe(3);
+
+            scope.x = 1;
+            scope.$digest();
+            expect(scope.$$watchersCount).toBe(0);
+          }));
+
+          it('should not affect when a one-time literal binding becomes stable', inject(function($parse) {
+            scope.$watch($parse('::[x]'));
+            scope.$watch($parse('::[x]', identity));
+            scope.$watch($parse('::[x]', function() { return 1; }));  //interceptor that returns non-literal
+
+            scope.$digest();
+            expect(scope.$$watchersCount).toBe(3);
+
+            scope.x = 1;
+            scope.$digest();
+            expect(scope.$$watchersCount).toBe(0);
+          }));
+
+          it('should watch the intercepted value of one-time bindings', inject(function($parse, log) {
+            scope.$watch($parse('::{x:x, y:y}', function(lit) { return lit.x; }), log);
+
+            scope.$apply();
+            expect(log.empty()).toEqual([undefined]);
+
+            scope.$apply('x = 1');
+            expect(log.empty()).toEqual([1]);
+
+            scope.$apply('x = 2; y=1');
+            expect(log.empty()).toEqual([2]);
+
+            scope.$apply('x = 1; y=2');
+            expect(log.empty()).toEqual([]);
+          }));
+
+          it('should watch the intercepted value of one-time bindings in nested interceptors', inject(function($parse, log) {
+            scope.$watch($parse($parse('::{x:x, y:y}', function(lit) { return lit.x; }), identity), log);
+
+            scope.$apply();
+            expect(log.empty()).toEqual([undefined]);
+
+            scope.$apply('x = 1');
+            expect(log.empty()).toEqual([1]);
+
+            scope.$apply('x = 2; y=1');
+            expect(log.empty()).toEqual([2]);
+
+            scope.$apply('x = 1; y=2');
+            expect(log.empty()).toEqual([]);
+          }));
+
+          it('should nest interceptors around eachother, not around the intercepted', inject(function($parse) {
+            function origin() { return 0; }
+
+            var fn = origin;
+            function addOne(n) { return n + 1; }
+
+            fn = $parse(fn, addOne);
+            expect(fn.$$intercepted).toBe(origin);
+            expect(fn()).toBe(1);
+
+            fn = $parse(fn, addOne);
+            expect(fn.$$intercepted).toBe(origin);
+            expect(fn()).toBe(2);
+
+            fn = $parse(fn, addOne);
+            expect(fn.$$intercepted).toBe(origin);
+            expect(fn()).toBe(3);
+          }));
+
+          it('should not propogate $$watchDelegate to the interceptor wrapped expression', inject(function($parse) {
+            function getter(s) {
+              return s.x;
+            }
+            getter.$$watchDelegate = getter;
+
+            function doubler(v) {
+              return 2 * v;
+            }
+
+            var lastValue;
+            function watcher(val) {
+              lastValue = val;
+            }
+            scope.$watch($parse(getter, doubler), watcher);
+
+            scope.$apply('x = 1');
+            expect(lastValue).toBe(2 * 1);
+
+            scope.$apply('x = 123');
+            expect(lastValue).toBe(2 * 123);
+          }));
         });
 
-        it('should not invoke interceptorFns unless the input changes', inject(function($parse) {
-          var called = false;
-          function interceptor(v) {
-            called = true;
-            return v;
-          }
-          scope.$watch($parse('a', interceptor));
-          scope.$watch($parse('a + b', interceptor));
-          scope.a = scope.b = 0;
-          scope.$digest();
-          expect(called).toBe(true);
+        describe('literals', function() {
 
-          called = false;
-          scope.$digest();
-          expect(called).toBe(false);
+          it('should support watching', inject(function($parse) {
+            var lastVal = NaN;
+            var callCount = 0;
+            var listener = function(val) { callCount++; lastVal = val; };
 
-          scope.a++;
-          scope.$digest();
-          expect(called).toBe(true);
-        }));
+            scope.$watch('{val: val}', listener);
 
-        it('should invoke interceptors when the expression is `undefined`', inject(function($parse) {
-          var called = false;
-          function interceptor(v) {
-            called = true;
-            return v;
-          }
-          scope.$watch($parse(undefined, interceptor));
-          scope.$digest();
-          expect(called).toBe(true);
-        }));
+            scope.$apply('val = 1');
+            expect(callCount).toBe(1);
+            expect(lastVal).toEqual({val: 1});
 
-        it('should treat filters with constant input as constants', inject(function($parse) {
-          var filterCalls = 0;
-          $filterProvider.register('foo', valueFn(function(input) {
-            filterCalls++;
-            return input;
+            scope.$apply('val = []');
+            expect(callCount).toBe(2);
+            expect(lastVal).toEqual({val: []});
+
+            scope.$apply('val = []');
+            expect(callCount).toBe(3);
+            expect(lastVal).toEqual({val: []});
+
+            scope.$apply('val = {}');
+            expect(callCount).toBe(4);
+            expect(lastVal).toEqual({val: {}});
           }));
 
-          var parsed = $parse('{x: 1} | foo:1');
+          it('should only watch the direct inputs', inject(function($parse) {
+            var lastVal = NaN;
+            var callCount = 0;
+            var listener = function(val) { callCount++; lastVal = val; };
 
-          expect(parsed.constant).toBe(true);
+            scope.$watch('{val: val}', listener);
 
-          var watcherCalls = 0;
-          scope.$watch(parsed, function(input) {
-            expect(input).toEqual({x:1});
-            watcherCalls++;
-          });
+            scope.$apply('val = 1');
+            expect(callCount).toBe(1);
+            expect(lastVal).toEqual({val: 1});
 
-          scope.$digest();
-          expect(filterCalls).toBe(1);
-          expect(watcherCalls).toBe(1);
+            scope.$apply('val = [2]');
+            expect(callCount).toBe(2);
+            expect(lastVal).toEqual({val: [2]});
 
-          scope.$digest();
-          expect(filterCalls).toBe(1);
-          expect(watcherCalls).toBe(1);
-        }));
+            scope.$apply('val.push(3)');
+            expect(callCount).toBe(2);
 
-        it('should always reevaluate filters with non-primitive input that doesn\'t support valueOf()',
-            inject(function($parse) {
-          var filterCalls = 0;
-          $filterProvider.register('foo', valueFn(function(input) {
-            filterCalls++;
-            return input;
+            scope.$apply('val.length = 0');
+            expect(callCount).toBe(2);
           }));
 
-          var parsed = $parse('obj | foo');
-          var obj = scope.obj = {};
+          it('should only watch the direct inputs when nested', inject(function($parse) {
+            var lastVal = NaN;
+            var callCount = 0;
+            var listener = function(val) { callCount++; lastVal = val; };
 
-          var watcherCalls = 0;
-          scope.$watch(parsed, function(input) {
-            expect(input).toBe(obj);
-            watcherCalls++;
-          });
+            scope.$watch('[{val: [val]}]', listener);
 
-          scope.$digest();
-          expect(filterCalls).toBe(2);
-          expect(watcherCalls).toBe(1);
+            scope.$apply('val = 1');
+            expect(callCount).toBe(1);
+            expect(lastVal).toEqual([{val: [1]}]);
 
-          scope.$digest();
-          expect(filterCalls).toBe(3);
-          expect(watcherCalls).toBe(1);
-        }));
+            scope.$apply('val = [2]');
+            expect(callCount).toBe(2);
+            expect(lastVal).toEqual([{val: [[2]]}]);
 
-        it('should always reevaluate filters with non-primitive input created with null prototype',
-            inject(function($parse) {
-          var filterCalls = 0;
-          $filterProvider.register('foo', valueFn(function(input) {
-            filterCalls++;
-            return input;
+            scope.$apply('val.push(3)');
+            expect(callCount).toBe(2);
+
+            scope.$apply('val.length = 0');
+            expect(callCount).toBe(2);
           }));
 
-          var parsed = $parse('obj | foo');
-          var obj = scope.obj = Object.create(null);
+          describe('with non-primative input', function() {
 
-          var watcherCalls = 0;
-          scope.$watch(parsed, function(input) {
-            expect(input).toBe(obj);
-            watcherCalls++;
+            describe('that does NOT support valueOf()', function() {
+              it('should not be reevaluated', inject(function($parse) {
+                var obj = scope.obj = {};
+
+                var parsed = $parse('[obj]');
+                var watcherCalls = 0;
+                scope.$watch(parsed, function(input) {
+                  expect(input[0]).toBe(obj);
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+              }));
+            });
+
+            describe('that does support valueOf()', function() {
+              it('should not be reevaluated', inject(function($parse) {
+                var date = scope.date = new Date();
+
+                var parsed = $parse('[date]');
+                var watcherCalls = 0;
+                scope.$watch(parsed, function(input) {
+                  expect(input[0]).toBe(date);
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+              }));
+
+              it('should be reevaluated even when valueOf() changes', inject(function($parse) {
+                var date = scope.date = new Date();
+
+                var parsed = $parse('[date]');
+                var watcherCalls = 0;
+                scope.$watch(parsed, function(input) {
+                  expect(input[0]).toBe(date);
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+
+                date.setYear(1901);
+
+                scope.$digest();
+                expect(watcherCalls).toBe(2);
+              }));
+
+              it('should not be reevaluated when the instance changes but valueOf() does not', inject(function($parse) {
+                scope.date = new Date(1234567890123);
+
+                var parsed = $parse('[date]');
+                var watcherCalls = 0;
+                scope.$watch(parsed, function(input) {
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+
+                scope.date = new Date(1234567890123);
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+              }));
+
+              it('should be reevaluated when the instance does not change but valueOf() does', inject(function($parse) {
+
+                scope.date = new Date(1234567890123);
+
+                var parsed = $parse('[date]');
+                var watcherCalls = 0;
+                scope.$watch(parsed, function(input) {
+                  watcherCalls++;
+                });
+
+                scope.$digest();
+                expect(watcherCalls).toBe(1);
+
+                scope.date.setTime(scope.date.getTime() + 1);
+                scope.$digest();
+                expect(watcherCalls).toBe(2);
+              }));
+            });
           });
-
-          scope.$digest();
-          expect(filterCalls).toBe(2);
-          expect(watcherCalls).toBe(1);
-
-          scope.$digest();
-          expect(filterCalls).toBe(3);
-          expect(watcherCalls).toBe(1);
-        }));
-
-        it('should not reevaluate filters with non-primitive input that does support valueOf()',
-            inject(function($parse) {
-          var filterCalls = 0;
-          $filterProvider.register('foo', valueFn(function(input) {
-            filterCalls++;
-            expect(input instanceof Date).toBe(true);
-            return input;
-          }));
-
-          var parsed = $parse('date | foo:a');
-          var date = scope.date = new Date();
-
-          var watcherCalls = 0;
-          scope.$watch(parsed, function(input) {
-            expect(input).toBe(date);
-            watcherCalls++;
-          });
-
-          scope.$digest();
-          expect(filterCalls).toBe(1);
-          expect(watcherCalls).toBe(1);
-
-          scope.$digest();
-          expect(filterCalls).toBe(1);
-          expect(watcherCalls).toBe(1);
-        }));
-
-        it('should reevaluate filters with non-primitive input that does support valueOf() when' +
-           'valueOf() value changes', inject(function($parse) {
-          var filterCalls = 0;
-          $filterProvider.register('foo', valueFn(function(input) {
-            filterCalls++;
-            expect(input instanceof Date).toBe(true);
-            return input;
-          }));
-
-          var parsed = $parse('date | foo:a');
-          var date = scope.date = new Date();
-
-          var watcherCalls = 0;
-          scope.$watch(parsed, function(input) {
-            expect(input).toBe(date);
-            watcherCalls++;
-          });
-
-          scope.$digest();
-          expect(filterCalls).toBe(1);
-          expect(watcherCalls).toBe(1);
-
-          date.setYear(1901);
-
-          scope.$digest();
-          expect(filterCalls).toBe(2);
-          expect(watcherCalls).toBe(1);
-        }));
-
-        it('should invoke interceptorFns if they are flagged as having $stateful',
-            inject(function($parse) {
-          var called = false;
-          function interceptor() {
-            called = true;
-          }
-          interceptor.$stateful = true;
-
-          scope.$watch($parse('a', interceptor));
-          scope.a = 0;
-          scope.$digest();
-          expect(called).toBe(true);
-
-          called = false;
-          scope.$digest();
-          expect(called).toBe(true);
-
-          scope.a++;
-          called = false;
-          scope.$digest();
-          expect(called).toBe(true);
-        }));
+        });
 
         it('should continue with the evaluation of the expression without invoking computed parts',
             inject(function($parse) {
@@ -3103,6 +3816,59 @@ describe('parser', function() {
           scope.$digest();
           expect(objB.value).toBe(scope.input);
         }));
+
+        it('should watch ES6 object computed property changes', function() {
+          var count = 0;
+          var lastValue;
+
+          scope.$watch('{[a]: true}', function(val) {
+            count++;
+            lastValue = val;
+          });
+
+          scope.$digest();
+          expect(count).toBe(1);
+          expect(lastValue).toEqual({'undefined': true});
+
+          scope.$digest();
+          expect(count).toBe(1);
+          expect(lastValue).toEqual({'undefined': true});
+
+          scope.a = true;
+          scope.$digest();
+          expect(count).toBe(2);
+          expect(lastValue).toEqual({'true': true});
+
+          scope.a = 'abc';
+          scope.$digest();
+          expect(count).toBe(3);
+          expect(lastValue).toEqual({'abc': true});
+
+          scope.a = undefined;
+          scope.$digest();
+          expect(count).toBe(4);
+          expect(lastValue).toEqual({'undefined': true});
+        });
+
+        it('should not shallow-watch ES6 object computed properties in case of stateful toString', function() {
+          var count = 0;
+          var lastValue;
+
+          scope.$watch('{[a]: true}', function(val) {
+            count++;
+            lastValue = val;
+          });
+
+          scope.a = {toString: function() { return this.b; }};
+          scope.a.b = 1;
+
+          //TODO: would be great if it didn't throw!
+          expect(function() { scope.$apply(); }).toThrowMinErr('$rootScope', 'infdig');
+          expect(lastValue).toEqual({1: true});
+
+          expect(function() { scope.$apply('a.b = 2'); }).toThrowMinErr('$rootScope', 'infdig');
+          expect(lastValue).toEqual({2: true});
+        });
       });
 
       describe('locals', function() {
@@ -3141,6 +3907,72 @@ describe('parser', function() {
           expect(isFunction(s.toString)).toBe(true);
           expect(l.toString).toBe(1);
         }));
+
+        it('should overwrite undefined / null scope properties when assigning', inject(function($parse) {
+          var scope;
+
+          scope = {};
+          $parse('a.b = 1')(scope);
+          $parse('c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: 1}, c: {d: 2}});
+
+          scope = {a: {}};
+          $parse('a.b.c = 1')(scope);
+          $parse('a.c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: {c: 1}, c: {d: 2}}});
+
+          scope = {a: undefined, c: undefined};
+          $parse('a.b = 1')(scope);
+          $parse('c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: 1}, c: {d: 2}});
+
+          scope = {a: {b: undefined, c: undefined}};
+          $parse('a.b.c = 1')(scope);
+          $parse('a.c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: {c: 1}, c: {d: 2}}});
+
+          scope = {a: null, c: null};
+          $parse('a.b = 1')(scope);
+          $parse('c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: 1}, c: {d: 2}});
+
+          scope = {a: {b: null, c: null}};
+          $parse('a.b.c = 1')(scope);
+          $parse('a.c["d"] = 2')(scope);
+          expect(scope).toEqual({a: {b: {c: 1}, c: {d: 2}}});
+        }));
+
+        they('should not overwrite $prop scope properties when assigning', [0, false, '', NaN],
+          function(falsyValue) {
+            inject(function($parse) {
+              var scope;
+
+              scope = {a: falsyValue, c: falsyValue};
+              tryParseAndIgnoreException('a.b = 1');
+              tryParseAndIgnoreException('c["d"] = 2');
+              expect(scope).toEqual({a: falsyValue, c: falsyValue});
+
+              scope = {a: {b: falsyValue, c: falsyValue}};
+              tryParseAndIgnoreException('a.b.c = 1');
+              tryParseAndIgnoreException('a.c["d"] = 2');
+              expect(scope).toEqual({a: {b: falsyValue, c: falsyValue}});
+
+              // Helpers
+              //
+              // Normally assigning property on a primitive should throw exception in strict mode
+              // and silently fail in non-strict mode, IE seems to always have the non-strict-mode behavior,
+              // so if we try to use 'expect(function() {$parse('a.b=1')({a:false});).toThrow()' for testing
+              // the test will fail in case of IE because it will not throw exception, and if we just use
+              // '$parse('a.b=1')({a:false})' the test will fail because it will throw exception in case of Chrome
+              // so we use tryParseAndIgnoreException helper to catch the exception silently for all cases.
+              //
+              function tryParseAndIgnoreException(expression) {
+                try {
+                    $parse(expression)(scope);
+                } catch (error) {/* ignore exception */}
+              }
+            });
+          });
       });
 
       describe('literal', function() {
@@ -3211,6 +4043,11 @@ describe('parser', function() {
           expect($parse('5 != null').constant).toBe(true);
           expect($parse('{standard: 4/3, wide: 16/9}').constant).toBe(true);
           expect($parse('{[standard]: 4/3, wide: 16/9}').constant).toBe(false);
+          expect($parse('{["key"]: 1}').constant).toBe(true);
+          expect($parse('[0].length').constant).toBe(true);
+          expect($parse('[0][0]').constant).toBe(true);
+          expect($parse('{x: 1}.x').constant).toBe(true);
+          expect($parse('{x: 1}["x"]').constant).toBe(true);
         }));
 
         it('should not mark any expression involving variables or function calls as constant', inject(function($parse) {
@@ -3324,7 +4161,7 @@ describe('parser', function() {
   forEach([true, false], function(cspEnabled) {
     describe('custom identifiers (csp: ' + cspEnabled + ')', function() {
       var isIdentifierStartRe = /[#a-z]/;
-      var isIdentifierContinueRe = /[\-a-z]/;
+      var isIdentifierContinueRe = /[-a-z]/;
       var isIdentifierStartFn;
       var isIdentifierContinueFn;
       var scope;

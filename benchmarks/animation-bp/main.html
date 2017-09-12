@@ -1,0 +1,28 @@
+<style>
+  [ng-cloak] { display: none !important; }
+  .animation-container .ng-enter,
+  .animation-container .ng-leave {
+    transition: all 0.1s;
+  }
+
+  .animation-container .ng-enter,
+  .animation-container .ng-leave.ng-leave-active {
+    opacity: 0;
+  }
+
+  .animation-container .ng-enter.ng-enter-active,
+  .animation-container .ng-leave {
+    opacity: 1;
+  }
+</style>
+<div ng-app="animationBenchmark" ng-cloak ng-controller="BenchmarkController as bm">
+  <div class="container-fluid">
+    <h2>Large collection of elements animated in and out with ngAnimate</h2>
+
+    <div class="animation-container">
+      <div ng-repeat="i in bm.items track by $index">
+        Just a plain ol' element
+      </div>
+    </div>
+  </div>
+</div>

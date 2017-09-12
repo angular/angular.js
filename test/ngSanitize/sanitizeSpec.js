@@ -49,6 +49,8 @@ describe('HTML', function() {
           comment = comment_;
         }
       };
+      // Trigger the $sanitizer provider to execute, which initializes the `htmlParser` function.
+      inject(function($sanitize) {});
     });
 
     it('should not parse comments', function() {
@@ -246,13 +248,44 @@ describe('HTML', function() {
       .toEqual('<p>text1text2</p>');
   });
 
+  it('should throw on clobbered elements', function() {
+    inject(function($sanitize) {
+      expect(function() {
+        $sanitize('<form><input name="parentNode" /></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+
+      expect(function() {
+        $sanitize('<form><div><div><input name="parentNode" /></div></div></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+
+      expect(function() {
+        $sanitize('<form><input name="nextSibling" /></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+
+      expect(function() {
+        $sanitize('<form><div><div><input name="nextSibling" /></div></div></form>');
+      }).toThrowMinErr('$sanitize', 'elclob');
+    });
+  });
+
+  // See https://github.com/cure53/DOMPurify/blob/a992d3a75031cb8bb032e5ea8399ba972bdf9a65/src/purify.js#L439-L449
+  it('should not allow JavaScript execution when creating inert document', inject(function($sanitize) {
+    var doc = $sanitize('<svg><g onload="window.xxx = 100"></g></svg>');
+    expect(window.xxx).toBe(undefined);
+    delete window.xxx;
+  }));
+
+  // See https://github.com/cure53/DOMPurify/releases/tag/0.6.7
+  it('should not allow JavaScript hidden in badly formed HTML to get through sanitization (Firefox bug)', inject(function($sanitize) {
+    var doc = $sanitize('<svg><p><style><img src="</style><img src=x onerror=alert(1)//">');
+    expect(doc).toEqual('<p><img src="x"></p>');
+  }));
 
   describe('SVG support', function() {
 
     beforeEach(module(function($sanitizeProvider) {
       $sanitizeProvider.enableSvg(true);
     }));
-
 
     it('should accept SVG tags', function() {
       expectHTML('<svg width="400px" height="150px" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red"></svg>')
@@ -352,7 +385,7 @@ describe('HTML', function() {
       expect(html).toEqual('<div rel="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#10;&#0;&#13;&#295;">');
     });
 
-    it('should ignore missformed elements', function() {
+    it('should ignore misformed elements', function() {
       writer.start('d>i&v', {});
       expect(html).toEqual('');
     });
@@ -508,7 +541,7 @@ describe('HTML', function() {
         expect('&#106 &#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;').not.toBeValidUrl();
       });
 
-      it('should ignore decimal with leading 0 encodede javascript:', function() {
+      it('should ignore decimal with leading 0 encoded javascript:', function() {
         expect('&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058').not.toBeValidUrl();
         expect('&#0000106 &#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058').not.toBeValidUrl();
         expect('&#0000106; &#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058').not.toBeValidUrl();

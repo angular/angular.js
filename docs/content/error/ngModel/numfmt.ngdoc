@@ -7,7 +7,7 @@ The `input[number]` and `input[range]` directives require the model to be a `num
 
 If the model is something else, this error will be thrown.
 
-Angular does not set validation errors on the `<input>` in this case
+AngularJS does not set validation errors on the `<input>` in this case
 as this error is caused by incorrect application logic and not by bad input from the user.
 
 If your model does not contain actual numbers then it is up to the application developer

@@ -1,0 +1,39 @@
+{% import "lib/macros.html" as lib -%}
+{% import "lib/deprecated.html" as x -%}
+
+{%- if doc.methods %}
+<h2>Methods</h2>
+<ul class="methods">
+  {%- for method in doc.methods %}
+  <li id="{$ method.name $}">
+    <h3>{$ lib.functionSyntax(method) $}</h3>
+    <div>{$ method.description | marked $}</div>
+
+    {$ x.deprecatedBlock(method) $}
+
+    {% if method.params %}
+    <h4>Parameters</h4>
+    {$ lib.paramTable(method.params) $}
+    {% endif %}
+
+    {% if method.this %}
+    <h4>Method's {% code %}this{% endcode %}</h4>
+    {$ method.this | marked $}
+    {% endif %}
+
+    {% if method.returns %}
+    <h4>Returns</h4>
+    {$ lib.typeInfo(method.returns) $}
+    {% endif %}
+
+    {%- if method.examples %}
+    <h4 id="{$ doc.name $}.{$ method.name $}-examples">Examples</h4>
+    {%- for example in method.examples -%}
+      {$ example | marked $}
+    {%- endfor -%}
+    {% endif -%}
+
+  </li>
+  {% endfor -%}
+</ul>
+{%- endif -%}

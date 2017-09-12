@@ -153,7 +153,7 @@
       </Shapes>
       <Connects/>
     </Page>
-    <Page ID="1" NameU="&amp;lt;angular/&amp;gt; parts">
+    <Page ID="1" NameU="&amp;lt;AngularJS/&amp;gt; parts">
       <PageSheet>
         <RulerGrid>
           <XGridSpacing>0.111111</XGridSpacing>
@@ -2015,13 +2015,13 @@
           <Text><cp IX="0"/><pp IX="0"/>Scope
 <cp IX="1"/>* $get / $set
 * $eval / $tryEval
-* $watch 
+* $watch
 * $become</Text>
         </Shape>
       </Shapes>
       <Connects/>
     </Page>
-    <Page ID="2" NameU="&amp;lt;angular/&amp;gt; usage">
+    <Page ID="2" NameU="&amp;lt;AngularJS/&amp;gt; usage">
       <PageSheet>
         <RulerGrid>
           <XGridSpacing>0.111111</XGridSpacing>

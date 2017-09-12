@@ -6,7 +6,7 @@ var packagePath = __dirname;
 var Package = require('dgeni').Package;
 
 // Create and export a new Dgeni package called angularjs. This package depends upon
-// the ngdoc, nunjucks, and examples packages defined in the dgeni-packages npm module.
+// the ngdoc, nunjucks, and examples packages defined in the dgeni-packages node module.
 module.exports = new Package('angularjs', [
   require('dgeni-packages/ngdoc'),
   require('dgeni-packages/nunjucks'),
@@ -52,10 +52,12 @@ module.exports = new Package('angularjs', [
 
 
 .config(function(parseTagsProcessor) {
+  parseTagsProcessor.tagDefinitions.push(require('./tag-defs/deprecated')); // this will override the jsdoc version
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/tutorial-step'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/sortOrder'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/installation'));
   parseTagsProcessor.tagDefinitions.push(require('./tag-defs/this'));
+
 })
 
 
@@ -65,7 +67,11 @@ module.exports = new Package('angularjs', [
 
 
 .config(function(templateFinder, renderDocsProcessor, gitData) {
-  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates'));
+  // We are completely overwriting the folders
+  templateFinder.templateFolders.length = 0;
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/examples'));
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/ngdoc'));
+  templateFinder.templateFolders.unshift(path.resolve(packagePath, 'templates/app'));
   renderDocsProcessor.extraData.git = gitData;
 })
 

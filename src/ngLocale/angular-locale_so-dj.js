@@ -35,14 +35,14 @@ $provide.value("$locale", {
       "Sabti"
     ],
     "ERANAMES": [
-      "Ciise ka hor (CS)",
-      "Ciise ka dib (CS)"
+      "CK",
+      "CD"
     ],
     "ERAS": [
       "CK",
       "CD"
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 5,
     "MONTH": [
       "Bisha Koobaad",
       "Bisha Labaad",
@@ -126,8 +126,8 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 0,
+        "minFrac": 0,
         "minInt": 1,
         "negPre": "-\u00a4",
         "negSuf": "",

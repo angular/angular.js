@@ -7,7 +7,7 @@ var Q  = require('q'),
     localeInfo = {};
 
 
-var NG_LOCALE_DIR = '../src/ngLocale/';
+var NG_LOCALE_DIR = __dirname + '/../../src/ngLocale/';
 
 
 function readSymbols() {
@@ -45,7 +45,7 @@ function extractPlurals() {
 }
 
 function writeLocaleFiles() {
-  console.log('Final stage: Writing angular locale files to directory: %j', NG_LOCALE_DIR);
+  console.log('Final stage: Writing AngularJS locale files to directory: %j', NG_LOCALE_DIR);
   var result = Q.defer();
   var localeIds = Object.keys(localeInfo);
   var num_files = 0;

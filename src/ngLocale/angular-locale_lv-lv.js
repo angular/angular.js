@@ -58,13 +58,13 @@ $provide.value("$locale", {
       "decembris"
     ],
     "SHORTDAY": [
-      "Sv",
-      "Pr",
-      "Ot",
-      "Tr",
-      "Ce",
-      "Pk",
-      "Se"
+      "sv\u0113td.",
+      "pirmd.",
+      "otrd.",
+      "tre\u0161d.",
+      "ceturtd.",
+      "piektd.",
+      "sestd."
     ],
     "SHORTMONTH": [
       "janv.",
@@ -81,18 +81,18 @@ $provide.value("$locale", {
       "dec."
     ],
     "STANDALONEMONTH": [
-      "Janv\u0101ris",
-      "Febru\u0101ris",
-      "Marts",
-      "Apr\u012blis",
-      "Maijs",
-      "J\u016bnijs",
-      "J\u016blijs",
-      "Augusts",
-      "Septembris",
-      "Oktobris",
-      "Novembris",
-      "Decembris"
+      "janv\u0101ris",
+      "febru\u0101ris",
+      "marts",
+      "apr\u012blis",
+      "maijs",
+      "j\u016bnijs",
+      "j\u016blijs",
+      "augusts",
+      "septembris",
+      "oktobris",
+      "novembris",
+      "decembris"
     ],
     "WEEKENDRANGE": [
       5,
@@ -124,8 +124,8 @@ $provide.value("$locale", {
         "posSuf": ""
       },
       {
-        "gSize": 0,
-        "lgSize": 0,
+        "gSize": 3,
+        "lgSize": 3,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,

@@ -17,12 +17,12 @@ $provide.value("$locale", {
       "\u0634\u0646\u0628\u0647"
     ],
     "ERANAMES": [
-      "\u0642.\u0645.",
-      "\u0645."
+      "BCE",
+      "CE"
     ],
     "ERAS": [
-      "\u0642.\u0645.",
-      "\u0645."
+      "BCE",
+      "CE"
     ],
     "FIRSTDAYOFWEEK": 5,
     "MONTH": [
@@ -80,14 +80,14 @@ $provide.value("$locale", {
       3,
       4
     ],
-    "fullDate": "y \u0646\u0686\u06cc \u06cc\u06cc\u0644 d \u0646\u0686\u06cc MMMM EEEE \u06a9\u0648\u0646\u06cc",
-    "longDate": "d \u0646\u0686\u06cc MMMM y",
-    "medium": "d MMM y H:mm:ss",
-    "mediumDate": "d MMM y",
-    "mediumTime": "H:mm:ss",
-    "short": "y/M/d H:mm",
-    "shortDate": "y/M/d",
-    "shortTime": "H:mm"
+    "fullDate": "y MMMM d, EEEE",
+    "longDate": "y MMMM d",
+    "medium": "y MMM d HH:mm:ss",
+    "mediumDate": "y MMM d",
+    "mediumTime": "HH:mm:ss",
+    "short": "y-MM-dd HH:mm",
+    "shortDate": "y-MM-dd",
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "Af.",
@@ -108,13 +108,13 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "maxFrac": 2,
-        "minFrac": 2,
+        "maxFrac": 0,
+        "minFrac": 0,
         "minInt": 1,
-        "negPre": "-",
-        "negSuf": "\u00a0\u00a4",
-        "posPre": "",
-        "posSuf": "\u00a0\u00a4"
+        "negPre": "-\u00a4\u00a0",
+        "negSuf": "",
+        "posPre": "\u00a4\u00a0",
+        "posSuf": ""
       }
     ]
   },
