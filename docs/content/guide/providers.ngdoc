@@ -398,7 +398,7 @@ To wrap it up, let's summarize the most important points:
 <tr>
   <td>object available in config phase</td>
   <td class="error">no</td>
-  <td class="error">no</td>
+  <td class="error">no\*\*\*</td>
   <td class="error">no</td>
   <td class="success">yes</td>
   <td class="success">yes\*\*</td>
@@ -426,4 +426,6 @@ To wrap it up, let's summarize the most important points:
 
 \*\* the service object is not available during the config phase, but the provider instance is
 (see the `unicornLauncherProvider` example above).
+
+\*\*\* service can be injected to the config by adding the suffix "Provider" to its name, but this is the wrong way, Provider should be used instead in case a configuration is required. 
 
