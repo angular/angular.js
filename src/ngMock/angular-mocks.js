@@ -1323,7 +1323,7 @@ angular.mock.dump = function(object) {
   ```
  */
 angular.mock.$httpBackendDecorator =
-  ['$rootScope', '$timeout', '$delegate', createHttpBackendMock];
+  ['$q', '$rootScope', '$timeout', '$delegate', createHttpBackendMock];
 
 /**
  * General factory function for $httpBackend mock.
@@ -1339,7 +1339,7 @@ angular.mock.$httpBackendDecorator =
  * @param {Object=} $browser Auto-flushing enabled if specified
  * @return {Object} Instance of $httpBackend mock
  */
-function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
+function createHttpBackendMock($q, $rootScope, $timeout, $delegate, $browser) {
   var definitions = [],
       expectations = [],
       responses = [],
@@ -1438,10 +1438,22 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         return;
       }
     }
-    throw wasExpected ?
+
+    // In addition to be being converted to a rejection, this error also needs to be passed to
+    // the $exceptionHandler and be rethrown (so that the test fails).
+    var error = wasExpected ?
         new Error('No response defined !') :
         new Error('Unexpected request: ' + method + ' ' + url + '\n' +
                   (expectation ? 'Expected ' + expectation : 'No more request expected'));
+
+    // IE10+ and PhanthomJS do not set stack trace information, until the error is thrown
+    if (!error.stack) {
+      try {
+        throw error;
+      } catch (e) { /* empty */ }
+    }
+
+    throw new $q.$$PassToExceptionHandlerError(error);
   }
 
   /**
@@ -2706,7 +2718,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  */
 angular.mock.e2e = {};
 angular.mock.e2e.$httpBackendDecorator =
-  ['$rootScope', '$timeout', '$delegate', '$browser', createHttpBackendMock];
+  ['$q', '$rootScope', '$timeout', '$delegate', '$browser', createHttpBackendMock];
 
 
 /**
