@@ -109,9 +109,6 @@ describe('sanitizeUri', function() {
       testUrl = 'ftp://foo.com/bar';
       expect(sanitizeImg(testUrl)).toBe('ftp://foo.com/bar');
 
-      testUrl = 'sftp://foo.com/bar';
-      expect(sanitizeImg(testUrl)).toBe('sftp://foo.com/bar');
-
       testUrl = 'file:///foo/bar.html';
       expect(sanitizeImg(testUrl)).toBe('file:///foo/bar.html');
     });
