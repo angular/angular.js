@@ -67,6 +67,12 @@ angular.module('search', [])
     clearResults();
     $scope.q = '';
   };
+
+  $scope.handleResultClicked = function($event) {
+    if ($event.which === 1 && !$event.ctrlKey && !$event.metaKey) {
+      $scope.hideResults();
+    }
+  };
 }])
 
 
