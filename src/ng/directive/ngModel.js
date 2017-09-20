@@ -878,6 +878,154 @@ NgModelController.prototype = {
    */
   $overrideModelOptions: function(options) {
     this.$options = this.$options.createChild(options);
+  },
+
+  /**
+   * @ngdoc method
+   *
+   * @name  ngModel.NgModelController#$processModelValue
+
+   * @description
+   *
+   * Runs the model -> view pipeline on the current
+   * {@link ngModel.NgModelController#$modelValue $modelValue}.
+   *
+   * The following actions are performed by this method:
+   *
+   * - the `$modelValue` is run through the {@link ngModel.NgModelController#$formatters $formatters}
+   * and the result is set to the {@link ngModel.NgModelController#$viewValue $viewValue}
+   * - the `ng-empty` or `ng-not-empty` class is set on the element
+   * - if the `$viewValue` has changed:
+   *   - {@link ngModel.NgModelController#$render $render} is called on the control
+   *   - the {@link ngModel.NgModelController#$validators $validators} are run and
+   *   the validation status is set.
+   *
+   * This method is called by ngModel internally when the bound scope value changes.
+   * Application developers usually do not have to call this function themselves.
+   *
+   * This function can be used when the `$viewValue` or the rendered DOM value are not correctly
+   * formatted and the `$modelValue` must be run through the `$formatters` again.
+   *
+   * #### Example
+   *
+   * Consider a text input with an autocomplete list (for fruit), where the items are
+   * objects with a name and an id.
+   * A user enters `ap` and then selects `Apricot` from the list.
+   * Based on this, the autocomplete widget will call `$setViewValue({name: 'Apricot', id: 443})`,
+   * but the rendered value will still be `ap`.
+   * The widget can then call `ctrl.$processModelValue()` to run the model -> view
+   * pipeline again, which formats the object to the string `Apricot`,
+   * then updates the `$viewValue`, and finally renders it in the DOM.
+   *
+   * <example module="inputExample" name="ng-model-process">
+     <file name="index.html">
+      <div ng-controller="inputController" style="display: flex;">
+        <div style="margin-right: 30px;">
+          Search Fruit:
+          <basic-autocomplete items="items" on-select="selectedFruit = item"></basic-autocomplete>
+        </div>
+        <div>
+          Model:<br>
+          <pre>{{selectedFruit | json}}</pre>
+        </div>
+      </div>
+     </file>
+     <file name="app.js">
+      angular.module('inputExample', [])
+        .controller('inputController', function($scope) {
+          $scope.items = [
+            {name: 'Apricot', id: 443},
+            {name: 'Clementine', id: 972},
+            {name: 'Durian', id: 169},
+            {name: 'Jackfruit', id: 982},
+            {name: 'Strawberry', id: 863}
+          ];
+        })
+        .component('basicAutocomplete', {
+          bindings: {
+            items: '<',
+            onSelect: '&'
+          },
+          templateUrl: 'autocomplete.html',
+          controller: function($element, $scope) {
+            var that = this;
+            var ngModel;
+
+            that.$postLink = function() {
+              ngModel = $element.find('input').controller('ngModel');
+
+              ngModel.$formatters.push(function(value) {
+                return (value && value.name) || value;
+              });
+
+              ngModel.$parsers.push(function(value) {
+                var match = value;
+                for (var i = 0; i < that.items.length; i++) {
+                  if (that.items[i].name === value) {
+                    match = that.items[i];
+                    break;
+                  }
+                }
+
+                return match;
+              });
+            };
+
+            that.selectItem = function(item) {
+              ngModel.$setViewValue(item);
+              ngModel.$processModelValue();
+              that.onSelect({item: item});
+            };
+          }
+        });
+     </file>
+     <file name="autocomplete.html">
+       <div>
+         <input type="search" ng-model="$ctrl.searchTerm" />
+         <ul>
+           <li ng-repeat="item in $ctrl.items | filter:$ctrl.searchTerm">
+             <button ng-click="$ctrl.selectItem(item)">{{ item.name }}</button>
+           </li>
+         </ul>
+       </div>
+     </file>
+   * </example>
+   *
+   */
+  $processModelValue: function() {
+    var viewValue = this.$$format();
+
+    if (this.$viewValue !== viewValue) {
+      this.$$updateEmptyClasses(viewValue);
+      this.$viewValue = this.$$lastCommittedViewValue = viewValue;
+      this.$render();
+      // It is possible that model and view value have been updated during render
+      this.$$runValidators(this.$modelValue, this.$viewValue, noop);
+    }
+  },
+
+  /**
+   * This method is called internally to run the $formatters on the $modelValue
+   */
+  $$format: function() {
+    var formatters = this.$formatters,
+        idx = formatters.length;
+
+    var viewValue = this.$modelValue;
+    while (idx--) {
+      viewValue = formatters[idx](viewValue);
+    }
+
+    return viewValue;
+  },
+
+  /**
+   * This method is called internally when the bound scope value changes.
+   */
+  $$setModelValue: function(modelValue) {
+    this.$modelValue = this.$$rawModelValue = modelValue;
+    this.$$parserValid = undefined;
+    this.$processModelValue();
   }
 };
 
@@ -894,30 +1042,14 @@ function setupModelWatcher(ctrl) {
     var modelValue = ctrl.$$ngModelGet(scope);
 
     // if scope model value and ngModel value are out of sync
-    // TODO(perf): why not move this to the action fn?
+    // This cannot be moved to the action function, because it would not catch the
+    // case where the model is changed in the ngChange function or the model setter
     if (modelValue !== ctrl.$modelValue &&
-       // checks for NaN is needed to allow setting the model to NaN when there's an asyncValidator
-        // eslint-disable-next-line no-self-compare
-       (ctrl.$modelValue === ctrl.$modelValue || modelValue === modelValue)
+      // checks for NaN is needed to allow setting the model to NaN when there's an asyncValidator
+      // eslint-disable-next-line no-self-compare
+      (ctrl.$modelValue === ctrl.$modelValue || modelValue === modelValue)
     ) {
-      ctrl.$modelValue = ctrl.$$rawModelValue = modelValue;
-      ctrl.$$parserValid = undefined;
-
-      var formatters = ctrl.$formatters,
-          idx = formatters.length;
-
-      var viewValue = modelValue;
-      while (idx--) {
-        viewValue = formatters[idx](viewValue);
-      }
-      if (ctrl.$viewValue !== viewValue) {
-        ctrl.$$updateEmptyClasses(viewValue);
-        ctrl.$viewValue = ctrl.$$lastCommittedViewValue = viewValue;
-        ctrl.$render();
-
-        // It is possible that model and view value have been updated during render
-        ctrl.$$runValidators(ctrl.$modelValue, ctrl.$viewValue, noop);
-      }
+      ctrl.$$setModelValue(modelValue);
     }
 
     return modelValue;
