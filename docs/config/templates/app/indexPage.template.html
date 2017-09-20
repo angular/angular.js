@@ -132,7 +132,7 @@
                 <div ng-repeat="(key, value) in results track by key" class="search-results-group" ng-class="colClassName + ' col-group-' + key" ng-show="value.length > 0">
                   <h4 class="search-results-group-heading">{{ key }}</h4>
                   <ul class="search-results">
-                    <li ng-repeat="item in value" class="search-result"><a ng-click="hideResults()" ng-href="{{ item.path }}">{{ item.name }}</a></li>
+                    <li ng-repeat="item in value" class="search-result"><a ng-click="handleResultClicked($event)" ng-href="{{ item.path }}">{{ item.name }}</a></li>
                   </ul>
                 </div>
               </div>
