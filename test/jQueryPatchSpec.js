@@ -28,7 +28,7 @@ if (window.jQuery) {
       expect(spy2).toHaveBeenCalledTimes(1);
     });
 
-    describe('$detach event', function() {
+    describe('$destroy event', function() {
 
       it('should fire on remove()', function() {
         doc.find('span').remove();
@@ -77,7 +77,7 @@ if (window.jQuery) {
       expect(spy1).not.toHaveBeenCalled();
     });
 
-    describe('$detach event is not invoked in too many cases', function() {
+    describe('$destroy event is not invoked in too many cases', function() {
 
       it('should fire only on matched elements on remove(selector)', function() {
         doc.find('span').remove('.second');
