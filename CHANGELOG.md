@@ -11637,7 +11637,7 @@ There are no breaking changes in this release (promise!)
    [#4437](https://github.com/angular/angular.js/issues/4437), [#4874](https://github.com/angular/angular.js/issues/4874))
 - **minErr:** remove references to internal APIs
   ([94764ee0](https://github.com/angular/angular.js/commit/94764ee08910726db1db7a1101c3001500306dea))
-- **ngIf:** don't create multiple elements when changing from a truthy value to another thruthy value
+- **ngIf:** don't create multiple elements when changing from a truthy value to another truthy value
   ([4612705e](https://github.com/angular/angular.js/commit/4612705ec297bc6ba714cb7a98f1be6aff77c4b8),
    [#4852](https://github.com/angular/angular.js/issues/4852))
 - **urlUtils:**
