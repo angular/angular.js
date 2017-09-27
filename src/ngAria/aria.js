@@ -10,8 +10,6 @@
  * attributes that convey state or semantic information about the application for users
  * of assistive technologies, such as screen readers.
  *
- * <div doc-module-components="ngAria"></div>
- *
  * ## Usage
  *
  * For ngAria to do its magic, simply include the module `ngAria` as a dependency. The following

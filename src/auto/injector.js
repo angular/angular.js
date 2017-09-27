@@ -147,7 +147,7 @@ function annotate(fn, strictDi, name) {
  *   })).toBe($injector);
  * ```
  *
- * # Injection Function Annotation
+ * ## Injection Function Annotation
  *
  * JavaScript does not have annotations, and annotations are needed for dependency injection. The
  * following are all valid ways of annotating function with injection arguments and are equivalent.
@@ -165,7 +165,7 @@ function annotate(fn, strictDi, name) {
  *   $injector.invoke(['serviceA', function(serviceA){}]);
  * ```
  *
- * ## Inference
+ * ### Inference
  *
  * In JavaScript calling `toString()` on a function returns the function definition. The definition
  * can then be parsed and the function arguments can be extracted. This method of discovering
@@ -173,10 +173,10 @@ function annotate(fn, strictDi, name) {
  * *NOTE:* This does not work with minification, and obfuscation tools since these tools change the
  * argument names.
  *
- * ## `$inject` Annotation
+ * ### `$inject` Annotation
  * By adding an `$inject` property onto a function the injection parameters can be specified.
  *
- * ## Inline
+ * ### Inline
  * As an array of injection names, where the last item in the array is the function to call.
  */
 
@@ -264,7 +264,7 @@ function annotate(fn, strictDi, name) {
  * function is invoked. There are three ways in which the function can be annotated with the needed
  * dependencies.
  *
- * # Argument names
+ * ## Argument names
  *
  * The simplest form is to extract the dependencies from the arguments of the function. This is done
  * by converting the function into a string using `toString()` method and extracting the argument
@@ -284,7 +284,7 @@ function annotate(fn, strictDi, name) {
  * This method does not work with code minification / obfuscation. For this reason the following
  * annotation strategies are supported.
  *
- * # The `$inject` property
+ * ## The `$inject` property
  *
  * If a function has an `$inject` property and its value is an array of strings, then the strings
  * represent names of services to be injected into the function.
@@ -300,7 +300,7 @@ function annotate(fn, strictDi, name) {
  *   expect(injector.annotate(MyController)).toEqual(['$scope', '$route']);
  * ```
  *
- * # The array notation
+ * ## The array notation
  *
  * It is often desirable to inline Injected functions and that's when setting the `$inject` property
  * is very inconvenient. In these situations using the array notation to specify the dependencies in

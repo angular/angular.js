@@ -531,7 +531,7 @@
  * $sce#getTrustedResourceUrl $sce.getTrustedResourceUrl}.
  *
  *
- * #### `replace` ([*DEPRECATED*!]
+ * #### `replace` (*DEPRECATED*)
  *
  * `replace` will be removed in next major release - i.e. v2.0).
  *

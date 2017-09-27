@@ -8,9 +8,7 @@
  * The `ngAnimate` module provides support for CSS-based animations (keyframes and transitions) as well as JavaScript-based animations via
  * callback hooks. Animations are not enabled by default, however, by including `ngAnimate` the animation hooks are enabled for an AngularJS app.
  *
- * <div doc-module-components="ngAnimate"></div>
- *
- * # Usage
+ * ## Usage
  * Simply put, there are two ways to make use of animations when ngAnimate is used: by using **CSS** and **JavaScript**. The former works purely based
  * using CSS (by using matching CSS selectors/styles) and the latter triggers animations that are registered via `module.animation()`. For
  * both CSS and JS animations the sole requirement is to have a matching `CSS class` that exists both in the registered animation and within

@@ -2,7 +2,7 @@
 {% extends "api/api.template.html" %}
 
 {% block additional %}
-  <h2>Usage</h2>
+  <h2 id="usage">Usage</h2>
   <h3>In HTML Template Binding</h3>
   {% if doc.usage %}
     {$ doc.usage | code $}

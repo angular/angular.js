@@ -15,7 +15,7 @@
  * $q can be used in two fashions --- one which is more similar to Kris Kowal's Q or jQuery's Deferred
  * implementations, and the other which resembles ES6 (ES2015) promises to some degree.
  *
- * # $q constructor
+ * ## $q constructor
  *
  * The streamlined ES6 style promise is essentially just using $q as a constructor which takes a `resolver`
  * function as the first argument. This is similar to the native Promise implementation from ES6,
@@ -103,7 +103,7 @@
  * For more on this please see the [Q documentation](https://github.com/kriskowal/q) especially the
  * section on serial or parallel joining of promises.
  *
- * # The Deferred API
+ * ## The Deferred API
  *
  * A new instance of deferred is constructed by calling `$q.defer()`.
  *
@@ -125,7 +125,7 @@
  * - promise – `{Promise}` – promise object associated with this deferred.
  *
  *
- * # The Promise API
+ * ## The Promise API
  *
  * A new promise instance is created when a deferred instance is created and can be retrieved by
  * calling `deferred.promise`.
@@ -157,7 +157,7 @@
  *   specification](https://github.com/kriskowal/q/wiki/API-Reference#promisefinallycallback) for
  *   more information.
  *
- * # Chaining promises
+ * ## Chaining promises
  *
  * Because calling the `then` method of a promise returns a new derived promise, it is easily
  * possible to create a chain of promises:
@@ -177,7 +177,7 @@
  * $http's response interceptors.
  *
  *
- * # Differences between Kris Kowal's Q and $q
+ * ## Differences between Kris Kowal's Q and $q
  *
  *  There are two main differences:
  *
@@ -187,7 +187,7 @@
  * - Q has many more features than $q, but that comes at a cost of bytes. $q is tiny, but contains
  *   all the important functionality needed for common async tasks.
  *
- * # Testing
+ * ## Testing
  *
  *  ```js
  *    it('should simulate promise', inject(function($q, $rootScope) {

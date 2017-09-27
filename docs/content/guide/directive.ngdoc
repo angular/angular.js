@@ -977,7 +977,7 @@ controllers using `require`.
 Otherwise use `link`.
 </div>
 
-### Summary
+## Summary
 
 Here we've seen the main use cases for directives. Each of these samples acts as a good starting
 point for creating your own directives.

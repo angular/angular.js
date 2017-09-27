@@ -14,15 +14,11 @@ var noop;
  * @name ngRoute
  * @description
  *
- * # ngRoute
- *
  * The `ngRoute` module provides routing and deeplinking services and directives for AngularJS apps.
  *
  * ## Example
  * See {@link ngRoute.$route#example $route} for an example of configuring and using `ngRoute`.
  *
- *
- * <div doc-module-components="ngRoute"></div>
  */
 /* global -ngRouteModule */
 var ngRouteModule = angular.
