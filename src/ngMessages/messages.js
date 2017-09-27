@@ -20,7 +20,7 @@ var jqLite;
  * Currently, the ngMessages module only contains the code for the `ngMessages`, `ngMessagesInclude`
  * `ngMessage` and `ngMessageExp` directives.
  *
- * # Usage
+ * ## Usage
  * The `ngMessages` directive allows keys in a key/value collection to be associated with a child element
  * (or 'message') that will show or hide based on the truthiness of that key's value in the collection. A common use
  * case for `ngMessages` is to display error messages for inputs using the `$error` object exposed by the
