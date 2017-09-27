@@ -463,13 +463,13 @@ function $SceDelegateProvider() {
  *
  * `$sce` is a service that provides Strict Contextual Escaping services to AngularJS.
  *
- * # Strict Contextual Escaping
+ * ## Strict Contextual Escaping
  *
  * Strict Contextual Escaping (SCE) is a mode in which AngularJS constrains bindings to only render
  * trusted values. Its goal is to assist in writing code in a way that (a) is secure by default, and
  * (b) makes auditing for security vulnerabilities such as XSS, clickjacking, etc. a lot easier.
  *
- * ## Overview
+ * ### Overview
  *
  * To systematically block XSS security bugs, AngularJS treats all values as untrusted by default in
  * HTML or sensitive URL bindings. When binding untrusted values, AngularJS will automatically
@@ -485,7 +485,7 @@ function $SceDelegateProvider() {
  *
  * As of version 1.2, AngularJS ships with SCE enabled by default.
  *
- * ## In practice
+ * ### In practice
  *
  * Here's an example of a binding in a privileged context:
  *
@@ -522,7 +522,7 @@ function $SceDelegateProvider() {
  * (and shorthand methods such as {@link ng.$sce#trustAsHtml $sce.trustAsHtml}, etc.) to
  * build the trusted versions of your values.
  *
- * ## How does it work?
+ * ### How does it work?
  *
  * In privileged contexts, directives and code will bind to the result of {@link ng.$sce#getTrusted
  * $sce.getTrusted(context, value)} rather than to the value directly.  Think of this function as
@@ -546,7 +546,7 @@ function $SceDelegateProvider() {
  * }];
  * ```
  *
- * ## Impact on loading templates
+ * ### Impact on loading templates
  *
  * This applies both to the {@link ng.directive:ngInclude `ng-include`} directive as well as
  * `templateUrl`'s specified by {@link guide/directive directives}.
@@ -566,7 +566,7 @@ function $SceDelegateProvider() {
  * won't work on all browsers.  Also, loading templates from `file://` URL does not work on some
  * browsers.
  *
- * ## This feels like too much overhead
+ * ### This feels like too much overhead
  *
  * It's important to remember that SCE only applies to interpolation expressions.
  *
@@ -590,7 +590,7 @@ function $SceDelegateProvider() {
  * security onto an application later.
  *
  * <a name="contexts"></a>
- * ## What trusted context types are supported?
+ * ### What trusted context types are supported?
  *
  * | Context             | Notes          |
  * |---------------------|----------------|
@@ -606,7 +606,7 @@ function $SceDelegateProvider() {
  * in AngularJS currently, so their corresponding `$sce.trustAs` functions aren't useful yet. This
  * might evolve.
  *
- * ## Format of items in {@link ng.$sceDelegateProvider#resourceUrlWhitelist resourceUrlWhitelist}/{@link ng.$sceDelegateProvider#resourceUrlBlacklist Blacklist} <a name="resourceUrlPatternItem"></a>
+ * ### Format of items in {@link ng.$sceDelegateProvider#resourceUrlWhitelist resourceUrlWhitelist}/{@link ng.$sceDelegateProvider#resourceUrlBlacklist Blacklist} <a name="resourceUrlPatternItem"></a>
  *
  *  Each element in these arrays must be one of the following:
  *
@@ -653,7 +653,7 @@ function $SceDelegateProvider() {
  *
  * Refer {@link ng.$sceDelegateProvider $sceDelegateProvider} for an example.
  *
- * ## Show me an example using SCE.
+ * ### Show me an example using SCE.
  *
  * <example module="mySceApp" deps="angular-sanitize.js" name="sce-service">
  * <file name="index.html">

@@ -5,16 +5,11 @@
  * @name ngTouch
  * @description
  *
- * # ngTouch
- *
  * The `ngTouch` module provides helpers for touch-enabled devices.
  * The implementation is based on jQuery Mobile touch event handling
- * ([jquerymobile.com](http://jquerymobile.com/)).
- *
+ * ([jquerymobile.com](http://jquerymobile.com/)). *
  *
  * See {@link ngTouch.$swipe `$swipe`} for usage.
- *
- * <div doc-module-components="ngTouch"></div>
  *
  */
 

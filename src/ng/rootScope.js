@@ -143,7 +143,7 @@ function $RootScopeProvider() {
      * an in-depth introduction and usage examples.
      *
      *
-     * # Inheritance
+     * ## Inheritance
      * A scope can inherit from a parent scope, as in this example:
      * ```js
          var parent = $rootScope;
@@ -318,7 +318,7 @@ function $RootScopeProvider() {
        *
        *
        *
-       * # Example
+       * #### Example
        * ```js
            // let's assume that scope was dependency injected as the $rootScope
            var scope = $rootScope;
@@ -541,7 +541,7 @@ function $RootScopeProvider() {
        *   adding, removing, and moving items belonging to an object or array.
        *
        *
-       * # Example
+       * #### Example
        * ```js
           $scope.names = ['igor', 'matias', 'misko', 'james'];
           $scope.dataCount = 4;
@@ -743,7 +743,7 @@ function $RootScopeProvider() {
        *
        * In unit tests, you may need to call `$digest()` to simulate the scope life cycle.
        *
-       * # Example
+       * #### Example
        * ```js
            var scope = ...;
            scope.name = 'misko';
@@ -972,7 +972,7 @@ function $RootScopeProvider() {
        * the expression are propagated (uncaught). This is useful when evaluating AngularJS
        * expressions.
        *
-       * # Example
+       * #### Example
        * ```js
            var scope = ng.$rootScope.Scope();
            scope.a = 1;
@@ -1054,9 +1054,8 @@ function $RootScopeProvider() {
        * cycle of {@link ng.$exceptionHandler exception handling},
        * {@link ng.$rootScope.Scope#$digest executing watches}.
        *
-       * ## Life cycle
+       * **Life cycle: Pseudo-Code of `$apply()`**
        *
-       * # Pseudo-Code of `$apply()`
        * ```js
            function $apply(expr) {
              try {

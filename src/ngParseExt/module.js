@@ -8,13 +8,8 @@
  * @packageName angular-parse-ext
  * @description
  *
- * # ngParseExt
- *
  * The `ngParseExt` module provides functionality to allow Unicode characters in
  * identifiers inside AngularJS expressions.
- *
- *
- * <div doc-module-components="ngParseExt"></div>
  *
  * This module allows the usage of any identifier that follows ES6 identifier naming convention
  * to be used as an identifier in an AngularJS expression. ES6 delegates some of the identifier
