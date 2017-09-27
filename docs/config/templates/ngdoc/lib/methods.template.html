@@ -2,11 +2,11 @@
 {% import "lib/deprecated.html" as x -%}
 
 {%- if doc.methods %}
-<h2>Methods</h2>
+<h2 id="{$ doc.name $}-methods">Methods</h2>
 <ul class="methods">
   {%- for method in doc.methods %}
-  <li id="{$ method.name $}">
-    <h3>{$ lib.functionSyntax(method) $}</h3>
+  <li>
+    <h3 id="{$ method.name $}">{$ lib.functionSyntax(method) $}</h3>
     <div>{$ method.description | marked $}</div>
 
     {$ x.deprecatedBlock(method) $}

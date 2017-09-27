@@ -905,6 +905,35 @@ iframe[name="example-anchoringExample"] {
   background-color: inherit;
 }
 
+toc-container {
+  display: block;
+  margin: 15px 10px;
+}
+
+toc-container b {
+  text-transform: uppercase;
+}
+
+toc-container .btn {
+  padding: 3px 6px;
+  font-size: 13px;
+  margin-left: 5px;
+}
+
+toc-container > div > toc-tree ul {
+  list-style: none;
+  padding-left: 15px;
+  padding-bottom: 2px;
+}
+
+toc-container > div > toc-tree > ul {
+  padding-left: 0;
+}
+
+toc-container > div > toc-tree > ul > li > toc-tree > ul > li toc-tree > ul li {
+  font-size: 13px;
+}
+
 @media handheld and (max-width:800px), screen and (max-device-width:800px), screen and (max-width:800px) {
   .navbar {
     min-height: auto;

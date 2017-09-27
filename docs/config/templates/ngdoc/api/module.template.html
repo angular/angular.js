@@ -8,7 +8,7 @@
 
 {$ x.deprecatedBlock(doc) $}
 
-<h2>Installation</h2>
+<h2 id="module-installation">Installation</h2>
 {% if doc.installation or doc.installation == '' %}
   {$ doc.installation | marked $}
 {% else %}
@@ -76,7 +76,7 @@
 
 {% if doc.componentGroups.length %}
 <div class="component-breakdown">
-  <h2>Module Components</h2>
+  <h2 id="module-components">Module Components</h2>
   {% for componentGroup in doc.componentGroups %}
   <div>
     <h3 class="component-heading" id="{$ componentGroup.groupType | dashCase $}">{$ componentGroup.groupType | title $}</h3>
@@ -98,7 +98,7 @@
 {% endif %}
 
 {% if doc.usage %}
-  <h2>Usage</h2>
+  <h2 id="module-usage">Usage</h2>
   {$ doc.usage | marked $}
 {% endif %}
 
