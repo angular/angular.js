@@ -1136,7 +1136,7 @@ addSetValidityMethod({
  *  - {@link ng.directive:select select}
  *  - {@link ng.directive:textarea textarea}
  *
- * # Complex Models (objects or collections)
+ * ## Complex Models (objects or collections)
  *
  * By default, `ngModel` watches the model by reference, not value. This is important to know when
  * binding inputs to models that are objects (e.g. `Date`) or collections (e.g. arrays). If only properties of the
@@ -1152,7 +1152,7 @@ addSetValidityMethod({
  * first level of the object (or only changing the properties of an item in the collection if it's an array) will still
  * not trigger a re-rendering of the model.
  *
- * # CSS classes
+ * ## CSS classes
  * The following CSS classes are added and removed on the associated input/select/textarea element
  * depending on the validity of the model.
  *
@@ -1171,7 +1171,7 @@ addSetValidityMethod({
  *
  * Keep in mind that ngAnimate can detect each of these classes when added and removed.
  *
- * ## Animation Hooks
+ * ### Animation Hooks
  *
  * Animations within models are triggered when any of the associated CSS classes are added and removed
  * on the input element which is attached to the model. These classes include: `.ng-pristine`, `.ng-dirty`,

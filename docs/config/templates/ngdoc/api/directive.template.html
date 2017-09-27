@@ -2,7 +2,7 @@
 {% extends "api/api.template.html" %}
 
 {% block additional %}
-  <h2>Directive Info</h2>
+  <h2 id="{$ doc.name $}-info">Directive Info</h2>
   <ul>
     {% if doc.scope %}<li>This directive creates new scope.</li>{% endif %}
     <li>This directive executes at priority level {$ doc.priority $}.</li>

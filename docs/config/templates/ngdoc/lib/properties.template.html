@@ -2,11 +2,11 @@
 {% import "lib/deprecated.html" as x -%}
 
 {%- if doc.properties %}
-<h2>Properties</h2>
+<h2 id="{$ doc.name $}-properties">Properties</h2>
 <ul class="properties">
   {%- for property in doc.properties %}
-  <li id="{$ property.name $}">
-    <h3>{$ property.name | code $}</h3>
+  <li>
+    <h3 id="{$ property.name $}">{$ property.name | code $}</h3>
     {$ lib.typeInfo(property) $}
     {$ x.deprecatedBlock(property) $}
   </li>
