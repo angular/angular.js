@@ -1084,6 +1084,16 @@ describe('ngMock', function() {
     });
 
 
+    it('should provide "whenOverride" methods for each HTTP verb', function() {
+      expect(typeof hb.whenOverrideGET).toBe('function');
+      expect(typeof hb.whenOverridePOST).toBe('function');
+      expect(typeof hb.whenOverridePUT).toBe('function');
+      expect(typeof hb.whenOverridePATCH).toBe('function');
+      expect(typeof hb.whenOverrideDELETE).toBe('function');
+      expect(typeof hb.whenOverrideHEAD).toBe('function');
+    });
+
+
     it('should provide "route" shortcuts for expect and when', function() {
       expect(typeof hb.whenRoute).toBe('function');
       expect(typeof hb.expectRoute).toBe('function');
@@ -1097,6 +1107,22 @@ describe('ngMock', function() {
       callback.and.callFake(function(status, response) {
         expect(status).toBe(200);
         expect(response).toBe('content');
+      });
+
+      hb('GET', '/url1', null, callback);
+      expect(callback).not.toHaveBeenCalled();
+      hb.flush();
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    it('should match against whenOverride() handlers before normal when() handlers', function() {
+      hb.when('GET', '/url1').respond(200, 'content', {});
+      hb.whenOverride('GET', '/url1').respond(201, 'another', {});
+
+      callback.and.callFake(function(status, response) {
+        expect(status).toBe(201);
+        expect(response).toBe('another');
       });
 
       hb('GET', '/url1', null, callback);

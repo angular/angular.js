@@ -1450,6 +1450,30 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
     throw error;
   }
 
+  function when(method, url, data, headers, keys) {
+    var definition = new MockHttpExpectation(method, url, data, headers, keys),
+        chain = {
+          respond: function(status, data, headers, statusText) {
+            definition.passThrough = undefined;
+            definition.response = createResponse(status, data, headers, statusText);
+            return chain;
+          }
+        };
+
+    if ($browser) {
+      chain.passThrough = function() {
+        definition.response = undefined;
+        definition.passThrough = true;
+        return chain;
+      };
+    }
+
+    return {
+      definition: definition,
+      chain: chain
+    };
+  }
+
   /**
    * @ngdoc method
    * @name $httpBackend#when
@@ -1482,25 +1506,80 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
 
     assertArgDefined(arguments, 1, 'url');
 
-    var definition = new MockHttpExpectation(method, url, data, headers, keys),
-        chain = {
-          respond: function(status, data, headers, statusText) {
-            definition.passThrough = undefined;
-            definition.response = createResponse(status, data, headers, statusText);
-            return chain;
-          }
-        };
+    var mock = when(method, url, data, headers, keys);
 
-    if ($browser) {
-      chain.passThrough = function() {
-        definition.response = undefined;
-        definition.passThrough = true;
-        return chain;
-      };
-    }
+    definitions.push(mock.definition);
+    return mock.chain;
+  };
 
-    definitions.push(definition);
-    return chain;
+  /**
+   * @ngdoc method
+   * @name $httpBackend#whenOverride
+   * @description
+   * Creates a new backend definition that is put at the front of the queue for matching.
+   * This means that a  matching `whenOverride` definition will always respond even if
+   * there is a more specific `when` definition.
+   *
+   * #### Expected usage:
+   * ```js
+   * // Without "override":
+   * $httpBackend.whenPOST('/foo').respond(1);
+   * $httpBackend.whenPOST('/foo', {id: 1}).respond(2);
+   * $http.post('/foo');            // --> 1
+   * $http.post('/foo', {id: 1});   // --> 1
+   *
+   * // With "overrride":
+   * $httpBackend.whenPOST('/foo').respond(1);
+   * $httpBackend.whenOverridePOST('/foo', {id: 1}).respond(2);
+   * $http.post('/foo');            // --> 1
+   * $http.post('/foo', {id: 1});   // --> 2
+   * ```
+   *
+   * #### Potentially confusing usage:
+   * ```js
+   * // Without "override":
+   * $httpBackend.whenPOST('/foo', {id: 1}).respond(1);
+   * $httpBackend.whenPOST('/foo').respond(2);
+   * $http.post('/foo');            // --> 2
+   * $http.post('/foo', {id: 1});   // --> 1
+   *
+   * // With "overrride":
+   * $httpBackend.whenPOST('/foo', {id: 1}).respond(1);
+   * $httpBackend.whenOverridePOST('/foo').respond(2);
+   * $http.post('/foo');            // --> 2
+   * $http.post('/foo', {id: 1});   // --> 2
+   * ```
+   *
+   * @param {string} method HTTP method.
+   * @param {string|RegExp|function(string)=} url HTTP url or function that receives a url
+   *   and returns true if the url matches the current definition.
+   * @param {(string|RegExp|function(string))=} data HTTP request body or function that receives
+   *   data string and returns true if the data is as expected.
+   * @param {(Object|function(Object))=} headers HTTP headers or function that receives http header
+   *   object and returns true if the headers match the current definition.
+   * @param {(Array)=} keys Array of keys to assign to regex matches in request url described above.
+   * @returns {requestHandler} Returns an object with `respond` method that controls how a matched
+   *   request is handled. You can save this object for later use and invoke `respond` again in
+   *   order to change how a matched request is handled.
+   *
+   *  - respond –
+   *      ```js
+   *      {function([status,] data[, headers, statusText])
+   *      | function(function(method, url, data, headers, params)}
+   *      ```
+   *    – The respond method takes a set of static data to be returned or a function that can
+   *    return an array containing response status (number), response data (Array|Object|string),
+   *    response headers (Object), and the text for the status (string). The respond method returns
+   *    the `requestHandler` object for possible overrides.
+   */
+  $httpBackend.whenOverride = function(method, url, data, headers, keys) {
+
+    assertArgDefined(arguments, 1, 'url');
+
+    var mock = when(method, url, data, headers, keys);
+
+    definitions.unshift(mock.definition);
+    return mock.chain;
   };
 
   /**
@@ -1596,6 +1675,8 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * order to change how a matched request is handled.
    */
   createShortMethods('when');
+
+  createShortMethods('whenOverride');
 
   /**
    * @ngdoc method
