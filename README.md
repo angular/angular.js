@@ -21,26 +21,6 @@ piece of cake. Best of all? It makes development fun!
 
 ##### Looking for the new Angular? Go here: https://github.com/angular/angular
 
-Building AngularJS
----------
-[Once you have set up your environment](https://docs.angularjs.org/misc/contribute), just run:
-
-    grunt package
-
-
-Running tests
--------------
-To execute all unit tests, use:
-
-    grunt test:unit
-
-To execute end-to-end (e2e) tests, use:
-
-    grunt package
-    grunt test:e2e
-
-To learn more about the grunt tasks, run `grunt --help`
-
 Contribute & Develop
 --------------------
 

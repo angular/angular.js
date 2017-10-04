@@ -3,80 +3,95 @@
 We'd love for you to contribute to our source code and to make AngularJS even better than it is
 today! Here are the guidelines we'd like you to follow:
 
- - [Code of Conduct](#coc)
- - [Question or Problem?](#question)
- - [Issues and Bugs](#issue)
- - [Feature Requests](#feature)
- - [Submission Guidelines](#submit)
- - [Coding Rules](#rules)
- - [Commit Message Guidelines](#commit)
- - [Signing the CLA](#cla)
- - [Further Info](#info)
+- [Code of Conduct](#coc)
+- [Questions, Bugs, Features](#requests)
+  - [Questions and Problems](#question)
+  - [Issues and Bugs](#issue)
+  - [Feature Requests](#feature)
+  - [Improving Documentation](#docs)
+  - [Issue Submission Guidelines](#submit)
+- [Code & Documentation Contributions](#contributions)
+  - [Development Setup](#development-setup)
+  - [Coding Rules](#rules)
+  - [Writing Documentation](#writing-docs)
+  - [Commit Message Guidelines](#commit)
+  - [Pull Request Submission Guidelines](#submit-pr)
+  - [Signing the CLA](#cla)
 
 ## <a name="coc"></a> Code of Conduct
 
 Help us keep AngularJS open and inclusive. Please read and follow our [Code of Conduct][coc].
 
+## <a name="requests"></a> Questions, Bugs, Features
+
 ## <a name="question"></a> Got a Question or Problem?
 
-If you have questions about how to use AngularJS, please direct these to the [Google Group][groups]
-discussion list or [StackOverflow][stackoverflow]. We are also available on [IRC][irc] and
-[Gitter][gitter].
+Do not open issues for general support questions as we want to keep GitHub issues for bug reports and feature requests. You've got much better chances of getting your question answered on dedicated support platforms, the best being [Stack Overflow][stackoverflow]:
 
-## <a name="issue"></a> Found an Issue?
+Stack Overflow is a much better place to ask questions since:
 
-If you find a bug in the source code or a mistake in the documentation, you can help us by
-submitting an issue to our [GitHub Repository][github]. Even better you can submit a Pull Request
-with a fix.
+- there are thousands of people willing to help on Stack Overflow
+- questions and answers stay available for public viewing so your question / answer might help someone else
+- Stack Overflow's voting system assures that the best answers are prominently visible.
 
-**Localization Issues:** AngularJS uses the [Google Closure I18N library] to generate
+To save your and our time, we will systematically close all issues that are requests for general support and redirect people to the section you are reading right now.
+
+Other channels for support are:
+- the [Google Group][groups] discussion list
+- the [AngularJS IRC][irc]
+- the [AngularJS Gitter][gitter]
+
+## <a name="issue"></a> Found an Issue or Bug?
+
+If you find a bug in the source code, you can help us by submitting an issue to our [GitHub Repository][github]. Even better you can submit a Pull Request with a fix.
+
+**Please see the [Submission Guidelines](#submit) below.**
+
+**Special Note for Localization Issues:** AngularJS uses the [Google Closure I18N library] to generate
 its own I18N files (the ngLocale module). This means that any changes to these files would be lost
 the next time that we import the library.
 Since the Closure library i18n data is itself auto-generated from the data of the
 [Common Locale Data Repository (CLDR)] project, errors in the data should
 be reported there. See also the [Closure guide to i18n changes].
 
-**Please see the [Submission Guidelines](#submit) below.**
+## <a name="feature"></a> Missing a Feature?
 
-## <a name="feature"></a> Want a Feature?
+You can request a new feature by submitting an issue to our [GitHub Repository][github-issues].
 
-You can request a new feature by submitting an issue to our [GitHub Repository][github].  If you
-would like to implement a new feature then consider what kind of change it is:
+If you would like to implement a new feature then consider what kind of change it is:
 
-* **Major Changes** that you wish to contribute to the project should be discussed first on our
-  [dev mailing list][angular-dev] or [IRC][irc] so that we can better coordinate our efforts,
-  prevent duplication of work, and help you to craft the change so that it is successfully accepted
-  into the project.
-* **Small Changes** can be crafted and submitted to the [GitHub Repository][github] as a Pull
-  Request.
-
+* **Major Changes** that you wish to contribute to the project should be discussed first in an
+  [GitHub issue][github-issues] that clearly outlines the changes and benefits of the feature.
+* **Small Changes** can directly be crafted and submitted to the [GitHub Repository][github]
+  as a Pull Request. See the main section about [Documentation & Code Contributions](#code-contrib)
+  and specifically the [Pull Request Submission Guidelines](#submit-pr).
 
 ## <a name="docs"></a> Want a Doc Fix?
+
+Should you have a suggestion for the documentation, you can open an issue and outline the problem
+or improvement you have - however, creating the doc fix yourself is much better!
 
 If you want to help improve the docs, it's a good idea to let others know what you're working on to
 minimize duplication of effort. Create a new issue (or comment on a related existing one) to let
 others know what you're working on.
 
+If you're making a small change (typo, phrasing) don't worry about filing an issue first. Use the friendly blue "Improve this doc" button at the top right of the doc page to fork the repository
+in-place and make a quick change on the fly. The commit message is preformatted to the right type and scope, so you only have to add the description.
+
 For large fixes, please build and test the documentation before submitting the PR to be sure you
 haven't accidentally introduced any layout or formatting issues. You should also make sure that your
-commit message starts with "docs" and follows the **[Commit Message Guidelines](#commit)** outlined
-below.
+commit message follows the **[Commit Message Guidelines](#commit)**.
 
-If you're just making a small change, don't worry about filing an issue first. Use the friendly blue
-"Improve this doc" button at the top right of the doc page to fork the repository in-place and make
-a quick change on the fly. When naming the commit, it is advised to follow the commit message
-guidelines below, by starting the commit message with **docs** and referencing the filename. Since
-this is not obvious and some changes are made on the fly, this is not strictly necessary and we will
-understand if this isn't done the first few times.
-
-## <a name="submit"></a> Submission Guidelines
-
-### Submitting an Issue
+## <a name="submit"></a> Issue Submission Guidelines
 Before you submit your issue search the archive, maybe your question was already answered.
 
 If your issue appears to be a bug, and hasn't been reported, open a new issue. Help us to maximize
 the effort we can spend fixing issues and adding new features, by not reporting duplicate issues.
-Providing the following information will increase the chances of your issue being dealt with
+
+The "[new issue][github-new-issue]" form contains a number of prompts that you should fill out to
+make it easier to understand and categorize the issue.
+
+In general, providing the following information will increase the chances of your issue being dealt with
 quickly:
 
 * **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
@@ -93,94 +108,183 @@ Here is a great example of a well defined issue: https://github.com/angular/angu
 
 **If you get help, help others. Good karma rulez!**
 
-### Submitting a Pull Request
-Before you submit your pull request consider the following guidelines:
 
-* Search [GitHub](https://github.com/angular/angular.js/pulls) for an open or closed Pull Request
-  that relates to your submission. You don't want to duplicate effort.
-* Please sign our [Contributor License Agreement (CLA)](#cla) before sending pull
-  requests. We cannot accept code without this.
-* Make your changes in a new git branch:
+## <a name="contributions"></a> Code and Documentation Contributions
 
-    ```shell
-    git checkout -b my-fix-branch master
-    ```
+### Development Setup
 
-* Create your patch, **including appropriate test cases**.
-* Follow our [Coding Rules](#rules).
-* Run the full AngularJS test suite, as described in the [developer documentation][dev-doc],
-  and ensure that all tests pass.
-* Commit your changes using a descriptive commit message that follows our
-  [commit message conventions](#commit) and passes our commit message presubmit hook
-  (`validate-commit-msg.js`). Adherence to the [commit message conventions](#commit) is required,
-  because release notes are automatically generated from these messages.
+This document describes how to set up your development environment to build and test AngularJS, and
+explains the basic mechanics of using `git`, `node`, `yarn`, `grunt`, and `bower`.
 
-    ```shell
-    git commit -a
-    ```
-  Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
+#### Installing Dependencies
 
-* Build your changes locally to ensure all the tests pass:
+Before you can build AngularJS, you must install and configure the following dependencies on your
+machine:
 
-    ```shell
-    grunt test
-    ```
+* [Git](http://git-scm.com/): The [Github Guide to
+  Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* Push your branch to GitHub:
+* [Node.js v6.x (LTS)](http://nodejs.org): We use Node to generate the documentation, run a
+  development web server, run tests, and generate distributable files. Depending on your system,
+  you can install Node either from source or as a pre-packaged bundle.
 
-    ```shell
-    git push origin my-fix-branch
-    ```
+  We recommend using [nvm](https://github.com/creationix/nvm) (or [nvm-windows](https://github.com/coreybutler/nvm-windows))
+  to manage and install Node.js, which makes it easy to change the version of Node.js per project.
 
-In GitHub, send a pull request to `angular.js:master`.
-If we suggest changes, then:
+* [Yarn](https://yarnpkg.com): We use Yarn to install our Node.js module dependencies (rather than using npm).
+  There are detailed installation instructions available at https://yarnpkg.com/en/docs/install.
 
-* Make the required updates.
-* Re-run the AngularJS test suite to ensure tests are still passing.
-* Commit your changes to your branch (e.g. `my-fix-branch`).
-* Push the changes to your GitHub repository (this will update your Pull Request).
+* [Java](http://www.java.com): We minify JavaScript using our
+  [Closure Tools](https://developers.google.com/closure/) jar. Make sure you have Java (version 7 or higher)
+  installed and included in your [PATH](http://docs.oracle.com/javase/tutorial/essential/environment/paths.html)
+  variable.
 
-If the PR gets too outdated we may ask you to rebase and force push to update the PR:
+* [Grunt](http://gruntjs.com): We use Grunt as our build system. Install the grunt command-line tool globally with:
+
+  ```shell
+  yarn global add grunt-cli
+  ```
+
+#### Forking AngularJS on Github
+
+To contribute code to AngularJS, you must have a GitHub account so you can push code to your own
+fork of AngularJS and open Pull Requests in the [GitHub Repository][github].
+
+To create a Github account, follow the instructions [here](https://github.com/signup/free).
+Afterwards, go ahead and [fork](http://help.github.com/forking) the [main AngularJS repository](https://github.com/angular/angular.js).
+
+
+#### Building AngularJS
+
+To build AngularJS, you clone the source code repository and use Grunt to generate the non-minified and
+minified AngularJS files:
 
 ```shell
-git rebase master -i
-git push origin my-fix-branch -f
+# Clone your Github repository:
+git clone https://github.com/<github username>/angular.js.git
+
+# Go to the AngularJS directory:
+cd angular.js
+
+# Add the main AngularJS repository as an upstream remote to your repository:
+git remote add upstream "https://github.com/angular/angular.js.git"
+
+# Install node.js dependencies:
+yarn install
+
+# Build AngularJS (which will install `bower` dependencies automatically):
+grunt package
 ```
 
-_WARNING: Squashing or reverting commits and force-pushing thereafter may remove GitHub comments
-on code that were previously made by you or others in your commits. Avoid any form of rebasing
-unless necessary._
+**Note:** If you're using Windows, you must use an elevated command prompt (right click, run as
+Administrator). This is because `grunt package` creates some symbolic links.
 
-That's it! Thank you for your contribution!
+**Note:** If you're using Linux, and `yarn install` fails with the message
+'Please try running this command again as root/Administrator.', you may need to globally install `grunt` and `bower`:
 
-#### After your pull request is merged
+- sudo yarn global add grunt-cli
+- sudo yarn global add bower
 
-After your pull request is merged, you can safely delete your branch and pull the changes
-from the main (upstream) repository:
+The build output is in the `build` directory. It consists of the following files and
+directories:
 
-* Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
+* `angular-<version>.zip` — The complete zip file, containing all of the release build
+artifacts.
 
-    ```shell
-    git push origin --delete my-fix-branch
-    ```
+* `angular.js` — The non-minified AngularJS script.
 
-* Check out the master branch:
+* `angular.min.js` —  The minified AngularJS script.
 
-    ```shell
-    git checkout master -f
-    ```
+* `angular-scenario.js` — The (deprecated) AngularJS End2End test runner.
 
-* Delete the local branch:
+* `docs/` — A directory that contains a standalone version of the docs (same as served in `docs.angularjs.org`).
 
-    ```shell
-    git branch -D my-fix-branch
-    ```
+#### <a name="local-server"></a> Running a Local Development Web Server
 
-* Update your master with the latest upstream version:
+To debug code, run end-to-end tests, and serve the docs, it is often useful to have a local HTTP server. For this purpose, we have made available a local web server based on Node.js.
 
-    ```shell
-    git pull --ff upstream master
-    ```
+1. To start the web server, run:
+   ```shell
+   grunt webserver
+   ```
+
+2. To access the local server, enter the following URL into your web browser:
+   ```text
+   http://localhost:8000/
+   ```
+   By default, it serves the contents of the AngularJS project directory.
+
+3. To access the locally served docs, visit this URL:
+   ```text
+   http://localhost:8000/build/docs/
+   ```
+
+#### <a name="unit-tests"></a> Running the Unit Test Suite
+
+We write unit and integration tests with Jasmine and execute them with Karma. To run all of the
+tests once on Chrome run:
+
+```shell
+grunt test:unit
+```
+
+To run the tests on other browsers (Chrome, ChromeCanary, Firefox and Safari are pre-configured) use:
+
+```shell
+grunt test:unit --browsers=Chrome,Firefox
+```
+
+**Note:** there should be _no spaces between browsers_. `Chrome, Firefox` is INVALID.
+
+If you have a Saucelabs or Browserstack account, you can also run the unit tests on these services via
+our pre-defined customLaunchers.
+
+For example, to run the whole unit test suite:
+
+```shell
+# Browserstack
+grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
+# Saucelabs
+grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
+```
+
+Running these commands requires you to set up the [Karma Browserstack][karma-browserstack] or [Karma-Saucelabs][karma-saucelabs], respectively.
+
+During development, however, it's more productive to continuously run unit tests every time the source or test files change. To execute tests in this mode run:
+
+1. To start the Karma server, capture Chrome browser and run unit tests, run:
+
+   ```shell
+   grunt autotest
+   ```
+
+2. To capture more browsers, open this URL in the desired browser (URL might be different if you have multiple instance
+   of Karma running, read Karma's console output for the correct URL):
+
+   ```text
+   http://localhost:9876/
+   ```
+
+3. To re-run tests just change any source or test file.
+
+
+To learn more about all of the preconfigured Grunt tasks run:
+
+```shell
+grunt --help
+```
+
+
+#### <a name="e2e-tests"></a> Running the End-to-end Test Suite
+
+AngularJS's end to end tests are run with Protractor. Simply run:
+
+```shell
+grunt test:e2e
+```
+
+This will start the webserver and run the tests on Chrome.
+
 
 ## <a name="rules"></a> Coding Rules
 
@@ -188,8 +292,8 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
 
 * All features or bug fixes **must be tested** by one or more [specs][unit-testing].
 * All public API methods **must be documented** with ngdoc, an extended version of jsdoc (we added
-  support for markdown and templating via @ngdoc tag). To see how we document our APIs, please check
-  out the existing source code and see [this wiki page][ngDocs].
+  support for markdown and templating via @ngdoc tag). To see how we document our APIs, please check out the existing source code and see the section about
+  [writing documentation](#writing-documentation)
 * With the exceptions listed below, we follow the rules contained in
   [Google's JavaScript Style Guide][js-style-guide]:
     * **Do not use namespaces**: Instead,  wrap the entire AngularJS code base in an anonymous closure and
@@ -202,6 +306,160 @@ To ensure consistency throughout the source code, keep these rules in mind as yo
       external API. See our existing code to see what we mean.
     * We **don't go crazy with type annotations** for private internal APIs unless it's an internal API
       that is used throughout AngularJS. The best guidance is to do what makes the most sense.
+
+### Specific topics
+
+#### Provider configuration
+
+When adding configuration (options) to [providers](https://code.angularjs.org/snapshot/docs/api/auto/service/$provide#provider), we follow a special pattern.
+
+- for each option, add a `method` that ...
+  - works as a getter and returns the current value when called without argument
+  - works as a setter and returns itself for chaining when called with argument
+  - for boolean options, uses the naming scheme `<option>Enabled([enabled])`
+- non-primitive options (e.g. objects) should be copied or the properties assigned explicitly to a new object so that the configuration cannot be changed during runtime.
+
+For a boolean config example, see [`$compileProvider#debugInfoEnabled`][debugInfoEnabled]
+
+For an object config example, see [`angular.errorHandlingConfig`][errorHandlingConfig]
+
+#### Throwing errors
+
+User-facing errors should be thrown with [`minErr`][minErr], a special error function that provides errors ids, templated error messages, and adds a link to a detailed error description.
+
+The `$compile:badrestrict` error is a good example for a well-defined `minErr`: [code][badrestrict-code] and [description][badrestrict-description].
+
+
+## <a name="writing-docs"></a> Writing Documentation
+
+The AngularJS project uses a form of [jsdoc](http://usejsdoc.org/) called ngdoc for all of its code documentation.
+
+This means that all the docs are stored inline in the source code and so are kept in sync as the it changes.
+
+There is also extra content (the developer guide, error pages, the tutorial, and misceallenous pages) that
+live inside the AngularJS repository as markdown files.
+
+This means that since we generate the documentation from the source code, we can easily provide version-specific documentation by simply checking out a version of AngularJS and running the build.
+
+Extracting the source code documentation, processing and building the docs is handled by the documentation
+generation tool [Dgeni][dgeni].
+
+### Building and viewing the docs locally
+The docs can be built from scratch using grunt:
+
+```shell
+grunt docs
+```
+
+This defers the doc-building task to `gulp`.
+
+Note that the docs app is using the local build files to run. This means you might first have to run the build:
+
+```shell
+grunt build
+```
+
+(This is also necessary if you are making changes to minErrors).
+
+To view the docs, see [Running a Local Development Web Server](#local-server).
+
+### Writing jsdoc
+The ngdoc utility has basic support for many of the standard jsdoc directives.  But in particular it is
+interested in the following block tags:
+
+* `@name name` - the name of the ngdoc document
+* `@param {type} name description` - describes a parameter of a function
+* `@returns {type} description` - describes what a function returns
+* `@requires` - normally indicates that a JavaScript module is required; in an Angular service it is used to describe what other services this service relies on
+* `@property` - describes a property of an object
+* `@description` - used to provide a description of a component in markdown
+* `@link` - specifies a link to a URL or a type in the API reference. **NOTE**: to link to `ng.$rootScope.Scope#$on` insert `methods_` between `#` and the actual method name: `{@link ng.$rootScope.Scope#methods_$on listen}`. Same goes for properties and events.
+* `@example` - specifies an example. This can be a simple code block, or a [runnable example][#the-example-tag].
+* `@deprecated` - specifies that the following code is deprecated and should not be used.
+
+The `type` must be wrapped in `{}` curly braces; e.g. {Object|Array}
+Parameters can be made optional by putting the `[name]` in square brackets; e.g. `@param {boolean} [ownPropsOnly=false]`
+
+Descriptions can contain markdown formatting.
+
+#### AngularJS-specific jsdoc directives
+
+In addition to the standard jsdoc tags, there are a number that are specific to the Angular
+code-base:
+
+* `@ngdoc` - specifies the type of thing being documented. See below for more detail.
+* `@eventType emit|broadcast` - specifies whether the event is emitted or broadcast
+* `@usage` - shows how to use `function` or `directive`. Is usually automatically generated.
+
+The following are specific to directives:
+
+* `@animations` - specifies the animations a directive supports
+* `@multiElement` - specifies if a directive can span over multiple elements
+* `@priority` - specifies a directive's priority
+* `@restrict` - is extracted to show the usage of a directive. For example, for [E]lement, [A]ttribute, and [C]lass, use `@restrict ECA`
+* `@scope` - specifies that a directive will create a new scope
+
+### The `@ngdoc` Directive
+This directive helps to specify the template used to render the item being documented.  For instance,
+a directive would have different properties to a filter and so would be documented differently.  The
+commonly used types are:
+
+* `overview` - a general page (guide, api index)
+* `provider` - AngularJS provider, such as `$compileProvider` or `$httpProvider`.
+* `service` - injectable AngularJS service, such as `$compile` or `$http`.
+* `object` - well defined object (often exposed as a service)
+* `function` - function that will be available to other methods *(such as a helper function within the ng module)*
+* `method` - method on an object/service/controller
+* `property` - property on an object/service/controller
+* `event` -  AngularJS event that will propagate through the `$scope` tree.
+* `directive` - AngularJS  directive
+* `filter` - AngularJS filter
+* `error` - minErr error description
+
+### General documentation with Markdown
+
+Any text in tags can contain markdown syntax for formatting. Generally, you can use any markdown
+feature.
+
+A few specific notes:
+
+- Only use *h2* headings and lower, as the page title is set in *h1*. Also make sure you follow the
+heading hierarchy. This ensures correct table of contents are created.
+
+#### Code blocks
+In line code can be specified by enclosing the code in back-ticks (\`).
+A block of multi-line code can be enclosed in triple back-ticks (\`\`\`) but it is formatted better if
+it is enclosed in &lt;pre&gt;...&lt;/pre&gt; tags and the code lines themselves are indented.
+
+### Writing runnable (live) examples and e2e tests
+It is possible to embed examples in the documentation along with appropriate e2e tests. These
+examples and scenarios will be converted to runnable code within the documentation.  So it is important
+that they work correctly.  To ensure this, all these e2e scenarios are run as part the automated Travis tests.
+
+If you are adding an example with an e2e test, you should [run the test locally](#e2e-tests). You can
+use `fit` to run only your test.
+
+#### The `<example>` tag
+This tag identifies a block of HTML that will define a runnable example. It can take the following attributes:
+
+* `module` - specify an AngularJS module containing code that must be loaded to support this example.
+* `animation` - if set to `true` then this example uses ngAnimations.
+
+Within this tag we provide `<file>` tags that specify what files contain the example code.
+
+```
+<example module="angularAppModule" name="exampleName" deps="angular-animate.js;angular-route.js" animations="true">
+  ...
+  <file name="index.html">...</file>
+  <file name="script.js">...</file>
+  <file name="animations.css">...</file>
+  <file name="protractor.js">...</file>
+  ...
+</example>
+```
+
+You can see an example of a well-defined example [in the `ngRepeat` documentation][ngRepeat-example].
+
 
 ## <a name="commit"></a> Git Commit Guidelines
 
@@ -274,31 +532,127 @@ The rest of the commit message is then used for this.
 
 A detailed explanation can be found in this [document][commit-message-format].
 
-## <a name="cla"></a> Signing the CLA
+### <a name="submit-pr"></a> Pull Request Submission Guidelines
+Before you submit your pull request consider the following guidelines:
 
-Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code
-changes to be accepted, the CLA must be signed. It's a quick process, we promise!
+* Search [GitHub](https://github.com/angular/angular.js/pulls) for an open or closed Pull Request
+  that relates to your submission. You don't want to duplicate effort.
+* Make your changes in a new git branch:
+
+    ```shell
+    git checkout -b my-fix-branch master
+    ```
+
+* Create your patch commit, **including appropriate test cases**.
+* Follow our [Coding Rules](#rules).
+* Run the AngularJS [unit](#unit-tests) and [E2E test](#e2e-tests) suites, and ensure that all tests
+  pass. It is generally sufficient to run the tests only on Chrome, as our Travis integration will
+  run the tests on all supported browsers.
+* Run `grunt eslint` to check that you have followed the automatically enforced coding rules
+* Commit your changes using a descriptive commit message that follows our
+  [commit message conventions](#commit). Adherence to the [commit message conventions](#commit)
+  is required, because release notes are automatically generated from these messages.
+
+    ```shell
+    git commit -a
+    ```
+  Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
+
+* Before creating the Pull Request, package and run all tests a last time:
+
+    ```shell
+    grunt test
+    ```
+
+* Push your branch to GitHub:
+
+    ```shell
+    git push <remote> my-fix-branch
+    ```
+
+* In GitHub, send a pull request to `angular.js:master`. This will trigger the check of the
+(Contributor License Agreement)(#cla) and the Travis integration.
+
+* If you find that the Travis integration has failed, look into the logs on Travis to find out
+if your changes caused test failures, the commit message was malformed etc. If you find that the
+tests failed or times out for unrelated reasons, you can ping a team member so that the build can be
+restarted.
+
+* If we suggest changes, then:
+
+  * Make the required updates.
+  * Re-run the AngularJS test suite to ensure tests are still passing.
+  * Commit your changes to your branch (e.g. `my-fix-branch`).
+  * Push the changes to your GitHub repository (this will update your Pull Request).
+
+    You can also amend the initial commits and force push them to the branch.
+
+    ```shell
+    git rebase master -i
+    git push origin my-fix-branch -f
+    ```
+
+    This is generally easier to follow, but seperate commits are useful if the Pull Request contains
+    iterations that might be interesting to see side-by-side.
+
+That's it! Thank you for your contribution!
+
+#### After your pull request is merged
+
+After your pull request is merged, you can safely delete your branch and pull the changes
+from the main (upstream) repository:
+
+* Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
+
+    ```shell
+    git push origin --delete my-fix-branch
+    ```
+
+* Check out the master branch:
+
+    ```shell
+    git checkout master -f
+    ```
+
+* Delete the local branch:
+
+    ```shell
+    git branch -D my-fix-branch
+    ```
+
+* Update your master with the latest upstream version:
+
+    ```shell
+    git pull --ff upstream master
+    ```
+
+## <a name="cla"></a> Signing the Contributor License Agreement (CLA)
+
+Upon submmitting a Pull Request, a friendly bot will ask you to sign our CLA if you haven't done
+so before. Unfortunately, this is necessary for documentation changes, too.
+It's a quick process, we promise!
 
 * For individuals we have a [simple click-through form][individual-cla].
 * For corporations we'll need you to
   [print, sign and one of scan+email, fax or mail the form][corporate-cla].
 
-## <a name="info"></a> Further Information
-You can find out more detailed information about contributing in the
-[AngularJS documentation][contributing].
-
 
 
 [Google Closure I18N library]: https://github.com/google/closure-library/tree/master/closure/goog/i18n
 [angular-dev]: https://groups.google.com/forum/?fromgroups#!forum/angular-dev
+[browserstack]: https://www.browserstack.com/
 [closing-issues]: https://help.github.com/articles/closing-issues-via-commit-messages/
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
 [commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
 [contribute]: http://docs.angularjs.org/misc/contribute
 [contributing]: http://docs.angularjs.org/misc/contribute
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
-[dev-doc]: https://docs.angularjs.org/guide
+[dgeni]: https://github.com/angular/dgeni
+[karma-browserstack]: https://github.com/karma-runner/karma-browserstack-launcher
+[karma-sauce]: https://github.com/karma-runner/karma-sauce-launcher
 [github]: https://github.com/angular/angular.js
+[github-issues]: https://github.com/angular/angular.js/issues
+[github-new-issue]: https://github.com/angular/angular.js/issues/new
 [gitter]: https://gitter.im/angular/angular.js
 [groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
 [individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
@@ -306,11 +660,17 @@ You can find out more detailed information about contributing in the
 [js-style-guide]: https://google.github.io/styleguide/javascriptguide.xml
 [jsfiddle]: http://jsfiddle.net/
 [list]: https://groups.google.com/forum/?fromgroups#!forum/angular
-[ngDocs]: https://github.com/angular/angular.js/wiki/Writing-AngularJS-Documentation
+[ngRepeat-example]: https://github.com/angular/angular.js/blob/0822d34b10ea0371c260c80a1486a4d508ea5a91/src/ng/directive/ngRepeat.js#L249-L340
 [plunker]: http://plnkr.co/edit
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
+[saucelabs]: http://saucelabs.com
 [unit-testing]: https://docs.angularjs.org/guide/unit-testing
 [Common Locale Data Repository (CLDR)]: http://cldr.unicode.org
 [Closure guide to i18n changes]: https://github.com/google/closure-library/wiki/Internationalization-%28i18n%29-changes-in-Closure-Library
+[debugInfoEnabled]: https://github.com/angular/angular.js/blob/32fbb2e78f53d765fbb170f7cf99e42e072d363b/src/ng/compile.js#L1378-L1413
+[errorHandlingConfig]: https://github.com/angular/angular.js/blob/master/src/minErr.js#L13-L42
+[minErr]: https://github.com/angular/angular.js/blob/202f1809ad14827a6ac6a125157c605d65e0b551/src/minErr.js#L53-L113
+[badrestrict-code]: https://github.com/angular/angular.js/blob/202f1809ad14827a6ac6a125157c605d65e0b551/src/ng/compile.js#L1107-L1110
+[badrestrict-description]: https://github.com/angular/angular.js/blob/master/docs/content/error/$compile/badrestrict.ngdoc
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CONTRIBUTING.md?pixel)](https://github.com/igrigorik/ga-beacon)
