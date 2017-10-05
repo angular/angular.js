@@ -2401,6 +2401,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         var attrStart = directive.$$start;
         var attrEnd = directive.$$end;
 
+        downloadTemplateDependencies(directive);
+
         // collect multiblock sections
         if (attrStart) {
           $compileNode = groupScan(compileNode, attrStart, attrEnd);
@@ -3069,6 +3071,20 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
         }
       });
+    }
+
+
+    function downloadTemplateDependencies(directive) {
+      if (directive.directives) {
+        directive.directives.forEach(function(name) {
+          $injector.get(name + Suffix).forEach(function(dependency) {
+            downloadTemplateDependencies(dependency);
+            if (isString(dependency.templateUrl)) {
+              $templateRequest($sce.getTrustedResourceUrl(dependency.templateUrl));
+            }
+          });
+        });
+      }
     }
 
 
