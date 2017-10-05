@@ -2,11 +2,11 @@
 {% import "lib/deprecated.html" as x -%}
 
 {%- if doc.events %}
-<h2>Events</h2>
+<h2 id="events">Events</h2>
 <ul class="events">
   {%- for event in doc.events %}
   <li id="{$ event.name $}">
-    <h3>{$ event.name $}</h3>
+    <h3 id="event-{$ event.name $}">{$ event.name $}</h3>
     <div>{$ event.description | marked $}</div>
 
     {$ x.deprecatedBlock(event) $}
@@ -27,7 +27,7 @@
     {% endif -%}
     {%- if event.params %}
     <section class="api-section">
-      <h3>Parameters</h3>
+      <h4>Parameters</h4>
       {$ lib.paramTable(event.params) $}
     </section>
     {%- endif -%}
