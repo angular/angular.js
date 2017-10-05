@@ -318,7 +318,7 @@ function $RootScopeProvider() {
        *
        *
        *
-       * #### Example
+       * @example
        * ```js
            // let's assume that scope was dependency injected as the $rootScope
            var scope = $rootScope;
@@ -569,7 +569,7 @@ function $RootScopeProvider() {
        *   adding, removing, and moving items belonging to an object or array.
        *
        *
-       * #### Example
+       * @example
        * ```js
           $scope.names = ['igor', 'matias', 'misko', 'james'];
           $scope.dataCount = 4;
@@ -767,7 +767,7 @@ function $RootScopeProvider() {
        *
        * In unit tests, you may need to call `$digest()` to simulate the scope life cycle.
        *
-       * #### Example
+       * @example
        * ```js
            var scope = ...;
            scope.name = 'misko';
@@ -996,7 +996,7 @@ function $RootScopeProvider() {
        * the expression are propagated (uncaught). This is useful when evaluating Angular
        * expressions.
        *
-       * #### Example
+       * @example
        * ```js
            var scope = ng.$rootScope.Scope();
            scope.a = 1;
