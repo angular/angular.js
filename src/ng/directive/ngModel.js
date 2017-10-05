@@ -472,6 +472,7 @@ NgModelController.prototype = {
    * input which may have such events pending. This is important in order to make sure that the
    * input field will be updated with the new model value and any pending operations are cancelled.
    *
+   * @example
    * <example name="ng-model-cancel-update" module="cancel-update-example">
    *   <file name="app.js">
    *     angular.module('cancel-update-example', [])
@@ -906,8 +907,7 @@ NgModelController.prototype = {
    * This function can be used when the `$viewValue` or the rendered DOM value are not correctly
    * formatted and the `$modelValue` must be run through the `$formatters` again.
    *
-   * #### Example
-   *
+   * @example
    * Consider a text input with an autocomplete list (for fruit), where the items are
    * objects with a name and an id.
    * A user enters `ap` and then selects `Apricot` from the list.
