@@ -4,6 +4,7 @@
  * @ngdoc directive
  * @name ngInit
  * @restrict AC
+ * @priority 450
  *
  * @description
  * The `ngInit` directive allows you to evaluate an expression in the

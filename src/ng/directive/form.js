@@ -415,8 +415,7 @@ addSetValidityMethod({
  * submitted. Note that `ngClick` events will occur before the model is updated. Use `ngSubmit`
  * to have access to the updated model.
  *
- * ## Animation Hooks
- *
+ * @animations
  * Animations in ngForm are triggered when any of the associated CSS classes are added and removed.
  * These classes are: `.ng-pristine`, `.ng-dirty`, `.ng-invalid` and `.ng-valid` as well as any
  * other validations that are performed within the form. Animations in ngForm are similar to how

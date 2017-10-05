@@ -592,6 +592,7 @@ angular.module('ngMessages', [], function initAngularHelpers() {
    * @name ngMessage
    * @restrict AE
    * @scope
+   * @priority 1
    *
    * @description
    * `ngMessage` is a directive with the purpose to show and hide a particular message.

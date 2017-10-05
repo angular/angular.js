@@ -92,6 +92,8 @@ defaultModelOptions = new ModelOptions({
 /**
  * @ngdoc directive
  * @name ngModelOptions
+ * @restrict A
+ * @priority 10
  *
  * @description
  * This directive allows you to modify the behaviour of {@link ngModel} directives within your

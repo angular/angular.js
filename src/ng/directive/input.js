@@ -2082,6 +2082,8 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
 /**
  * @ngdoc directive
  * @name ngValue
+ * @restrict A
+ * @priority 100
  *
  * @description
  * Binds the given expression to the value of the element.
@@ -2094,8 +2096,8 @@ var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
  * It can also be used to achieve one-way binding of a given expression to an input element
  * such as an `input[text]` or a `textarea`, when that element does not use ngModel.
  *
- * @element input
- * @param {string=} ngValue angular expression, whose value will be bound to the `value` attribute
+ * @element ANY
+ * @param {string=} ngValue AngularJS expression, whose value will be bound to the `value` attribute
  * and `value` property of the element.
  *
  * @example
