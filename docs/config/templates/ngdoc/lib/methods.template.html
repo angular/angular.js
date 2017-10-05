@@ -27,7 +27,7 @@
     {% endif %}
 
     {%- if method.examples %}
-    <h4 id="{$ doc.name $}.{$ method.name $}-examples">Examples</h4>
+    <h4 id="{$ doc.name $}.{$ method.name $}-examples">{$ "Examples" if method.examples | length > 1 else "Example" $}</h4>
     {%- for example in method.examples -%}
       {$ example | marked $}
     {%- endfor -%}
