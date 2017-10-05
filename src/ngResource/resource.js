@@ -291,7 +291,7 @@ function shallowClearAndCopy(src, dst) {
  *
  * @example
  *
- * # Credit card resource
+ * ### Credit card resource
  *
  * ```js
      // Define CreditCard class
@@ -336,7 +336,7 @@ function shallowClearAndCopy(src, dst) {
  *
  * @example
  *
- * # User resource
+ * ### User resource
  *
  * When the data is returned from the server then the object is an instance of the resource type and
  * all of the non-GET methods are available with `$` prefix. This allows you to easily support CRUD
@@ -377,7 +377,7 @@ function shallowClearAndCopy(src, dst) {
  *
  * @example
  *
- * # Creating a custom 'PUT' request
+ * ### Creating a custom 'PUT' request
  *
  * In this example we create a custom method on our resource to make a PUT request
  * ```js
@@ -409,7 +409,7 @@ function shallowClearAndCopy(src, dst) {
  *
  * @example
  *
- * # Cancelling requests
+ * ### Cancelling requests
  *
  * If an action's configuration specifies that it is cancellable, you can cancel the request related
  * to an instance or collection (as long as it is a result of a "non-instance" call):

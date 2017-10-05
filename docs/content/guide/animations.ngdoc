@@ -232,8 +232,8 @@ triggered:
 | {@link ng.directive:ngClass#animations ngClassEven / ngClassOdd}              | add and remove                                                            |
 | {@link ng.directive:ngHide#animations ngHide}                                 | add and remove (the `ng-hide` class)                                      |
 | {@link ng.directive:ngShow#animations ngShow}                                 | add and remove (the `ng-hide` class)                                      |
-| {@link ng.directive:ngModel#animation-hooks ngModel}                          | add and remove ({@link ng.directive:ngModel#css-classes various classes}) |
-| {@link ng.directive:form#animation-hooks form / ngForm}                       | add and remove ({@link ng.directive:form#css-classes various classes})    |
+| {@link ng.directive:ngModel#animations ngModel}                          | add and remove ({@link ng.directive:ngModel#css-classes various classes}) |
+| {@link ng.directive:form#animations form / ngForm}                       | add and remove ({@link ng.directive:form#css-classes various classes})    |
 | {@link module:ngMessages#animations ngMessages}                               | add and remove (the `ng-active`/`ng-inactive` classes)                    |
 
 For a full breakdown of the steps involved during each animation event, refer to the
