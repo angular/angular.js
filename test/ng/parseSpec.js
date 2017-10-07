@@ -4245,4 +4245,48 @@ describe('parser', function() {
       });
     });
   });
+
+  describe('hidden/unsupported features', function() {
+    describe('$$getAst()', function() {
+      it('should be a method exposed on the `$parse` service', inject(function($parse) {
+        expect(isFunction($parse.$$getAst)).toBeTruthy();
+      }));
+
+      it('should accept a string expression argument and return the corresponding AST', inject(function($parse) {
+        var ast = $parse.$$getAst('foo.bar');
+        expect(ast).toEqual({
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'MemberExpression',
+                object: { type: 'Identifier', name: 'foo' },
+                property: { type: 'Identifier', name: 'bar' },
+                computed: false
+              }
+            }
+          ]
+        });
+      }));
+
+      it('should parse one time binding expressions', inject(function($parse) {
+        var ast = $parse.$$getAst('::foo.bar');
+        expect(ast).toEqual({
+          type: 'Program',
+          body: [
+            {
+              type: 'ExpressionStatement',
+              expression: {
+                type: 'MemberExpression',
+                object: { type: 'Identifier', name: 'foo' },
+                property: { type: 'Identifier', name: 'bar' },
+                computed: false
+              }
+            }
+          ]
+        });
+      }));
+    });
+  });
 });
