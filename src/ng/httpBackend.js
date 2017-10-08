@@ -70,6 +70,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
     } else {
 
       var xhr = createXhr(method, url);
+      var abortedByTimeout = false;
 
       xhr.open(method, url, true);
       forEach(headers, function(value, key) {
@@ -110,7 +111,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       };
 
       var requestAborted = function() {
-        completeRequest(callback, -1, null, null, '', 'abort');
+        completeRequest(callback, -1, null, null, '', abortedByTimeout ? 'timeout' : 'abort');
       };
 
       var requestTimeout = function() {
@@ -120,11 +121,11 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       };
 
       xhr.onerror = requestError;
-      xhr.onabort = requestAborted;
       xhr.ontimeout = requestTimeout;
+      xhr.onabort = requestAborted;
 
       forEach(eventHandlers, function(value, key) {
-          xhr.addEventListener(key, value);
+        xhr.addEventListener(key, value);
       });
 
       forEach(uploadEventHandlers, function(value, key) {
@@ -155,14 +156,26 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
       xhr.send(isUndefined(post) ? null : post);
     }
 
+    // Since we are using xhr.abort() when a request times out, we have to set a flag that
+    // indicates to requestAborted if the request timed out or was aborted.
+    //
+    // http.timeout = numerical timeout   timeout
+    // http.timeout = $timeout            timeout
+    // http.timeout = promise             abort
+    // xhr.abort()                        abort (The xhr object is normally inaccessible, but
+    //                                    can be exposed with the xhrFactory)
     if (timeout > 0) {
-      var timeoutId = $browserDefer(timeoutRequest, timeout);
+      var timeoutId = $browserDefer(function() {
+        timeoutRequest('timeout');
+      }, timeout);
     } else if (isPromiseLike(timeout)) {
-      timeout.then(timeoutRequest);
+      timeout.then(function() {
+        timeoutRequest(isDefined(timeout.$$timeoutId) ? 'timeout' : 'abort');
+      });
     }
 
-
-    function timeoutRequest() {
+    function timeoutRequest(reason) {
+      abortedByTimeout = reason === 'timeout';
       if (jsonpDone) {
         jsonpDone();
       }

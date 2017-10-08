@@ -2,6 +2,8 @@
 
 /* global MockXhr: false */
 
+// The http specs run against the mocked httpBackend
+
 describe('$http', function() {
 
   var callback, mockedCookies;
@@ -1907,7 +1909,7 @@ describe('$http', function() {
             function(response) {
               expect(response.data).toBeUndefined();
               expect(response.status).toBe(-1);
-              expect(response.xhrStatus).toBe('timeout');
+              expect(response.xhrStatus).toBe('abort');
               expect(response.headers()).toEqual(Object.create(null));
               expect(response.config.url).toBe('/some');
               callback();
@@ -1923,17 +1925,45 @@ describe('$http', function() {
       }));
 
 
-      it('should reject promise when timeout promise resolves', inject(function($timeout) {
+      it('should timeout request when numerical timeout is exceeded', inject(function($timeout) {
         var onFulfilled = jasmine.createSpy('onFulfilled');
-        var onRejected = jasmine.createSpy('onRejected');
+        var onRejected = jasmine.createSpy('onRejected').and.callFake(function(response) {
+          expect(response.xhrStatus).toBe('timeout');
+        });
+
         $httpBackend.expect('GET', '/some').respond(200);
 
-        $http({method: 'GET', url: '/some', timeout: $timeout(noop, 10)}).then(onFulfilled, onRejected);
+        $http({
+          method: 'GET',
+          url: '/some',
+          timeout: 10
+        }).then(onFulfilled, onRejected);
 
         $timeout.flush(100);
 
         expect(onFulfilled).not.toHaveBeenCalled();
-        expect(onRejected).toHaveBeenCalledOnce();
+        expect(onRejected).toHaveBeenCalled();
+      }));
+
+
+      it('should reject promise when timeout promise resolves', inject(function($timeout) {
+        var onFulfilled = jasmine.createSpy('onFulfilled');
+        var onRejected = jasmine.createSpy('onRejected').and.callFake(function(response) {
+          expect(response.xhrStatus).toBe('timeout');
+        });
+
+        $httpBackend.expect('GET', '/some').respond(200);
+
+        $http({
+          method: 'GET',
+          url: '/some',
+          timeout: $timeout(noop, 10)
+        }).then(onFulfilled, onRejected);
+
+        $timeout.flush(100);
+
+        expect(onFulfilled).not.toHaveBeenCalled();
+        expect(onRejected).toHaveBeenCalled();
       }));
     });
 
