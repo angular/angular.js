@@ -845,6 +845,11 @@ function $HttpProvider() {
      *      See {@link $http#caching $http Caching} for more information.
      *    - **timeout** – `{number|Promise}` – timeout in milliseconds, or {@link ng.$q promise}
      *      that should abort the request when resolved.
+     *
+     *      A numerical timeout or a promise returned from {@link ng.$timeout $timeout}, will set
+     *      the `xhrStatus` in the {@link $http#$http-returns response} to "timeout", and any other
+     *      resolved promise will set it to "abort", following standard XMLHttpRequest behavior.
+     *
      *    - **withCredentials** - `{boolean}` - whether to set the `withCredentials` flag on the
      *      XHR object. See [requests with credentials](https://developer.mozilla.org/docs/Web/HTTP/Access_control_CORS#Requests_with_credentials)
      *      for more information.

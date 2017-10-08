@@ -1669,7 +1669,7 @@ describe('ngMock', function() {
 
       canceler();  // simulate promise resolution
 
-      expect(callback).toHaveBeenCalledWith(-1, undefined, '', undefined, 'timeout');
+      expect(callback).toHaveBeenCalledWith(-1, undefined, '', undefined, 'abort');
       hb.verifyNoOutstandingExpectation();
       hb.verifyNoOutstandingRequest();
     });
