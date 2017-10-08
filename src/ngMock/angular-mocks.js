@@ -1378,9 +1378,13 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
     function wrapResponse(wrapped) {
       if (!$browser && timeout) {
         if (timeout.then) {
-          timeout.then(handleTimeout);
+          timeout.then(function() {
+            handlePrematureEnd(angular.isDefined(timeout.$$timeoutId) ? 'timeout' : 'abort');
+          });
         } else {
-          $timeout(handleTimeout, timeout);
+          $timeout(function() {
+            handlePrematureEnd('timeout');
+          }, timeout);
         }
       }
 
@@ -1394,11 +1398,11 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
                  copy(response[3] || ''), copy(response[4]));
       }
 
-      function handleTimeout() {
+      function handlePrematureEnd(reason) {
         for (var i = 0, ii = responses.length; i < ii; i++) {
           if (responses[i] === handleResponse) {
             responses.splice(i, 1);
-            callback(-1, undefined, '', undefined, 'timeout');
+            callback(-1, undefined, '', undefined, reason);
             break;
           }
         }
@@ -2110,7 +2114,11 @@ function MockXhr() {
     return lines.join('\n');
   };
 
-  this.abort = angular.noop;
+  this.abort = function() {
+    if (isFunction(this.onabort)) {
+      this.onabort();
+    }
+  };
 
   // This section simulates the events on a real XHR object (and the upload object)
   // When we are testing $httpBackend (inside the AngularJS project) we make partial use of this
