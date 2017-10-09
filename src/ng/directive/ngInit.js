@@ -5,6 +5,9 @@
  * @name ngInit
  * @restrict AC
  * @priority 450
+ * @element ANY
+ *
+ * @param {expression} ngInit {@link guide/expression Expression} to eval.
  *
  * @description
  * The `ngInit` directive allows you to evaluate an expression in the
@@ -12,10 +15,16 @@
  *
  * <div class="alert alert-danger">
  * This directive can be abused to add unnecessary amounts of logic into your templates.
- * There are only a few appropriate uses of `ngInit`, such as for aliasing special properties of
- * {@link ng.directive:ngRepeat `ngRepeat`}, as seen in the demo below; and for injecting data via
- * server side scripting. Besides these few cases, you should use {@link guide/controller controllers}
- * rather than `ngInit` to initialize values on a scope.
+ * There are only a few appropriate uses of `ngInit`:
+ * <ul>
+ *   <li>aliasing special properties of {@link ng.directive:ngRepeat `ngRepeat`},
+ *     as seen in the demo below.</li>
+ *   <li>initializing data during development, or for examples, as seen throughout these docs.</li>
+ *   <li>injecting data via server side scripting.</li>
+ * </ul>
+ *
+ * Besides these few cases, you should use {@link guide/component Components} or
+ * {@link guide/controller Controllers} rather than `ngInit` to initialize values on a scope.
  * </div>
  *
  * <div class="alert alert-warning">
@@ -25,11 +34,6 @@
  * `<div ng-init="test1 = ($index | toString)"></div>`
  * </pre>
  * </div>
- *
- * @priority 450
- *
- * @element ANY
- * @param {expression} ngInit {@link guide/expression Expression} to eval.
  *
  * @example
    <example module="initExample" name="ng-init">
