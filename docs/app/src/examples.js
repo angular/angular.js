@@ -74,7 +74,7 @@ angular.module('examples', [])
 }])
 
 .factory('createCopyrightNotice', function() {
-    var COPYRIGHT = 'Copyright ' + (new Date()).getFullYear() + ' Google Inc. All Rights Reserved.\n'
+    var COPYRIGHT = 'Copyright ' + (new Date()).getFullYear() + ' Google LLC. All Rights Reserved.\n'
      + 'Use of this source code is governed by an MIT-style license that\n'
      + 'can be found in the LICENSE file at http://angular.io/license';
     var COPYRIGHT_JS_CSS = '\n\n/*\n' + COPYRIGHT + '\n*/';
