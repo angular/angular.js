@@ -284,7 +284,7 @@ function JQLite(element) {
   }
   if (!(this instanceof JQLite)) {
     if (argIsString && element.charAt(0) !== '<') {
-      return new JQLite(document.querySelector(element));
+      return new JQLite(window.document.querySelector(element));
     }
     return new JQLite(element);
   }
