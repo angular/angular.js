@@ -8,7 +8,7 @@
 describe('table of contents', function() {
 
   it('on provider pages', function() {
-    browser.get('build/docs/index.html#!/api/ng/provider/$controllerProvider');
+    browser.get('build/docs/index.html#!/api/ng/provider/$interpolateProvider');
 
     var toc = element.all(by.css('toc-container > div > toc-tree'));
     toc.getText().then(function(text) {
@@ -19,7 +19,7 @@ describe('table of contents', function() {
     var tocFirstLevel = element.all(by.css('toc-container > div > toc-tree > ul > li'));
 
     tocFirstLevel.then(function(match) {
-      expect(match.length).toBe(2);
+      expect(match.length).toBe(3);
 
       expect(match[1].all(by.css('li')).count()).toBe(2);
     });
