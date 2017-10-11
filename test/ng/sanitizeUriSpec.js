@@ -216,6 +216,9 @@ describe('sanitizeUri', function() {
       testUrl = 'ftp://foo/bar';
       expect(sanitizeHref(testUrl)).toBe('ftp://foo/bar');
 
+      testUrl = 'sftp://foo/bar';
+      expect(sanitizeHref(testUrl)).toBe('sftp://foo/bar');
+
       testUrl = 'mailto:foo@bar.com';
       expect(sanitizeHref(testUrl)).toBe('mailto:foo@bar.com');
 

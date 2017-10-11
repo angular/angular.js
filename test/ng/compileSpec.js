@@ -153,7 +153,7 @@ describe('$compile', function() {
 
     it('should allow aHrefSanitizationWhitelist to be configured', function() {
       module(function($compileProvider) {
-        expect($compileProvider.aHrefSanitizationWhitelist()).toEqual(/^\s*(https?|ftp|mailto|tel|file):/); // the default
+        expect($compileProvider.aHrefSanitizationWhitelist()).toEqual(/^\s*(https?|s?ftp|mailto|tel|file):/); // the default
         $compileProvider.aHrefSanitizationWhitelist(/other/);
         expect($compileProvider.aHrefSanitizationWhitelist()).toEqual(/other/);
       });
