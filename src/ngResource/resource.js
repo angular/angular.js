@@ -841,11 +841,6 @@ angular.module('ngResource', ['ng']).
           };
         });
 
-        Resource.bind = function(additionalParamDefaults) {
-          var extendedParamDefaults = extend({}, paramDefaults, additionalParamDefaults);
-          return resourceFactory(url, extendedParamDefaults, actions, options);
-        };
-
         return Resource;
       }
 
