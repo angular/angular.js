@@ -354,7 +354,7 @@ describe('ngRepeat', function() {
     });
 
 
-    it('should iterate over object with changing primitive property values', function() {
+    it('should iterate over object with changing primitive property values', inject(function($rootElement, $document) {
       // test for issue #933
 
       element = $compile(
@@ -364,6 +364,10 @@ describe('ngRepeat', function() {
               '<input type="checkbox" ng-model="items[key]">' +
             '</li>' +
           '</ul>')(scope);
+
+      // Append the app to the document so that "click" on a radio/checkbox triggers "change"
+      // Support: Chrome, Safari 8, 9
+      jqLite($document[0].body).append($rootElement.append(element));
 
       scope.items = {misko: true, shyam: true, zhenbo:true};
       scope.$digest();
@@ -395,7 +399,7 @@ describe('ngRepeat', function() {
       expect(element.find('input')[0].checked).toBe(false);
       expect(element.find('input')[1].checked).toBe(true);
       expect(element.find('input')[2].checked).toBe(true);
-    });
+    }));
   });
 
   describe('alias as', function() {

@@ -319,7 +319,7 @@ function generateInputCompilerHelper(helper) {
         };
       });
     });
-    inject(function($compile, $rootScope, $sniffer) {
+    inject(function($compile, $rootScope, $sniffer, $document, $rootElement) {
 
       helper.compileInput = function(inputHtml, mockValidity, scope) {
 
@@ -340,6 +340,11 @@ function generateInputCompilerHelper(helper) {
 
         // Compile the lot and return the input element
         $compile(helper.formElm)(scope);
+
+        $rootElement.append(helper.formElm);
+        // Append the app to the document so that "click" on a radio/checkbox triggers "change"
+        // Support: Chrome, Safari 8, 9
+        jqLite($document[0].body).append($rootElement);
 
         spyOn(scope.form, '$addControl').and.callThrough();
         spyOn(scope.form, '$$renameControl').and.callThrough();

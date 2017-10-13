@@ -401,12 +401,17 @@ describe('Binder', function() {
     expect(optionC.text()).toEqual('C');
   }));
 
-  it('ItShouldSelectTheCorrectRadioBox', inject(function($rootScope, $compile) {
+  it('ItShouldSelectTheCorrectRadioBox', inject(function($rootScope, $compile, $rootElement, $document) {
     element = $compile(
       '<div>' +
         '<input type="radio" ng-model="sex" value="female">' +
         '<input type="radio" ng-model="sex" value="male">' +
       '</div>')($rootScope);
+
+    // Append the app to the document so that "click" on a radio/checkbox triggers "change"
+    // Support: Chrome, Safari 8, 9
+    jqLite($document[0].body).append($rootElement.append(element));
+
     var female = jqLite(element[0].childNodes[0]);
     var male = jqLite(element[0].childNodes[1]);
 
