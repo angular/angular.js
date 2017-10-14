@@ -955,7 +955,6 @@ function $RootScopeProvider() {
         // Disable listeners, watchers and apply/digest methods
         this.$destroy = this.$digest = this.$apply = this.$evalAsync = this.$applyAsync = noop;
         this.$on = this.$watch = this.$watchGroup = function() { return noop; };
-        this.$$listeners = {};
 
         // Disconnect the next sibling to prevent `cleanUpScope` destroying those too
         this.$$nextSibling = null;
@@ -1364,6 +1363,7 @@ function $RootScopeProvider() {
 
         if (current.$$listenerCount[name] === 0) {
           delete current.$$listenerCount[name];
+          delete current.$$listeners[name];
         }
       } while ((current = current.$parent));
     }
