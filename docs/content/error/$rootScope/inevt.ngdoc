@@ -1,0 +1,22 @@
+@ngdoc error
+@name $rootScope:inevt
+@fullName Recursive $emit/$broadcast event
+@description
+
+This error occurs when the an event is `$emit`ed or `$broadcast`ed recursively on a scope.
+
+For example, when an event listener fires the same event being listened to.
+
+```
+$scope.$on('foo', function() {
+    $scope.$emit('foo');
+});
+```
+
+Or when a parent element causes indirect recursion.
+
+```
+$scope.$on('foo', function() {
+    $rootScope.$broadcast('foo');
+});
+```
