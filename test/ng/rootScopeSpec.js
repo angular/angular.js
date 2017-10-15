@@ -2316,6 +2316,19 @@ describe('Scope', function() {
         }));
 
 
+        // See issue https://github.com/angular/angular.js/issues/16135
+        it('should deallocate the listener array entry', inject(function($rootScope) {
+          var remove1 = $rootScope.$on('abc', noop);
+          $rootScope.$on('abc', noop);
+
+          expect($rootScope.$$listeners['abc'].length).toBe(2);
+
+          remove1();
+
+          expect($rootScope.$$listeners['abc'].length).toBe(1);
+        }));
+
+
         it('should call next listener after removing the current listener via its own handler', inject(function($rootScope) {
           var listener1 = jasmine.createSpy('listener1').and.callFake(function() { remove1(); });
           var remove1 = $rootScope.$on('abc', listener1);
@@ -2448,6 +2461,107 @@ describe('Scope', function() {
           expect($rootScope.$$listenerCount).toEqual({abc: 1});
           expect(child.$$listenerCount).toEqual({abc: 1});
         }));
+
+
+        it('should throw on recursive $broadcast', inject(function($rootScope) {
+          $rootScope.$on('e', function() { $rootScope.$broadcast('e'); });
+
+          expect(function() { $rootScope.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+          expect(function() { $rootScope.$broadcast('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+        }));
+
+
+        it('should throw on nested recursive $broadcast', inject(function($rootScope) {
+          $rootScope.$on('e2', function() { $rootScope.$broadcast('e'); });
+          $rootScope.$on('e', function() { $rootScope.$broadcast('e2'); });
+
+          expect(function() { $rootScope.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+          expect(function() { $rootScope.$broadcast('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+        }));
+
+
+        it('should throw on recursive $emit', inject(function($rootScope) {
+          $rootScope.$on('e', function() { $rootScope.$emit('e'); });
+
+          expect(function() { $rootScope.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+          expect(function() { $rootScope.$broadcast('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+        }));
+
+
+        it('should throw on nested recursive $emit', inject(function($rootScope) {
+          $rootScope.$on('e2', function() { $rootScope.$emit('e'); });
+          $rootScope.$on('e', function() { $rootScope.$emit('e2'); });
+
+          expect(function() { $rootScope.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+          expect(function() { $rootScope.$broadcast('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+        }));
+
+
+        it('should throw on recursive $broadcast on child listener', inject(function($rootScope) {
+          var child = $rootScope.$new();
+          child.$on('e', function() { $rootScope.$broadcast('e'); });
+
+          expect(function() { child.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (2)');
+          expect(function() { child.$broadcast('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (2)');
+        }));
+
+
+        it('should throw on nested recursive $broadcast on child listener', inject(function($rootScope) {
+          var child = $rootScope.$new();
+          child.$on('e2', function() { $rootScope.$broadcast('e'); });
+          child.$on('e', function() { $rootScope.$broadcast('e2'); });
+
+          expect(function() { child.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (2)');
+          expect(function() { child.$broadcast('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (2)');
+        }));
+
+
+        it('should throw on recursive $emit parent listener', inject(function($rootScope) {
+          var child = $rootScope.$new();
+          $rootScope.$on('e', function() { child.$emit('e'); });
+
+          expect(function() { child.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+          expect(function() { $rootScope.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+          expect(function() { $rootScope.$broadcast('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+        }));
+
+
+        it('should throw on nested recursive $emit parent listener', inject(function($rootScope) {
+          var child = $rootScope.$new();
+          $rootScope.$on('e2', function() { child.$emit('e'); });
+          $rootScope.$on('e', function() { child.$emit('e2'); });
+
+          expect(function() { child.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+          expect(function() { $rootScope.$emit('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+          expect(function() { $rootScope.$broadcast('e', 5); }).toThrowMinErr('$rootScope', 'inevt', 'e already $emit/$broadcast-ing on scope (1)');
+        }));
+
+
+        it('should clear recursive state of $broadcast if $exceptionHandler rethrows', function() {
+          module(function($exceptionHandlerProvider) {
+            $exceptionHandlerProvider.mode('rethrow');
+          });
+          inject(function($rootScope) {
+            var throwingListener = jasmine.createSpy('thrower').and.callFake(function() {
+              throw new Error('Listener Error!');
+            });
+            var secondListener = jasmine.createSpy('second');
+
+            $rootScope.$on('e', throwingListener);
+            $rootScope.$on('e', secondListener);
+
+            expect(function() { $rootScope.$broadcast('e'); }).toThrowError('Listener Error!');
+            expect(throwingListener).toHaveBeenCalled();
+            expect(secondListener).not.toHaveBeenCalled();
+
+            throwingListener.calls.reset();
+            secondListener.calls.reset();
+
+            expect(function() { $rootScope.$broadcast('e'); }).toThrowError('Listener Error!');
+            expect(throwingListener).toHaveBeenCalled();
+            expect(secondListener).not.toHaveBeenCalled();
+          });
+        });
       });
     });
 
@@ -2537,7 +2651,7 @@ describe('Scope', function() {
         expect(spy1).toHaveBeenCalledOnce();
         expect(spy2).toHaveBeenCalledOnce();
         expect(spy3).toHaveBeenCalledOnce();
-        expect(child.$$listeners['evt'].length).toBe(3); // cleanup will happen on next $emit
+        expect(child.$$listeners['evt'].length).toBe(2);
 
         spy1.calls.reset();
         spy2.calls.reset();
@@ -2571,7 +2685,7 @@ describe('Scope', function() {
         expect(spy1).toHaveBeenCalledOnce();
         expect(spy2).toHaveBeenCalledOnce();
         expect(spy3).toHaveBeenCalledOnce();
-        expect(child.$$listeners['evt'].length).toBe(3); //cleanup will happen on next $broadcast
+        expect(child.$$listeners['evt'].length).toBe(2);
 
         spy1.calls.reset();
         spy2.calls.reset();
