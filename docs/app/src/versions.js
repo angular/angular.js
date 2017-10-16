@@ -12,10 +12,16 @@ angular.module('versions', ['currentVersionData', 'allVersionsData'])
             /** @this VersionPickerController */
             function VersionPickerController($location, $window, CURRENT_NG_VERSION, ALL_NG_VERSIONS) {
 
-      var versionStr = CURRENT_NG_VERSION.isSnapshot ? 'snapshot' : CURRENT_NG_VERSION.version;
+      var versionStr = CURRENT_NG_VERSION.version;
+
+      if (CURRENT_NG_VERSION.isSnapshot) {
+        versionStr = CURRENT_NG_VERSION.distTag === 'latest' ? 'snapshot-stable' : 'snapshot';
+      }
 
       this.versions  = ALL_NG_VERSIONS;
-      this.selectedVersion = find(ALL_NG_VERSIONS, function(value) { return value.version.version === versionStr; });
+      this.selectedVersion = find(ALL_NG_VERSIONS, function(value) {
+        return value.version.version === versionStr;
+      });
 
       this.jumpToDocsVersion = function(value) {
         var currentPagePath = $location.path().replace(/\/$/, '');
