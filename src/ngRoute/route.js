@@ -671,9 +671,13 @@ function $RouteProvider() {
       var nextRoute = preparedRoute;
 
       if (preparedRouteIsUpdateOnly) {
-        lastRoute.params = nextRoute.params;
-        angular.copy(lastRoute.params, $routeParams);
-        $rootScope.$broadcast('$routeUpdate', lastRoute);
+        $q.when(nextRoute).
+        then(resolveLocals).
+        then(function() {
+          lastRoute.params = nextRoute.params;
+          angular.copy(lastRoute.params, $routeParams);
+          $rootScope.$broadcast('$routeUpdate', lastRoute);
+        });
       } else if (nextRoute || lastRoute) {
         forceReload = false;
         $route.current = nextRoute;
