@@ -55,6 +55,9 @@ module.exports = function generateVersionDocProcessor(gitData) {
 
         if (missesCurrentVersion) versions.push(currentVersion.version);
 
+        // Get the stable release with the highest version
+        var highestStableRelease = versions.reverse().find(semverIsStable);
+
         versions = versions
             .filter(function(versionStr) {
               return blacklist.indexOf(versionStr) === -1;
@@ -82,7 +85,21 @@ module.exports = function generateVersionDocProcessor(gitData) {
         var latest = sortObject(latestMap, reverse(semver.compare))
             .map(function(version) { return makeOption(version, 'Latest'); });
 
-        return [makeOption({version: 'snapshot'}, 'Latest', 'master')]
+        // Generate master and stable snapshots
+        var snapshots = [
+          makeOption(
+            {version: 'snapshot'},
+            'Latest',
+            'master-snapshot'
+          ),
+          makeOption(
+            {version: 'snapshot-stable'},
+            'Latest',
+            createSnapshotStableLabel(highestStableRelease)
+          )
+        ];
+
+        return snapshots
             .concat(latest)
             .concat(versions);
       }
@@ -111,6 +128,18 @@ module.exports = function generateVersionDocProcessor(gitData) {
 
       function sortObject(obj, cmp) {
         return Object.keys(obj).map(function(key) { return obj[key]; }).sort(cmp);
+      }
+
+      // https://github.com/kaelzhang/node-semver-stable/blob/34dd29842409295d49889d45871bec55a992b7f6/index.js#L25
+      function semverIsStable(version) {
+        var semverObj = semver.parse(version);
+        return semverObj === null ? false : !semverObj.prerelease.length;
+      }
+
+      function createSnapshotStableLabel(version) {
+        var label = 'v' + version.replace(/.$/, 'x') + '-snapshot';
+
+        return label;
       }
     }
   };
