@@ -45,12 +45,22 @@ module.exports = function(config, specificOptions) {
       'SL_Chrome': {
         base: 'SauceLabs',
         browserName: 'chrome',
-        version: '59'
+        version: 'latest'
+      },
+      'SL_Chrome-1': {
+        base: 'SauceLabs',
+        browserName: 'chrome',
+        version: 'latest-1'
       },
       'SL_Firefox': {
         base: 'SauceLabs',
         browserName: 'firefox',
-        version: '54'
+        version: 'latest'
+      },
+      'SL_Firefox-1': {
+        base: 'SauceLabs',
+        browserName: 'firefox',
+        version: 'latest-1'
       },
       'SL_Safari_8': {
         base: 'SauceLabs',
@@ -86,7 +96,13 @@ module.exports = function(config, specificOptions) {
         base: 'SauceLabs',
         browserName: 'microsoftedge',
         platform: 'Windows 10',
-        version: '14'
+        version: 'latest'
+      },
+      'SL_EDGE-1': {
+        base: 'SauceLabs',
+        browserName: 'microsoftedge',
+        platform: 'Windows 10',
+        version: 'latest-1'
       },
       'SL_iOS': {
         base: 'SauceLabs',
@@ -137,7 +153,6 @@ module.exports = function(config, specificOptions) {
       'BS_EDGE': {
         base: 'BrowserStack',
         browser: 'edge',
-        browser_version: '14',
         os: 'Windows',
         os_version: '10'
       },
