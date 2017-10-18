@@ -29,10 +29,23 @@
       </li>
     {% endif -%}
 
+
+    {% set hasNameAsParam = false %}
+
+    {# when a directive's name is not a parameter (i.e. doesn't take a value),
+      add the directive name to the list of attributes and/or css classes #}
+
+    {%- for param in doc.params %}
+    {% set hasNameAsParam = true if param.name === doc.name else hasNameAsParam %}
+    {%- endfor %}
+
     {%- if doc.restrict.attribute -%}
       <li>as attribute:
         {% code %}
         <{$ doc.element $}
+          {%- if not hasNameAsParam %}
+          {$ lib.directiveParam(doc.name, {}, '', '') $}
+          {%- endif -%}
           {%- for param in doc.params %}
           {$ lib.directiveParam(param.name, param.type, '="', '"') $}
           {%- endfor %}>
@@ -43,10 +56,14 @@
     {% endif -%}
 
     {%- if doc.restrict.cssClass -%}
+
       <li>as CSS class:
         {% code %}
         {% set sep = joiner(' ') %}
         <{$ doc.element $} class="
+        {%- if not hasNameAsParam -%}
+          {$ sep() $}{$ lib.directiveParam(doc.name, {}, '', '') $}
+        {%- endif -%}
         {%- for param in doc.params -%}
           {$ sep() $}{$ lib.directiveParam(param.name, param.type, ': ', ';') $}
         {%- endfor %}"> ... </{$ doc.element $}>
