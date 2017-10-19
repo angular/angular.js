@@ -20,21 +20,11 @@ env:
     - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
   global:
-    # node 4 likes the G++ v4.8 compiler
-    # see https://docs.travis-ci.com/user/languages/javascript-with-nodejs#Node.js-v4-(or-io.js-v3)-compiler-requirements
-    - CXX=g++-4.8
     - SAUCE_USERNAME=angular-ci
     - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
     - LOGS_DIR=/tmp/angular-build/logs
     - BROWSER_PROVIDER_READY_FILE=/tmp/browsersprovider-tunnel-ready
     - secure: oTBjhnOKhs0qDSKTf7fE4f6DYiNDPycvB7qfSF5QRIbJK/LK/J4UtFwetXuXj79HhUZG9qnoT+5e7lPaiaMlpsIKn9ann7ffqFWN1E8TMtpJF+AGigx3djYElwfgf5nEnFUFhwjFzvbfpZNnxVGgX5YbIZpe/WUbHkP4ffU0Wks=
-
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - g++-4.8
 
 before_install:
   - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.27.5
