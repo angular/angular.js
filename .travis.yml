@@ -52,6 +52,9 @@ notifications:
 jobs:
   include:
     - stage: deploy
+      # Don't deploy from PRs.
+      # The deployment logic for pushed branches is defined in scripts\travis\build.sh
+      if: type != pull_request
       env:
         - JOB=deploy
       before_script: skip
@@ -75,8 +78,7 @@ jobs:
           on:
             repo: angular/angular.js
             all_branches: true
-            # deploy a new docs version when the commit is tagged on the "latest" npm version
-            condition: $TRAVIS_TAG != '' && $( jq ".distTag" "package.json" | tr -d "\"[:space:]" ) = latest
+            condition: $DEPLOY_DOCS
         - provider: gcs
           skip_cleanup: true
           access_key_id: GOOGLDB7W2J3LFHICF3R
@@ -88,6 +90,5 @@ jobs:
           on:
             repo: angular/angular.js
             all_branches: true
-            # upload the build when the commit is tagged or the branch is "master"
-            condition: $TRAVIS_TAG != '' || ($TRAVIS_PULL_REQUEST = false && $TRAVIS_BRANCH = master)
+            condition: $DEPLOY_CODE
 

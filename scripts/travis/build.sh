@@ -18,7 +18,7 @@ case "$JOB" in
     fi
     ;;
   "unit")
-    if [ "$BROWSER_PROVIDER" == "browserstack" ]; then
+    if [[ "$BROWSER_PROVIDER" == "browserstack" ]]; then
       BROWSERS="BS_Chrome,BS_Safari,BS_Firefox,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9"
     else
       BROWSERS="SL_Chrome,SL_Chrome-1,SL_Firefox,SL_Firefox-1,SL_Safari_8,SL_Safari_9,SL_IE_9,SL_IE_10,SL_IE_11,SL_EDGE,SL_EDGE-1,SL_iOS"
@@ -46,11 +46,28 @@ case "$JOB" in
     grunt test:travis-protractor --specs="$TARGET_SPECS"
     ;;
   "deploy")
-    # we never deploy on Pull requests, so it's safe to skip the build here
-    if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
+    export DEPLOY_DOCS
+    export DEPLOY_CODE
+
+    DIST_TAG=$( jq ".distTag" "package.json" | tr -d "\"[:space:]" )
+
+    # upload docs if the branch distTag from package.json is "latest" (i.e. stable branch)
+    if [[ "$DIST_TAG" == latest ]]; then
+      DEPLOY_DOCS=true
+    fi
+
+    # upload the build (code + docs) if ...
+    #   the commit is tagged
+    #   - or the branch is "master"
+    #   - or the branch distTag from package.json is "latest" (i.e. stable branch)
+    if [[ "$TRAVIS_TAG" != '' || "$TRAVIS_BRANCH" == master || "$DIST_TAG" == latest ]]; then
+      DEPLOY_CODE=true
+    fi
+
+    if [[ "$DEPLOY_DOCS" || "$DEPLOY_CODE" ]]; then
       grunt prepareFirebaseDeploy
     else
-      echo "Skipping build because Travis has been triggered by Pull Request"
+      echo "Skipping deployment build because conditions have not been met."
     fi
     ;;
   *)
