@@ -12,12 +12,12 @@ if [ "$JOB" != "ci-checks" ]; then
 fi
 
 # ci-checks and unit tests do not run against the packaged code
-if [ "$JOB" != "ci-checks" ] && [ "$JOB" != "unit" ]; then
+if [[ "$JOB" != "ci-checks" ]] && [[ "$JOB" != unit-* ]]; then
   grunt package
 fi
 
 # unit runs the docs tests too which need a built version of the code
-if [ "$JOB" = "unit" ]; then
+if [[ "$JOB" = unit-* ]]; then
   grunt bower
   grunt validate-angular-files
   grunt build
