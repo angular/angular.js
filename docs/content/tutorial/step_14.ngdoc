@@ -328,7 +328,7 @@ The applied CSS classes are much the same as with `ngRepeat`. Each time a new pa
 ensures that all views are contained within a single HTML element, which allows for easy animation
 control.
 
-For more on CSS animations, see the [Web Platform documentation][webplatform-animations].
+For more on CSS animations, see the [MDN web docs][mdn-animations].
 
 
 ## Animating `ngClass` with JavaScript
@@ -561,4 +561,4 @@ There you have it! We have created a web application in a relatively short amoun
 [caniuse-css-transitions]: http://caniuse.com/#feat=css-transitions
 [jquery]: https://jquery.com/
 [jquery-animate]: https://api.jquery.com/animate/
-[webplatform-animations]: https://docs.webplatform.org/wiki/css/properties/animations
+[mdn-animations]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations
