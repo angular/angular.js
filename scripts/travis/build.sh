@@ -2,8 +2,18 @@
 
 set -e
 
-export BROWSER_STACK_ACCESS_KEY=`echo $BROWSER_STACK_ACCESS_KEY | rev`
-export SAUCE_ACCESS_KEY=`echo $SAUCE_ACCESS_KEY | rev`
+export BROWSER_STACK_ACCESS_KEY
+export SAUCE_ACCESS_KEY
+
+BROWSER_STACK_ACCESS_KEY=$(echo "$BROWSER_STACK_ACCESS_KEY" | rev)
+SAUCE_ACCESS_KEY=$(echo "$SAUCE_ACCESS_KEY" | rev)
+
+BROWSERS="SL_Chrome,SL_Chrome-1,\
+SL_Firefox,SL_Firefox-1,\
+SL_Safari_8,SL_Safari_9,\
+SL_iOS,\
+SL_IE_9,SL_IE_10,SL_IE_11,\
+SL_EDGE,SL_EDGE-1"
 
 case "$JOB" in
   "ci-checks")
@@ -17,18 +27,18 @@ case "$JOB" in
       yarn run commitplease -- "${TRAVIS_COMMIT_RANGE/.../..}"
     fi
     ;;
-  "unit")
-    if [[ "$BROWSER_PROVIDER" == "browserstack" ]]; then
-      BROWSERS="BS_Chrome,BS_Safari,BS_Firefox,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9"
-    else
-      BROWSERS="SL_Chrome,SL_Chrome-1,SL_Firefox,SL_Firefox-1,SL_Safari_8,SL_Safari_9,SL_IE_9,SL_IE_10,SL_IE_11,SL_EDGE,SL_EDGE-1,SL_iOS"
-    fi
-
+  "unit-core")
     grunt test:promises-aplus
-    grunt test:unit --browsers="$BROWSERS" --reporters=spec
-    grunt tests:docs --browsers="$BROWSERS" --reporters=spec
+    grunt test:jqlite --browsers="$BROWSERS" --reporters=spec
+    grunt test:modules --browsers="$BROWSERS" --reporters=spec
     ;;
-  "docs-e2e")
+  "unit-jquery")
+    grunt test:jquery --browsers="$BROWSERS" --reporters=spec
+    grunt test:jquery-2.2 --browsers="$BROWSERS" --reporters=spec
+    grunt test:jquery-2.1 --browsers="$BROWSERS" --reporters=spec
+    ;;
+  "docs-app")
+    grunt tests:docs --browsers="$BROWSERS" --reporters=spec
     grunt test:travis-protractor --specs="docs/app/e2e/**/*.scenario.js"
     ;;
   "e2e")
@@ -71,6 +81,13 @@ case "$JOB" in
     fi
     ;;
   *)
-    echo "Unknown job type. Please set JOB=ci-checks, JOB=unit, JOB=deploy or JOB=e2e-*."
+    echo "Unknown job type. Please set JOB to one of\
+      'ci-checks',\
+      'unit-core',\
+      'unit-jquery',\
+      'docs-app',\
+      'e2e',\
+      or\
+      'deploy'."
     ;;
 esac
