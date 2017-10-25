@@ -830,8 +830,7 @@ function createInjector(modulesToLoad, strictDi) {
           provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
         }
       }
-
-      try {
+      function tryBlock() {
         if (isString(module)) {
           moduleFn = angularModule(module);
           instanceInjector.modules[module] = moduleFn;
@@ -845,20 +844,28 @@ function createInjector(modulesToLoad, strictDi) {
         } else {
           assertArgFn(module, 'module');
         }
-      } catch (e) {
-        if (isArray(module)) {
-          module = module[module.length - 1];
-        }
-        if (e.message && e.stack && e.stack.indexOf(e.message) === -1) {
-          // Safari & FF's stack traces don't contain error.message content
-          // unlike those of Chrome and IE
-          // So if stack doesn't contain message, we create a new string that contains both.
-          // Since error.stack is read-only in Safari, I'm overriding e and not e.stack here.
-          // eslint-disable-next-line no-ex-assign
-          e = e.message + '\n' + e.stack;
-        }
-        throw $injectorMinErr('modulerr', 'Failed to instantiate module {0} due to:\n{1}',
-                  module, e.stack || e.message || e);
+      }
+
+      if (!errorHandlingConfig().isModuleError) {
+        tryBlock();
+      } else {
+        try {
+          tryBlock();
+         } catch (e) {
+           if (isArray(module)) {
+             module = module[module.length - 1];
+           }
+           if (errorHandlingConfig().isModuleStack && e.message && e.stack && e.stack.indexOf(e.message) === -1) {
+             // Safari & FF's stack traces don't contain error.message content
+             // unlike those of Chrome and IE
+             // So if stack doesn't contain message, we create a new string that contains both.
+             // Since error.stack is read-only in Safari, I'm overriding e and not e.stack here.
+             // eslint-disable-next-line no-ex-assign
+             e = e.message + '\n' + e.stack;
+           }
+           throw $injectorMinErr('modulerr', 'Failed to instantiate module {0} due to:\n{1}',
+                     module,errorHandlingConfig().isModuleStack ? (e.stack || e.message || e) : e.message);
+         }
       }
     });
     return runBlocks;

@@ -1,11 +1,13 @@
 'use strict';
 
 describe('errors', function() {
-  var originalObjectMaxDepthInErrorMessage = minErrConfig.objectMaxDepth;
-  var originalIsUrlParameters =  minErrConfig.isUrlParameters;
+  var originalObj = angular.copy(errConfigObj);
+
   afterEach(function() {
-    minErrConfig.objectMaxDepth = originalObjectMaxDepthInErrorMessage;
-    minErrConfig.isUrlParameters = originalIsUrlParameters;
+    errConfigObj.objectMaxDepth = originalObj.objectMaxDepth;
+    errConfigObj.isUrlParameters = originalObj.isUrlParameters;
+    errConfigObj.isModuleError = originalObj.isModuleError;
+    errConfigObj.isModuleStack = originalObj.isModuleStack;
   });
 
   describe('errorHandlingConfig', function() {
@@ -21,7 +23,7 @@ describe('errors', function() {
 
       it('should not change objectMaxDepth when undefined is supplied', function() {
         errorHandlingConfig({objectMaxDepth: undefined});
-        expect(errorHandlingConfig().objectMaxDepth).toBe(originalObjectMaxDepthInErrorMessage);
+        expect(errorHandlingConfig().objectMaxDepth).toBe(originalObj.objectMaxDepth);
       });
 
       they('should set objectMaxDepth to NaN when $prop is supplied',
@@ -45,7 +47,37 @@ describe('errors', function() {
       });
       it('should not change its value when non-boolean is supplied', function() {
         errorHandlingConfig({isUrlParameters:123});
-        expect(errorHandlingConfig().isUrlParameters).toBe(originalIsUrlParameters);
+        expect(errorHandlingConfig().isUrlParameters).toBe(originalObj.isUrlParameters);
+      });
+    });
+    describe('isModuleStack',function() {
+      it('should get default isModuleStack', function() {
+        expect(errorHandlingConfig().isModuleStack).toBe(true);
+      });
+      it('should set isModuleStack', function() {
+        errorHandlingConfig({isModuleStack:false});
+        expect(errorHandlingConfig().isModuleStack).toBe(false);
+        errorHandlingConfig({isModuleStack:true});
+        expect(errorHandlingConfig().isModuleStack).toBe(true);
+      });
+      it('should not change its value when non-boolean is supplied', function() {
+        errorHandlingConfig({isModuleStack:123});
+        expect(errorHandlingConfig().isModuleStack).toBe(originalObj.isModuleStack);
+      });
+    });
+    describe('isModuleError',function() {
+      it('should get default isModuleError', function() {
+        expect(errorHandlingConfig().isModuleError).toBe(true);
+      });
+      it('should set isModuleError', function() {
+        errorHandlingConfig({isModuleError:false});
+        expect(errorHandlingConfig().isModuleError).toBe(false);
+        errorHandlingConfig({isModuleError:true});
+        expect(errorHandlingConfig().isModuleError).toBe(true);
+      });
+      it('should not change its value when non-boolean is supplied', function() {
+        errorHandlingConfig({isModuleError:123});
+        expect(errorHandlingConfig().isModuleError).toBe(originalObj.isModuleError);
       });
     });
 

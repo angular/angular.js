@@ -940,6 +940,13 @@ describe('injector', function() {
 
 
     describe('error handling', function() {
+      var obj = angular.copy(errorHandlingConfig());
+
+      afterEach(function() {
+        errorHandlingConfig({isModuleStack:obj.isModuleStack});
+        errorHandlingConfig({isModuleError:obj.isModuleError});
+      });
+
       it('should handle wrong argument type', function() {
         expect(function() {
           createInjector([
@@ -957,6 +964,33 @@ describe('injector', function() {
         }).toThrowMinErr('$injector', 'modulerr', /Failed to instantiate module .+ due to:\n.*MyError/);
       });
 
+      it('should just rethrow the exception if ´isModuleError´  is false', function() {
+        expect(function() {
+          errorHandlingConfig({isModuleError:false});
+          createInjector([function() {
+            throw new Error('MyError');
+          }], {});
+        }).toThrow(new Error('MyError'));
+      });
+
+      it('should not generate the stack for the failed module if ´isModuleStack´ is false', function() {
+        errorHandlingConfig({isModuleStack:false});
+        expect(function() {
+            createInjector([function() {
+              throw new Error('MyError');
+            }], {});
+
+        }).not.toThrowMinErr('$injector', 'modulerr', /(\w+@|at\s+\w+).+:\d+:\d+/);
+      });
+
+      it('should generate the stack if ´isModuleStack´ option is true', function() {
+        errorHandlingConfig({isModuleStack:true});
+        expect(function() {
+            createInjector([function() {
+              throw new Error('MyError');
+            }], {});
+        }).toThrowMinErr('$injector', 'modulerr', /(\w+@|at\s+\w+).+:\d+:\d+/);
+      });
 
       it('should decorate the missing service error with module name', function() {
         angular.module('TestModule', [], function(xyzzy) {});
