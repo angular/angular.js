@@ -54,22 +54,31 @@ jobs:
   include:
     - stage: deploy
       # Don't deploy from PRs.
-      # The deployment logic for pushed branches is defined in scripts\travis\build.sh
+      # This is a Travis-specific boolean language: https://docs.travis-ci.com/user/conditional-builds-stages-jobs#Specifying-conditions
+      # The deployment logic for pushed branches is further defined in scripts\travis\build.sh
       if: type != pull_request
       env:
         - JOB=deploy
       before_script: skip
       script:
-        - "./scripts/travis/build.sh"
+        # Export the variables into the current process
+        - . ./scripts/travis/build.sh
+        - "echo DEPLOY_DOCS: $DEPLOY_DOCS, DEPLOY_CODE: $DEPLOY_CODE"
+      after_script: skip
       # Work around the 10min Travis timeout so the code.angularjs firebase+gcs code deploy can complete
+      # Only run the keep_alive once (before_deploy is run for each provider)
       before_deploy: |
-        function keep_alive() {
-          while true; do
-            echo -en "\a"
-            sleep 5
-          done
-        }
-        keep_alive &
+        if ! [ "$BEFORE_DEPLOY_RUN" ]; then
+          export BEFORE_DEPLOY_RUN=1;
+
+          function keep_alive() {
+            while true; do
+              echo -en "\a"
+              sleep 10
+            done
+          }
+          keep_alive &
+        fi
       deploy:
         - provider: firebase
           # the upload folder for firebase is configured in /firebase.json
@@ -79,7 +88,7 @@ jobs:
           on:
             repo: angular/angular.js
             all_branches: true
-            condition: $DEPLOY_DOCS
+            condition: "$DEPLOY_DOCS == true"
         - provider: gcs
           skip_cleanup: true
           access_key_id: GOOGLDB7W2J3LFHICF3R
@@ -91,5 +100,5 @@ jobs:
           on:
             repo: angular/angular.js
             all_branches: true
-            condition: $DEPLOY_CODE
+            condition: "$DEPLOY_CODE == true"
 

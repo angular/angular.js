@@ -46,13 +46,13 @@ case "$JOB" in
       export USE_JQUERY=1
     fi
 
-    export TARGET_SPECS="build/docs/ptore2e/**/default_test.js"
-
     if [[ "$TEST_TARGET" == jquery* ]]; then
       TARGET_SPECS="build/docs/ptore2e/**/jquery_test.js"
+    else
+      TARGET_SPECS="build/docs/ptore2e/**/default_test.js"
     fi
 
-    export TARGET_SPECS="test/e2e/tests/**/*.js,$TARGET_SPECS"
+    TARGET_SPECS="test/e2e/tests/**/*.js,$TARGET_SPECS"
     grunt test:travis-protractor --specs="$TARGET_SPECS"
     ;;
   "deploy")
@@ -64,6 +64,8 @@ case "$JOB" in
     # upload docs if the branch distTag from package.json is "latest" (i.e. stable branch)
     if [[ "$DIST_TAG" == latest ]]; then
       DEPLOY_DOCS=true
+    else
+      DEPLOY_DOCS=false
     fi
 
     # upload the build (code + docs) if ...
@@ -72,9 +74,11 @@ case "$JOB" in
     #   - or the branch distTag from package.json is "latest" (i.e. stable branch)
     if [[ "$TRAVIS_TAG" != '' || "$TRAVIS_BRANCH" == master || "$DIST_TAG" == latest ]]; then
       DEPLOY_CODE=true
+    else
+      DEPLOY_CODE=false
     fi
 
-    if [[ "$DEPLOY_DOCS" || "$DEPLOY_CODE" ]]; then
+    if [[ "$DEPLOY_DOCS" == true || "$DEPLOY_CODE" == true ]]; then
       grunt prepareFirebaseDeploy
     else
       echo "Skipping deployment build because conditions have not been met."
