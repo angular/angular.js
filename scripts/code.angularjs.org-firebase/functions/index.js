@@ -169,6 +169,13 @@ function sendStoredFile(request, response) {
   }
 }
 
+const snapshotRegex = /^snapshot(-stable)?\//;
+
+/**
+ * The build folder contains a zip file that is unique per build.
+ * When a new zip file is uploaded into snapshot or snapshot-stable,
+ * delete the previous zip file.
+ */
 function deleteOldSnapshotZip(event) {
   const object = event.data;
 
@@ -179,15 +186,17 @@ function deleteOldSnapshotZip(event) {
 
   const bucket = gcs.bucket(bucketId);
 
-  if (contentType !== 'application/zip' ||
-      !filePath.startsWith('snapshot/') ||
+  const snapshotFolderMatch = filePath.match(snapshotRegex);
+
+  if (!snapshotFolderMatch ||
+      contentType !== 'application/zip' ||
       resourceState === 'not_exists' // Deletion event
     ) {
     return;
   }
 
   bucket.getFiles({
-    prefix: 'snapshot/',
+    prefix: snapshotFolderMatch[0],
     delimiter: '/',
     autoPaginate: false
   }).then(function(data) {
@@ -196,6 +205,8 @@ function deleteOldSnapshotZip(event) {
     const oldZipFiles = files.filter(file => {
       return file.metadata.name !== filePath && file.metadata.contentType === 'application/zip';
     });
+
+    console.info(`found ${oldZipFiles.length} old zip files to delete`);
 
     oldZipFiles.forEach(function(file) {
       file.delete();

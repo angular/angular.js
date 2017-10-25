@@ -63,7 +63,11 @@ module.exports = function(grunt) {
   NG_VERSION.cdn = versionInfo.cdnVersion;
   var dist = 'angular-' + NG_VERSION.full;
 
-  var deployVersion = NG_VERSION.isSnapshot ? 'snapshot' : NG_VERSION.full;
+  var deployVersion = NG_VERSION.full;
+
+  if (NG_VERSION.isSnapshot) {
+    deployVersion = NG_VERSION.distTag === 'latest' ? 'snapshot-stable' : 'snapshot';
+  }
 
   if (versionInfo.cdnVersion == null) {
     throw new Error('Unable to read CDN version, are you offline or has the CDN not been properly pushed?\n' +
