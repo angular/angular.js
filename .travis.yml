@@ -53,10 +53,10 @@ notifications:
 jobs:
   include:
     - stage: deploy
-      # Don't deploy from PRs.
+      # Don't deploy from PRs and only from our default branches.
       # This is a Travis-specific boolean language: https://docs.travis-ci.com/user/conditional-builds-stages-jobs#Specifying-conditions
       # The deployment logic for pushed branches is further defined in scripts\travis\build.sh
-      if: type != pull_request
+      if: type != pull_request and branch =~ ^(v1\.\d+\.x|master)$
       env:
         - JOB=deploy
       before_script: skip
