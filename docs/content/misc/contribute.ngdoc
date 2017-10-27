@@ -4,4 +4,6 @@
 
 # Contributing & Core Development
 
-For everything related to contributing, we have a document in our Git Repository that covers everything from submitting issues, setting up and building the code, to writing documentation, and much more: [Contributing](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md).
+For everything related to contributing, we have a document in our Git Repository that covers
+everything from submitting issues, setting up and building the code, to writing documentation,
+and much more: [Contributing](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md).
