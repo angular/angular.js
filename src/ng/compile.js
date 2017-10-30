@@ -1415,16 +1415,19 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * @ngdoc method
    * @name  $compileProvider#strictComponentBindingsEnabled
    *
-   * @param {boolean=} enabled update the strictComponentBindingsEnabled state if provided, otherwise just return the
-   * current strictComponentBindingsEnabled state
+   * @param {boolean=} enabled update the strictComponentBindingsEnabled state if provided,
+   * otherwise return the current strictComponentBindingsEnabled state.
    * @returns {*} current value if used as getter or itself (chaining) if used as setter
    *
    * @kind function
    *
    * @description
-   * Call this method to enable/disable strict component bindings check. If enabled, the compiler will enforce that
-   * for all bindings of a component that are not set as optional with `?`, an attribute needs to be provided
-   * on the component's HTML tag.
+   * Call this method to enable / disable the strict component bindings check. If enabled, the
+   * compiler will enforce that all scope / controller bindings of a
+   * {@link $compileProvider#directive directive} / {@link $compileProvider#component component}
+   * that are not set as optional with `?`, must be provided when the directive is instantiated.
+   * If not provided, the compiler will throw the
+   * {@link error/$compile/missingattr $compile:missingattr error}.
    *
    * The default value is false.
    */
