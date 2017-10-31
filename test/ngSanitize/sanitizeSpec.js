@@ -237,11 +237,9 @@ describe('HTML', function() {
       .toEqual('');
   });
 
-  if (isChrome) {
-    it('should prevent mXSS attacks', function() {
-      expectHTML('<a href="&#x3000;javascript:alert(1)">CLICKME</a>').toBe('<a>CLICKME</a>');
-    });
-  }
+  it('should prevent mXSS attacks', function() {
+    expectHTML('<a href="&#x3000;javascript:alert(1)">CLICKME</a>').toBe('<a>CLICKME</a>');
+  });
 
   it('should strip html comments', function() {
     expectHTML('<!-- comment 1 --><p>text1<!-- comment 2 -->text2</p><!-- comment 3 -->')
