@@ -91,6 +91,7 @@ function $RootScopeProvider() {
       this.$$watchersCount = 0;
       this.$id = nextUid();
       this.$$ChildScope = null;
+      this.$$suspended = false;
     }
     ChildScope.prototype = parent;
     return ChildScope;
@@ -178,6 +179,7 @@ function $RootScopeProvider() {
                      this.$$childHead = this.$$childTail = null;
       this.$root = this;
       this.$$destroyed = false;
+      this.$$suspended = false;
       this.$$listeners = {};
       this.$$listenerCount = {};
       this.$$watchersCount = 0;
@@ -808,7 +810,7 @@ function $RootScopeProvider() {
 
           traverseScopesLoop:
           do { // "traverse the scopes" loop
-            if ((watchers = current.$$watchers)) {
+            if ((watchers = !current.$$suspended && current.$$watchers)) {
               // process our watches
               watchers.$$digestWatchIndex = watchers.length;
               while (watchers.$$digestWatchIndex--) {
@@ -852,7 +854,9 @@ function $RootScopeProvider() {
             // Insanity Warning: scope depth-first traversal
             // yes, this code is a bit crazy, but it works and we have tests to prove it!
             // this piece should be kept in sync with the traversal in $broadcast
-            if (!(next = ((current.$$watchersCount && current.$$childHead) ||
+            // (though it differs due to having the extra check for $$suspended and does not
+            // check $$listenerCount)
+            if (!(next = ((!current.$$suspended && current.$$watchersCount && current.$$childHead) ||
                 (current !== target && current.$$nextSibling)))) {
               while (current !== target && !(next = current.$$nextSibling)) {
                 current = current.$parent;
@@ -889,6 +893,95 @@ function $RootScopeProvider() {
         $browser.$$checkUrlChange();
       },
 
+      /**
+       * @ngdoc method
+       * @name $rootScope.Scope#$suspend
+       * @kind function
+       *
+       * @description
+       * Suspend watchers of this scope subtree so that they will not be invoked during digest.
+       *
+       * This can be used to optimize your application when you know that running those watchers
+       * is redundant.
+       *
+       * **Warning**
+       *
+       * Suspending scopes from the digest cycle can have unwanted and difficult to debug results.
+       * Only use this approach if you are confident that you know what you are doing and have
+       * ample tests to ensure that bindings get updated as you expect.
+       *
+       * Some of the things to consider are:
+       *
+       * * Any external event on a directive/component will not trigger a digest while the hosting
+       *   scope is suspended - even if the event handler calls `$apply()` or `$rootScope.$digest()`.
+       * * Transcluded content exists on a scope that inherits from outside a directive but exists
+       *   as a child of the directive's containing scope. If the containing scope is suspended the
+       *   transcluded scope will also be suspended, even if the scope from which the transcluded
+       *   scope inherits is not suspended.
+       * * Multiple directives trying to manage the suspended status of a scope can confuse each other:
+       *    * A call to `$suspend()` on an already suspended scope is a no-op.
+       *    * A call to `$resume()` on a non-suspended scope is a no-op.
+       *    * If two directives suspend a scope, then one of them resumes the scope, the scope will no
+       *      longer be suspended. This could result in the other directive believing a scope to be
+       *      suspended when it is not.
+       * * If a parent scope is suspended then all its descendants will be also excluded from future
+       *   digests whether or not they have been suspended themselves. Note that this also applies to
+       *   isolate child scopes.
+       * * Calling `$digest()` directly on a descendant of a suspended scope will still run the watchers
+       *   for that scope and its descendants. When digesting we only check whether the current scope is
+       *   locally suspended, rather than checking whether it has a suspended ancestor.
+       * * Calling `$resume()` on a scope that has a suspended ancestor will not cause the scope to be
+       *   included in future digests until all its ancestors have been resumed.
+       * * Resolved promises, e.g. from explicit `$q` deferreds and `$http` calls, trigger `$apply()`
+       *   against the `$rootScope` and so will still trigger a global digest even if the promise was
+       *   initiated by a component that lives on a suspended scope.
+       */
+      $suspend: function() {
+        this.$$suspended = true;
+      },
+
+      /**
+       * @ngdoc method
+       * @name $rootScope.Scope#$isSuspended
+       * @kind function
+       *
+       * @description
+       * Call this method to determine if this scope has been explicitly suspended. It will not
+       * tell you whether an ancestor has been suspended.
+       * To determine if this scope will be excluded from a digest triggered at the $rootScope,
+       * for example, you must check all its ancestors:
+       *
+       * ```
+       * function isExcludedFromDigest(scope) {
+       *   while(scope) {
+       *     if (scope.$isSuspended()) return true;
+       *     scope = scope.$parent;
+       *   }
+       *   return false;
+       * ```
+       *
+       * Be aware that a scope may not be included in digests if it has a suspended ancestor,
+       * even if `$isSuspended()` returns false.
+       *
+       * @returns true if the current scope has been suspended.
+       */
+      $isSuspended: function() {
+        return this.$$suspended;
+      },
+
+      /**
+       * @ngdoc method
+       * @name $rootScope.Scope#$resume
+       * @kind function
+       *
+       * @description
+       * Resume watchers of this scope subtree in case it was suspended.
+       *
+       * See {@link $rootScope.Scope#$suspend} for information about the dangers of using this approach.
+       */
+      $resume: function() {
+        this.$$suspended = false;
+      },
 
       /**
        * @ngdoc event
@@ -1289,7 +1382,8 @@ function $RootScopeProvider() {
           // Insanity Warning: scope depth-first traversal
           // yes, this code is a bit crazy, but it works and we have tests to prove it!
           // this piece should be kept in sync with the traversal in $digest
-          // (though it differs due to having the extra check for $$listenerCount)
+          // (though it differs due to having the extra check for $$listenerCount and
+          // does not check $$suspended)
           if (!(next = ((current.$$listenerCount[name] && current.$$childHead) ||
               (current !== target && current.$$nextSibling)))) {
             while (current !== target && !(next = current.$$nextSibling)) {

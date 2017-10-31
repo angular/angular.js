@@ -1255,6 +1255,128 @@ describe('Scope', function() {
       });
     });
 
+
+    describe('$suspend/$resume/$isSuspended', function() {
+      it('should suspend watchers on scope', inject(function($rootScope) {
+        var watchSpy = jasmine.createSpy('watchSpy');
+        $rootScope.$watch(watchSpy);
+        $rootScope.$suspend();
+        $rootScope.$digest();
+        expect(watchSpy).not.toHaveBeenCalled();
+      }));
+
+      it('should resume watchers on scope', inject(function($rootScope) {
+        var watchSpy = jasmine.createSpy('watchSpy');
+        $rootScope.$watch(watchSpy);
+        $rootScope.$suspend();
+        $rootScope.$resume();
+        $rootScope.$digest();
+        expect(watchSpy).toHaveBeenCalled();
+      }));
+
+      it('should suspend watchers on child scope', inject(function($rootScope) {
+        var watchSpy = jasmine.createSpy('watchSpy');
+        var scope = $rootScope.$new(true);
+        scope.$watch(watchSpy);
+        $rootScope.$suspend();
+        $rootScope.$digest();
+        expect(watchSpy).not.toHaveBeenCalled();
+      }));
+
+      it('should resume watchers on child scope', inject(function($rootScope) {
+        var watchSpy = jasmine.createSpy('watchSpy');
+        var scope = $rootScope.$new(true);
+        scope.$watch(watchSpy);
+        $rootScope.$suspend();
+        $rootScope.$resume();
+        $rootScope.$digest();
+        expect(watchSpy).toHaveBeenCalled();
+      }));
+
+      it('should resume digesting immediately if `$resume` is called from an ancestor scope watch handler', inject(function($rootScope) {
+        var watchSpy = jasmine.createSpy('watchSpy');
+        var scope = $rootScope.$new();
+
+        // Setup a handler that will toggle the scope suspension
+        $rootScope.$watch('a', function(a) { if (a) scope.$resume(); else scope.$suspend(); });
+
+        // Spy on the scope watches being called
+        scope.$watch(watchSpy);
+
+        // Trigger a digest that should suspend the scope from within the watch handler
+        $rootScope.$apply('a = false');
+        // The scope is suspended before it gets to do a digest
+        expect(watchSpy).not.toHaveBeenCalled();
+
+        // Trigger a digest that should resume the scope from within the watch handler
+        $rootScope.$apply('a = true');
+        // The watch handler that resumes the scope is in the parent, so the resumed scope will digest immediately
+        expect(watchSpy).toHaveBeenCalled();
+      }));
+
+      it('should resume digesting immediately if `$resume` is called from a non-ancestor scope watch handler', inject(function($rootScope) {
+        var watchSpy = jasmine.createSpy('watchSpy');
+        var scope = $rootScope.$new();
+        var sibling = $rootScope.$new();
+
+        // Setup a handler that will toggle the scope suspension
+        sibling.$watch('a', function(a) { if (a) scope.$resume(); else scope.$suspend(); });
+
+        // Spy on the scope watches being called
+        scope.$watch(watchSpy);
+
+        // Trigger a digest that should suspend the scope from within the watch handler
+        $rootScope.$apply('a = false');
+        // The scope is suspended by the sibling handler after the scope has already digested
+        expect(watchSpy).toHaveBeenCalled();
+        watchSpy.calls.reset();
+
+        // Trigger a digest that should resume the scope from within the watch handler
+        $rootScope.$apply('a = true');
+        // The watch handler that resumes the scope marks the digest as dirty, so it will run an extra digest
+        expect(watchSpy).toHaveBeenCalled();
+      }));
+
+      it('should not suspend watchers on parent or sibling scopes', inject(function($rootScope) {
+        var watchSpyParent = jasmine.createSpy('watchSpyParent');
+        var watchSpyChild = jasmine.createSpy('watchSpyChild');
+        var watchSpySibling = jasmine.createSpy('watchSpySibling');
+
+        var parent = $rootScope.$new();
+        parent.$watch(watchSpyParent);
+        var child = parent.$new();
+        child.$watch(watchSpyChild);
+        var sibling = parent.$new();
+        sibling.$watch(watchSpySibling);
+
+        child.$suspend();
+        $rootScope.$digest();
+        expect(watchSpyParent).toHaveBeenCalled();
+        expect(watchSpyChild).not.toHaveBeenCalled();
+        expect(watchSpySibling).toHaveBeenCalled();
+      }));
+
+      it('should return true from `$isSuspended()` when a scope is suspended', inject(function($rootScope) {
+        $rootScope.$suspend();
+        expect($rootScope.$isSuspended()).toBe(true);
+        $rootScope.$resume();
+        expect($rootScope.$isSuspended()).toBe(false);
+      }));
+
+      it('should return false from `$isSuspended()` for a non-suspended scope that has a suspended ancestor', inject(function($rootScope) {
+        var childScope = $rootScope.$new();
+        $rootScope.$suspend();
+        expect(childScope.$isSuspended()).toBe(false);
+        childScope.$suspend();
+        expect(childScope.$isSuspended()).toBe(true);
+        childScope.$resume();
+        expect(childScope.$isSuspended()).toBe(false);
+        $rootScope.$resume();
+        expect(childScope.$isSuspended()).toBe(false);
+      }));
+    });
+
+
     describe('optimizations', function() {
 
       function setupWatches(scope, log) {
