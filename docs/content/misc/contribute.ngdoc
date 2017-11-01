@@ -2,8 +2,12 @@
 @name Develop
 @description
 
-# Contributing & Core Development
+# Contributing & Development
 
-For everything related to contributing, we have a document in our Git Repository that covers
-everything from submitting issues, setting up and building the code, to writing documentation,
-and much more: [Contributing](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md).
+For everything related to contributing, we have a document in our Git Repository that covers the
+basics about support channels, creating issues, and pull requests:
+[Contributing](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md).
+
+For developers, we have a more detailed document that covers project setup, coding rules, and
+a guide to writing documentation:
+[Developing](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md).

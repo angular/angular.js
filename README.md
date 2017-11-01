@@ -16,15 +16,27 @@ piece of cake. Best of all? It makes development fun!
 * Tutorial: https://docs.angularjs.org/tutorial
 * API Docs: https://docs.angularjs.org/api
 * Developer Guide: https://docs.angularjs.org/guide
-* Contribution guidelines: [CONTRIBUTING.md](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md)
+* Contribution guidelines: [CONTRIBUTING.md](CONTRIBUTING.md)
+* Core Development: [DEVELOPERS.md](DEVELOPERS.md)
 * Dashboard: https://dashboard.angularjs.org
 
 ##### Looking for the new Angular? Go here: https://github.com/angular/angular
 
-Contribute & Develop
+Documentation
+--------------------
+Go to https://docs.angularjs.org
+
+Contribute
 --------------------
 
-We've set up a separate document for our [contribution guidelines](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md).
+We've set up a separate document for our
+[contribution guidelines](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md).
+
+Develop
+--------------------
+
+We've set up a separate document for
+[developers](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md).
 
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/README.md?pixel)](https://github.com/igrigorik/ga-beacon)
