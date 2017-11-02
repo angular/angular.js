@@ -189,10 +189,12 @@ module.exports = function(config, specificOptions) {
     config.browserStack.startTunnel = false;
     config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
 
+    // In Travis, if a browser cannot be started, retrying usually does not help, so only try once
+    config.sauceLabs.retryLimit = 1;
     config.sauceLabs.build = buildLabel;
     config.sauceLabs.startConnect = false;
     config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
-    config.sauceLabs.recordScreenshots = true;
+    config.sauceLabs.recordScreenshots = false;
 
     // Debug logging into a file, that we print out at the end of the build.
     config.loggers.push({
