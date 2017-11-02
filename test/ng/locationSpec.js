@@ -477,6 +477,17 @@ describe('$location', function() {
         expect(locationUrl.hash()).toBe('x <>#');
       });
 
+
+      it('should not decode encoded forward slashes in the path', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com/base/', 'http://host.com/base/');
+        locationUrl.$$parse('http://host.com/base/a/ng2;path=%2Fsome%2Fpath');
+        expect(locationUrl.path()).toBe('/a/ng2;path=%2Fsome%2Fpath');
+        expect(locationUrl.search()).toEqual({});
+        expect(locationUrl.hash()).toBe('');
+        expect(locationUrl.url()).toBe('/a/ng2;path=%2Fsome%2Fpath');
+        expect(locationUrl.absUrl()).toBe('http://host.com/base/a/ng2;path=%2Fsome%2Fpath');
+      });
+
       it('should decode pluses as spaces in urls', function() {
         var locationUrl = new LocationHtml5Url('http://host.com/', 'http://host.com/');
         locationUrl.$$parse('http://host.com/?a+b=c+d');
