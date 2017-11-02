@@ -3637,7 +3637,7 @@ function SimpleChange(previous, current) {
 SimpleChange.prototype.isFirstChange = function() { return this.previousValue === _UNINITIALIZED_VALUE; };
 
 
-var PREFIX_REGEXP = /^((?:x|data)[:\-_])/i;
+var PREFIX_REGEXP = /^((?:x|data)*[:\-_])/i;
 var SPECIAL_CHARS_REGEXP = /[:\-_]+(.)/g;
 
 /**
