@@ -2,13 +2,56 @@
 
 (function() {
   /**
-   * Triggers a browser event. Attempts to choose the right event if one is
-   * not specified.
+   * @ngdoc function
+   * @name browserTrigger
+   * @description
+   *
+   * This is a global (window) function that is only available when the {@link ngMock} module is
+   * included.
+   *
+   * It can be used to trigger a native browser event on an element, which is useful for unit testing.
+   *
    *
    * @param {Object} element Either a wrapped jQuery/jqLite node or a DOMElement
-   * @param {string} eventType Optional event type
-   * @param {Object=} eventData An optional object which contains additional event data (such as x,y
-   * coordinates, keys, etc...) that are passed into the event when triggered
+   * @param {string=} eventType Optional event type. If none is specified, the function tries
+   *                            to determine the right event type for the element, e.g. `change` for
+   *                            `input[text]`.
+   * @param {Object=} eventData An optional object which contains additional event data that is used
+   *                            when creating the event:
+   *
+   *  - `bubbles`: [Event.bubbles](https://developer.mozilla.org/docs/Web/API/Event/bubbles).
+   *    Not applicable to all events.
+   *
+   *  - `cancelable`: [Event.cancelable](https://developer.mozilla.org/docs/Web/API/Event/cancelable).
+   *    Not applicable to all events.
+   *
+   *  - `charcode`: [charCode](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/charcode)
+   *    for keyboard events (keydown, keypress, and keyup).
+   *
+   *  - `elapsedTime`: the elapsedTime for
+   *    [TransitionEvent](https://developer.mozilla.org/docs/Web/API/TransitionEvent)
+   *    and [AnimationEvent](https://developer.mozilla.org/docs/Web/API/AnimationEvent).
+   *
+   *  - `keycode`: [keyCode](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/keycode)
+   *    for keyboard events (keydown, keypress, and keyup).
+   *
+   *  - `keys`: an array of possible modifier keys (ctrl, alt, shift, meta) for
+   *    [MouseEvent](https://developer.mozilla.org/docs/Web/API/MouseEvent) and
+   *    keyboard events (keydown, keypress, and keyup).
+   *
+   *  - `relatedTarget`: the
+   *    [relatedTarget](https://developer.mozilla.org/docs/Web/API/MouseEvent/relatedTarget)
+   *    for [MouseEvent](https://developer.mozilla.org/docs/Web/API/MouseEvent).
+   *
+   *  - `which`: [which](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/which)
+   *    for keyboard events (keydown, keypress, and keyup).
+   *
+   *  - `x`: x-coordinates for [MouseEvent](https://developer.mozilla.org/docs/Web/API/MouseEvent)
+   *    and [TouchEvent](https://developer.mozilla.org/docs/Web/API/TouchEvent).
+   *
+   *  - `y`: y-coordinates for [MouseEvent](https://developer.mozilla.org/docs/Web/API/MouseEvent)
+   *    and [TouchEvent](https://developer.mozilla.org/docs/Web/API/TouchEvent).
+   *
    */
   window.browserTrigger = function browserTrigger(element, eventType, eventData) {
     if (element && !element.nodeName) element = element[0];
