@@ -1,3 +1,4 @@
+<!-- General PR submission guidelines https://github.com/angular/angular.js/CONTRIBUTING.md#submit-pr -->
 **What kind of change does this PR introduce? (Bug fix, feature, docs update, ...)**
 
 
@@ -15,9 +16,9 @@
 
 
 **Please check if the PR fulfills these requirements**
-- [ ] The commit message follows our guidelines: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit-message-format
-- [ ] Tests for the changes have been added (for bug fixes / features)
-- [ ] Docs have been added / updated (for bug fixes / features)
+- [ ] The commit message follows our [guidelines](../DEVELOPERS.md#commits)
+- [ ] Fix/Feature: [Docs](../DEVELOPERS.md#documentation) have been added/updated
+- [ ] Fix/Feature: Tests have been added; existing tests pass
 
 **Other information**:
 

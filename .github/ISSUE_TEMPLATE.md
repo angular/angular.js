@@ -11,7 +11,7 @@ IF YOU DON'T FILL OUT THE FOLLOWING INFORMATION WE MIGHT CLOSE YOUR ISSUE WITHOU
 <!-- (check one with "x") -->
 - [ ] bug report
 - [ ] feature request
-- [ ] other (Please do not submit support requests here (see above))
+- [ ] other <!--(Please do not submit support requests here - see above)-->
 
 **Current behavior:**
 <!-- Describe how the bug manifests / how the current features are insufficient. -->
@@ -27,7 +27,8 @@ https://plnkr.co or similar (you can use this template as a starting point: http
 -->
 
 **AngularJS version:** 1.x.y
-<!-- Check whether this is still an issue in the most recent stable or in the snapshot AngularJS version (https://code.angularjs.org/snapshot/) -->
+<!-- Check whether this is still an issue in the most recent stable or in the snapshot AngularJS
+version (https://code.angularjs.org/snapshot/) -->
 
 **Browser:** [all | Chrome XX | Firefox XX | Edge XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari | iOS XX UIWebView | iOS XX WKWebView ]
 <!-- All browsers where this could be reproduced (and Operating System if relevant) -->
