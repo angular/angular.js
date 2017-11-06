@@ -10658,10 +10658,7 @@ describe('$compile', function() {
             template:
               '<div class="a" ng-transclude="ng-transclude"></div>' +
               '<div class="b" ng:transclude="ng:transclude"></div>' +
-              '<div class="c" data-ng-transclude="data-ng-transclude"></div>' +
-              '<div class="d" -ng-transclude="-ng-transclude"></div>' +
-              '<div class="e" _ng_transclude="_ng_transclude"></div>' +
-              '<div class="f" :ng:transclude=":ng:transclude"></div>'
+              '<div class="c" data-ng-transclude="data-ng-transclude"></div>'
           };
         });
       });
@@ -10676,21 +10673,12 @@ describe('$compile', function() {
         var a = element.children().eq(0);
         var b = element.children().eq(1);
         var c = element.children().eq(2);
-        var d = element.children().eq(3);
-        var e = element.children().eq(4);
-        var f = element.children().eq(5);
         expect(a).toHaveClass('a');
         expect(b).toHaveClass('b');
         expect(c).toHaveClass('c');
-        expect(d).toHaveClass('d');
-        expect(e).toHaveClass('e');
-        expect(f).toHaveClass('f');
         expect(a.text()).toEqual('stuartbobkevin');
         expect(b.text()).toEqual('stuartbobkevin');
         expect(c.text()).toEqual('stuartbobkevin');
-        expect(d.text()).toEqual('stuartbobkevin');
-        expect(e.text()).toEqual('stuartbobkevin');
-        expect(f.text()).toEqual('stuartbobkevin');
       });
     });
 
@@ -11742,18 +11730,6 @@ describe('$compile', function() {
         expect(element.attr('dash-test4')).toBe('JamieMason');
       }));
 
-      it('should work if they are prefixed with special chars', inject(function() {
-        $rootScope.name = 'JamieMason';
-        element = $compile('<span -ng-attr-dash-test2="{{name}}" _ng-attr-dash-test3="{{name}}" :ng:attr-dash-test4="{{name}}"></span>')($rootScope);
-        expect(element.attr('dash-test2')).toBeUndefined();
-        expect(element.attr('dash-test3')).toBeUndefined();
-        expect(element.attr('dash-test4')).toBeUndefined();
-        $rootScope.$digest();
-        expect(element.attr('dash-test2')).toBe('JamieMason');
-        expect(element.attr('dash-test3')).toBe('JamieMason');
-        expect(element.attr('dash-test4')).toBe('JamieMason');
-      }));
-
       it('should keep attributes ending with -start single-element directives', function() {
         module(function($compileProvider) {
           $compileProvider.directive('dashStarter', function(log) {
@@ -11817,27 +11793,6 @@ describe('$compile', function() {
       expect(element.find('filter').attr('filterUnits')).toBe('0.42');
       expect(element.find('feDiffuseLighting').attr('surfaceScale')).toBe('1');
       expect(element.find('feSpecularLighting').attr('surfaceScale')).toBe('1');
-    }));
-
-    it('should work if they are prefixed with special chars', inject(function($compile, $rootScope) {
-      $rootScope.dimensions = '0 0 0 0';
-      $rootScope.number = 0.42;
-      $rootScope.scale = 1;
-
-      element = $compile('<svg -ng-attr-view_box="{{dimensions}}">' +
-        '<filter _ng-attr-filter_units="{{number}}">' +
-        '<feDiffuseLighting -ng:attr_surface_scale="{{scale}}"' +
-        ':ng:attr_diffuse_constant="{{number}}"></feDiffuseLighting>' +
-        '<feSpecularLighting _ng:attr_surface_scale="{{scale}}"' +
-        ':ng-attr_diffuse_constant="{{number}}"></feSpecularLighting>')($rootScope);
-      expect(element.attr('viewBox')).toBeUndefined();
-      $rootScope.$digest();
-      expect(element.attr('viewBox')).toBe('0 0 0 0');
-      expect(element.find('filter').attr('filterUnits')).toBe('0.42');
-      expect(element.find('feDiffuseLighting').attr('surfaceScale')).toBe('1');
-      expect(element.find('feDiffuseLighting').attr('diffuseConstant')).toBe('0.42');
-      expect(element.find('feSpecularLighting').attr('surfaceScale')).toBe('1');
-      expect(element.find('feSpecularLighting').attr('diffuseConstant')).toBe('0.42');
     }));
   });
 
@@ -12193,28 +12148,6 @@ describe('$compile', function() {
       expect(spans.eq(1)).toBeHidden();
       expect(spans.eq(2)).toBeHidden();
       expect(spans.eq(3)).toBeHidden();
-    }));
-
-
-    it('should support special char prefix', inject(function($compile, $rootScope) {
-      $rootScope.show = false;
-      element = $compile(
-          '<div>' +
-              '<span -ng-show-start="show"></span>' +
-              '<span -ng-show-end></span>' +
-              '<span :ng-show-start="show"></span>' +
-              '<span :ng-show-end></span>' +
-              '<span _ng-show-start="show"></span>' +
-              '<span _ng-show-end></span>' +
-          '</div>')($rootScope);
-      $rootScope.$digest();
-      var spans = element.find('span');
-      expect(spans.eq(0)).toBeHidden();
-      expect(spans.eq(1)).toBeHidden();
-      expect(spans.eq(2)).toBeHidden();
-      expect(spans.eq(3)).toBeHidden();
-      expect(spans.eq(4)).toBeHidden();
-      expect(spans.eq(5)).toBeHidden();
     }));
   });
 
