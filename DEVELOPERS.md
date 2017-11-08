@@ -34,12 +34,9 @@ machine:
   to be installed and included in your
   [PATH](http://docs.oracle.com/javase/tutorial/essential/environment/paths.html) variable.
 
-* [Grunt](http://gruntjs.com): We use Grunt as our build system. Install the grunt command-line tool
-  globally with:
-
-  ```shell
-  yarn global add grunt-cli
-  ```
+* [Grunt](http://gruntjs.com): We use Grunt as our build system. We're using it as a local dependency,
+  but you can also add the grunt command-line tool globally (with `yarn global add grunt-cli`), which allows
+  you to leave out the `yarn` prefix for all our grunt commands.
 
 ### Forking AngularJS on Github
 
@@ -70,20 +67,11 @@ git remote add upstream "https://github.com/angular/angular.js.git"
 yarn install
 
 # Build AngularJS (which will install `bower` dependencies automatically):
-grunt package
+yarn grunt package
 ```
 
 **Note:** If you're using Windows, you must use an elevated command prompt (right click, run as
-Administrator). This is because `grunt package` creates some symbolic links.
-
-**Note:** If you're using Linux, and `yarn install` fails with the message
-'Please try running this command again as root/Administrator.', you may need to globally install
-`grunt` and `bower`:
-
-```shell
-sudo yarn global add grunt-cli
-sudo yarn global add bower
-```
+Administrator). This is because `yarn grunt package` creates some symbolic links.
 
 The build output is in the `build` directory. It consists of the following files and
 directories:
@@ -105,7 +93,7 @@ HTTP server. For this purpose, we have made available a local web server based o
 
 1. To start the web server, run:
    ```shell
-   grunt webserver
+   yarn grunt webserver
    ```
 
 2. To access the local server, enter the following URL into your web browser:
@@ -125,13 +113,13 @@ We write unit and integration tests with Jasmine and execute them with Karma. To
 tests once on Chrome run:
 
 ```shell
-grunt test:unit
+yarn grunt test:unit
 ```
 
 To run the tests on other browsers (Chrome, ChromeCanary, Firefox and Safari are pre-configured) use:
 
 ```shell
-grunt test:unit --browsers=Chrome,Firefox
+yarn grunt test:unit --browsers=Chrome,Firefox
 ```
 
 **Note:** there should be _no spaces between browsers_. `Chrome, Firefox` is INVALID.
@@ -143,9 +131,9 @@ For example, to run the whole unit test suite:
 
 ```shell
 # Browserstack
-grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
+yarn grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
 # Saucelabs
-grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
+yarn grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
 ```
 
 Running these commands requires you to set up [Karma Browserstack][karma-browserstack] or
@@ -157,7 +145,7 @@ source or test files change. To execute tests in this mode run:
 1. To start the Karma server, capture Chrome browser and run unit tests, run:
 
    ```shell
-   grunt autotest
+   yarn grunt autotest
    ```
 
 2. To capture more browsers, open this URL in the desired browser (URL might be different if you
@@ -173,7 +161,7 @@ source or test files change. To execute tests in this mode run:
 To learn more about all of the preconfigured Grunt tasks run:
 
 ```shell
-grunt --help
+yarn grunt --help
 ```
 
 
@@ -182,7 +170,7 @@ grunt --help
 AngularJS's end to end tests are run with Protractor. Simply run:
 
 ```shell
-grunt test:e2e
+yarn grunt test:e2e
 ```
 
 This will start the webserver and run the tests on Chrome.
@@ -329,7 +317,7 @@ documentation generation tool [Dgeni][dgeni].
 The docs can be built from scratch using grunt:
 
 ```shell
-grunt docs
+yarn grunt docs
 ```
 
 This defers the doc-building task to `gulp`.
@@ -338,7 +326,7 @@ Note that the docs app is using the local build files to run. This means you mig
 the build:
 
 ```shell
-grunt build
+yarn grunt build
 ```
 
 (This is also necessary if you are making changes to minErrors).
