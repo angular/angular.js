@@ -3638,7 +3638,7 @@ SimpleChange.prototype.isFirstChange = function() { return this.previousValue ==
 
 
 var PREFIX_REGEXP = /^((?:x|data)[:\-_])/i;
-var SPECIAL_CHARS_REGEXP = /([:\-_]+(.))/g;
+var SPECIAL_CHARS_REGEXP = /[:\-_]+(.)/g;
 
 /**
  * Converts all accepted directives format into proper directive name.
@@ -3647,7 +3647,7 @@ var SPECIAL_CHARS_REGEXP = /([:\-_]+(.))/g;
 function directiveNormalize(name) {
   return name
     .replace(PREFIX_REGEXP, '')
-    .replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+    .replace(SPECIAL_CHARS_REGEXP, function(_, letter, offset) {
       return offset ? letter.toUpperCase() : letter;
     });
 }
