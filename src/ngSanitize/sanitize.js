@@ -16,6 +16,8 @@ var bind;
 var extend;
 var forEach;
 var isDefined;
+var isArray;
+var isObject;
 var lowercase;
 var noop;
 var nodeContains;
@@ -145,8 +147,10 @@ var htmlSanitizeWriter;
  */
 function $SanitizeProvider() {
   var svgEnabled = false;
+  var hasBeenInstantiated = false;
 
   this.$get = ['$$sanitizeUri', function($$sanitizeUri) {
+    hasBeenInstantiated = true;
     if (svgEnabled) {
       extend(validElements, svgElements);
     }
@@ -199,6 +203,56 @@ function $SanitizeProvider() {
     }
   };
 
+
+  /**
+   * @ngdoc method
+   * @name $sanitizeProvider#addValidElements
+   * @kind function
+   *
+   * @param {Array|Object} elements List of valid elements.
+   *
+   *    Object properties:
+   *
+   *    - `svgElements` – `{string[]=}` – An array of SVG elements' names.
+   *    - `htmlVoidElements` – `{string[]=}` – An array of void elements' names.
+   *    - `htmlElements` – `{string[]=}` – An array of html elements' names.
+   */
+  this.addValidElements = function(elements) {
+    if (hasBeenInstantiated) return this;
+
+    if (isArray(elements)) {
+      addElementsTo(validElements, elements);
+      return this;
+    }
+
+    if (isObject(elements)) {
+      addElementsTo(svgElements, elements['svgElements']);
+      addElementsTo(voidElements, elements['htmlVoidElements']);
+      addElementsTo(validElements, elements['htmlVoidElements']);
+      addElementsTo(validElements, elements['htmlElements']);
+    }
+
+    return this;
+  };
+
+
+  /**
+   * @ngdoc method
+   * @name $sanitizeProvider#addValidAttrs
+   * @kind function
+   *
+   * @description
+   * The added attributes will not be treated as URI attributes, which means their values will
+   * not sanitized as URIs using the aHrefSanitizationWhitelist and imgSrcSanitizationWhitelist of {@link ng.$compileProvider $compileProvider}.
+   *
+   * @param {Array} attrs List of valid attributes
+   */
+  this.addValidAttrs = function(attrs) {
+    if (hasBeenInstantiated) return this;
+    extend(validAttrs, arrayToMap(attrs, true));
+    return this;
+  };
+
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // Private stuff
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,6 +261,8 @@ function $SanitizeProvider() {
   extend = angular.extend;
   forEach = angular.forEach;
   isDefined = angular.isDefined;
+  isArray = angular.isArray;
+  isObject = angular.isObject;
   lowercase = angular.$$lowercase;
   noop = angular.noop;
 
@@ -230,23 +286,23 @@ function $SanitizeProvider() {
 
   // Safe Void Elements - HTML5
   // http://dev.w3.org/html5/spec/Overview.html#void-elements
-  var voidElements = toMap('area,br,col,hr,img,wbr');
+  var voidElements = stringToMap('area,br,col,hr,img,wbr');
 
   // Elements that you can, intentionally, leave open (and which close themselves)
   // http://dev.w3.org/html5/spec/Overview.html#optional-tags
-  var optionalEndTagBlockElements = toMap('colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr'),
-      optionalEndTagInlineElements = toMap('rp,rt'),
+  var optionalEndTagBlockElements = stringToMap('colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr'),
+      optionalEndTagInlineElements = stringToMap('rp,rt'),
       optionalEndTagElements = extend({},
                                               optionalEndTagInlineElements,
                                               optionalEndTagBlockElements);
 
   // Safe Block Elements - HTML5
-  var blockElements = extend({}, optionalEndTagBlockElements, toMap('address,article,' +
+  var blockElements = extend({}, optionalEndTagBlockElements, stringToMap('address,article,' +
           'aside,blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,' +
           'h6,header,hgroup,hr,ins,map,menu,nav,ol,pre,section,table,ul'));
 
   // Inline Elements - HTML5
-  var inlineElements = extend({}, optionalEndTagInlineElements, toMap('a,abbr,acronym,b,' +
+  var inlineElements = extend({}, optionalEndTagInlineElements, stringToMap('a,abbr,acronym,b,' +
           'bdi,bdo,big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,' +
           'samp,small,span,strike,strong,sub,sup,time,tt,u,var'));
 
@@ -254,12 +310,12 @@ function $SanitizeProvider() {
   // https://wiki.whatwg.org/wiki/Sanitization_rules#svg_Elements
   // Note: the elements animate,animateColor,animateMotion,animateTransform,set are intentionally omitted.
   // They can potentially allow for arbitrary javascript to be executed. See #11290
-  var svgElements = toMap('circle,defs,desc,ellipse,font-face,font-face-name,font-face-src,g,glyph,' +
+  var svgElements = stringToMap('circle,defs,desc,ellipse,font-face,font-face-name,font-face-src,g,glyph,' +
           'hkern,image,linearGradient,line,marker,metadata,missing-glyph,mpath,path,polygon,polyline,' +
           'radialGradient,rect,stop,svg,switch,text,title,tspan');
 
   // Blocked Elements (will be stripped)
-  var blockedElements = toMap('script,style');
+  var blockedElements = stringToMap('script,style');
 
   var validElements = extend({},
                                      voidElements,
@@ -268,9 +324,9 @@ function $SanitizeProvider() {
                                      optionalEndTagElements);
 
   //Attributes that have href and hence need to be sanitized
-  var uriAttrs = toMap('background,cite,href,longdesc,src,xlink:href,xml:base');
+  var uriAttrs = stringToMap('background,cite,href,longdesc,src,xlink:href,xml:base');
 
-  var htmlAttrs = toMap('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
+  var htmlAttrs = stringToMap('abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,' +
       'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,' +
       'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,' +
       'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,' +
@@ -278,7 +334,7 @@ function $SanitizeProvider() {
 
   // SVG attributes (without "id" and "name" attributes)
   // https://wiki.whatwg.org/wiki/Sanitization_rules#svg_Attributes
-  var svgAttrs = toMap('accent-height,accumulate,additive,alphabetic,arabic-form,ascent,' +
+  var svgAttrs = stringToMap('accent-height,accumulate,additive,alphabetic,arabic-form,ascent,' +
       'baseProfile,bbox,begin,by,calcMode,cap-height,class,color,color-rendering,content,' +
       'cx,cy,d,dx,dy,descent,display,dur,end,fill,fill-rule,font-family,font-size,font-stretch,' +
       'font-style,font-variant,font-weight,from,fx,fy,g1,g2,glyph-name,gradientUnits,hanging,' +
@@ -299,12 +355,22 @@ function $SanitizeProvider() {
                                   svgAttrs,
                                   htmlAttrs);
 
-  function toMap(str, lowercaseKeys) {
-    var obj = {}, items = str.split(','), i;
+  function stringToMap(str, lowercaseKeys) {
+    return arrayToMap(str.split(','), lowercaseKeys);
+  }
+
+  function arrayToMap(items, lowercaseKeys) {
+    var obj = {}, i;
     for (i = 0; i < items.length; i++) {
       obj[lowercaseKeys ? lowercase(items[i]) : items[i]] = true;
     }
     return obj;
+  }
+
+  function addElementsTo(elementsMap, newElements) {
+    if (newElements && newElements.length) {
+      extend(elementsMap, arrayToMap(newElements));
+    }
   }
 
   /**
