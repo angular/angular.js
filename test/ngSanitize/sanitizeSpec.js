@@ -293,10 +293,56 @@ describe('HTML', function() {
     expect(doc).toEqual('<p><img src="x"></p>');
   }));
 
+  describe('Custom white-list support', function() {
+
+    var $sanitizeProvider;
+    beforeEach(module(function(_$sanitizeProvider_) {
+      $sanitizeProvider = _$sanitizeProvider_;
+
+      $sanitizeProvider.addValidElements(['foo']);
+      $sanitizeProvider.addValidElements({
+        htmlElements: ['foo-button', 'foo-video'],
+        htmlVoidElements: ['foo-input'],
+        svgElements: ['foo-svg']
+      });
+      $sanitizeProvider.addValidAttrs(['foo']);
+    }));
+
+    it('should allow custom white-listed element', function() {
+      expectHTML('<foo></foo>').toEqual('<foo></foo>');
+      expectHTML('<foo-button></foo-button>').toEqual('<foo-button></foo-button>');
+      expectHTML('<foo-video></foo-video>').toEqual('<foo-video></foo-video>');
+    });
+
+    it('should allow custom white-listed void element', function() {
+      expectHTML('<foo-input/>').toEqual('<foo-input>');
+    });
+
+    it('should allow custom white-listed void element to be used with closing tag', function() {
+      expectHTML('<foo-input></foo-input>').toEqual('<foo-input>');
+    });
+
+    it('should allow custom white-listed attribute', function() {
+      expectHTML('<foo-input foo="foo"/>').toEqual('<foo-input foo="foo">');
+    });
+
+    it('should ignore custom white-listed SVG element if SVG disabled', function() {
+      expectHTML('<foo-svg></foo-svg>').toEqual('');
+    });
+
+    it('should not allow add custom element after service has been instantiated', inject(function($sanitize) {
+      $sanitizeProvider.addValidElements(['bar']);
+      expectHTML('<bar></bar>').toEqual('');
+    }));
+  });
+
   describe('SVG support', function() {
 
     beforeEach(module(function($sanitizeProvider) {
       $sanitizeProvider.enableSvg(true);
+      $sanitizeProvider.addValidElements({
+        svgElements: ['font-face-uri']
+      });
     }));
 
     it('should accept SVG tags', function() {
@@ -312,6 +358,10 @@ describe('HTML', function() {
         .toBeOneOf('<svg preserveAspectRatio="true"></svg>',
                    '<svg preserveAspectRatio="true" xmlns="http://www.w3.org/2000/svg"></svg>');
 
+    });
+
+    it('should allow custom white-listed SVG element', function() {
+      expectHTML('<font-face-uri></font-face-uri>').toEqual('<font-face-uri></font-face-uri>');
     });
 
     it('should sanitize SVG xlink:href attribute values', function() {
