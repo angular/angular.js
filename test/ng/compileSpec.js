@@ -294,7 +294,8 @@ describe('$compile', function() {
       inject(function($compile) {});
     });
 
-    it('should omit special chars before processing directive name', function() {
+    it('should omit special chars before processing attribute directive name', function() {
+      // a regression https://github.com/angular/angular.js/issues/16278
       module(function() {
         directive('t', function(log) {
           return {
