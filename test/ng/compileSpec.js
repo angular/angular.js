@@ -294,6 +294,27 @@ describe('$compile', function() {
       inject(function($compile) {});
     });
 
+    it('should ignore special chars before processing attribute directive name', function() {
+      // a regression https://github.com/angular/angular.js/issues/16278
+      module(function() {
+        directive('t', function(log) {
+          return {
+            restrict: 'A',
+            link: {
+              pre: log.fn('pre'),
+              post: log.fn('post')
+            }
+          };
+        });
+      });
+      inject(function($compile, $rootScope, log) {
+        $compile('<div _t></div>')($rootScope);
+        $compile('<div -t></div>')($rootScope);
+        $compile('<div :t></div>')($rootScope);
+        expect(log).toEqual('pre; post; pre; post; pre; post');
+      });
+    });
+
     it('should throw an exception if the directive factory is not defined', function() {
       module(function() {
         expect(function() {
