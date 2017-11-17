@@ -50,3 +50,24 @@ You can also get this error if you accidentally load AngularJS itself more than 
   </body>
 </html>
 ```
+You can also get this error when the path to templateURL for a route in any of the $stateProvider.state() calls was wrong.
+Having an incorrect url in the templateUrl causes the app to be bootstraped again. Hence this error.
+```
+//e.g in your js file
+ .state('employeedetails',
+            {
+                url: '/employee/:employeeId',
+                views: {
+                    '@': {
+                        templateUrl: 'app/employee/this url does not exit .html', // this is the incorrect url which causes this error
+                        controller: 'EmployeedetailController',
+                        controllerAs: 'vm'
+                    }
+                },
+                ncyBreadcrumb: {
+                    label: '{{vm.title}}',
+                    parent: 'EmployeeListing'
+                }
+            })
+            
+```
