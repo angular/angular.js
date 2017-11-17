@@ -2284,6 +2284,15 @@ describe('input', function() {
 
   describe('number', function() {
 
+    // Helpers for min / max tests
+    var subtract = function(value) {
+      return value - 5;
+    };
+
+    var add = function(value) {
+      return value + 5;
+    };
+
     it('should reset the model if view is invalid', function() {
       var inputElm = helper.compileInput('<input type="number" ng-model="age"/>');
 
@@ -2465,6 +2474,29 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
 
+
+      it('should validate against the viewValue', function() {
+        var inputElm = helper.compileInput(
+          '<input type="number" ng-model-options="{allowInvalid: true}" ng-model="value" name="alias" min="10" />');
+
+        var ngModelCtrl = inputElm.controller('ngModel');
+        ngModelCtrl.$parsers.push(subtract);
+
+        helper.changeInputValueTo('10');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(5);
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+
+        ngModelCtrl.$parsers.pop();
+        ngModelCtrl.$parsers.push(add);
+
+        helper.changeInputValueTo('5');
+        expect(inputElm).toBeInvalid();
+        expect($rootScope.form.alias.$error.min).toBeTruthy();
+        expect($rootScope.value).toBe(10);
+      });
+
+
       it('should validate even if min value changes on-the-fly', function() {
         $rootScope.min = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" min="{{min}}" />');
@@ -2510,6 +2542,28 @@ describe('input', function() {
         expect($rootScope.value).toBe(100);
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
+
+
+      it('should validate against the viewValue', function() {
+        var inputElm = helper.compileInput(
+          '<input type="number" ng-model-options="{allowInvalid: true}" ng-model="value" name="alias" ng-min="10" />');
+        var ngModelCtrl = inputElm.controller('ngModel');
+        ngModelCtrl.$parsers.push(subtract);
+
+        helper.changeInputValueTo('10');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(5);
+        expect($rootScope.form.alias.$error.min).toBeFalsy();
+
+        ngModelCtrl.$parsers.pop();
+        ngModelCtrl.$parsers.push(add);
+
+        helper.changeInputValueTo('5');
+        expect(inputElm).toBeInvalid();
+        expect($rootScope.form.alias.$error.min).toBeTruthy();
+        expect($rootScope.value).toBe(10);
+      });
+
 
       it('should validate even if the ngMin value changes on-the-fly', function() {
         $rootScope.min = undefined;
@@ -2558,6 +2612,28 @@ describe('input', function() {
         expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
 
+
+      it('should validate against the viewValue', function() {
+        var inputElm = helper.compileInput('<input type="number"' +
+          'ng-model-options="{allowInvalid: true}" ng-model="value" name="alias" max="10" />');
+        var ngModelCtrl = inputElm.controller('ngModel');
+        ngModelCtrl.$parsers.push(add);
+
+        helper.changeInputValueTo('10');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(15);
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+
+        ngModelCtrl.$parsers.pop();
+        ngModelCtrl.$parsers.push(subtract);
+
+        helper.changeInputValueTo('15');
+        expect(inputElm).toBeInvalid();
+        expect($rootScope.form.alias.$error.max).toBeTruthy();
+        expect($rootScope.value).toBe(10);
+      });
+
+
       it('should validate even if max value changes on-the-fly', function() {
         $rootScope.max = undefined;
         var inputElm = helper.compileInput('<input type="number" ng-model="value" name="alias" max="{{max}}" />');
@@ -2603,6 +2679,28 @@ describe('input', function() {
         expect($rootScope.value).toBe(0);
         expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
+
+
+      it('should validate against the viewValue', function() {
+        var inputElm = helper.compileInput('<input type="number"' +
+          'ng-model-options="{allowInvalid: true}" ng-model="value" name="alias" ng-max="10" />');
+        var ngModelCtrl = inputElm.controller('ngModel');
+        ngModelCtrl.$parsers.push(add);
+
+        helper.changeInputValueTo('10');
+        expect(inputElm).toBeValid();
+        expect($rootScope.value).toBe(15);
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+
+        ngModelCtrl.$parsers.pop();
+        ngModelCtrl.$parsers.push(subtract);
+
+        helper.changeInputValueTo('15');
+        expect(inputElm).toBeInvalid();
+        expect($rootScope.form.alias.$error.max).toBeTruthy();
+        expect($rootScope.value).toBe(10);
+      });
+
 
       it('should validate even if the ngMax value changes on-the-fly', function() {
         $rootScope.max = undefined;
