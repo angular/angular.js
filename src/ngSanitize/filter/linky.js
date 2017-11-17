@@ -12,7 +12,7 @@
  * Requires the {@link ngSanitize `ngSanitize`} module to be installed.
  *
  * @param {string} text Input text.
- * @param {string} target Window (`_blank|_self|_parent|_top`) or named frame to open links in.
+ * @param {string} [target] Window (`_blank|_self|_parent|_top`) or named frame to open links in.
  * @param {object|function(url)} [attributes] Add custom attributes to the link element.
  *
  *    Can be one of:
