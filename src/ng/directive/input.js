@@ -1468,11 +1468,13 @@ function createDateInputType(type, regexp, parseDate, format) {
   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
     badInputChecker(scope, element, attr, ctrl, type);
     baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
-    var timezone = ctrl && ctrl.$options.getOption('timezone');
     var previousDate;
 
     ctrl.$parsers.push(function(value) {
-      if (ctrl.$isEmpty(value)) return null;
+      if (ctrl.$isEmpty(value)) {
+        previousDate = null;
+        return null;
+      }
       if (regexp.test(value)) {
         // Note: We cannot read ctrl.$modelValue, as there might be a different
         // parser/formatter in the processing chain so that the model
@@ -1489,6 +1491,7 @@ function createDateInputType(type, regexp, parseDate, format) {
       }
       if (isValidDate(value)) {
         previousDate = value;
+        var timezone = ctrl.$options.getOption('timezone');
         if (previousDate && timezone) {
           previousDate = convertTimezoneToLocal(previousDate, timezone, true);
         }
@@ -1532,6 +1535,8 @@ function createDateInputType(type, regexp, parseDate, format) {
 
     function parseDateAndConvertTimeZoneToLocal(value, previousDate) {
       var parsedDate = parseDate(value, previousDate);
+      var timezone = ctrl.$options.getOption('timezone');
+
       if (!isNaN(parsedDate) && timezone) {
         parsedDate = convertTimezoneToLocal(parsedDate, timezone);
       }

@@ -718,6 +718,21 @@ describe('input', function() {
     });
 
 
+    it('should be possible to override the timezone', function() {
+      var inputElm = helper.compileInput('<input type="month" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      helper.changeInputValueTo('2013-07');
+      expect(+$rootScope.value).toBe(Date.UTC(2013, 6, 1));
+
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: '-0500'});
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2014, 6, 1));
+      });
+      expect(inputElm.val()).toBe('2014-06');
+    });
+
+
     they('should use any timezone if specified in the options (format: $prop)',
       {'+HHmm': '+0500', '+HH:mm': '+05:00'},
       function(tz) {
@@ -1004,6 +1019,21 @@ describe('input', function() {
     });
 
 
+    it('should be possible to override the timezone', function() {
+      var inputElm = helper.compileInput('<input type="week" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      helper.changeInputValueTo('2013-W03');
+      expect(+$rootScope.value).toBe(Date.UTC(2013, 0, 17));
+
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: '+5000'});
+
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2014, 0, 17));
+      });
+      expect(inputElm.val()).toBe('2014-W04');
+    });
+
+
     they('should use any timezone if specified in the options (format: $prop)',
       {'+HHmm': '+0500', '+HH:mm': '+05:00'},
       function(tz) {
@@ -1226,6 +1256,25 @@ describe('input', function() {
         $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
       });
       expect(inputElm.val()).toBe('2001-01-01T01:02:00.000');
+    });
+
+
+    it('should be possible to override the timezone', function() {
+      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      helper.changeInputValueTo('2000-01-01T01:02');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
+
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: '+0500'});
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
+      });
+      expect(inputElm.val()).toBe('2001-01-01T06:02:00.000');
+
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: 'UTC'});
+
+      helper.changeInputValueTo('2000-01-01T01:02');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
     });
 
 
@@ -1591,6 +1640,25 @@ describe('input', function() {
     });
 
 
+    it('should be possible to override the timezone', function() {
+      var inputElm = helper.compileInput('<input type="time" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      helper.changeInputValueTo('23:02:00');
+      expect(+$rootScope.value).toBe(Date.UTC(1970, 0, 1, 23, 2, 0));
+
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: '-0500'});
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(1971, 0, 1, 23, 2, 0));
+      });
+      expect(inputElm.val()).toBe('18:02:00.000');
+
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: 'UTC'});
+      helper.changeInputValueTo('23:02:00');
+      // The year is still set from the previous date
+      expect(+$rootScope.value).toBe(Date.UTC(1971, 0, 1, 23, 2, 0));
+    });
+
+
     they('should use any timezone if specified in the options (format: $prop)',
       {'+HHmm': '+0500', '+HH:mm': '+05:00'},
       function(tz) {
@@ -1920,6 +1988,24 @@ describe('input', function() {
     });
 
 
+    it('should be possible to override the timezone', function() {
+      var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      helper.changeInputValueTo('2000-01-01');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1));
+
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: '-0500'});
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2001, 0, 1));
+      });
+      expect(inputElm.val()).toBe('2000-12-31');
+
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: 'UTC'});
+      helper.changeInputValueTo('2000-01-01');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 19));
+    });
+
+
     they('should use any timezone if specified in the options (format: $prop)',
       {'+HHmm': '+0500', '+HH:mm': '+05:00'},
       function(tz) {
@@ -2003,6 +2089,30 @@ describe('input', function() {
       expect(+$rootScope.val).toBe(+new Date(2014, 0, 2, 4, 5, 6, 0));
 
       dealoc(formElm);
+    });
+
+    it('should not reuse the hour part of a previous date object after emptying the input', function() {
+      var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
+
+      helper.changeInputValueTo('2000-01-01');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1));
+
+      // Change the timezone offset so that the display date is a day earlier
+      // This does not change the model, but our implementation
+      // internally caches a Date object with this offset
+      // and re-uses it if part of the date changes
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: '-0500'});
+      $rootScope.$apply(function() {
+        $rootScope.value = new Date(Date.UTC(2001, 0, 1));
+      });
+      expect(inputElm.val()).toBe('2000-12-31');
+
+      // Emptying the input should clear the cached date object
+      helper.changeInputValueTo('');
+
+      inputElm.controller('ngModel').$overrideModelOptions({timezone: 'UTC'});
+      helper.changeInputValueTo('2000-01-01');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 0));
     });
 
     describe('min', function() {
