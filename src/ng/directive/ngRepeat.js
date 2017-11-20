@@ -103,7 +103,8 @@
  * will not have to rebuild the DOM elements for items it has already rendered, even if the
  * JavaScript objects in the collection have been substituted for new ones. For large collections,
  * this significantly improves rendering performance. If you don't have a unique identifier,
- * `track by $index` can also provide a performance boost.
+ * `track by $index` can also provide a performance boost,
+ * but can cause unexpected side effects if not used correctly as noted below.
  * </div>
  *
  * ```html
@@ -115,10 +116,12 @@
  * <br />
  * <div class="alert alert-warning">
  * Avoid using `track by $index` when the repeated template contains
- * {@link guide/expression#one-time-binding one-time bindings}. In such cases, the `nth` DOM
- * element will always be matched with the `nth` item of the array, so the bindings on that element
- * will not be updated even when the corresponding item changes, essentially causing the view to get
- * out-of-sync with the underlying data.
+ * {@link guide/expression#one-time-binding one-time bindings} or {@link guide/directive#creating-directives directives}.
+ * In such cases, where the array changes and `track by $index` is in use the `nth` DOM element
+ * will always be matched with the `nth` item of the array. Since ngRepeat thinks that this item is the same as before,
+ * it will not re-create the DOM, but keep the existing one (bound to the existing scope), and therefore
+ * any directives that appear on the template will not be re-compiled (since compilation/linking happens only when a new instance is created).
+ * This is ngRepeats "keep track" function at play and it to reduce unnecessary DOM elements being rebuilt.
  * </div>
  *
  * When no `track by` expression is provided, it is equivalent to tracking by the built-in
