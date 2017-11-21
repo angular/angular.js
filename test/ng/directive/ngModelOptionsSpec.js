@@ -498,9 +498,41 @@ describe('ngModelOptions', function() {
 
           helper.changeInputValueTo('c');
           browserTrigger(helper.inputElm, 'mouseup');
-          // counter-intuitively `default` in `debounce` is a catch-all
+          // `default` in `debounce` only affects the event triggers that are not defined in updateOn
+          expect($rootScope.name).toEqual('c');
+        });
+
+
+        it('should use the value of * to debounce all unspecified events',
+          function() {
+          var inputElm = helper.compileInput(
+              '<input type="text" ng-model="name" name="alias" ' +
+                'ng-model-options="{' +
+                  'updateOn: \'default blur mouseup\', ' +
+                  'debounce: { default: 10000, blur: 5000, \'*\': 15000 }' +
+                '}"' +
+              '/>');
+
+          helper.changeInputValueTo('a');
+          expect($rootScope.name).toBeUndefined();
+          $timeout.flush(6000);
+          expect($rootScope.name).toBeUndefined();
+          $timeout.flush(4000);
+          expect($rootScope.name).toEqual('a');
+
+          helper.changeInputValueTo('b');
+          browserTrigger(inputElm, 'blur');
+          $timeout.flush(4000);
+          expect($rootScope.name).toEqual('a');
+          $timeout.flush(2000);
           expect($rootScope.name).toEqual('b');
-          $timeout.flush(10000);
+
+          helper.changeInputValueTo('c');
+          browserTrigger(helper.inputElm, 'mouseup');
+          expect($rootScope.name).toEqual('b');
+          $timeout.flush(10000); // flush default
+          expect($rootScope.name).toEqual('b');
+          $timeout.flush(5000);
           expect($rootScope.name).toEqual('c');
         });
 
