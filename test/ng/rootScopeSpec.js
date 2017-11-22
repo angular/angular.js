@@ -2562,6 +2562,26 @@ describe('Scope', function() {
             expect(secondListener).not.toHaveBeenCalled();
           });
         });
+
+
+        it('should deallocate the $$listenerCount entry when reaching 0', inject(function($rootScope) {
+          var child = $rootScope.$new();
+
+          child.$on('abc', noop)();
+
+          expect('abc' in $rootScope.$$listenerCount).toBe(false);
+          expect('abc' in child.$$listenerCount).toBe(false);
+        }));
+
+
+        it('should deallocate the $$listeners entry when empty', inject(function($rootScope) {
+          var child = $rootScope.$new();
+
+          child.$on('abc', noop)();
+
+          expect('abc' in $rootScope.$$listeners).toBe(false);
+          expect('abc' in child.$$listeners).toBe(false);
+        }));
       });
     });
 
