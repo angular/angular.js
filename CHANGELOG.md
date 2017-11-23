@@ -1,3 +1,58 @@
+<a name="1.6.7"></a>
+# 1.6.7 imperial-backstroke (2017-11-24)
+
+
+## Bug Fixes
+- **$compile:** sanitize special chars in directive name
+  ([c4003f](https://github.com/angular/angular.js/commit/c4003fd03489f876b646f06838f4edb576bacf6f),
+  [#16314](https://github.com/angular/angular.js/issues/16314),
+  [#16278](https://github.com/angular/angular.js/issues/16278))
+- **$location:** do not decode forward slashes in the path in HTML5 mode
+  ([e06ebf](https://github.com/angular/angular.js/commit/e06ebfdbb558544602fe9da4d7d98045a965f468),
+  [#16312](https://github.com/angular/angular.js/issues/16312))
+- **sanitizeUri:** sanitize URIs that contain IDEOGRAPHIC SPACE chars
+  ([ddeb1d](https://github.com/angular/angular.js/commit/ddeb1df15a23de93eb95dbe202e83e93673e1c4e),
+  [#16288](https://github.com/angular/angular.js/issues/16288))
+- **$rootScope:** fix potential memory leak when removing scope listeners
+  ([358a69](https://github.com/angular/angular.js/commit/358a69fa8b89b251ee44e523458d6c7f40b92b2d),
+  [#16135](https://github.com/angular/angular.js/issues/16135),
+  [#16161](https://github.com/angular/angular.js/issues/16161))
+- **http:** do not allow encoded callback params in jsonp requests
+  ([569e90](https://github.com/angular/angular.js/commit/569e906a5818271416ad0b749be2f58dc34938bd))
+- **ngMock:** pass unexpected request failures in `$httpBackend` to the error handler
+  ([1555a4](https://github.com/angular/angular.js/commit/1555a4911ad5360c145c0ddc8ec6c4bf9a381c13),
+  [#16150](https://github.com/angular/angular.js/issues/16150),
+  [#15855](https://github.com/angular/angular.js/issues/15855))
+- **ngAnimate:** don't close transitions when child transitions close
+  ([1391e9](https://github.com/angular/angular.js/commit/1391e99c7f73795180b792af21ad4402f96e225d),
+  [#16210](https://github.com/angular/angular.js/issues/16210))
+- **ngMock.browserTrigger:** add 'bubbles' to Transition/Animation Event
+  ([7a5f06](https://github.com/angular/angular.js/commit/7a5f06d55d123a39bb7b030667fb1ab672939598))
+
+
+## New Features
+- **$sanitize, $compileProvider, linky:** add support for the "sftp" protocol in links
+  ([a675ea](https://github.com/angular/angular.js/commit/a675ea034366fbb0fcf0d73fed65216aa99bce11),
+  [#16102](https://github.com/angular/angular.js/issues/16102))
+- **ngModel.NgModelController:** expose $processModelValue to run model -> view pipeline
+  ([145194](https://github.com/angular/angular.js/commit/14519488ce9218aa891d34e89fc3271fd4ed0f04),
+  [#3407](https://github.com/angular/angular.js/issues/3407),
+  [#10764](https://github.com/angular/angular.js/issues/10764),
+  [#16237](https://github.com/angular/angular.js/issues/16237))
+- **$injector:** ability to load new modules after bootstrapping
+  ([6e78fe](https://github.com/angular/angular.js/commit/6e78fee73258bb0ae36414f9db2e8734273e481b))
+
+
+## Performance Improvements
+- **jqLite:**
+  - avoid setting class attribute when not changed
+  ([9c95f6](https://github.com/angular/angular.js/commit/9c95f6d5e00ee7e054aabb3e363f5bfb3b7b4103))
+  - avoid repeated add/removeAttribute in jqLiteRemoveClass
+  ([cab9eb](https://github.com/angular/angular.js/commit/cab9ebfd5a02e897f802bf6321b8471e4843c5d3),
+  [#16078](https://github.com/angular/angular.js/issues/16078),
+  [#16131](https://github.com/angular/angular.js/issues/16131))
+
+
 <a name="1.6.6"></a>
 # 1.6.6 interdimensional-cable (2017-08-18)
 
