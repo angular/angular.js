@@ -394,14 +394,15 @@ function $RootScopeProvider() {
        */
       $watch: function(watchExp, listener, objectEquality, prettyPrintExpression) {
         var get = $parse(watchExp);
+        var fn = isFunction(listener) ? listener : noop;
 
         if (get.$$watchDelegate) {
-          return get.$$watchDelegate(this, listener, objectEquality, get, watchExp);
+          return get.$$watchDelegate(this, fn, objectEquality, get, watchExp);
         }
         var scope = this,
             array = scope.$$watchers,
             watcher = {
-              fn: listener,
+              fn: fn,
               last: initWatchVal,
               get: get,
               exp: prettyPrintExpression || watchExp,
@@ -409,10 +410,6 @@ function $RootScopeProvider() {
             };
 
         lastDirtyWatch = null;
-
-        if (!isFunction(listener)) {
-          watcher.fn = noop;
-        }
 
         if (!array) {
           array = scope.$$watchers = [];
