@@ -727,9 +727,9 @@ describe('input', function() {
       inputElm.controller('ngModel').$overrideModelOptions({timezone: '-0500'});
 
       $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(2014, 6, 1));
+        $rootScope.value = new Date(Date.UTC(2013, 6, 1));
       });
-      expect(inputElm.val()).toBe('2014-06');
+      expect(inputElm.val()).toBe('2013-06');
     });
 
 
@@ -1028,9 +1028,10 @@ describe('input', function() {
       inputElm.controller('ngModel').$overrideModelOptions({timezone: '+5000'});
 
       $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(2014, 0, 17));
+        // the 17. with an offset of +5000 moves the date into next week
+        $rootScope.value = new Date(Date.UTC(2013, 0, 18));
       });
-      expect(inputElm.val()).toBe('2014-W04');
+      expect(inputElm.val()).toBe('2013-W04');
     });
 
 
@@ -2002,7 +2003,7 @@ describe('input', function() {
 
       inputElm.controller('ngModel').$overrideModelOptions({timezone: 'UTC'});
       helper.changeInputValueTo('2000-01-01');
-      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 19));
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 0));
     });
 
 
@@ -2091,11 +2092,11 @@ describe('input', function() {
       dealoc(formElm);
     });
 
-    it('should not reuse the hour part of a previous date object after emptying the input', function() {
+    it('should not reuse the hour part of a previous date object after changing the timezone', function() {
       var inputElm = helper.compileInput('<input type="date" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
 
       helper.changeInputValueTo('2000-01-01');
-      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1));
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 0));
 
       // Change the timezone offset so that the display date is a day earlier
       // This does not change the model, but our implementation
@@ -2103,9 +2104,9 @@ describe('input', function() {
       // and re-uses it if part of the date changes
       inputElm.controller('ngModel').$overrideModelOptions({timezone: '-0500'});
       $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(2001, 0, 1));
+        $rootScope.value = new Date(Date.UTC(2000, 0, 1, 0));
       });
-      expect(inputElm.val()).toBe('2000-12-31');
+      expect(inputElm.val()).toBe('1999-12-31');
 
       // Emptying the input should clear the cached date object
       helper.changeInputValueTo('');
