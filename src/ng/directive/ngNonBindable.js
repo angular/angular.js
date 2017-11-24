@@ -9,13 +9,10 @@
  *
  * @description
  * The `ngNonBindable` directive tells AngularJS not to compile or bind the contents of the current
- * DOM element.AngularJS will generally ignore each attribute of the element itself. Attributes will
- * *not* be ignored if they are part of a directive that has a higher priority than that of the
- * `ngNonBindable` directive.
- *
- * This is useful if the element contains what appears to be AngularJS directives and bindings but
- * which should be ignored by AngularJS. This could be the case if you have a site that displays
- * snippets of code, for instance.
+ * DOM element, including directives on the element itself that have a lower priority than
+ * `ngNonBindable`. This is useful if the element contains what appears to be AngularJS directives
+ * and bindings but which should be ignored by AngularJS. This could be the case if you have a site
+ * that displays snippets of code, for instance.
  *
  * @example
  * In this example there are two locations where a simple interpolation binding (`{{}}`) is present,
