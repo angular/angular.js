@@ -1277,8 +1277,7 @@ function $RootScopeProvider() {
           }
           //if any listener on the current scope stops propagation, prevent bubbling
           if (stopPropagation) {
-            event.currentScope = null;
-            return event;
+            break;
           }
           //traverse upwards
           scope = scope.$parent;
