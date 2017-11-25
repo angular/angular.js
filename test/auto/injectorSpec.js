@@ -440,6 +440,45 @@ describe('injector', function() {
     });
 
 
+    it('should handle inheritance without own args', function() {
+      function Base(a) {
+      }
+      function Sub() {
+        Base.apply(this, arguments);
+      }
+      Sub.prototype = Object.create(Base.prototype);
+      Sub.prototype.constructor = Sub;
+
+      expect(annotate(Base)).toEqual(['a']);
+      expect(annotate(Sub)).toEqual(['a']);
+
+      delete Base.$inject;
+      delete Sub.$inject;
+
+      expect(annotate(Sub)).toEqual(['a']);
+      expect(annotate(Base)).toEqual(['a']);
+    });
+
+    it('should handle inheritance with different args', function() {
+      function Base(a) {
+      }
+      function Sub(x, a) {
+        Base.call(this, a);
+      }
+      Sub.prototype = Object.create(Base.prototype);
+      Sub.prototype.constructor = Sub;
+
+      expect(annotate(Base)).toEqual(['a']);
+      expect(annotate(Sub)).toEqual(['x', 'a']);
+
+      delete Base.$inject;
+      delete Sub.$inject;
+
+      expect(annotate(Sub)).toEqual(['x', 'a']);
+      expect(annotate(Base)).toEqual(['a']);
+    });
+
+
     describe('es6', function() {
       if (support.shorthandMethods) {
         // The functions are generated using `eval` as just having the ES6 syntax can break some browsers.
@@ -500,6 +539,38 @@ describe('injector', function() {
           var instance = injector.invoke(Clazz);
 
           expect(instance).toEqual(jasmine.any(Clazz));
+        });
+
+        it('should annotate correctly when inheriting with different constructor args', function() {
+          // eslint-disable-next-line no-eval
+          var clazzes = eval('(() => { class Base { constructor(a) {} }; class Sub extends Base { constructor(x, a) {super(a);} }; return {Base,Sub}})()');
+          var Base = clazzes.Base;
+          var Sub = clazzes.Sub;
+
+          expect(annotate(Base)).toEqual(['a']);
+          expect(annotate(Sub)).toEqual(['x', 'a']);
+
+          delete Base.$inject;
+          delete Sub.$inject;
+
+          expect(annotate(Sub)).toEqual(['x', 'a']);
+          expect(annotate(Base)).toEqual(['a']);
+        });
+
+        it('should annotate correctly when inheriting without subclass constructor', function() {
+          // eslint-disable-next-line no-eval
+          var clazzes = eval('(() => { class Base { constructor(a) {} }; class Sub extends Base {}; return {Base,Sub}})()');
+          var Base = clazzes.Base;
+          var Sub = clazzes.Sub;
+
+          expect(annotate(Base)).toEqual(['a']);
+          expect(annotate(Sub)).toEqual(['a']);
+
+          delete Base.$inject;
+          delete Sub.$inject;
+
+          expect(annotate(Sub)).toEqual(['a']);
+          expect(annotate(Base)).toEqual(['a']);
         });
       }
     });

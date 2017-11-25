@@ -96,8 +96,9 @@ function annotate(fn, strictDi, name) {
       last;
 
   if (typeof fn === 'function') {
-    if (!($inject = fn.$inject)) {
-      $inject = [];
+    $inject = fn.$inject;
+    if (!$inject || !fn.hasOwnProperty('$inject')) {
+      var $computedInject = [];
       if (fn.length) {
         if (strictDi) {
           if (!isString(name) || !name) {
@@ -109,9 +110,16 @@ function annotate(fn, strictDi, name) {
         argDecl = extractArgs(fn);
         forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg) {
           arg.replace(FN_ARG, function(all, underscore, name) {
-            $inject.push(name);
+            $computedInject.push(name);
           });
         });
+      }
+
+      var proto = fn.prototype && Object.getPrototypeOf(fn.prototype);
+      if (!$computedInject.length && !$inject && proto && proto.constructor) {
+        $inject = annotate(proto.constructor, strictDi, name);
+      } else {
+        $inject = $computedInject.length ? $computedInject : ($inject || []);
       }
       fn.$inject = $inject;
     }
