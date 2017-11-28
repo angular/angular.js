@@ -673,6 +673,20 @@ describe('$location', function() {
         locationUrl.search({'q': '4/5 6'});
         expect(locationUrl.absUrl()).toEqual('http://host.com?q=4%2F5%206');
       });
+
+      it('url() should decode non-component special characters in hashbang mode', function() {
+        var locationUrl = new LocationHashbangUrl('http://host.com', 'http://host.com');
+        locationUrl.$$parse('http://host.com');
+        locationUrl.url('/foo%3Abar');
+        expect(locationUrl.path()).toEqual('/foo:bar');
+      });
+
+      it('url() should not decode non-component special characters in html5 mode', function() {
+        var locationUrl = new LocationHtml5Url('http://host.com', 'http://host.com');
+        locationUrl.$$parse('http://host.com');
+        locationUrl.url('/foo%3Abar');
+        expect(locationUrl.path()).toEqual('/foo%3Abar');
+      });
     });
   });
 
