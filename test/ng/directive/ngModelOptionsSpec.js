@@ -391,6 +391,43 @@ describe('ngModelOptions', function() {
           browserTrigger(inputElm[2], 'click');
           expect($rootScope.color).toBe('blue');
         });
+
+        it('should re-set the trigger events when overridden with $overrideModelOptions', function() {
+          var inputElm = helper.compileInput(
+              '<input type="text" ng-model="name" name="alias" ' +
+                'ng-model-options="{ updateOn: \'blur click\' }"' +
+              '/>');
+
+          var ctrl = inputElm.controller('ngModel');
+
+          helper.changeInputValueTo('a');
+          expect($rootScope.name).toBeUndefined();
+          browserTrigger(inputElm, 'blur');
+          expect($rootScope.name).toEqual('a');
+
+          helper.changeInputValueTo('b');
+          expect($rootScope.name).toBe('a');
+          browserTrigger(inputElm, 'click');
+          expect($rootScope.name).toEqual('b');
+
+          $rootScope.$apply('name = undefined');
+          expect(inputElm.val()).toBe('');
+          ctrl.$overrideModelOptions({updateOn: 'blur mousedown'});
+
+          helper.changeInputValueTo('a');
+          expect($rootScope.name).toBeUndefined();
+          browserTrigger(inputElm, 'blur');
+          expect($rootScope.name).toEqual('a');
+
+          helper.changeInputValueTo('b');
+          expect($rootScope.name).toBe('a');
+          browserTrigger(inputElm, 'click');
+          expect($rootScope.name).toBe('a');
+
+          browserTrigger(inputElm, 'mousedown');
+          expect($rootScope.name).toEqual('b');
+        });
+
       });
 
 
