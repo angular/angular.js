@@ -1535,14 +1535,15 @@ function createDateInputType(type, regexp, parseDate, format) {
     }
 
     function parseDateAndConvertTimeZoneToLocal(value, previousDate) {
-      if (timezone && previousTimezone && previousTimezone !== timezone) {
-        // If the timezone has changed, adjust the previousDate to the default timzeone
+      var timezone = ctrl.$options.getOption('timezone');
+
+      if (previousTimezone && previousTimezone !== timezone) {
+        // If the timezone has changed, adjust the previousDate to the default timezone
         // so that the new date is converted with the correct timezone offset
-        previousDate = addDateMinutes(previousDate, timezoneToOffset(previousTimezone, 0));
+        previousDate = addDateMinutes(previousDate, timezoneToOffset(previousTimezone));
       }
 
       var parsedDate = parseDate(value, previousDate);
-      var timezone = ctrl.$options.getOption('timezone');
 
       if (!isNaN(parsedDate) && timezone) {
         parsedDate = convertTimezoneToLocal(parsedDate, timezone);
