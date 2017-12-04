@@ -610,6 +610,37 @@ describe('input', function() {
       helper.changeInputValueTo('stuff');
       expect(inputElm.val()).toBe('stuff');
       expect($rootScope.value).toBeUndefined();
+      expect(inputElm).toHaveClass('ng-invalid-month');
+      expect(inputElm).toBeInvalid();
+    });
+
+
+    it('should not set error=month when a later parser returns undefined', function() {
+      var inputElm = helper.compileInput('<input type="month" ng-model="value"/>');
+      var ctrl = inputElm.controller('ngModel');
+
+      ctrl.$parsers.push(function() {
+        return undefined;
+      });
+
+      inputElm[0].setAttribute('type', 'text');
+
+      helper.changeInputValueTo('2017-01');
+
+      expect($rootScope.value).toBeUndefined();
+      expect(ctrl.$error.month).toBeFalsy();
+      expect(ctrl.$error.parse).toBeTruthy();
+      expect(inputElm).not.toHaveClass('ng-invalid-month');
+      expect(inputElm).toHaveClass('ng-invalid-parse');
+      expect(inputElm).toBeInvalid();
+
+      helper.changeInputValueTo('asdf');
+
+      expect($rootScope.value).toBeUndefined();
+      expect(ctrl.$error.month).toBeTruthy();
+      expect(ctrl.$error.parse).toBeFalsy();
+      expect(inputElm).toHaveClass('ng-invalid-month');
+      expect(inputElm).not.toHaveClass('ng-invalid-parse');
       expect(inputElm).toBeInvalid();
     });
 
@@ -2455,6 +2486,73 @@ describe('input', function() {
       $rootScope.form.alias.$setViewValue('123214124123412412E-26');
       expect(inputElm).toBeValid();
       expect($rootScope.value).toBe(123214124123412412e-26);
+    });
+
+    it('should not set $error number if any other parser fails', function() {
+      var inputElm = helper.compileInput('<input type="number" ng-model="age"/>');
+      var ctrl = inputElm.controller('ngModel');
+
+      var previousParserFail = false;
+      var laterParserFail = false;
+
+      ctrl.$parsers.unshift(function(value) {
+        return previousParserFail ? undefined : value;
+      });
+
+      ctrl.$parsers.push(function(value) {
+        return laterParserFail ? undefined : value;
+      });
+
+      // to allow non-number values, we have to change type so that
+      // the browser which have number validation will not interfere with
+      // this test.
+      inputElm[0].setAttribute('type', 'text');
+
+      helper.changeInputValueTo('123X');
+      expect(inputElm.val()).toBe('123X');
+
+      expect($rootScope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+      expect(ctrl.$error.number).toBe(true);
+      expect(ctrl.$error.parse).toBeFalsy();
+      expect(inputElm).toHaveClass('ng-invalid-number');
+      expect(inputElm).not.toHaveClass('ng-invalid-parse');
+
+      previousParserFail = true;
+      helper.changeInputValueTo('123');
+      expect(inputElm.val()).toBe('123');
+
+      expect($rootScope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+      expect(ctrl.$error.number).toBeFalsy();
+      expect(ctrl.$error.parse).toBe(true);
+      expect(inputElm).not.toHaveClass('ng-invalid-number');
+      expect(inputElm).toHaveClass('ng-invalid-parse');
+
+      previousParserFail = false;
+      laterParserFail = true;
+
+      helper.changeInputValueTo('1234');
+      expect(inputElm.val()).toBe('1234');
+
+      expect($rootScope.age).toBeUndefined();
+      expect(inputElm).toBeInvalid();
+      expect(ctrl.$error.number).toBeFalsy();
+      expect(ctrl.$error.parse).toBe(true);
+      expect(inputElm).not.toHaveClass('ng-invalid-number');
+      expect(inputElm).toHaveClass('ng-invalid-parse');
+
+      laterParserFail = false;
+
+      helper.changeInputValueTo('12345');
+      expect(inputElm.val()).toBe('12345');
+
+      expect($rootScope.age).toBe(12345);
+      expect(inputElm).toBeValid();
+      expect(ctrl.$error.number).toBeFalsy();
+      expect(ctrl.$error.parse).toBeFalsy();
+      expect(inputElm).not.toHaveClass('ng-invalid-number');
+      expect(inputElm).not.toHaveClass('ng-invalid-parse');
     });
 
 

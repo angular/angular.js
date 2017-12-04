@@ -1378,13 +1378,13 @@ describe('ngModel', function() {
           }
         };
 
-        ctrl.$$parserName = 'parserOrValidator';
         ctrl.$parsers.push(function(value) {
           switch (value) {
             case 'allInvalid':
             case 'stillAllInvalid':
             case 'parseInvalid-validatorsValid':
             case 'stillParseInvalid-validatorsValid':
+              ctrl.$$parserName = 'parserOrValidator';
               return undefined;
             default:
               return value;
