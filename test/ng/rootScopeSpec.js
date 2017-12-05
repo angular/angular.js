@@ -2925,6 +2925,45 @@ describe('Scope', function() {
         }));
       });
     });
+
+
+    it('should allow recursive $emit/$broadcast', inject(function($rootScope) {
+      var callCount = 0;
+      $rootScope.$on('evt', function($event, arg0) {
+        callCount++;
+        if (arg0 !== 1234) {
+          $rootScope.$emit('evt', 1234);
+          $rootScope.$broadcast('evt', 1234);
+        }
+      });
+
+      $rootScope.$emit('evt');
+      $rootScope.$broadcast('evt');
+      expect(callCount).toBe(6);
+    }));
+
+
+    it('should allow recursive $emit/$broadcast between parent/child', inject(function($rootScope) {
+      var child = $rootScope.$new();
+      var calls = '';
+
+      $rootScope.$on('evt', function($event, arg0) {
+        calls += 'r';  // For "root".
+        if (arg0 === 'fromChild') {
+          $rootScope.$broadcast('evt', 'fromRoot2');
+        }
+      });
+
+      child.$on('evt', function($event, arg0) {
+        calls += 'c';  // For "child".
+        if (arg0 === 'fromRoot1') {
+          child.$emit('evt', 'fromChild');
+        }
+      });
+
+      $rootScope.$broadcast('evt', 'fromRoot1');
+      expect(calls).toBe('rccrrc');
+    }));
   });
 
   describe('doc examples', function() {
