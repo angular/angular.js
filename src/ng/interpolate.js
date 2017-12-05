@@ -331,9 +331,7 @@ function $InterpolateProvider() {
             var lastValue;
             return scope.$watchGroup(parseFns, /** @this */ function interpolateFnWatcher(values, oldValues) {
               var currValue = compute(values);
-              if (isFunction(listener)) {
-                listener.call(this, currValue, values !== oldValues ? lastValue : currValue, scope);
-              }
+              listener.call(this, currValue, values !== oldValues ? lastValue : currValue, scope);
               lastValue = currValue;
             });
           }

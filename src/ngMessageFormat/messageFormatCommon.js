@@ -34,7 +34,7 @@ function parseTextLiteral(text) {
   parsedFn['$$watchDelegate'] = function watchDelegate(scope, listener, objectEquality) {
     var unwatch = scope['$watch'](noop,
         function textLiteralWatcher() {
-          if (isFunction(listener)) { listener(text, text, scope); }
+          listener(text, text, scope);
           unwatch();
         },
         objectEquality);
@@ -58,7 +58,7 @@ function subtractOffset(expressionFn, offset) {
   parsedFn['$$watchDelegate'] = function watchDelegate(scope, listener, objectEquality) {
     unwatch = scope['$watch'](expressionFn,
         function pluralExpressionWatchListener(newValue, oldValue) {
-          if (isFunction(listener)) { listener(minusOffset(newValue), minusOffset(oldValue), scope); }
+          listener(minusOffset(newValue), minusOffset(oldValue), scope);
         },
         objectEquality);
     return unwatch;
