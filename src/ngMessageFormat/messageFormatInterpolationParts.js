@@ -122,9 +122,7 @@ function InterpolationPartsWatcher(interpolationParts, scope, listener, objectEq
 
 InterpolationPartsWatcher.prototype.watchListener = function watchListener(newExpressionValues, oldExpressionValues) {
   var result = this.interpolationParts.getResult(newExpressionValues);
-  if (isFunction(this.listener)) {
-    this.listener.call(null, result, newExpressionValues === oldExpressionValues ? result : this.previousResult, this.scope);
-  }
+  this.listener.call(null, result, newExpressionValues === oldExpressionValues ? result : this.previousResult, this.scope);
   this.previousResult = result;
 };
 

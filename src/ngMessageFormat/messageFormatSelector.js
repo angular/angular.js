@@ -66,9 +66,7 @@ MessageSelectorWatchers.prototype.expressionFnListener = function expressionFnLi
 };
 
 MessageSelectorWatchers.prototype.messageFnListener = function messageFnListener(newMessage, oldMessage) {
-  if (isFunction(this.listener)) {
-    this.listener.call(null, newMessage, newMessage === oldMessage ? newMessage : this.lastMessage, this.scope);
-  }
+  this.listener.call(null, newMessage, newMessage === oldMessage ? newMessage : this.lastMessage, this.scope);
   this.lastMessage = newMessage;
 };
 
