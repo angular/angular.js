@@ -417,7 +417,8 @@ defaultModelOptions = new ModelOptions({
  * The `ngModelOptions` expression is only evaluated once when the directive is linked; it is not
  * watched for changes. However, it is possible to override the options on a single
  * {@link ngModel.NgModelController} instance with
- * {@link ngModel.NgModelController#$overrideModelOptions}. See also the example for
+ * {@link ngModel.NgModelController#$overrideModelOptions `NgModelController#$overrideModelOptions()`}.
+ * See also the example for
  * {@link ngModelOptions#default-events-extra-triggers-and-catch-all-debounce-values
  * Default events, extra triggers, and catch-all debounce values}.
  *
