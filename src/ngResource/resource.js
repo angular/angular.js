@@ -187,8 +187,9 @@ function shallowClearAndCopy(src, dst) {
  *     [requestType](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType).
  *   - **`interceptor`** - `{Object=}` - The interceptor object has four optional methods -
  *     `request`, `requestError`, `response`, and `responseError`. See
- *     {@link ng.$http $http interceptors} for details. In addition, the
- *     resource instance or array object is accessible by the `resource` property of the
+ *     {@link ng.$http $http interceptors} for details. Note that `request`/`requestError`
+ *     interceptors are applied before calling `$http`, thus before any global `$http` interceptors.
+ *     The resource instance or array object is accessible by the `resource` property of the
  *     `http response` object passed to response interceptors.
  *     Keep in mind that the associated promise will be resolved with the value returned by the
  *     response interceptor, if one is specified. The default response interceptor returns
