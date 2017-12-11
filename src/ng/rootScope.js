@@ -1152,7 +1152,7 @@ function $RootScopeProvider() {
        *     event propagates through the scope hierarchy, this property is set to null.
        *   - `name` - `{string}`: name of the event.
        *   - `stopPropagation` - `{function=}`: calling `stopPropagation` function will cancel
-       *     further event propagation (available only for events that were `$emit`-ed).
+       *     further event propagation.
        *   - `preventDefault` - `{function}`: calling `preventDefault` sets `defaultPrevented` flag
        *     to true.
        *   - `defaultPrevented` - `{boolean}`: true if `preventDefault` was called.
@@ -1269,9 +1269,11 @@ function $RootScopeProvider() {
         var target = this,
             current = target,
             next = target,
+            stopPropagation = false,
             event = {
               name: name,
               targetScope: target,
+              stopPropagation: function() {stopPropagation = true;},
               preventDefault: function() {
                 event.defaultPrevented = true;
               },
@@ -1290,8 +1292,8 @@ function $RootScopeProvider() {
           // yes, this code is a bit crazy, but it works and we have tests to prove it!
           // this piece should be kept in sync with the traversal in $digest
           // (though it differs due to having the extra check for $$listenerCount)
-          if (!(next = ((current.$$listenerCount[name] && current.$$childHead) ||
-              (current !== target && current.$$nextSibling)))) {
+          if (!(next = ((current.$$listenerCount[name] && !stopPropagation && current.$$childHead) ||
+              (current !== target && ((stopPropagation = false) || current.$$nextSibling))))) {
             while (current !== target && !(next = current.$$nextSibling)) {
               current = current.$parent;
             }
