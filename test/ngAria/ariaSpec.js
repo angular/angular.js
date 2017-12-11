@@ -420,6 +420,21 @@ describe('$aria', function() {
       scope.$apply('txtInput=\'LTten\'');
       expect(element.attr('aria-invalid')).toBe('userSetValue');
     });
+
+    it('should not attach if input is type="hidden"', function() {
+      compileElement('<input type="hidden" ng-model="txtInput">');
+      expect(element.attr('aria-invalid')).toBeUndefined();
+    });
+
+
+    it('should attach aria-invalid to custom control that is type="hidden"', function() {
+      compileElement('<div ng-model="txtInput" type="hidden" role="textbox" ng-minlength="10"></div>');
+      scope.$apply('txtInput=\'LTten\'');
+      expect(element.attr('aria-invalid')).toBe('true');
+
+      scope.$apply('txtInput=\'morethantencharacters\'');
+      expect(element.attr('aria-invalid')).toBe('false');
+    });
   });
 
   describe('aria-invalid when disabled', function() {
