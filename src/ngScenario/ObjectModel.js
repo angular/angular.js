@@ -85,27 +85,22 @@ angular.scenario.ObjectModel = function(runner) {
     self.emit('StepEnd', it, step);
   });
 
-  runner.on('StepFailure', function(spec, step, error) {
-    var it = self.getSpec(spec.id),
-        modelStep = it.getLastStep();
+  function handleError(errorStatus, eventName) {
+    return function(spec, step, error) {
+      var it = self.getSpec(spec.id),
+          modelStep = it.getLastStep();
 
-    modelStep.setErrorStatus('failure', error, step.line());
-    it.setStatusFromStep(modelStep);
+      modelStep.setErrorStatus(errorStatus, error, step.line());
+      it.setStatusFromStep(modelStep);
 
-    // forward the event
-    self.emit('StepFailure', it, modelStep, error);
-  });
+      // forward the event
+      self.emit(eventName, it, modelStep, error);
+    };
+  }
 
-  runner.on('StepError', function(spec, step, error) {
-    var it = self.getSpec(spec.id),
-        modelStep = it.getLastStep();
+  runner.on('StepFailure', handleError('failure', 'StepFailure'));
 
-    modelStep.setErrorStatus('error', error, step.line());
-    it.setStatusFromStep(modelStep);
-
-    // forward the event
-    self.emit('StepError', it, modelStep, error);
-  });
+  runner.on('StepError', handleError('error', 'StepError'));
 
   runner.on('RunnerBegin', function() {
     self.emit('RunnerBegin');
