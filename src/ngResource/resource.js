@@ -185,11 +185,12 @@ function shallowClearAndCopy(src, dst) {
  *     for more information.
  *   - **`responseType`** - `{string}` - see
  *     [requestType](https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#responseType).
- *   - **`interceptor`** - `{Object=}` - The interceptor object has two optional methods -
- *     `response` and `responseError`. Both `response` and `responseError` interceptors get called
- *     with `http response` object. See {@link ng.$http $http interceptors}. In addition, the
- *     resource instance or array object is accessible by the `resource` property of the
- *     `http response` object.
+ *   - **`interceptor`** - `{Object=}` - The interceptor object has four optional methods -
+ *     `request`, `requestError`, `response`, and `responseError`. See
+ *     {@link ng.$http $http interceptors} for details. Note that `request`/`requestError`
+ *     interceptors are applied before calling `$http`, thus before any global `$http` interceptors.
+ *     The resource instance or array object is accessible by the `resource` property of the
+ *     `http response` object passed to response interceptors.
  *     Keep in mind that the associated promise will be resolved with the value returned by the
  *     response interceptor, if one is specified. The default response interceptor returns
  *     `response.resource` (i.e. the resource instance or array).
@@ -707,6 +708,9 @@ angular.module('ngResource', ['ng']).
             var isInstanceCall = this instanceof Resource;
             var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
             var httpConfig = {};
+            var requestInterceptor = action.interceptor && action.interceptor.request || undefined;
+            var requestErrorInterceptor = action.interceptor && action.interceptor.requestError ||
+              undefined;
             var responseInterceptor = action.interceptor && action.interceptor.response ||
               defaultResponseInterceptor;
             var responseErrorInterceptor = action.interceptor && action.interceptor.responseError ||
@@ -743,7 +747,14 @@ angular.module('ngResource', ['ng']).
               extend({}, extractParams(data, action.params || {}), params),
               action.url);
 
-            var promise = $http(httpConfig).then(function(response) {
+            // Start the promise chain
+            var promise = $q.
+              resolve(httpConfig).
+              then(requestInterceptor).
+              catch(requestErrorInterceptor).
+              then($http);
+
+            promise = promise.then(function(response) {
               var data = response.data;
 
               if (data) {
