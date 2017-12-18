@@ -72,7 +72,7 @@ function currencyFilter($locale) {
     return (amount == null)
         ? amount
         : formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, fractionSize).
-            replace(/\u00A4/g, currencySymbol);
+            replace(/\u00A4/g, currencySymbol).trim();
   };
 }
 
