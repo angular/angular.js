@@ -1,3 +1,25 @@
+<a name="1.6.8"></a>
+# 1.6.8 beneficial-tincture (2017-12-18)
+
+
+## Bug Fixes
+- **$location:**
+  - always decode special chars in `$location.url(value)`
+  ([2bdf71](https://github.com/angular/angular.js/commit/2bdf7126878c87474bb7588ce093d0a3c57b0026))
+  - decode non-component special chars in Hashbang URLS
+  ([57b626](https://github.com/angular/angular.js/commit/57b626a673b7530399d3377dfe770165bec35f8a))
+- **ngModelController:** allow $overrideModelOptions to set updateOn
+  ([55516d](https://github.com/angular/angular.js/commit/55516da2dfc7c5798dce24e9fa930c5ac90c900c),
+  [#16351](https://github.com/angular/angular.js/issues/16351),
+  [#16364](https://github.com/angular/angular.js/issues/16364))
+
+
+## New Features
+- **$parse:** add a hidden interface to retrieve an expression's AST
+  ([f33d95](https://github.com/angular/angular.js/commit/f33d95cfcff6fd0270f92a142df8794cca2013ad),
+  [#16253](https://github.com/angular/angular.js/issues/16253),
+  [#16260](https://github.com/angular/angular.js/issues/16260))
+
 <a name="1.6.7"></a>
 # 1.6.7 imperial-backstroke (2017-11-24)
 
