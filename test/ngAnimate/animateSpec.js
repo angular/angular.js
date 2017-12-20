@@ -790,6 +790,7 @@ describe('animations', function() {
       expect(element).toHaveClass('red');
     }));
 
+
     it('removeClass() should issue a removeClass animation with the correct DOM operation', inject(function($animate, $rootScope) {
       parent.append(element);
       element.addClass('blue');
@@ -933,6 +934,195 @@ describe('animations', function() {
         expect(capturedAnimation).toBeTruthy();
       }));
     });
+
+
+    describe('$animate.cancel()', function() {
+
+      it('should cancel enter()', inject(function($animate, $rootScope) {
+        expect(parent.children().length).toBe(0);
+
+        options.foo = 'bar';
+        var spy = jasmine.createSpy('cancelCatch');
+
+        var runner = $animate.enter(element, parent, null, options);
+
+        runner.catch(spy);
+
+        expect(parent.children().length).toBe(1);
+
+        $rootScope.$digest();
+
+        expect(capturedAnimation[0]).toBe(element);
+        expect(capturedAnimation[1]).toBe('enter');
+        expect(capturedAnimation[2].foo).toEqual(options.foo);
+
+        $animate.cancel(runner);
+        // Since enter() immediately adds the element, we can only check if the
+        // element is still at the position
+        expect(parent.children().length).toBe(1);
+
+        $rootScope.$digest();
+
+        // Catch handler is called after digest
+        expect(spy).toHaveBeenCalled();
+      }));
+
+
+      it('should cancel move()', inject(function($animate, $rootScope) {
+        parent.append(element);
+
+        expect(parent.children().length).toBe(1);
+        expect(parent2.children().length).toBe(0);
+
+        options.foo = 'bar';
+        var spy = jasmine.createSpy('cancelCatch');
+
+        var runner = $animate.move(element, parent2, null, options);
+        runner.catch(spy);
+
+        expect(parent.children().length).toBe(0);
+        expect(parent2.children().length).toBe(1);
+
+        $rootScope.$digest();
+
+        expect(capturedAnimation[0]).toBe(element);
+        expect(capturedAnimation[1]).toBe('move');
+        expect(capturedAnimation[2].foo).toEqual(options.foo);
+
+        $animate.cancel(runner);
+        // Since moves() immediately moves the element, we can only check if the
+        // element is still at the correct position
+        expect(parent.children().length).toBe(0);
+        expect(parent2.children().length).toBe(1);
+
+        $rootScope.$digest();
+
+        // Catch handler is called after digest
+        expect(spy).toHaveBeenCalled();
+      }));
+
+
+      it('cancel leave()', inject(function($animate, $rootScope) {
+        parent.append(element);
+        options.foo = 'bar';
+        var spy = jasmine.createSpy('cancelCatch');
+
+        var runner = $animate.leave(element, options);
+
+        runner.catch(spy);
+        $rootScope.$digest();
+
+        expect(capturedAnimation[0]).toBe(element);
+        expect(capturedAnimation[1]).toBe('leave');
+        expect(capturedAnimation[2].foo).toEqual(options.foo);
+
+        expect(element.parent().length).toBe(1);
+
+        $animate.cancel(runner);
+        // Animation concludes immediately
+        expect(element.parent().length).toBe(0);
+        expect(spy).not.toHaveBeenCalled();
+
+        $rootScope.$digest();
+        // Catch handler is called after digest
+        expect(spy).toHaveBeenCalled();
+      }));
+
+      it('should cancel addClass()', inject(function($animate, $rootScope) {
+        parent.append(element);
+        options.foo = 'bar';
+        var runner = $animate.addClass(element, 'red', options);
+        var spy = jasmine.createSpy('cancelCatch');
+
+        runner.catch(spy);
+        $rootScope.$digest();
+
+        expect(capturedAnimation[0]).toBe(element);
+        expect(capturedAnimation[1]).toBe('addClass');
+        expect(capturedAnimation[2].foo).toEqual(options.foo);
+
+        $animate.cancel(runner);
+        expect(element).toHaveClass('red');
+        expect(spy).not.toHaveBeenCalled();
+
+        $rootScope.$digest();
+        expect(spy).toHaveBeenCalled();
+      }));
+
+
+      it('should cancel setClass()', inject(function($animate, $rootScope) {
+        parent.append(element);
+        element.addClass('red');
+        options.foo = 'bar';
+
+        var runner = $animate.setClass(element, 'blue', 'red', options);
+        var spy = jasmine.createSpy('cancelCatch');
+
+        runner.catch(spy);
+        $rootScope.$digest();
+
+        expect(capturedAnimation[0]).toBe(element);
+        expect(capturedAnimation[1]).toBe('setClass');
+        expect(capturedAnimation[2].foo).toEqual(options.foo);
+
+        $animate.cancel(runner);
+        expect(element).toHaveClass('blue');
+        expect(element).not.toHaveClass('red');
+        expect(spy).not.toHaveBeenCalled();
+
+        $rootScope.$digest();
+        expect(spy).toHaveBeenCalled();
+      }));
+
+
+      it('should cancel removeClass()', inject(function($animate, $rootScope) {
+        parent.append(element);
+        element.addClass('red blue');
+
+        options.foo = 'bar';
+        var runner = $animate.removeClass(element, 'red', options);
+        var spy = jasmine.createSpy('cancelCatch');
+
+        runner.catch(spy);
+        $rootScope.$digest();
+
+        expect(capturedAnimation[0]).toBe(element);
+        expect(capturedAnimation[1]).toBe('removeClass');
+        expect(capturedAnimation[2].foo).toEqual(options.foo);
+
+        $animate.cancel(runner);
+        expect(element).not.toHaveClass('red');
+        expect(element).toHaveClass('blue');
+
+        $rootScope.$digest();
+        expect(spy).toHaveBeenCalled();
+      }));
+
+
+      it('should cancel animate()',
+        inject(function($animate, $rootScope) {
+
+        parent.append(element);
+
+        var fromStyle = { color: 'blue' };
+        var options = { addClass: 'red' };
+
+        var runner = $animate.animate(element, fromStyle, null, null, options);
+        var spy = jasmine.createSpy('cancelCatch');
+
+        runner.catch(spy);
+        $rootScope.$digest();
+
+        expect(capturedAnimation).toBeTruthy();
+
+        $animate.cancel(runner);
+        expect(element).toHaveClass('red');
+
+        $rootScope.$digest();
+        expect(spy).toHaveBeenCalled();
+      }));
+    });
+
 
     describe('parent animations', function() {
       they('should not cancel a pre-digest parent class-based animation if a child $prop animation is set to run',
