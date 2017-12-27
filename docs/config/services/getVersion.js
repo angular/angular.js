@@ -4,7 +4,7 @@ var path = require('canonical-path');
 /**
  * dgService getVersion
  * @description
- * Find the current version of the bower component (or node module)
+ * Find the current version of the node module
  */
 module.exports = function getVersion(readFilesProcessor) {
   var basePath = readFilesProcessor.basePath;

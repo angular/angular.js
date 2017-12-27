@@ -65,7 +65,7 @@ function generateFixture(test, query) {
       }
     }
     if (!/^\d+\.\d+.*$/.test(query.jquery)) {
-      $(jquery).attr('src', '/bower_components/jquery/dist/jquery.js');
+      $(jquery).attr('src', '/node_modules/jquery/dist/jquery.js');
     } else {
       $(jquery).attr('src', '//ajax.googleapis.com/ajax/libs/jquery/' + query.jquery + '/jquery.js');
     }

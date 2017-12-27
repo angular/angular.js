@@ -1,4 +1,3 @@
-bower_components/**
 build/**
 docs/app/assets/js/angular-bootstrap/**
 docs/config/templates/**
@@ -8,3 +7,4 @@ src/angular.bind.js
 src/ngParseExt/ucd.js
 i18n/closure/**
 tmp/**
+vendor/**
