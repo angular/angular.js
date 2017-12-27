@@ -9,7 +9,7 @@
 ## <a name="setup"> Development Setup
 
 This document describes how to set up your development environment to build and test AngularJS, and
-explains the basic mechanics of using `git`, `node`, `yarn`, `grunt`, and `bower`.
+explains the basic mechanics of using `git`, `node`, `yarn` and `grunt`.
 
 ### Installing Dependencies
 
@@ -64,10 +64,10 @@ cd angular.js
 # Add the main AngularJS repository as an upstream remote to your repository:
 git remote add upstream "https://github.com/angular/angular.js.git"
 
-# Install node.js dependencies:
+# Install JavaScript dependencies:
 yarn install
 
-# Build AngularJS (which will install `bower` dependencies automatically):
+# Build AngularJS:
 yarn grunt package
 ```
 

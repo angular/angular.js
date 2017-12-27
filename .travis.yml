@@ -5,8 +5,6 @@ node_js:
 
 cache:
   yarn: true
-  directories:
-    - bower_components
 
 branches:
   except:
@@ -32,7 +30,7 @@ before_install:
   - export PATH="$HOME/.yarn/bin:$PATH"
 
 before_script:
-  - du -sh ./node_modules ./bower_components/ || true
+  - du -sh ./node_modules || true
   - "./scripts/travis/before_build.sh"
 script:
   - "./scripts/travis/build.sh"
