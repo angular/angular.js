@@ -13,7 +13,7 @@ var rename = require('gulp-rename');
 
 // We indicate to gulp that tasks are async by returning the stream.
 // Gulp can then wait for the stream to close before starting dependent tasks.
-// See clean and bower for async tasks, and see assets and doc-gen for dependent tasks below
+// See clean for an async task, and see assets and doc-gen for dependent tasks below.
 
 var outputFolder = '../build/docs';
 

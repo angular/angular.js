@@ -426,14 +426,12 @@ module.exports = function(grunt) {
     'shell:promises-aplus-tests'
   ]);
   grunt.registerTask('minify', [
-    'bower',
     'clean',
     'build',
     'minall'
   ]);
   grunt.registerTask('webserver', ['connect:devserver']);
   grunt.registerTask('package', [
-    'bower',
     'validate-angular-files',
     'clean',
     'buildall',
