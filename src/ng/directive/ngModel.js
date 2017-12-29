@@ -127,8 +127,10 @@ var ngModelMinErr = minErr('ngModel');
  * };
  * ```
  *
- * @property {Array.<Function>} $viewChangeListeners Array of functions to execute whenever the
- *     view value has changed. It is called with no arguments, and its return value is ignored.
+ * @property {Array.<Function>} $viewChangeListeners Array of functions to execute whenever
+ *     a change to {@link ngModel.NgModelController#$viewValue `$viewValue`} has caused a change
+ *     to {@link ngModel.NgModelController#$modelValue `$modelValue`}.
+ *     It is called with no arguments, and its return value is ignored.
  *     This can be used in place of additional $watches against the model value.
  *
  * @property {Object} $error An object hash with all failing validator ids as keys.
