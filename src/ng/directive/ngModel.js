@@ -128,7 +128,8 @@ var ngModelMinErr = minErr('ngModel');
  * ```
  *
  * @property {Array.<Function>} $viewChangeListeners Array of functions to execute whenever
- *     a change to the view value has caused a change to the model value.
+ *     a change to {@link ngModel.NgModelController#$viewValue `$viewValue`} has caused a change
+ *     to {@link ngModel.NgModelController#$modelValue `$modelValue`}.
  *     It is called with no arguments, and its return value is ignored.
  *     This can be used in place of additional $watches against the model value.
  *
