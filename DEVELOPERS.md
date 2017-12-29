@@ -18,7 +18,7 @@ machine:
 * [Git](http://git-scm.com/): The [Github Guide to
   Installing Git][git-setup] is a good source of information.
 
-* [Node.js v6.x (LTS)](http://nodejs.org): We use Node to generate the documentation, run a
+* [Node.js v8.x (LTS)](http://nodejs.org): We use Node to generate the documentation, run a
   development web server, run tests, and generate distributable files. Depending on your system,
   you can install Node either from source or as a pre-packaged bundle.
 
