@@ -1,6 +1,7 @@
 # Developing AngularJS
 
 * [Development Setup](#setup)
+* [Running Tests](#tests)
 * [Coding Rules](#rules)
 * [Commit Message Guidelines](#commits)
 * [Writing Documentation](#documentation)
@@ -107,6 +108,8 @@ HTTP server. For this purpose, we have made available a local web server based o
    http://localhost:8000/build/docs/
    ```
 
+## <a name="tests"> Running Tests
+
 ### <a name="unit-tests"></a> Running the Unit Test Suite
 
 We write unit and integration tests with Jasmine and execute them with Karma. To run all of the
@@ -116,7 +119,7 @@ tests once on Chrome run:
 yarn grunt test:unit
 ```
 
-To run the tests on other browsers (Chrome, ChromeCanary, Firefox and Safari are pre-configured) use:
+To run the tests on other browsers (Chrome and Firefox are pre-configured) use:
 
 ```shell
 yarn grunt test:unit --browsers=Chrome,Firefox
@@ -124,16 +127,19 @@ yarn grunt test:unit --browsers=Chrome,Firefox
 
 **Note:** there should be _no spaces between browsers_. `Chrome, Firefox` is INVALID.
 
-If you have a Saucelabs or Browserstack account, you can also run the unit tests on these services
-via our pre-defined customLaunchers.
+If you want to test locally on Safari, Internet Explorer, or Edge, you must install 
+the respective `karma-<browser>-launcher` from npm.
 
-For example, to run the whole unit test suite:
+If you have a Saucelabs or Browserstack account, you can also run the unit tests on these services
+via our pre-defined customLaunchers. See the [karma config file](/karma-shared.conf.js) for all pre-configured browsers.
+
+For example, to run the whole unit test suite on selected browsers:
 
 ```shell
 # Browserstack
-yarn grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
+yarn grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_10
 # Saucelabs
-yarn grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
+yarn grunt test:unit --browsers=SL_Chrome,SL_Firefox,SL_Safari,SL_IE_9,SL_IE_10,SL_IE_11,SL_EDGE,SL_iOS_10
 ```
 
 Running these commands requires you to set up [Karma Browserstack][karma-browserstack] or
