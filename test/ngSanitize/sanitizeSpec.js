@@ -246,24 +246,37 @@ describe('HTML', function() {
       .toEqual('<p>text1text2</p>');
   });
 
-  it('should throw on clobbered elements', function() {
-    inject(function($sanitize) {
-      expect(function() {
-        $sanitize('<form><input name="parentNode" /></form>');
-      }).toThrowMinErr('$sanitize', 'elclob');
+  describe('clobbered elements', function() {
 
-      expect(function() {
-        $sanitize('<form><div><div><input name="parentNode" /></div></div></form>');
-      }).toThrowMinErr('$sanitize', 'elclob');
+    it('should throw on a form with an input named "parentNode"', function() {
+      inject(function($sanitize) {
 
-      expect(function() {
-        $sanitize('<form><input name="nextSibling" /></form>');
-      }).toThrowMinErr('$sanitize', 'elclob');
+        expect(function() {
+          $sanitize('<form><input name="parentNode" /></form>');
+        }).toThrowMinErr('$sanitize', 'elclob');
 
-      expect(function() {
-        $sanitize('<form><div><div><input name="nextSibling" /></div></div></form>');
-      }).toThrowMinErr('$sanitize', 'elclob');
+        expect(function() {
+          $sanitize('<form><div><div><input name="parentNode" /></div></div></form>');
+        }).toThrowMinErr('$sanitize', 'elclob');
+      });
     });
+
+    if (!/Edge\/16/.test(window.navigator.userAgent)) {
+      // Skip test on Edge 16 due to browser bug.
+      it('should throw on a form with an input named "nextSibling"', function() {
+        inject(function($sanitize) {
+
+          expect(function() {
+            $sanitize('<form><input name="nextSibling" /></form>');
+          }).toThrowMinErr('$sanitize', 'elclob');
+
+          expect(function() {
+            $sanitize('<form><div><div><input name="nextSibling" /></div></div></form>');
+          }).toThrowMinErr('$sanitize', 'elclob');
+
+        });
+      });
+    }
   });
 
   // See https://github.com/cure53/DOMPurify/blob/a992d3a75031cb8bb032e5ea8399ba972bdf9a65/src/purify.js#L439-L449
