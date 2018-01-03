@@ -1,6 +1,7 @@
 # Developing AngularJS
 
 * [Development Setup](#setup)
+* [Running Tests](#tests)
 * [Coding Rules](#rules)
 * [Commit Message Guidelines](#commits)
 * [Writing Documentation](#documentation)
@@ -107,6 +108,8 @@ HTTP server. For this purpose, we have made available a local web server based o
    http://localhost:8000/build/docs/
    ```
 
+## <a name="tests"> Running Tests
+
 ### <a name="unit-tests"></a> Running the Unit Test Suite
 
 We write unit and integration tests with Jasmine and execute them with Karma. To run all of the
@@ -133,7 +136,7 @@ For example, to run the whole unit test suite:
 # Browserstack
 yarn grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
 # Saucelabs
-yarn grunt test:unit --browsers=BS_Chrome,BS_Firefox,BS_Safari,BS_IE_9,BS_IE_10,BS_IE_11,BS_EDGE,BS_iOS_8,BS_iOS_9,BS_iOS_10
+yarn grunt test:unit --browsers=SL_Chrome,SL_Firefox,SL_Safari,SL_IE_9,SL_IE_10,SL_IE_11,SL_EDGE,SL_iOS_8,SL_iOS_9,SL_iOS_10
 ```
 
 Running these commands requires you to set up [Karma Browserstack][karma-browserstack] or
