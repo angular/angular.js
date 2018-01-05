@@ -1035,10 +1035,13 @@ describe('angular', function() {
 
     }
 
-    var originalFunction;
+    var originalPrototype = window.Function.prototype;
 
     beforeEach(function() {
       spyOn(window, 'Function');
+      // Jasmine 2.7+ doesn't support spying on Function, so we have restore the prototype
+      // as Jasmine will use Function internally
+      window.Function.prototype = originalPrototype;
     });
 
     afterEach(function() {
