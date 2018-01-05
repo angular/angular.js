@@ -18,7 +18,6 @@ fi
 
 # unit runs the docs tests too which need a built version of the code
 if [[ "$JOB" = unit-* ]]; then
-  grunt bower
   grunt validate-angular-files
   grunt build
 fi

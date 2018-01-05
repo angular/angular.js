@@ -171,7 +171,7 @@ var angularFiles = {
   ],
 
   'karma': [
-    'bower_components/jquery/dist/jquery.js',
+    'node_modules/jquery/dist/jquery.js',
     'test/jquery_remove.js',
     '@angularSrc',
     '@angularSrcModules',
@@ -202,7 +202,7 @@ var angularFiles = {
   ],
 
   'karmaJquery': [
-    'bower_components/jquery/dist/jquery.js',
+    'node_modules/jquery/dist/jquery.js',
     'test/jquery_alias.js',
     '@angularSrc',
     '@angularSrcModules',
@@ -220,8 +220,8 @@ var angularFiles = {
   angularFiles['karmaJquery' + jQueryVersion] = []
     .concat(angularFiles.karmaJquery)
     .map(function(path) {
-      if (path.startsWith('bower_components/jquery')) {
-        return path.replace(/^bower_components\/jquery/, 'bower_components/jquery-' + jQueryVersion);
+      if (path.startsWith('node_modules/jquery')) {
+        return path.replace(/^node_modules\/jquery/, 'node_modules/jquery-' + jQueryVersion);
       }
       return path;
     });
