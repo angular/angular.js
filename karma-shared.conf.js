@@ -181,7 +181,6 @@ module.exports = function(config, specificOptions) {
   if (process.env.TRAVIS) {
     var buildLabel = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
 
-    config.logLevel = config.LOG_DEBUG;
     // Karma (with socket.io 1.x) buffers by 50 and 50 tests can take a long time on IEs;-)
     config.browserNoActivityTimeout = 120000;
 
