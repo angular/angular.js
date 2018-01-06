@@ -327,6 +327,15 @@ describe('HTML', function() {
                    '<svg xmlns="http://www.w3.org/2000/svg"><a xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://example.com"></a></svg>');
     });
 
+    it('should sanitize SVG xml:base attribute values', function() {
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg"><a xml:base="javascript:alert(1)//" href="#"></a></svg>')
+        .toEqual('<svg xmlns="http://www.w3.org/2000/svg"><a href="#"></a></svg>');
+
+      expectHTML('<svg xmlns="http://www.w3.org/2000/svg"><a xml:base="https://example.com" href="#"></a></svg>')
+        .toEqual('<svg xmlns="http://www.w3.org/2000/svg"><a xml:base="https://example.com" href="#"></a></svg>');
+
+    });
+
     it('should sanitize unknown namespaced SVG attributes', function() {
       expectHTML('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a xlink:foo="javascript:alert()"></a></svg>')
         .toBeOneOf('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><a></a></svg>',
