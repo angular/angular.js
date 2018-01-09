@@ -87,7 +87,7 @@
     "rewire": "~2.1.0",
     "sax": "^1.1.1",
     "selenium-webdriver": "^2.53.1",
-    "semver": "~4.0.3",
+    "semver": "^5.4.1",
     "serve-favicon": "^2.3.0",
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
