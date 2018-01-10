@@ -8,13 +8,18 @@
 In AngularJS, a Controller is defined by a JavaScript **constructor function** that is used to augment the
 {@link scope AngularJS Scope}.
 
-When a Controller is attached to the DOM via the {@link ng.directive:ngController ng-controller}
-directive, AngularJS will instantiate a new Controller object, using the specified Controller's
-**constructor function**. A new **child scope** will be created and made available as an injectable
-parameter to the Controller's constructor function as `$scope`.
+Controllers can be attached to the DOM in different ways. For each of them, AngularJS will
+instantiate a new Controller object, using the specified Controller's **constructor function**:
+
+- the {@link ng.directive:ngController ngController} directive. A new **child scope** will be
+created and made available as an injectable parameter to the Controller's constructor function
+as `$scope`.
+- a route controller in a {@link ngRoute.$routeProvider $route definition}.
+- the controller of a {@link guide/directive regular directive},  or a
+{@link guide/component component directive}.
 
 If the controller has been attached using the `controller as` syntax then the controller instance will
-be assigned to a property on the new scope.
+be assigned to a property on the scope.
 
 Use controllers to:
 
@@ -32,6 +37,15 @@ Do not use controllers to:
 - Share code or state across controllers — Use {@link services AngularJS
 services} instead.
 - Manage the life-cycle of other components (for example, to create service instances).
+
+In general, a Controller shouldn't try to do too much. It should contain only the business logic
+needed for a single view.
+
+The most common way to keep Controllers slim is by encapsulating work that doesn't belong to
+controllers into services and then using these services in Controllers via dependency injection.
+This is discussed in the {@link di Dependency Injection}  and  {@link services
+Services} sections of this guide.
+
 
 ## Setting up the initial state of a `$scope` object
 
@@ -101,23 +115,6 @@ As discussed in the {@link concepts Concepts} section of this guide, any
 objects (or primitives) assigned to the scope become model properties. Any methods assigned to
 the scope are available in the template/view, and can be invoked via AngularJS expressions
 and `ng` event handler directives (e.g. {@link ng.directive:ngClick ngClick}).
-
-## Using Controllers Correctly
-
-In general, a Controller shouldn't try to do too much. It should contain only the business logic
-needed for a single view.
-
-The most common way to keep Controllers slim is by encapsulating work that doesn't belong to
-controllers into services and then using these services in Controllers via dependency injection.
-This is discussed in the {@link di Dependency Injection}  and  {@link services
-Services} sections of this guide.
-
-
-# Associating Controllers with AngularJS Scope Objects
-
-You can associate Controllers with scope objects implicitly via the {@link ng.directive:ngController ngController
-directive} or {@link ngRoute.$route $route service}.
-
 
 ## Simple Spicy Controller Example
 
@@ -262,7 +259,7 @@ Inheritance works with methods in the same way as it does with properties. So in
 examples, all of the properties could be replaced with methods that return string values.
 
 
-# Testing Controllers
+## Testing Controllers
 
 Although there are many ways to test a Controller, one of the best conventions, shown below,
 involves injecting the {@link ng.$rootScope $rootScope} and {@link ng.$controller $controller}:
