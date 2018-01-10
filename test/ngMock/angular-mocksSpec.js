@@ -1007,7 +1007,7 @@ describe('ngMock', function() {
         })();
 
         function testCaller() {
-          return inject(function() {
+          return inject(function injectableError() {
             throw new Error();
           });
         }
@@ -1019,7 +1019,7 @@ describe('ngMock', function() {
               try {
                 throwErrorFromInjectCallback();
               } catch (e) {
-                expect(e.stack).toMatch('testCaller');
+                expect(e.stack).toMatch('injectableError');
               }
             });
           });
