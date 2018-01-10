@@ -661,6 +661,14 @@ function ngMessageDirectiveFactory() {
       require: '^^ngMessages',
       link: function(scope, element, attrs, ngMessagesCtrl, $transclude) {
         var commentNode = element[0];
+        element.scope().$on('$destroy', function() {
+          // in the event that the element or a parent element is destroyed
+          // by another structural directive then it's time
+          // to deregister the message from the controller
+          // we do this here instead of in the attach function because otherwise
+          // comments that are not rendered will not be cleaned up
+          ngMessagesCtrl.deregister(commentNode);
+        });
 
         var records;
         var staticExp = attrs.ngMessage || attrs.when;
@@ -696,12 +704,8 @@ function ngMessageDirectiveFactory() {
                 // when we are destroying the node later.
                 var $$attachId = currentElement.$$attachId = ngMessagesCtrl.getAttachId();
 
-                // in the event that the element or a parent element is destroyed
-                // by another structural directive then it's time
-                // to deregister the message from the controller
                 currentElement.on('$destroy', function() {
                   if (currentElement && currentElement.$$attachId === $$attachId) {
-                    ngMessagesCtrl.deregister(commentNode);
                     messageCtrl.detach();
                   }
                   newScope.$destroy();
