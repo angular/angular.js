@@ -5,16 +5,21 @@
 
 # Understanding Controllers
 
-In Angular, a Controller is defined by a JavaScript **constructor function** that is used to augment the
-{@link scope Angular Scope}.
+In AngularJS, a Controller is defined by a JavaScript **constructor function** that is used to augment the
+{@link scope AngularJS Scope}.
 
-When a Controller is attached to the DOM via the {@link ng.directive:ngController ng-controller}
-directive, Angular will instantiate a new Controller object, using the specified Controller's
-**constructor function**. A new **child scope** will be created and made available as an injectable
-parameter to the Controller's constructor function as `$scope`.
+Controllers can be attached to the DOM in different ways. For each of them, AngularJS will
+instantiate a new Controller object, using the specified Controller's **constructor function**:
+
+- the {@link ng.directive:ngController ngController} directive. A new **child scope** will be
+created and made available as an injectable parameter to the Controller's constructor function
+as `$scope`.
+- a route controller in a {@link ngRoute.$routeProvider $route definition}.
+- the controller of a {@link guide/directive regular directive},  or a
+{@link guide/component component directive}.
 
 If the controller has been attached using the `controller as` syntax then the controller instance will
-be assigned to a property on the new scope.
+be assigned to a property on the scope.
 
 Use controllers to:
 
@@ -24,18 +29,27 @@ Use controllers to:
 Do not use controllers to:
 
 - Manipulate DOM — Controllers should contain only business logic.
-  Putting any presentation logic into Controllers significantly affects its testability. Angular
+  Putting any presentation logic into Controllers significantly affects its testability. AngularJS
   has {@link databinding databinding} for most cases and {@link guide/directive directives} to
   encapsulate manual DOM manipulation.
-- Format input — Use {@link forms angular form controls} instead.
-- Filter output — Use {@link guide/filter angular filters} instead.
-- Share code or state across controllers — Use {@link services angular
+- Format input — Use {@link forms AngularJS form controls} instead.
+- Filter output — Use {@link guide/filter AngularJS filters} instead.
+- Share code or state across controllers — Use {@link services AngularJS
 services} instead.
 - Manage the life-cycle of other components (for example, to create service instances).
 
+In general, a Controller shouldn't try to do too much. It should contain only the business logic
+needed for a single view.
+
+The most common way to keep Controllers slim is by encapsulating work that doesn't belong to
+controllers into services and then using these services in Controllers via dependency injection.
+This is discussed in the {@link di Dependency Injection}  and  {@link services
+Services} sections of this guide.
+
+
 ## Setting up the initial state of a `$scope` object
 
-Typically, when you create an application you need to set up the initial state for the Angular
+Typically, when you create an application you need to set up the initial state for the AngularJS
 `$scope`. You set up the initial state of a scope by attaching properties to the `$scope` object.
 The properties contain the **view model** (the model that will be presented by the view).  All the
 `$scope` properties will be available to the {@link templates template} at the point in the DOM where the Controller
@@ -52,13 +66,13 @@ myApp.controller('GreetingController', ['$scope', function($scope) {
 }]);
 ```
 
-We create an {@link module Angular Module}, `myApp`, for our application. Then we add the controller's
+We create an {@link module AngularJS Module}, `myApp`, for our application. Then we add the controller's
 constructor function to the module using the `.controller()` method. This keeps the controller's
 constructor function out of the global scope.
 
 <div class="alert alert-info">
 We have used an **inline injection annotation** to explicitly specify the dependency
-of the Controller on the `$scope` service provided by Angular. See the guide on
+of the Controller on the `$scope` service provided by AngularJS. See the guide on
 {@link guide/di Dependency Injection} for more information.
 </div>
 
@@ -102,23 +116,6 @@ objects (or primitives) assigned to the scope become model properties. Any metho
 the scope are available in the template/view, and can be invoked via angular expressions
 and `ng` event handler directives (e.g. {@link ng.directive:ngClick ngClick}).
 
-## Using Controllers Correctly
-
-In general, a Controller shouldn't try to do too much. It should contain only the business logic
-needed for a single view.
-
-The most common way to keep Controllers slim is by encapsulating work that doesn't belong to
-controllers into services and then using these services in Controllers via dependency injection.
-This is discussed in the {@link di Dependency Injection}  and  {@link services
-Services} sections of this guide.
-
-
-# Associating Controllers with Angular Scope Objects
-
-You can associate Controllers with scope objects implicitly via the {@link ng.directive:ngController ngController
-directive} or {@link ngRoute.$route $route service}.
-
-
 ## Simple Spicy Controller Example
 
 To illustrate further how Controller components work in Angular, let's create a little app with the
@@ -159,7 +156,7 @@ string "very". Depending on which button is clicked, the `spice` model is set to
 
 Things to notice in the example above:
 
-- The `ng-controller` directive is used to (implicitly) create a scope for our template, and the
+- The `ngController` directive is used to (implicitly) create a scope for our template, and the
 scope is augmented (managed) by the `SpicyController` Controller.
 - `SpicyController` is just a plain JavaScript function. As an (optional) naming convention the name
 starts with capital letter and ends with "Controller".
@@ -262,7 +259,7 @@ Inheritance works with methods in the same way as it does with properties. So in
 examples, all of the properties could be replaced with methods that return string values.
 
 
-# Testing Controllers
+## Testing Controllers
 
 Although there are many ways to test a Controller, one of the best conventions, shown below,
 involves injecting the {@link ng.$rootScope $rootScope} and {@link ng.$controller $controller}:
