@@ -92,8 +92,10 @@ Once the Controller has been attached to the DOM, the `double` method can be inv
 expression in the template:
 
 ```js
-<div ng-controller="DoubleController">
-  Two times <input ng-model="num"> equals {{ double(num) }}
+<div ng-app="myApp">
+  <div ng-controller="DoubleController">
+    Two times <input ng-model="num"> equals {{ double(num) }}
+  </div>
 </div>
 ```
 
