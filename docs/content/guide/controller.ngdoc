@@ -65,9 +65,11 @@ of the Controller on the `$scope` service provided by Angular. See the guide on
 We attach our controller to the DOM using the `ng-controller` directive. The `greeting` property can
 now be data-bound to the template:
 
-```js
-<div ng-controller="GreetingController">
-  {{ greeting }}
+```html
+<div ng-app="myApp">
+  <div ng-controller="GreetingController">
+    {{ greeting }}
+  </div>
 </div>
 ```
 
