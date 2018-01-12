@@ -134,6 +134,20 @@ describe('input', function() {
       browserTrigger(inputElm, 'compositionend');
       expect($rootScope.name).toEqual('caitp');
     });
+
+
+    it('should end composition on "compositionupdate" when event.data is ""', function() {
+      // This tests a bug workaround for IE9-11
+      // During composition, when an input is de-focussed by clicking away from it,
+      // the compositionupdate event is called with '', followed by a change event.
+      var inputElm = helper.compileInput('<input type="text" ng-model="name" name="alias" />');
+      browserTrigger(inputElm, 'compositionstart');
+      helper.changeInputValueTo('caitp');
+      expect($rootScope.name).toBeUndefined();
+      browserTrigger(inputElm, 'compositionupdate', {data: ''});
+      browserTrigger(inputElm, 'change');
+      expect($rootScope.name).toEqual('caitp');
+    });
   });
 
 
