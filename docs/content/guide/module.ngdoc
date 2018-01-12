@@ -141,13 +141,13 @@ The above is a suggestion. Tailor it to your needs.
 ## Module Loading
 
 A {@link angular.Module module} is a collection of providers, services, directives etc.,
-and optionally configuration and run blocks which get applied to the application during the
+and optionally config and run blocks which get applied to the application during the
 bootstrap process.
 
 The {@link angular.Module module API} describes all the available methods and how they can be used.
 
 See {@link guide/di#using-dependency-injection Using Dependency Injection} to find out which
-dependencies can be injected in which injectables.
+dependencies can be injected in each method.
 
 ### Dependencies and Order of execution
 
@@ -168,14 +168,16 @@ This continues until all module dependencies has been resolved.
 Then, the {@link angular.Module#run run} blocks that have been collected from each module are
 executed in order of requirement.
 
-Note that each module is only loaded once, even if multiple other modules require it.
+Note: each module is only loaded once, even if multiple other modules require it.
+Note: the factory function for "values" and "services" is called lazily when the value/service is
+injected for the first time.
 
-
-### Registering injectables in the config block
+### Registration in the config block
 
 While it is recommended to register injectables directly with the {@link angular.Module module API},
-it is also possible to register services, directives etc. by injecting into the config function
-{@link $provide $provide} or the individual service providers:
+it is also possible to register services, directives etc. by injecting
+{@link $provide $provide} or the individual service providers into the config function:
+
 
 ```js
 angular.module('myModule', []).
