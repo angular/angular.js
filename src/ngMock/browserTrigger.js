@@ -132,6 +132,24 @@
       evnt.keyCode = eventData.keyCode;
       evnt.charCode = eventData.charCode;
       evnt.which = eventData.which;
+    } else if (/composition/.test(eventType)) {
+      try {
+        evnt = new window.CompositionEvent(eventType, {
+          data: eventData.data
+        });
+      } catch (e) {
+        // Support: IE9+
+        evnt = window.document.createEvent('CompositionEvent', {});
+        evnt.initCompositionEvent(
+          eventType,
+          eventData.bubbles,
+          eventData.cancelable,
+          window,
+          eventData.data,
+          null
+        );
+      }
+
     } else {
       evnt = window.document.createEvent('MouseEvents');
       x = x || 0;
