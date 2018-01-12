@@ -76,7 +76,7 @@
  *
  * All different types of tracking functions, their syntax, and and their support for duplicate
  * items in collections can be found in the
- * {@link ngRepeat#ngRepeat-arguments ngRepeat expression descriotion}.
+ * {@link ngRepeat#ngRepeat-arguments ngRepeat expression description}.
  *
  * <div class="alert alert-success">
  * **Best Practice:** If you are working with objects that have a unique identifier property, you
@@ -91,11 +91,11 @@
  *
  * When DOM elements are re-used, ngRepeat updates the scope for the element, which will
  * automatically update any active bindings on the template. However, other
- * functionality will not be updated, because it is a static at this point:
+ * functionality will not be updated, because the element is not re-created:
  *
+ * - Directives are not re-compiled
  * - {@link guide/expression#one-time-binding one-time expressions} on the repeated template are not
  * updated if they have stabilized.
- * - Directives are not re-compiled.
  *
  * The above affects all kinds of element re-use due to tracking, but may be especially visible
  * when tracking by `$index` due to the way ngRepeat re-uses elements.
