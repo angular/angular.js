@@ -391,7 +391,7 @@ called `/base`). The URL `/base` is actually outside the application (it refers 
 in the root `/` folder).
 
 If you wish to be able to navigate to the application via a URL such as `/base` then you should ensure that
-you server is setup to redirect such requests to `/base/`.
+your server is setup to redirect such requests to `/base/`.
 
 See https://github.com/angular/angular.js/issues/14018 for more information.
 
