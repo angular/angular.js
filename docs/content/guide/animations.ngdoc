@@ -66,7 +66,7 @@ You may also want to setup a separate CSS file for defining CSS-based animations
 ## How they work
 
 Animations in AngularJS are completely based on CSS classes. As long as you have a CSS class
-attached to a HTML element within your application, you can apply animations to it. Lets say for
+attached to an HTML element within your application, you can apply animations to it. Let's say for
 example that we have an HTML template with a repeater like so:
 
 ```html
