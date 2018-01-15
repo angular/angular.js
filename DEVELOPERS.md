@@ -119,16 +119,13 @@ tests once on Chrome run:
 yarn grunt test:unit
 ```
 
-To run the tests on other browsers (Chrome and Firefox are pre-configured) use:
+To run the tests on other browsers use the command line flag:
 
 ```shell
 yarn grunt test:unit --browsers=Chrome,Firefox
 ```
 
 **Note:** there should be _no spaces between browsers_. `Chrome, Firefox` is INVALID.
-
-If you want to test locally on Safari, Internet Explorer, or Edge, you must install 
-the respective `karma-<browser>-launcher` from npm.
 
 If you have a Saucelabs or Browserstack account, you can also run the unit tests on these services
 via our pre-defined customLaunchers. See the [karma config file](/karma-shared.conf.js) for all pre-configured browsers.
