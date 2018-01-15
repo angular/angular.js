@@ -162,7 +162,6 @@ var ngTranscludeMinErr = minErr('ngTransclude');
 var ngTranscludeDirective = ['$compile', function($compile) {
   return {
     restrict: 'EAC',
-    terminal: true,
     compile: function ngTranscludeCompile(tElement) {
 
       // Remove and cache any original content to act as a fallback
