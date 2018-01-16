@@ -315,7 +315,7 @@ module.exports = function(grunt) {
         files: [
           // The source files are needed by the embedded examples in the docs app.
           {
-            src: 'build/angular*.{js.map,min.js}',
+            src: 'build/angular*.{js,js.map,min.js}',
             dest: 'uploadDocs/',
             expand: true,
             flatten: true
