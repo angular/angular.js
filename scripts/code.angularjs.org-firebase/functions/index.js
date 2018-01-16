@@ -61,12 +61,8 @@ function sendStoredFile(request, response) {
       return new Promise((resolve, reject) => {
 
         const readStream = file.createReadStream()
-          .on('error', error => {
-            reject(error);
-          })
-          .on('response', () => {
-            resolve(response);
-          });
+          .on('error', reject)
+          .on('finish', resolve);
 
         response
           .status(200)
@@ -75,7 +71,7 @@ function sendStoredFile(request, response) {
             'Cache-Control': `public, max-age=${BROWSER_CACHE_DURATION}, s-maxage=${CDN_CACHE_DURATION}`
           });
 
-          readStream.pipe(response);
+        readStream.pipe(response);
       });
 
     });
