@@ -417,13 +417,6 @@ angular.module('ngMessages', [], function initAngularHelpers() {
 
         $scope.$watchCollection($attrs.ngMessages || $attrs['for'], ctrl.render);
 
-        // If the element is destroyed, proactively destroy all the currently visible messages
-        $element.on('$destroy', function() {
-          forEach(messages, function(item) {
-            item.message.detach();
-          });
-        });
-
         this.reRender = function() {
           if (!renderLater) {
             renderLater = true;
@@ -497,6 +490,9 @@ angular.module('ngMessages', [], function initAngularHelpers() {
 
         function removeMessageNode(parent, comment, key) {
           var messageNode = messages[key];
+
+          // This message node may have already been removed by a call to deregister()
+          if (!messageNode) return;
 
           var match = findPreviousMessage(parent, comment);
           if (match) {
@@ -702,6 +698,8 @@ function ngMessageDirectiveFactory() {
                 // by another structural directive then it's time
                 // to deregister the message from the controller
                 currentElement.on('$destroy', function() {
+                  // If the message element was removed via a call to `detach` then `currentElement` will be null
+                  // So this handler only handles cases where something else removed the message element.
                   if (currentElement && currentElement.$$attachId === $$attachId) {
                     ngMessagesCtrl.deregister(commentNode);
                     messageCtrl.detach();
@@ -718,6 +716,14 @@ function ngMessageDirectiveFactory() {
               $animate.leave(elm);
             }
           }
+        });
+
+        // We need to ensure that this directive deregisters itself when it no longer exists
+        // Normally this is done when the attached element is destroyed; but if this directive
+        // gets removed before we attach the message to the DOM there is nothing to watch
+        // in which case we must deregister when the containing scope is destroyed.
+        scope.$on('$destroy', function() {
+          ngMessagesCtrl.deregister(commentNode);
         });
       }
     };
