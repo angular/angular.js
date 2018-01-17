@@ -8582,6 +8582,49 @@ describe('$compile', function() {
       });
 
 
+      it('should compile directives with lower priority than ngTransclude', function() {
+        var ngTranscludePriority;
+        var lowerPriority = -1;
+
+        module(function($provide) {
+          $provide.decorator('ngTranscludeDirective', function($delegate) {
+            ngTranscludePriority = $delegate[0].priority;
+            return $delegate;
+          });
+
+          directive('lower', function(log) {
+            return {
+              priority: lowerPriority,
+              link: {
+                pre: function() {
+                  log('pre');
+                },
+                post: function() {
+                  log('post');
+                }
+              }
+            };
+          });
+          directive('trans', function(log) {
+            return {
+              transclude: true,
+              template: '<div lower ng-transclude></div>'
+            };
+          });
+        });
+        inject(function(log, $rootScope, $compile) {
+          element = $compile('<div trans><span>transcluded content</span></div>')($rootScope);
+
+          expect(lowerPriority).toBeLessThan(ngTranscludePriority);
+
+          $rootScope.$apply();
+
+          expect(element.text()).toEqual('transcluded content');
+          expect(log).toEqual('pre; post');
+        });
+      });
+
+
       it('should not merge text elements from transcluded content', function() {
         module(function() {
           directive('foo', valueFn({
