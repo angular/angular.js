@@ -636,6 +636,30 @@ describe('ngMessages', function() {
     })
   );
 
+  it('should unregister the ngMessage even if it was never attached',
+    inject(function($compile, $rootScope) {
+      var html =
+        '<div ng-messages="items">' +
+          '<div ng-if="show"><div ng-message="x">ERROR</div></div>' +
+        '</div>';
+
+      element = $compile(html)($rootScope);
+
+      var ctrl = element.controller('ngMessages');
+
+      expect(messageChildren(element).length).toBe(0);
+      expect(Object.keys(ctrl.messages).length).toEqual(0);
+
+      $rootScope.$apply('show = true');
+      expect(messageChildren(element).length).toBe(0);
+      expect(Object.keys(ctrl.messages).length).toEqual(1);
+
+      $rootScope.$apply('show = false');
+      expect(messageChildren(element).length).toBe(0);
+      expect(Object.keys(ctrl.messages).length).toEqual(0);
+    })
+  );
+
 
   describe('when including templates', function() {
     they('should work with a dynamic collection model which is managed by ngRepeat',
