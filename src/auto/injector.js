@@ -440,6 +440,9 @@ function annotate(fn, strictDi, name) {
  * which lets you specify whether the {@link ng.$log $log} service will log debug messages to the
  * console or not.
  *
+ * It is possible to inject other providers into the provider function,
+ * but the injected provider must have been defined before the one that requires it.
+ *
  * @param {string} name The name of the instance. NOTE: the provider will be available under `name +
                         'Provider'` key.
  * @param {(Object|function())} provider If the provider is:

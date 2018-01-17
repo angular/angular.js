@@ -3,12 +3,14 @@
 @sortOrder 320
 @description
 
-# What is a Module?
+# Modules
+
+## What is a Module?
 
 You can think of a module as a container for the different parts of your app – controllers,
 services, filters, directives, etc.
 
-# Why?
+## Why?
 
 Most applications have a main method that instantiates and wires together the different parts of
 the application.
@@ -23,7 +25,7 @@ should be bootstrapped. There are several advantages to this approach:
   * End-to-end tests can use modules to override configuration.
 
 
-# The Basics
+## The Basics
 
 I'm in a hurry. How do I get a Hello World module working?
 
@@ -65,7 +67,7 @@ Important things to notice:
     This array is the list of modules `myApp` depends on.
 
 
-# Recommended Setup
+## Recommended Setup
 
 While the example above is simple, it will not scale to large applications. Instead we recommend
 that you break your application to multiple modules like this:
@@ -136,39 +138,46 @@ The above is a suggestion. Tailor it to your needs.
 
 
 
-# Module Loading & Dependencies
+## Module Loading
 
-A module is a collection of configuration and run blocks which get applied to the application
-during the bootstrap process. In its simplest form the module consists of a collection of two kinds
-of blocks:
+A {@link angular.Module module} is a collection of providers, services, directives etc.,
+and optionally config and run blocks which get applied to the application during the
+bootstrap process.
 
-  1. **Configuration blocks** - get executed during the provider registrations and configuration
-    phase. Only providers and constants can be injected into configuration blocks. This is to
-    prevent accidental instantiation of services before they have been fully configured.
-  2. **Run blocks** - get executed after the injector is created and are used to kickstart the
-    application. Only instances and constants can be injected into run blocks. This is to prevent
-    further system configuration during application run time.
+The {@link angular.Module module API} describes all the available methods and how they can be used.
 
-```js
-angular.module('myModule', []).
-  config(function(injectables) { // provider-injector
-    // This is an example of config block.
-    // You can have as many of these as you want.
-    // You can only inject Providers (not instances)
-    // into config blocks.
-  }).
-  run(function(injectables) { // instance-injector
-    // This is an example of a run block.
-    // You can have as many of these as you want.
-    // You can only inject instances (not Providers)
-    // into run blocks
-  });
-```
+See {@link guide/di#using-dependency-injection Using Dependency Injection} to find out which
+dependencies can be injected in each method.
 
-## Configuration Blocks
+### Dependencies and Order of execution
 
-There are some convenience methods on the module which are equivalent to the `config` block. For
-example:
+Modules can list other modules as their dependencies. Depending on a module implies that the required
+module will be loaded before the requiring module is loaded.
+
+In a single module the order of execution is as follows:
+
+1. {@link angular.Module#provider provider} functions are executed, so they and the services they
+define can be made available to the {@link auto.$injector $injector}.
+
+2. After that, the configuration blocks ({@link angular.Module#config config} functions) are executed.
+This means the configuration blocks of the required modules execute before the configuration blocks
+of any requiring module.
+
+This continues until all module dependencies has been resolved.
+
+Then, the {@link angular.Module#run run} blocks that have been collected from each module are
+executed in order of requirement.
+
+Note: each module is only loaded once, even if multiple other modules require it.
+Note: the factory function for "values" and "services" is called lazily when the value/service is
+injected for the first time.
+
+### Registration in the config block
+
+While it is recommended to register injectables directly with the {@link angular.Module module API},
+it is also possible to register services, directives etc. by injecting
+{@link $provide $provide} or the individual service providers into the config function:
+
 
 ```js
 angular.module('myModule', []).
@@ -188,12 +197,7 @@ angular.module('myModule', []).
   });
 ```
 
-<div class="alert alert-info">
-When bootstrapping, first AngularJS applies all constant definitions.
-Then AngularJS applies configuration blocks in the same order they were registered.
-</div>
-
-## Run Blocks
+### Run Blocks
 
 Run blocks are the closest thing in AngularJS to the main method. A run block is the code which
 needs to run to kickstart the application. It is executed after all of the services have been
@@ -201,22 +205,14 @@ configured and the injector has been created. Run blocks typically contain code 
 to unit-test, and for this reason should be declared in isolated modules, so that they can be
 ignored in the unit-tests.
 
-## Dependencies
-
-Modules can list other modules as their dependencies. Depending on a module implies that the required
-module needs to be loaded before the requiring module is loaded. In other words the configuration
-blocks of the required modules execute before the configuration blocks of the requiring module.
-The same is true for the run blocks. Each module can only be loaded once, even if multiple other
-modules require it.
-
-## Asynchronous Loading
+### Asynchronous Loading
 
 Modules are a way of managing $injector configuration, and have nothing to do with loading of
 scripts into a VM. There are existing projects which deal with script loading, which may be used
 with AngularJS. Because modules do nothing at load time they can be loaded into the VM in any order
 and thus script loaders can take advantage of this property and parallelize the loading process.
 
-## Creation versus Retrieval
+### Creation versus Retrieval
 
 Beware that using `angular.module('myModule', [])` will create the module `myModule` and overwrite any
 existing module named `myModule`. Use `angular.module('myModule')` to retrieve an existing module.
@@ -235,7 +231,7 @@ var myModule = angular.module('myModule', []);
 var myModule = angular.module('myOtherModule');
 ```
 
-# Unit Testing
+## Unit Testing
 
 A unit test is a way of instantiating a subset of an application to apply stimulus to it.
 Small, structured modules help keep unit tests concise and focused.

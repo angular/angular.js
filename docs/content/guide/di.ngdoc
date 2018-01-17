@@ -14,26 +14,34 @@ and providing them to other components as requested.
 
 ## Using Dependency Injection
 
-DI is pervasive throughout AngularJS. You can use it when defining components or when providing `run`
-and `config` blocks for a module.
+Dependency Injection is pervasive throughout AngularJS. You can use it when defining components
+or when providing `run` and `config` blocks for a module.
 
-- Components such as services, directives, filters, and animations are defined by an injectable
-factory method or constructor function. These components can be injected with "service" and "value"
-components as dependencies.
+- {@link angular.Module#service Services}, {@link angular.Module#directive directives},
+{@link angular.Module#filter filters}, and {@link angular.Module#animation animations} are
+defined by an injectable factory method or constructor function, and can be injected with
+"services", "values", and "constants" as dependencies.
 
-- Controllers are defined by a constructor function, which can be injected with any of the "service"
-and "value" components as dependencies, but they can also be provided with special dependencies. See
-{@link di#controllers Controllers} below for a list of these special dependencies.
+- {@link ng.$controller Controllers} are defined by a constructor function, which can be injected
+with any of the "service" and "value" as dependencies, but they can also be provided with
+"special dependencies". See {@link di#controllers Controllers} below for a list of these
+special dependencies.
 
-- The `run` method accepts a function, which can be injected with "service", "value" and "constant"
-components as dependencies. Note that you cannot inject "providers" into `run` blocks.
+- The {@link angular.Module#run `run`} method accepts a function, which can be injected with
+"services", "values" and, "constants" as dependencies. Note that you cannot inject "providers"
+into `run` blocks.
 
-- The `config` method accepts a function, which can be injected with "provider" and "constant"
-components as dependencies. Note that you cannot inject "service" or "value" components into
-configuration.
+- The {@link angular.Module#config `config`} method accepts a function, which can be injected with
+"providers" and "constants" as dependencies. Note that you cannot inject "services" or
+"values" into configuration.
+
+- The {@link angular.Module#provider `provider`} method can only be injected with other "providers".
+However, only those that have been **registered beforehand** can be injected. This is different
+from services, where the order of registration does not matter.
 
 See {@link module#module-loading-dependencies Modules} for more details about `run` and `config`
-blocks.
+blocks and {@link guide/providers Providers} for more information about the different provider
+types.
 
 
 ### Factory Methods
