@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "uploadDocs",
+    "public": "../../uploadDocs",
     "ignore": [
       "/index.html",
       "/index-debug.html",
