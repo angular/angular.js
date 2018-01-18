@@ -6,6 +6,13 @@
       "/index-debug.html",
       "/index-jquery.html"
     ],
+    "redirects": [
+      {
+        "source": "/error/:namespace\\::error*",
+        "destination": "/error/:namespace/:error*",
+        "type": 302
+      }
+    ],
     "rewrites": [
       {
         "source": "/",
