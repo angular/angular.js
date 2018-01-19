@@ -1,6 +1,7 @@
 {
   "hosting": {
     "public": "public",
+    "trailingSlash": false,
     "redirects": [
       {
         "source": "/:version/docs",
