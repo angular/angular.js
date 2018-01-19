@@ -78,6 +78,10 @@ function sendStoredFile(request, response) {
   }
 
   function sendErrorResponse(error) {
+    if (response.headersSent) {
+      return response;
+    }
+
     let code = 500;
     let message = `General error. Please try again later.
       If the error persists, please create an issue in the
