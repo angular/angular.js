@@ -324,6 +324,17 @@ module.exports = function(grunt) {
           }
         ]
       },
+      deployFirebaseCode: {
+        files: [
+          // the zip file should not be compressed again.
+          {
+            src: 'build/*.zip',
+            dest: 'uploadCode/' + deployVersion + '/',
+            expand: true,
+            flatten: true
+          }
+        ]
+      },
       deployFirebaseDocs: {
         files: [
           // The source files are needed by the embedded examples in the docs app.
@@ -357,7 +368,7 @@ module.exports = function(grunt) {
         options: {
           mode: 'gzip'
         },
-        src: ['**'],
+        src: ['**', '!*.zip'],
         cwd: 'build',
         expand: true,
         dest: 'uploadCode/' + deployVersion + '/'
@@ -463,6 +474,7 @@ module.exports = function(grunt) {
   grunt.registerTask('prepareFirebaseDeploy', [
     'package',
     'compress:deployFirebaseCode',
+    'copy:deployFirebaseCode',
     'copy:deployFirebaseDocs'
   ]);
   grunt.registerTask('default', ['package']);
