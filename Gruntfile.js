@@ -363,6 +363,10 @@ module.exports = function(grunt) {
     },
 
     shell: {
+      // Travis expects the firebase.json in the repository root, but we have it in a sub-folder
+      'symlink-firebase-docs': {
+        command: 'ln -s ./scripts/docs.angularjs.org-firebase/firebase.json ./firebase.json'
+      },
       'install-node-dependencies': {
         command: 'yarn'
       },
@@ -462,6 +466,7 @@ module.exports = function(grunt) {
     'package',
     'compress:deployFirebaseCode',
     'copy:deployFirebaseCode',
+    'shell:symlink-firebase-docs',
     'copy:deployFirebaseDocs'
   ]);
   grunt.registerTask('default', ['package']);

@@ -81,6 +81,7 @@ jobs:
         - provider: firebase
           # the upload folder for firebase is configured in /firebase.json
           skip_cleanup: true
+          project: docs-angularjs-org-9p2
           token:
             secure: $FIREBASE_TOKEN
           on:
