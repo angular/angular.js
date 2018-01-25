@@ -445,7 +445,7 @@ angular.module('docsTabsExample', [])
 </example>
 
 
-# Unit-testing Component Controllers
+## Unit-testing Component Controllers
 
 The easiest way to unit-test a component controller is by using the
 {@link ngMock.$componentController $componentController} that is included in {@link ngMock}. The

@@ -138,7 +138,7 @@ The result is that we end up with a hierarchy of **Routing Components** rendered
 ![Component Hierarchy](img/guide/component-hierarchy.svg)
 
 
-# Example Heroes App
+## Example Heroes App
 
 You can see the complete application running below.
 
@@ -459,12 +459,12 @@ You can see the complete application running below.
 </example>
 
 
-# Getting Started
+### Getting Started
 
 In the following sections we will step through building this application. The finished application has views
 to display list and detail views of Heroes and Crises.
 
-## Install the libraries
+#### Install the libraries
 
 It is easier to use [Yarn](https://yarnpkg.com) or [npm](https://www.npmjs.com) to install the
 **Component Router** module. For this guide we will also install AngularJS itself via Yarn:
@@ -475,7 +475,7 @@ yarn add angular@1.5.x @angular/router@0.2.0
 ```
 
 
-## Load the scripts
+#### Load the scripts
 
 Just like any AngularJS application, we load the JavaScript files into our `index.html`:
 
@@ -494,7 +494,7 @@ You also need to include ES6 shims for browsers that do not support ES6 code (In
  <script src="https://unpkg.com/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
  ```
 
-## Create the `app` module
+#### Create the `app` module
 
 In the app.js file, create the main application module `app` which depends on the `ngComponentRouter`
 module, which is provided by the **Component Router** script.
@@ -547,7 +547,7 @@ must have a base URL.
   ...
 ```
 
-## Bootstrap AngularJS
+#### Bootstrap AngularJS
 
 Bootstrap the AngularJS application and add the top level App Component.
 
@@ -559,7 +559,7 @@ Bootstrap the AngularJS application and add the top level App Component.
 ```
 
 
-# Implementing the AppComponent
+### Implementing the AppComponent
 
 In the previous section we have created a single top level **App Component**. Let's now create some more
 **Routing Components** and wire up **Route Config** for those. We start with a Heroes Feature, which
@@ -577,7 +577,7 @@ We are going to have a `Heroes` Component for the Heroes feature of our applicat
 and `HeroDetail` **Components** that will actually display the two different views.
 
 
-## App Component
+#### App Component
 
 Configure the **App Component** with a template and **Route Config**:
 
@@ -598,7 +598,7 @@ Configure the **App Component** with a template and **Route Config**:
 The **App Component** has an `<ng-outlet>` directive in its template. This is where the child **Components**
 of this view will be rendered.
 
-### ngLink
+#### ngLink
 
 We have used the `ng-link` directive to create a link to navigate to the Heroes Component. By using this
 directive we don't need to know what the actual URL will be. We can let the Router generate that for us.
@@ -607,7 +607,7 @@ We have included a link to the Crisis Center but have not included the `ng-link`
 implemented the CrisisCenter component.
 
 
-### Non-terminal Routes
+#### Non-terminal Routes
 
 We need to tell the **Router** that the `Heroes` **Route Definition** is **non-terminal**, that it should
 continue to match **Routes** in its child **Components**. We do this by adding a **continuation ellipsis
@@ -616,14 +616,14 @@ Without the **continuation ellipsis** the `HeroList` **Route** will never be mat
 stop at the `Heroes` **Routing Component** and not try to match the rest of the URL.
 
 
-## Heroes Feature
+### Heroes Feature
 
 Now we can implement our Heroes Feature which consists of three **Components**: `Heroes`, `HeroList` and
 `HeroDetail`. The `Heroes` **Routing Component** simply provides a template containing the {@link ngOutlet}
 directive and a **Route Config** that defines a set of child **Routes** which delegate through to the
 `HeroList` and `HeroDetail` **Components**.
 
-## HeroesComponent
+### HeroesComponent
 
 Create a new file `heroes.js`, which defines a new AngularJS module for the **Components** of this feature
 and registers the Heroes **Component**.
@@ -651,20 +651,20 @@ and also to add the module as a dependency of the `app` module:
 angular.module('app', ['ngComponentRouter', 'heroes'])
 ```
 
-### Use As Default
+#### Use As Default
 The `useAsDefault` property on the `HeroList` **Route Definition**, indicates that if no other **Route
 Definition** matches the URL, then this **Route Definition** should be used by default.
 
-### Route Parameters
+#### Route Parameters
 The `HeroDetail` Route has a named parameter (`id`), indicated by prefixing the URL segment with a colon,
 as part of its `path` property. The **Router** will match anything in this segment and make that value
 available to the HeroDetail **Component**.
 
-### Terminal Routes
+#### Terminal Routes
 Both the Routes in the `HeroesComponent` are terminal, i.e. their routes do not end with `...`. This is
 because the `HeroList` and `HeroDetail` will not contain any child routes.
 
-### Route Names
+#### Route Names
 **What is the difference between the `name` and `component` properties on a Route Definition?**
 
 The `component` property in a **Route Definition** defines the **Component** directive that will be rendered
@@ -676,7 +676,7 @@ The `name` property is used to reference the **Route Definition** when generatin
 that has the `name` property of `"Heroes"`.
 
 
-## HeroList Component
+### HeroList Component
 
 The HeroList **Component** is the first component in the application that actually contains significant
 functionality. It loads up a list of heroes from a `heroService` and displays them using `ng-repeat`.
@@ -705,7 +705,7 @@ The template iterates through each `hero` object of the array in the `$ctrl.hero
 the `$ctrl` property on the scope of the template.*
 
 
-## HeroService
+### HeroService
 
 Our HeroService simulates requesting a list of heroes from a server. In a real application this would be
 making an actual server request, perhaps over HTTP.
@@ -735,7 +735,7 @@ Note that both the `getHeroes()` and `getHero(id)` methods return a promise for 
 in real-life we would have to wait for the server to respond with the data.
 
 
-## Router Lifecycle Hooks
+### Router Lifecycle Hooks
 
 **How do I know when my Component is active?**
 
@@ -780,7 +780,7 @@ By returning a promise for the list of heroes from `$routerOnActivate()` we can 
 Route until the heroes have arrived successfully. This is similar to how a `resolve` works in {@link ngRoute}.
 
 
-## Route Parameters
+### Route Parameters
 
 **How do I access parameters for the current route?**
 
@@ -811,7 +811,7 @@ by the **Router**. In this code it is used to identify a specific Hero to retrie
 This hero is then attached to the **Component** so that it can be accessed in the template.
 
 
-## Access to the Current Router
+### Access to the Current Router
 
 **How do I get hold of the current router for my component?**
 
@@ -882,7 +882,7 @@ Other options for generating this navigation are:
   ```
   this form gives you the possibility of caching the instruction, but is more verbose.
 
-### Absolute vs Relative Navigation
+#### Absolute vs Relative Navigation
 
 **Why not use `$rootRouter` to do the navigation?**
 
@@ -894,7 +894,7 @@ to the `HeroListComponent` with the `$rootRouter`, we would have to provide a co
 `['App','Heroes','HeroList']`.
 
 
-## Extra Parameters
+### Extra Parameters
 
 We can also pass additional optional parameters to routes, which get encoded into the URL and are again
 available to the `$routerOnActivate(next, previous)` hook. If we pass the current `id` from the
@@ -936,7 +936,7 @@ Finally, we can use this information to highlight the current hero in the templa
 </div>
 ```
 
-## Crisis Center
+### Crisis Center
 
 Let's implement the Crisis Center feature, which displays a list if crises that need to be dealt with by a hero.
 The detailed crisis view has an additional feature where it blocks you from navigating if you have not saved
@@ -951,7 +951,7 @@ changes to the crisis being edited.
 ![Crisis Detail View](img/guide/crisis-detail.png)
 
 
-## Crisis Feature
+### Crisis Feature
 
 This feature is very similar to the Heroes feature. It contains the following **Components**:
 
@@ -962,7 +962,7 @@ This feature is very similar to the Heroes feature. It contains the following **
 CrisisService and CrisisListComponent are basically the same as HeroService and HeroListComponent
 respectively.
 
-## Navigation Control Hooks
+### Navigation Control Hooks
 
 **How do I prevent navigation from occurring?**
 
@@ -979,7 +979,7 @@ can complete, all the **Components** must agree that they can be deactivated or 
 The **Router** will call the `$routerCanDeactivate` and `$canActivate` hooks, if they are provided. If any
 of the hooks resolve to `false` then the navigation is cancelled.
 
-### Dialog Box Service
+#### Dialog Box Service
 
 We can implement a very simple dialog box that will prompt the user whether they are happy to lose changes they
 have made. The result of the prompt is a promise that can be used in a `$routerCanDeactivate` hook.

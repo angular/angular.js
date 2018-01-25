@@ -64,7 +64,7 @@ Games and GUI editors are examples of applications with intensive and tricky DOM
 These kinds of apps are different from CRUD apps, and as a result are probably not a good fit for AngularJS.
 In these cases it may be better to use a library with a lower level of abstraction, such as `jQuery`.
 
-# The Zen of AngularJS
+## The Zen of AngularJS
 
 AngularJS is built around the belief that declarative code is better than imperative when it comes
 to building UIs and wiring software components together, while imperative code is excellent for
