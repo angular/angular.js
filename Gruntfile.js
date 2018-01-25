@@ -463,7 +463,7 @@ module.exports = function(grunt) {
     'package',
     'compress:deployFirebaseCode',
     'copy:deployFirebaseCode',
-    'shell:symlink-firebase-docs',
+    'firebaseDocsJsonForTravis',
     'copy:deployFirebaseDocs'
   ]);
   grunt.registerTask('default', ['package']);
