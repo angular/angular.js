@@ -39,7 +39,7 @@ into `run` blocks.
 However, only those that have been **registered beforehand** can be injected. This is different
 from services, where the order of registration does not matter.
 
-See {@link module#module-loading-dependencies Modules} for more details about `run` and `config`
+See {@link module#module-loading Modules} for more details about `run` and `config`
 blocks and {@link guide/providers Providers} for more information about the different provider
 types.
 
