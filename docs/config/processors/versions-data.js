@@ -55,9 +55,6 @@ module.exports = function generateVersionDocProcessor(gitData) {
 
         if (missesCurrentVersion) versions.push(currentVersion.version);
 
-        // Get the stable release with the highest version
-        var highestStableRelease = versions.reverse().find(semverIsStable);
-
         versions = versions
             .filter(function(versionStr) {
               return blacklist.indexOf(versionStr) === -1;
@@ -84,6 +81,9 @@ module.exports = function generateVersionDocProcessor(gitData) {
         // List the latest version for each branch
         var latest = sortObject(latestMap, reverse(semver.compare))
             .map(function(version) { return makeOption(version, 'Latest'); });
+
+        // Get the stable release with the highest version
+        var highestStableRelease = versions.find(semverIsStable);
 
         // Generate master and stable snapshots
         var snapshots = [
@@ -130,14 +130,15 @@ module.exports = function generateVersionDocProcessor(gitData) {
         return Object.keys(obj).map(function(key) { return obj[key]; }).sort(cmp);
       }
 
+      // Adapted from
       // https://github.com/kaelzhang/node-semver-stable/blob/34dd29842409295d49889d45871bec55a992b7f6/index.js#L25
       function semverIsStable(version) {
-        var semverObj = semver.parse(version);
+        var semverObj = version.version;
         return semverObj === null ? false : !semverObj.prerelease.length;
       }
 
       function createSnapshotStableLabel(version) {
-        var label = 'v' + version.replace(/.$/, 'x') + '-snapshot';
+        var label = version.label.replace(/.$/, 'x') + '-snapshot';
 
         return label;
       }
