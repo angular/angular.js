@@ -439,7 +439,7 @@ describe('input', function() {
     }
   });
 
-  describe('"keydown", "paste" and "cut" events', function() {
+  describe('"keydown", "paste", "cut" and "drop" events', function() {
     beforeEach(function() {
       // Force browser to report a lack of an 'input' event
       $sniffer.hasEvent = function(eventName) {
@@ -461,6 +461,18 @@ describe('input', function() {
       expect($rootScope.name).toEqual('mark');
     });
 
+    it('should update the model on "drop" event if the input value changes', function() {
+      var inputElm = helper.compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
+
+      browserTrigger(inputElm, 'keydown');
+      $browser.defer.flush();
+      expect(inputElm).toBePristine();
+
+      inputElm.val('mark');
+      browserTrigger(inputElm, 'drop');
+      $browser.defer.flush();
+      expect($rootScope.name).toEqual('mark');
+    });
 
     it('should update the model on "cut" event', function() {
       var inputElm = helper.compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
