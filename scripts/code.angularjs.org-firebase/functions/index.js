@@ -31,7 +31,7 @@ function sendStoredFile(request, response) {
   }
 
   if (!fileName) {
-    //Root
+    // Root
     return getDirectoryListing('/').catch(sendErrorResponse);
   }
 
@@ -111,6 +111,11 @@ function sendStoredFile(request, response) {
     return getContent(getFilesOptions).then(() => {
       let contentList = '';
 
+      if (path === '/') {
+        // Let the latest versions appear first
+        directoryList.reverse();
+      }
+
       directoryList.forEach(directoryPath => {
         const dirName = directoryPath.split('/').reverse()[1];
         contentList += `<a href="${dirName}/">${dirName}/</a><br>`;
@@ -125,11 +130,20 @@ function sendStoredFile(request, response) {
       // without trailing slash
       const base = request.originalUrl.endsWith('/') ? request.originalUrl : request.originalUrl + '/';
 
-      let directoryListing = `
-        <base href="${base}">
-        <h1>Index of ${path}</h1>
-        <hr>
-        <pre>${contentList}</pre>`;
+      const directoryListing = `
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <base href="${base}">
+          </head>
+          <body>
+            <h1>Index of ${path}</h1>
+            <hr>
+            <pre>${contentList}</pre>
+          </body>
+        </html>`;
 
       return response
         .status(200)
