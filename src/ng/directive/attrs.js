@@ -436,7 +436,7 @@ forEach(['src', 'srcset', 'href'], function(attrName) {
           // On IE, if "ng:src" directive declaration is used and "src" attribute doesn't exist
           // then calling element.setAttribute('src', 'foo') doesn't do anything, so we need
           // to set the property as well to achieve the desired effect.
-          // We use attr[attrName] value since $set can sanitize the url.
+          // We use attr[attrName] value since $set might have sanitized the url.
           if (msie && propName) element.prop(propName, attr[name]);
         });
       }

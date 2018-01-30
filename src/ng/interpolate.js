@@ -238,16 +238,21 @@ function $InterpolateProvider() {
      * - `context`: evaluation context for all expressions embedded in the interpolated text
      */
     function $interpolate(text, mustHaveExpression, trustedContext, allOrNothing) {
+      var contextAllowsConcatenation = trustedContext === $sce.URL || trustedContext === $sce.MEDIA_URL;
+
       // Provide a quick exit and simplified result function for text with no interpolation
       if (!text.length || text.indexOf(startSymbol) === -1) {
-        var constantInterp;
-        if (!mustHaveExpression) {
-          var unescapedText = unescapeText(text);
-          constantInterp = valueFn(unescapedText);
-          constantInterp.exp = text;
-          constantInterp.expressions = [];
-          constantInterp.$$watchDelegate = constantWatchDelegate;
+        if (mustHaveExpression && !contextAllowsConcatenation) return;
+
+        var unescapedText = unescapeText(text);
+        if (contextAllowsConcatenation) {
+          unescapedText = $sce.getTrusted(trustedContext, unescapedText);
         }
+        var constantInterp = valueFn(unescapedText);
+        constantInterp.exp = text;
+        constantInterp.expressions = [];
+        constantInterp.$$watchDelegate = constantWatchDelegate;
+
         return constantInterp;
       }
 
@@ -256,11 +261,13 @@ function $InterpolateProvider() {
           endIndex,
           index = 0,
           expressions = [],
-          parseFns = [],
+          parseFns,
           textLength = text.length,
           exp,
           concat = [],
-          expressionPositions = [];
+          expressionPositions = [],
+          singleExpression;
+
 
       while (index < textLength) {
         if (((startIndex = text.indexOf(startSymbol, index)) !== -1) &&
@@ -270,10 +277,9 @@ function $InterpolateProvider() {
           }
           exp = text.substring(startIndex + startSymbolLength, endIndex);
           expressions.push(exp);
-          parseFns.push($parse(exp, parseStringifyInterceptor));
           index = endIndex + endSymbolLength;
           expressionPositions.push(concat.length);
-          concat.push('');
+          concat.push(''); // Placeholder that will get replaced with the evaluated expression.
         } else {
           // we did not find an interpolation, so we have to add the remainder to the separators array
           if (index !== textLength) {
@@ -283,15 +289,25 @@ function $InterpolateProvider() {
         }
       }
 
+      singleExpression = concat.length === 1 && expressionPositions.length === 1;
+      // Intercept expression if we need to stringify concatenated inputs, which may be SCE trusted
+      // objects rather than simple strings
+      // (we don't modify the expression if the input consists of only a single trusted input)
+      var interceptor = contextAllowsConcatenation && singleExpression ? undefined : parseStringifyInterceptor;
+      parseFns = expressions.map(function(exp) { return $parse(exp, interceptor); });
+
       // Concatenating expressions makes it hard to reason about whether some combination of
       // concatenated values are unsafe to use and could easily lead to XSS.  By requiring that a
-      // single expression be used for iframe[src], object[src], etc., we ensure that the value
-      // that's used is assigned or constructed by some JS code somewhere that is more testable or
-      // make it obvious that you bound the value to some user controlled value.  This helps reduce
-      // the load when auditing for XSS issues.
-      if (trustedContext && concat.length > 1) {
-          $interpolateMinErr.throwNoconcat(text);
-      }
+      // single expression be used for some $sce-managed secure contexts (RESOURCE_URLs mostly),
+      // we ensure that the value that's used is assigned or constructed by some JS code somewhere
+      // that is more testable or make it obvious that you bound the value to some user controlled
+      // value.  This helps reduce the load when auditing for XSS issues.
+
+      // Note that URL and MEDIA_URL $sce contexts do not need this, since `$sce` can sanitize the values
+      // passed to it. In that case, `$sce.getTrusted` will be called on either the single expression
+      // or on the overall concatenated string (losing trusted types used in the mix, by design).
+      // Both these methods will sanitize plain strings. Also, HTML could be included, but since it's
+      // only used in srcdoc attributes, this would not be very useful.
 
       if (!mustHaveExpression || expressions.length) {
         var compute = function(values) {
@@ -299,13 +315,16 @@ function $InterpolateProvider() {
             if (allOrNothing && isUndefined(values[i])) return;
             concat[expressionPositions[i]] = values[i];
           }
-          return concat.join('');
-        };
 
-        var getValue = function(value) {
-          return trustedContext ?
-            $sce.getTrusted(trustedContext, value) :
-            $sce.valueOf(value);
+          if (contextAllowsConcatenation) {
+            // If `singleExpression` then `concat[0]` might be a "trusted" value or `null`, rather than a string
+            return $sce.getTrusted(trustedContext, singleExpression ? concat[0] : concat.join(''));
+          } else if (trustedContext && concat.length > 1) {
+            // This context does not allow more than one part, e.g. expr + string or exp + exp.
+            $interpolateMinErr.throwNoconcat(text);
+          }
+          // In an unprivileged context or only one part: just concatenate and return.
+          return concat.join('');
         };
 
         return extend(function interpolationFn(context) {
@@ -340,7 +359,13 @@ function $InterpolateProvider() {
 
       function parseStringifyInterceptor(value) {
         try {
-          value = getValue(value);
+          // In concatenable contexts, getTrusted comes at the end, to avoid sanitizing individual
+          // parts of a full URL. We don't care about losing the trustedness here.
+          // In non-concatenable contexts, where there is only one expression, this interceptor is
+          // not applied to the expression.
+          value = (trustedContext && !contextAllowsConcatenation) ?
+                    $sce.getTrusted(trustedContext, value) :
+                    $sce.valueOf(value);
           return allOrNothing && !isDefined(value) ? value : stringify(value);
         } catch (err) {
           $exceptionHandler($interpolateMinErr.interr(text, err));

@@ -34,5 +34,18 @@ describe('ngSrcset', function() {
     element = $compile('<img ng-attr-srcset="{{undefined}}">')($rootScope);
     $rootScope.$digest();
   }));
-});
 
+  it('should interpolate the expression and bind to srcset', inject(function($compile, $rootScope) {
+    var element = $compile('<img ng-srcset="some/{{id}} 2x"></div>')($rootScope);
+
+    $rootScope.$digest();
+    expect(element.attr('srcset')).toBeUndefined();
+
+    $rootScope.$apply(function() {
+      $rootScope.id = 1;
+    });
+    expect(element.attr('srcset')).toEqual('some/1 2x');
+
+    dealoc(element);
+  }));
+});

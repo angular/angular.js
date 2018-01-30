@@ -22,12 +22,17 @@ var SCE_CONTEXTS = {
   // Style statements or stylesheets. Currently unused in AngularJS.
   CSS: 'css',
 
-  // An URL used in a context where it does not refer to a resource that loads code. Currently
-  // unused in AngularJS.
+  // An URL used in a context where it refers to the source of media, which are not expected to be run
+  // as scripts, such as an image, audio, video, etc.
+  MEDIA_URL: 'mediaUrl',
+
+  // An URL used in a context where it does not refer to a resource that loads code.
+  // A value that can be trusted as a URL can also trusted as a MEDIA_URL.
   URL: 'url',
 
   // RESOURCE_URL is a subtype of URL used where the referred-to resource could be interpreted as
   // code. (e.g. ng-include, script src binding, templateUrl)
+  // A value that can be trusted as a RESOURCE_URL, can also trusted as a URL and a MEDIA_URL.
   RESOURCE_URL: 'resourceUrl',
 
   // Script. Currently unused in AngularJS.
@@ -242,7 +247,7 @@ function $SceDelegateProvider() {
     return resourceUrlBlacklist;
   };
 
-  this.$get = ['$injector', function($injector) {
+  this.$get = ['$injector', '$$sanitizeUri', function($injector, $$sanitizeUri) {
 
     var htmlSanitizer = function htmlSanitizer(html) {
       throw $sceMinErr('unsafe', 'Attempting to use an unsafe value in a safe context.');
@@ -307,7 +312,8 @@ function $SceDelegateProvider() {
 
     byType[SCE_CONTEXTS.HTML] = generateHolderType(trustedValueHolderBase);
     byType[SCE_CONTEXTS.CSS] = generateHolderType(trustedValueHolderBase);
-    byType[SCE_CONTEXTS.URL] = generateHolderType(trustedValueHolderBase);
+    byType[SCE_CONTEXTS.MEDIA_URL] = generateHolderType(trustedValueHolderBase);
+    byType[SCE_CONTEXTS.URL] = generateHolderType(byType[SCE_CONTEXTS.MEDIA_URL]);
     byType[SCE_CONTEXTS.JS] = generateHolderType(trustedValueHolderBase);
     byType[SCE_CONTEXTS.RESOURCE_URL] = generateHolderType(byType[SCE_CONTEXTS.URL]);
 
@@ -386,15 +392,27 @@ function $SceDelegateProvider() {
      * @name $sceDelegate#getTrusted
      *
      * @description
-     * Takes any input, and either returns a value that's safe to use in the specified context, or
-     * throws an exception.
+     * Given an object and a security context in which to assign it, returns a value that's safe to
+     * use in this context, which was represented by the parameter. To do so, this function either
+     * unwraps the safe type it has been given (for instance, a {@link ng.$sceDelegate#trustAs
+     * `$sceDelegate.trustAs`} result), or it might try to sanitize the value given, depending on
+     * the context and sanitizer availablility.
      *
-     * In practice, there are several cases. When given a string, this function runs checks
-     * and sanitization to make it safe without prior assumptions. When given the result of a {@link
-     * ng.$sceDelegate#trustAs `$sceDelegate.trustAs`} call, it returns the originally supplied
-     * value if that value's context is valid for this call's context. Finally, this function can
-     * also throw when there is no way to turn `maybeTrusted` in a safe value (e.g., no sanitization
-     * is available or possible.)
+     * The contexts that can be sanitized are $sce.MEDIA_URL, $sce.URL and $sce.HTML. The first two are available
+     * by default, and the third one relies on the `$sanitize` service (which may be loaded through
+     * the `ngSanitize` module). Furthermore, for $sce.RESOURCE_URL context, a plain string may be
+     * accepted if the resource url policy defined by {@link ng.$sceDelegateProvider#resourceUrlWhitelist
+     * `$sceDelegateProvider.resourceUrlWhitelist`} and {@link ng.$sceDelegateProvider#resourceUrlBlacklist
+     * `$sceDelegateProvider.resourceUrlBlacklist`} accepts that resource.
+     *
+     * This function will throw if the safe type isn't appropriate for this context, or if the
+     * value given cannot be accepted in the context (which might be caused by sanitization not
+     * being available, or the value not being recognized as safe).
+     *
+     * <div class="alert alert-danger">
+     * Disabling auto-escaping is extremely dangerous, it usually creates a Cross Site Scripting
+     * (XSS) vulnerability in your application.
+     * </div>
      *
      * @param {string} type The context in which this value is to be used (such as `$sce.HTML`).
      * @param {*} maybeTrusted The result of a prior {@link ng.$sceDelegate#trustAs
@@ -412,12 +430,18 @@ function $SceDelegateProvider() {
       if (constructor && maybeTrusted instanceof constructor) {
         return maybeTrusted.$$unwrapTrustedValue();
       }
-      // Otherwise, if we get here, then we may either make it safe, or throw an exception. This
-      // depends on the context: some are sanitizatible (HTML), some use whitelists (RESOURCE_URL),
-      // some are impossible to do (JS). This step isn't implemented for CSS and URL, as AngularJS
-      // has no corresponding sinks.
-      if (type === SCE_CONTEXTS.RESOURCE_URL) {
-        // RESOURCE_URL uses a whitelist.
+
+      // If maybeTrusted is a trusted class instance but not of the correct trusted type
+      // then unwrap it and allow it to pass through to the rest of the checks
+      if (isFunction(maybeTrusted.$$unwrapTrustedValue)) {
+        maybeTrusted = maybeTrusted.$$unwrapTrustedValue();
+      }
+
+      // If we get here, then we will either sanitize the value or throw an exception.
+      if (type === SCE_CONTEXTS.MEDIA_URL || type === SCE_CONTEXTS.URL) {
+        // we attempt to sanitize non-resource URLs
+        return $$sanitizeUri(maybeTrusted, type === SCE_CONTEXTS.MEDIA_URL);
+      } else if (type === SCE_CONTEXTS.RESOURCE_URL) {
         if (isResourceUrlAllowedByPolicy(maybeTrusted)) {
           return maybeTrusted;
         } else {
@@ -572,9 +596,10 @@ function $SceDelegateProvider() {
  *
  * If your expressions are constant literals, they're automatically trusted and you don't need to
  * call `$sce.trustAs` on them (e.g.
- * `<div ng-bind-html="'<b>implicitly trusted</b>'"></div>`) just works. The `$sceDelegate` will
- * also use the `$sanitize` service if it is available when binding untrusted values to
- * `$sce.HTML` context. AngularJS provides an implementation in `angular-sanitize.js`, and if you
+ * `<div ng-bind-html="'<b>implicitly trusted</b>'"></div>`) just works (remember to include the
+ * `ngSanitize` module). The `$sceDelegate` will also use the `$sanitize` service if it is available
+ * when binding untrusted values to `$sce.HTML` context.
+ * AngularJS provides an implementation in `angular-sanitize.js`, and if you
  * wish to use it, you will also need to depend on the {@link ngSanitize `ngSanitize`} module in
  * your application.
  *
@@ -594,17 +619,27 @@ function $SceDelegateProvider() {
  *
  * | Context             | Notes          |
  * |---------------------|----------------|
- * | `$sce.HTML`         | For HTML that's safe to source into the application.  The {@link ng.directive:ngBindHtml ngBindHtml} directive uses this context for bindings. If an unsafe value is encountered, and the {@link ngSanitize.$sanitize $sanitize} service is available (implemented by the {@link ngSanitize ngSanitize} module) this will sanitize the value instead of throwing an error. |
- * | `$sce.CSS`          | For CSS that's safe to source into the application.  Currently, no bindings require this context. Feel free to use it in your own directives. |
- * | `$sce.URL`          | For URLs that are safe to follow as links.  Currently unused (`<a href=`, `<img src=`, and some others sanitize their urls and don't constitute an SCE context.) |
- * | `$sce.RESOURCE_URL` | For URLs that are not only safe to follow as links, but whose contents are also safe to include in your application.  Examples include `ng-include`, `src` / `ngSrc` bindings for tags other than `IMG`, `VIDEO`, `AUDIO`, `SOURCE`, and `TRACK` (e.g. `IFRAME`, `OBJECT`, etc.)  <br><br>Note that `$sce.RESOURCE_URL` makes a stronger statement about the URL than `$sce.URL` does (it's not just the URL that matters, but also what is at the end of it), and therefore contexts requiring values trusted for `$sce.RESOURCE_URL` can be used anywhere that values trusted for `$sce.URL` are required. |
- * | `$sce.JS`           | For JavaScript that is safe to execute in your application's context.  Currently, no bindings require this context.  Feel free to use it in your own directives. |
+ * | `$sce.HTML`         | For HTML that's safe to source into the application.  The {@link ng.directive:ngBindHtml ngBindHtml} directive uses this context for bindings. If an unsafe value is encountered and the {@link ngSanitize $sanitize} module is present this will sanitize the value instead of throwing an error. |
+ * | `$sce.CSS`          | For CSS that's safe to source into the application.  Currently unused.  Feel free to use it in your own directives. |
+ * | `$sce.MEDIA_URL`    | For URLs that are safe to render as media. Is automatically converted from string by sanitizing when needed. |
+ * | `$sce.URL`          | For URLs that are safe to follow as links. Is automatically converted from string by sanitizing when needed. Note that `$sce.URL` makes a stronger statement about the URL than `$sce.MEDIA_URL` does and therefore contexts requiring values trusted for `$sce.URL` can be used anywhere that values trusted for `$sce.MEDIA_URL` are required.|
+ * | `$sce.RESOURCE_URL` | For URLs that are not only safe to follow as links, but whose contents are also safe to include in your application.  Examples include `ng-include`, `src` / `ngSrc` bindings for tags other than `IMG` (e.g. `IFRAME`, `OBJECT`, etc.)  <br><br>Note that `$sce.RESOURCE_URL` makes a stronger statement about the URL than `$sce.URL` or `$sce.MEDIA_URL` do and therefore contexts requiring values trusted for `$sce.RESOURCE_URL` can be used anywhere that values trusted for `$sce.URL` or `$sce.MEDIA_URL` are required. |
+ * | `$sce.JS`           | For JavaScript that is safe to execute in your application's context.  Currently unused.  Feel free to use it in your own directives. |
  *
  *
- * Be aware that `a[href]` and `img[src]` automatically sanitize their URLs and do not pass them
- * through {@link ng.$sce#getTrusted $sce.getTrusted}. There's no CSS-, URL-, or JS-context bindings
- * in AngularJS currently, so their corresponding `$sce.trustAs` functions aren't useful yet. This
- * might evolve.
+ * <div class="alert alert-warning">
+ * Be aware that, before AngularJS 1.7.0, `a[href]` and `img[src]` used to sanitize their
+ * interpolated values directly rather than rely upon {@link ng.$sce#getTrusted `$sce.getTrusted`}.
+ *
+ * **As of 1.7.0, this is no longer the case.**
+ *
+ * Now such interpolations are marked as requiring `$sce.URL` (for `a[href]`) or `$sce.MEDIA_URL`
+ * (for `img[src]`), so that the sanitization happens (via `$sce.getTrusted...`) when the `$interpolate`
+ * service evaluates the expressions.
+ * </div>
+ *
+ * There are no CSS or JS context bindings in AngularJS currently, so their corresponding `$sce.trustAs`
+ * functions aren't useful yet. This might evolve.
  *
  * ### Format of items in {@link ng.$sceDelegateProvider#resourceUrlWhitelist resourceUrlWhitelist}/{@link ng.$sceDelegateProvider#resourceUrlBlacklist Blacklist} <a name="resourceUrlPatternItem"></a>
  *
@@ -778,7 +813,7 @@ function $SceProvider() {
    *     such a value.
    *
    * - getTrusted(contextEnum, value)
-   *     This function should return the a value that is safe to use in the context specified by
+   *     This function should return the value that is safe to use in the context specified by
    *     contextEnum or throw and exception otherwise.
    *
    * NOTE: This contract deliberately does NOT state that values returned by trustAs() must be
