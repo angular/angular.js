@@ -495,7 +495,7 @@ describe('HTML', function() {
       });
     });
 
-    it('should use $$sanitizeUri for links', function() {
+    it('should use $$sanitizeUri for a[href] links', function() {
       var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
       module(function($provide) {
         $provide.value('$$sanitizeUri', $$sanitizeUri);
@@ -511,7 +511,7 @@ describe('HTML', function() {
       });
     });
 
-    it('should use $$sanitizeUri for links', function() {
+    it('should use $$sanitizeUri for img[src] links', function() {
       var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri');
       module(function($provide) {
         $provide.value('$$sanitizeUri', $$sanitizeUri);

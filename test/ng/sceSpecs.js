@@ -1,5 +1,7 @@
 'use strict';
 
+/* eslint-disable no-script-url */
+
 describe('SCE', function() {
 
   describe('when disabled', function() {
@@ -211,7 +213,7 @@ describe('SCE', function() {
       expect($sce.parseAsJs('"string"')()).toBe('string');
     }));
 
-    it('should be possible to do one-time binding', function() {
+    it('should be possible to do one-time binding on a non-concatenable context', function() {
       module(provideLog);
       inject(function($sce, $rootScope, log) {
         $rootScope.$watch($sce.parseAsHtml('::foo'), function(value) {
@@ -231,6 +233,31 @@ describe('SCE', function() {
         log.reset();
 
         $rootScope.foo = $sce.trustAs($sce.HTML, 'anotherTrustedValue');
+        $rootScope.$digest();
+        expect(log).toEqual(''); // watcher no longer active
+      });
+    });
+
+    it('should be possible to do one-time binding on a concatenable context', function() {
+      module(provideLog);
+      inject(function($sce, $rootScope, log) {
+        $rootScope.$watch($sce.parseAsUrl('::foo'), function(value) {
+          log(value + '');
+        });
+
+        $rootScope.$digest();
+        expect(log).toEqual('undefined'); // initial listener call
+        log.reset();
+
+        $rootScope.foo = $sce.trustAs($sce.URL, 'trustedValue');
+        expect($rootScope.$$watchers.length).toBe(1);
+        $rootScope.$digest();
+
+        expect($rootScope.$$watchers.length).toBe(0);
+        expect(log).toEqual('trustedValue');
+        log.reset();
+
+        $rootScope.foo = $sce.trustAs($sce.URL, 'anotherTrustedValue');
         $rootScope.$digest();
         expect(log).toEqual(''); // watcher no longer active
       });
@@ -525,6 +552,44 @@ describe('SCE', function() {
     ));
   });
 
+  describe('URL-context sanitization', function() {
+    it('should sanitize values that are not whitelisted', inject(function($sce) {
+      expect($sce.getTrustedMediaUrl('javascript:foo')).toEqual('unsafe:javascript:foo');
+      expect($sce.getTrustedUrl('javascript:foo')).toEqual('unsafe:javascript:foo');
+    }));
+
+    it('should not sanitize values that are whitelisted', inject(function($sce) {
+      expect($sce.getTrustedMediaUrl('http://example.com')).toEqual('http://example.com');
+      expect($sce.getTrustedUrl('http://example.com')).toEqual('http://example.com');
+    }));
+
+    it('should not sanitize trusted values', inject(function($sce) {
+      expect($sce.getTrustedMediaUrl($sce.trustAsMediaUrl('javascript:foo'))).toEqual('javascript:foo');
+      expect($sce.getTrustedMediaUrl($sce.trustAsUrl('javascript:foo'))).toEqual('javascript:foo');
+      expect($sce.getTrustedMediaUrl($sce.trustAsResourceUrl('javascript:foo'))).toEqual('javascript:foo');
+
+      expect($sce.getTrustedUrl($sce.trustAsMediaUrl('javascript:foo'))).toEqual('unsafe:javascript:foo');
+      expect($sce.getTrustedUrl($sce.trustAsUrl('javascript:foo'))).toEqual('javascript:foo');
+      expect($sce.getTrustedUrl($sce.trustAsResourceUrl('javascript:foo'))).toEqual('javascript:foo');
+    }));
+
+    it('should use the $$sanitizeUri', function() {
+      var $$sanitizeUri = jasmine.createSpy('$$sanitizeUri').and.returnValue('someSanitizedUrl');
+      module(function($provide) {
+        $provide.value('$$sanitizeUri', $$sanitizeUri);
+      });
+      inject(function($sce) {
+        expect($sce.getTrustedMediaUrl('someUrl')).toEqual('someSanitizedUrl');
+        expect($$sanitizeUri).toHaveBeenCalledOnceWith('someUrl', true);
+
+        $$sanitizeUri.calls.reset();
+
+        expect($sce.getTrustedUrl('someUrl')).toEqual('someSanitizedUrl');
+        expect($$sanitizeUri).toHaveBeenCalledOnceWith('someUrl', false);
+      });
+    });
+  });
+
   describe('sanitizing html', function() {
     describe('when $sanitize is NOT available', function() {
       it('should throw an exception for getTrusted(string) values', inject(function($sce) {
@@ -535,9 +600,23 @@ describe('SCE', function() {
 
     describe('when $sanitize is available', function() {
       beforeEach(function() { module('ngSanitize'); });
+
       it('should sanitize html using $sanitize', inject(function($sce) {
         expect($sce.getTrustedHtml('a<xxx><B>b</B></xxx>c')).toBe('a<b>b</b>c');
       }));
+
+      // Note: that test only passes if HTML is added to the concatenable contexts list.
+      // See isConcatenableSecureContext in interpolate.js for that.
+      //
+      // if (!msie || msie >= 11) {
+      //   it('can set dynamic srcdocs with concatenations and sanitize the result',
+      //       inject(function($compile, $rootScope) {
+      //     var element = $compile('<iframe srcdoc="&lt;b&gt;&lt;script&gt;{{html}}"></iframe>')($rootScope);
+      //     $rootScope.html = 'no</script>yes</b>';
+      //     $rootScope.$digest();
+      //     expect(angular.lowercase(element.attr('srcdoc'))).toEqual('<b>yes</b>');
+      //   }));
+      // }
     });
   });
 });
