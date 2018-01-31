@@ -6,6 +6,11 @@
      * @ngdoc service
      * @name $swipe
      *
+     * @deprecated
+     * sinceVersion="1.7.0"
+     *
+     * See the {@link ngTouch module} documentation for more information.
+     *
      * @description
      * The `$swipe` service is a service that abstracts the messier details of hold-and-drag swipe
      * behavior, to make implementing swipe-related directives more convenient.
