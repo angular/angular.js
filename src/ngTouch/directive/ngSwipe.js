@@ -6,6 +6,11 @@
  * @ngdoc directive
  * @name ngSwipeLeft
  *
+ * @deprecated
+ * sinceVersion="1.7.0"
+ *
+ * See the {@link ngTouch module} documentation for more information.
+ *
  * @description
  * Specify custom behavior when an element is swiped to the left on a touchscreen device.
  * A leftward swipe is a quick, right-to-left slide of the finger.
@@ -41,6 +46,11 @@
 /**
  * @ngdoc directive
  * @name ngSwipeRight
+ *
+ * @deprecated
+ * sinceVersion="1.7.0"
+ *
+ * See the {@link ngTouch module} documentation for more information.
  *
  * @description
  * Specify custom behavior when an element is swiped to the right on a touchscreen device.
