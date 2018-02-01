@@ -93,7 +93,7 @@ function makeSwipeDirective(directiveName, direction, eventName) {
     return function(scope, element, attr) {
       var swipeHandler = $parse(attr[directiveName]);
 
-      var startCoords, valid;
+      var startCoords, valid, startTime;
 
       function validSwipe(coords) {
         // Check that it's within the coordinates.
@@ -122,6 +122,7 @@ function makeSwipeDirective(directiveName, direction, eventName) {
         'start': function(coords, event) {
           startCoords = coords;
           valid = true;
+          startTime = Date.now();
         },
         'cancel': function(event) {
           valid = false;
@@ -129,6 +130,7 @@ function makeSwipeDirective(directiveName, direction, eventName) {
         'end': function(coords, event) {
           if (validSwipe(coords)) {
             scope.$apply(function() {
+              event.touchTime = Date.now() - startTime;
               element.triggerHandler(eventName);
               swipeHandler(scope, {$event: event});
             });
