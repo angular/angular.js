@@ -1254,6 +1254,16 @@ describe('angular', function() {
     });
   });
 
+  describe('isArray', function() {
+
+    it('should return true if passed an object prototypically inherited from Array.prototype', function() {
+      function FooArray() {}
+      FooArray.prototype = [];
+      expect(isArray(new FooArray())).toBe(true);
+    });
+
+  });
+
   describe('isArrayLike', function() {
 
     it('should return false if passed a number', function() {
