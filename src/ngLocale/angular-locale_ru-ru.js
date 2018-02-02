@@ -42,7 +42,7 @@ $provide.value("$locale", {
       "\u0434\u043e \u043d. \u044d.",
       "\u043d. \u044d."
     ],
-    "FIRSTDAYOFWEEK": 0,
+    "FIRSTDAYOFWEEK": 1,
     "MONTH": [
       "\u044f\u043d\u0432\u0430\u0440\u044f",
       "\u0444\u0435\u0432\u0440\u0430\u043b\u044f",
