@@ -1,0 +1,11 @@
+User-agent: *
+
+Disallow: /components/
+Disallow: /examples/
+Disallow: /img/
+Disallow: /js/
+Disallow: /partials/
+Disallow: /ptore2e/
+Disallow: /*.js$
+Disallow: /*.map$
+Disallow: /Error404.html
