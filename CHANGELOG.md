@@ -1,3 +1,31 @@
+<a name="1.6.9"></a>
+# 1.6.9 fiery-basilisk (2018-02-02)
+
+
+## Bug Fixes
+- **input:** add `drop` event support for IE
+  ([5dc076](https://github.com/angular/angular.js/commit/5dc07667de00c5e85fd69c5b7b7fe4fb5fd65a77))
+- **ngMessages:** prevent memory leak from messages that are never attached
+  ([9d058d](https://github.com/angular/angular.js/commit/9d058de04bb78694b83179e9b97bc40214eca01a),
+  [#16389](https://github.com/angular/angular.js/issues/16389),
+  [#16404](https://github.com/angular/angular.js/issues/16404),
+  [#16406](https://github.com/angular/angular.js/issues/16406))
+- **ngTransclude:** remove terminal: true
+  ([1d826e](https://github.com/angular/angular.js/commit/1d826e2f1e941d14c3c56d7a0249f5796ba11f85),
+  [#16411](https://github.com/angular/angular.js/issues/16411),
+  [#16412](https://github.com/angular/angular.js/issues/16412))
+- **$sanitize:** sanitize `xml:base` attributes
+  ([b9ef65](https://github.com/angular/angular.js/commit/b9ef6585e10477fbbf912a971fe0b390bca692a6))
+
+
+## New Features
+- **currencyFilter:** trim whitespace around an empty currency symbol
+  ([367390](https://github.com/angular/angular.js/commit/3673909896efb6ff47546caf7fc61549f193e043),
+  [#15018](https://github.com/angular/angular.js/issues/15018),
+  [#15085](https://github.com/angular/angular.js/issues/15085),
+  [#15105](https://github.com/angular/angular.js/issues/15105))
+
+
 <a name="1.6.8"></a>
 # 1.6.8 beneficial-tincture (2017-12-18)
 
