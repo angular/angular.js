@@ -114,6 +114,24 @@ describe('$templateRequest', function() {
     expect($templateCache.get('tpl.html')).toBe('matias');
   }));
 
+  it('should return the cached value on the first request',
+    inject(function($rootScope, $templateRequest, $templateCache, $httpBackend) {
+
+      $httpBackend.expectGET('tpl.html').respond('matias');
+      spyOn($templateCache, 'put').and.returnValue('_matias');
+
+      var content = [];
+      function tplRequestCb(html) {
+        content.push(html);
+      }
+
+      $templateRequest('tpl.html').then(tplRequestCb);
+      $rootScope.$digest();
+      $httpBackend.flush();
+
+      expect(content[0]).toBe('_matias');
+    }));
+
   it('should call `$exceptionHandler` on request error', function() {
     module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
