@@ -15,8 +15,8 @@ var $sanitizeMinErr = angular.$$minErr('$sanitize');
 var bind;
 var extend;
 var forEach;
-var isDefined;
 var isArray;
+var isDefined;
 var isObject;
 var lowercase;
 var noop;
@@ -146,8 +146,8 @@ var htmlSanitizeWriter;
  * Creates and configures {@link $sanitize} instance.
  */
 function $SanitizeProvider() {
-  var svgEnabled = false;
   var hasBeenInstantiated = false;
+  var svgEnabled = false;
 
   this.$get = ['$$sanitizeUri', function($$sanitizeUri) {
     hasBeenInstantiated = true;
@@ -191,7 +191,7 @@ function $SanitizeProvider() {
    * </div>
    *
    * @param {boolean=} flag Enable or disable SVG support in the sanitizer.
-   * @returns {boolean|ng.$sanitizeProvider} Returns the currently configured value if called
+   * @returns {boolean|$sanitizeProvider} Returns the currently configured value if called
    *    without an argument or self for chaining otherwise.
    */
   this.enableSvg = function(enableSvg) {
@@ -209,27 +209,51 @@ function $SanitizeProvider() {
    * @name $sanitizeProvider#addValidElements
    * @kind function
    *
-   * @param {Array|Object} elements List of valid elements.
+   * @description
+   * Extends the built-in lists of valid HTML/SVG elements, i.e. elements that are considered safe
+   * and are not stripped off during sanitization. You can extend the following lists:
    *
-   *    Object properties:
+   * - `htmlElements`: A list of elements (tag names) to extend the current list of safe HTML
+   *   elements. HTML elements considered safe will not be removed during sanitization. All other
+   *   elements will be stripped off.
    *
-   *    - `svgElements` – `{string[]=}` – An array of SVG elements' names.
-   *    - `htmlVoidElements` – `{string[]=}` – An array of void elements' names.
-   *    - `htmlElements` – `{string[]=}` – An array of html elements' names.
+   * - `htmlVoidElements`: This is similar to `htmlElements`, but in addition allows the specified
+   *   elements to have no end tag (similar to HTML
+   *   [void elements](https://rawgit.com/w3c/html/html5.1-2/single-page.html#void-elements)).
+   *
+   * - `svgElements`: This is similar to `htmlElements`, but for SVG elements. This list is only
+   *   taken into account if SVG is {@link ngSanitize.$sanitizeProvider#enableSvg enabled} for
+   *   `$sanitize`.
+   *
+   * <div class="alert alert-warning">
+   *   This method must be called during the {@link angular.Module#config config} phase. Once the
+   *   `$sanitize` service has been instantiated, this method has no effect.
+   * </div>
+   *
+   * @param {Array<String>|Object} elements - A list of valid HTML elements or an object with one or
+   *   more of the following properties:
+   *   - **htmlElements** - `{Array<String>}` - A list of elements to extend the current list of
+   *     HTML elements.
+   *   - **htmlVoidElements** - `{Array<String>}` - A list of elements to extend the current list of
+   *     void HTML elements; i.e. elements that do not have an end tag.
+   *   - **svgElements** - `{Array<String>}` - A list of elements to extend the current list of SVG
+   *     elements. The list of SVG elements is only taken into account if SVG is
+   *     {@link ngSanitize.$sanitizeProvider#enableSvg enabled} for `$sanitize`.
+   *
+   * Passing an array (`[...]`) is equivalent to passing `{htmlElements: [...]}`.
+   *
+   * @return {$sanitizeProvider} Returns self for chaining.
    */
   this.addValidElements = function(elements) {
-    if (hasBeenInstantiated) return this;
+    if (!hasBeenInstantiated) {
+      if (isArray(elements)) {
+        elements = {htmlElements: elements};
+      }
 
-    if (isArray(elements)) {
-      addElementsTo(validElements, elements);
-      return this;
-    }
-
-    if (isObject(elements)) {
-      addElementsTo(svgElements, elements['svgElements']);
-      addElementsTo(voidElements, elements['htmlVoidElements']);
-      addElementsTo(validElements, elements['htmlVoidElements']);
-      addElementsTo(validElements, elements['htmlElements']);
+      addElementsTo(svgElements, elements.svgElements);
+      addElementsTo(voidElements, elements.htmlVoidElements);
+      addElementsTo(validElements, elements.htmlVoidElements);
+      addElementsTo(validElements, elements.htmlElements);
     }
 
     return this;
@@ -242,14 +266,28 @@ function $SanitizeProvider() {
    * @kind function
    *
    * @description
-   * The added attributes will not be treated as URI attributes, which means their values will
-   * not sanitized as URIs using the aHrefSanitizationWhitelist and imgSrcSanitizationWhitelist of {@link ng.$compileProvider $compileProvider}.
+   * Extends the built-in list of valid attributes, i.e. attributes that are considered safe and are
+   * not stripped off during sanitization.
    *
-   * @param {Array} attrs List of valid attributes
+   * **Note**:
+   * The new attributes will not be treated as URI attributes, which means their values will not be
+   * sanitized as URIs using `$compileProvider`'s
+   * {@link ng.$compileProvider#aHrefSanitizationWhitelist aHrefSanitizationWhitelist} and
+   * {@link ng.$compileProvider#imgSrcSanitizationWhitelist imgSrcSanitizationWhitelist}.
+   *
+   * <div class="alert alert-warning">
+   *   This method must be called during the {@link angular.Module#config config} phase. Once the
+   *   `$sanitize` service has been instantiated, this method has no effect.
+   * </div>
+   *
+   * @param {Array<String>} attrs - A list of valid attributes.
+   *
+   * @returns {$sanitizeProvider} Returns self for chaining.
    */
   this.addValidAttrs = function(attrs) {
-    if (hasBeenInstantiated) return this;
-    extend(validAttrs, arrayToMap(attrs, true));
+    if (!hasBeenInstantiated) {
+      extend(validAttrs, arrayToMap(attrs, true));
+    }
     return this;
   };
 
