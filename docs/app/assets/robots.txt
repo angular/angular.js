@@ -1,11 +1,9 @@
 User-agent: *
 
-Disallow: /components/
 Disallow: /examples/
 Disallow: /img/
-Disallow: /js/
 Disallow: /partials/
 Disallow: /ptore2e/
-Disallow: /*.js$
-Disallow: /*.map$
+Disallow: /*.js$ # The js files in the root are used by the embedded examples, not by the app itself
+Disallow: /*.map$ # The map files in the root are used by the embedded examples, not by the app itself
 Disallow: /Error404.html
