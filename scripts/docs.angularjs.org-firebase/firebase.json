@@ -23,7 +23,7 @@
         "destination": "/index-production.html"
       },
       {
-        "source": "**/*!(.jpg|.jpeg|.gif|.png|.html|.js|.map|.json|.css|.svg|.ttf|.txt|.woff|.woff2|.eot)",
+        "source": "**/*!(.jpg|.jpeg|.gif|.png|.html|.js|.map|.json|.css|.svg|.ttf|.txt|.woff|.woff2|.eot|.xml)",
         "destination": "/index-production.html"
       }
     ]
