@@ -31,6 +31,7 @@ module.exports = new Package('angularjs', [
 .processor(require('./processors/keywords'))
 .processor(require('./processors/pages-data'))
 .processor(require('./processors/versions-data'))
+.processor(require('./processors/sitemap'))
 
 
 .config(function(dgeni, log, readFilesProcessor, writeFilesProcessor) {
