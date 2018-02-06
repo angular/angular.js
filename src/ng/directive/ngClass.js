@@ -377,47 +377,58 @@ var ngClassDirective = classDirective('', true);
      </file>
    </example>
  *
- *  <hr />
+ * <hr />
  * @example
- * An example on how to implement animations using ngClassOdd:
+ * An example on how to implement animations using `ngClassOdd`:
  *
    <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-class-odd-animate">
      <file name="index.html">
-       <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz'];odd=false">
-         <li ng-repeat="name in names">
-           <span ng-class-odd="{ 'odd' : odd }"">
-            {{name}}
-           </span>
-         </li>
-       </ol>
-       <button ng-click="odd = !odd">Toggle</button>
+       <div ng-init="items=['Item 3', 'Item 2', 'Item 1', 'Item 0']">
+         <button ng-click="items.unshift('Item ' + items.length)">Add item</button>
+         <hr />
+         <table>
+           <tr ng-repeat="item in items" ng-class-odd="'odd'">
+             <td>{{ item }}</td>
+           </tr>
+         </table>
+       </div>
      </file>
      <file name="style.css">
-       span {
-        color: #000000;
+       .odd {
+         background: rgba(255, 255, 0, 0.25);
        }
-       span.odd {
-        color: #ff0000;
-        font-size:3em;
+
+       .odd-add, .odd-remove {
+         transition: 1.5s;
        }
-       span.odd-add,
-       span.odd-remove {
-          transition: linear 0.5s;
-        }
      </file>
      <file name="protractor.js" type="protractor">
-       it('should not have odd class by default', function() {
-        expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).not.
-           toMatch(/odd/);
+       it('should add new entries to the beginning of the list', function() {
+         var button = element(by.buttonText('Add item'));
+         var rows = element.all(by.repeater('item in items'));
+
+         expect(rows.count()).toBe(4);
+         expect(rows.get(0).getText()).toBe('Item 3');
+         expect(rows.get(1).getText()).toBe('Item 2');
+
+         button.click();
+
+         expect(rows.count()).toBe(5);
+         expect(rows.get(0).getText()).toBe('Item 4');
+         expect(rows.get(1).getText()).toBe('Item 3');
        });
 
-       it('should have odd class when button was clicked', function() {
-        var button = element(by.css('button'));
+       it('should add odd class to odd entries', function() {
+         var button = element(by.buttonText('Add item'));
+         var rows = element.all(by.repeater('item in items'));
 
-        button.click();
+         expect(rows.get(0).getAttribute('class')).toMatch(/odd/);
+         expect(rows.get(1).getAttribute('class')).not.toMatch(/odd/);
 
-        expect(element(by.repeater('name in names').row(0).column('name')).getAttribute('class')).
-           toMatch(/odd/);
+         button.click();
+
+         expect(rows.get(0).getAttribute('class')).toMatch(/odd/);
+         expect(rows.get(1).getAttribute('class')).not.toMatch(/odd/);
        });
      </file>
    </example>
@@ -476,47 +487,58 @@ var ngClassOddDirective = classDirective('Odd', 0);
      </file>
    </example>
  *
- *  <hr />
+ * <hr />
  * @example
- * An example on how to implement animations using ngClassEven:
+ * An example on how to implement animations using `ngClassEven`:
  *
    <example module="ngAnimate" deps="angular-animate.js" animations="true" name="ng-class-even-animate">
      <file name="index.html">
-       <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz'];even=false">
-         <li ng-repeat="name in names">
-           <span ng-class-even="{ 'even' : even }"">
-            {{name}}
-           </span>
-         </li>
-       </ol>
-       <button ng-click="even = !even">Toggle</button>
+       <div ng-init="items=['Item 3', 'Item 2', 'Item 1', 'Item 0']">
+         <button ng-click="items.unshift('Item ' + items.length)">Add item</button>
+         <hr />
+         <table>
+           <tr ng-repeat="item in items" ng-class-even="'even'">
+             <td>{{ item }}</td>
+           </tr>
+         </table>
+       </div>
      </file>
      <file name="style.css">
-       span {
-        color: #000000;
+       .even {
+         background: rgba(255, 255, 0, 0.25);
        }
-       span.even {
-        color: #0000ff;
-        font-size:3em;
-       }
-       span.even-add,
-       span.even-remove {
-        transition: linear 0.5s;
+
+       .even-add, .even-remove {
+         transition: 1.5s;
        }
      </file>
      <file name="protractor.js" type="protractor">
-       it('should not have even class by default', function() {
-        expect(element(by.repeater('name in names').row(1).column('name')).getAttribute('class')).not.
-           toMatch(/even/);
+       it('should add new entries to the beginning of the list', function() {
+         var button = element(by.buttonText('Add item'));
+         var rows = element.all(by.repeater('item in items'));
+
+         expect(rows.count()).toBe(4);
+         expect(rows.get(0).getText()).toBe('Item 3');
+         expect(rows.get(1).getText()).toBe('Item 2');
+
+         button.click();
+
+         expect(rows.count()).toBe(5);
+         expect(rows.get(0).getText()).toBe('Item 4');
+         expect(rows.get(1).getText()).toBe('Item 3');
        });
 
-       it('should have even class when button was clicked', function() {
-        var button = element(by.css('button'));
+       it('should add even class to even entries', function() {
+         var button = element(by.buttonText('Add item'));
+         var rows = element.all(by.repeater('item in items'));
 
-        button.click();
+         expect(rows.get(0).getAttribute('class')).not.toMatch(/even/);
+         expect(rows.get(1).getAttribute('class')).toMatch(/even/);
 
-        expect(element(by.repeater('name in names').row(1).column('name')).getAttribute('class')).
-           toMatch(/even/);
+         button.click();
+
+         expect(rows.get(0).getAttribute('class')).not.toMatch(/even/);
+         expect(rows.get(1).getAttribute('class')).toMatch(/even/);
        });
      </file>
    </example>
