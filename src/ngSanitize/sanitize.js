@@ -211,23 +211,29 @@ function $SanitizeProvider() {
    *
    * @description
    * Extends the built-in lists of valid HTML/SVG elements, i.e. elements that are considered safe
-   * and are not stripped off during sanitization. You can extend the following lists:
+   * and are not stripped off during sanitization. You can extend the following lists of elements:
    *
    * - `htmlElements`: A list of elements (tag names) to extend the current list of safe HTML
    *   elements. HTML elements considered safe will not be removed during sanitization. All other
    *   elements will be stripped off.
    *
-   * - `htmlVoidElements`: This is similar to `htmlElements`, but in addition allows the specified
-   *   elements to have no end tag (similar to HTML
-   *   [void elements](https://rawgit.com/w3c/html/html5.1-2/single-page.html#void-elements)).
+   * - `htmlVoidElements`: This is similar to `htmlElements`, but marks the elements as
+   *   "void elements" (similar to HTML
+   *   [void elements](https://rawgit.com/w3c/html/html5.1-2/single-page.html#void-elements)). These
+   *   elements have no end tag and cannot have content.
    *
    * - `svgElements`: This is similar to `htmlElements`, but for SVG elements. This list is only
    *   taken into account if SVG is {@link ngSanitize.$sanitizeProvider#enableSvg enabled} for
    *   `$sanitize`.
    *
-   * <div class="alert alert-warning">
+   * <div class="alert alert-info">
    *   This method must be called during the {@link angular.Module#config config} phase. Once the
    *   `$sanitize` service has been instantiated, this method has no effect.
+   * </div>
+   *
+   * <div class="alert alert-warning">
+   *   Keep in mind that extending the built-in lists of elements may expose your app to XSS or
+   *   other vulnerabilities. Be very mindful of the elements you add.
    * </div>
    *
    * @param {Array<String>|Object} elements - A list of valid HTML elements or an object with one or
@@ -275,9 +281,14 @@ function $SanitizeProvider() {
    * {@link ng.$compileProvider#aHrefSanitizationWhitelist aHrefSanitizationWhitelist} and
    * {@link ng.$compileProvider#imgSrcSanitizationWhitelist imgSrcSanitizationWhitelist}.
    *
-   * <div class="alert alert-warning">
+   * <div class="alert alert-info">
    *   This method must be called during the {@link angular.Module#config config} phase. Once the
    *   `$sanitize` service has been instantiated, this method has no effect.
+   * </div>
+   *
+   * <div class="alert alert-warning">
+   *   Keep in mind that extending the built-in list of attributes may expose your app to XSS or
+   *   other vulnerabilities. Be very mindful of the attributes you add.
    * </div>
    *
    * @param {Array<String>} attrs - A list of valid attributes.
