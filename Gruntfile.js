@@ -162,7 +162,8 @@ module.exports = function(grunt) {
 
     clean: {
       build: ['build'],
-      tmp: ['tmp']
+      tmp: ['tmp'],
+      deploy: ['uploadDocs', 'uploadCode']
     },
 
     eslint: {
@@ -326,7 +327,7 @@ module.exports = function(grunt) {
         files: [
           // The source files are needed by the embedded examples in the docs app.
           {
-            src: 'build/angular*.{js,js.map,min.js}',
+            src: ['build/angular*.{js,js.map,min.js}', 'build/sitemap.xml'],
             dest: 'uploadDocs/',
             expand: true,
             flatten: true
@@ -363,10 +364,6 @@ module.exports = function(grunt) {
     },
 
     shell: {
-      // Travis expects the firebase.json in the repository root, but we have it in a sub-folder
-      'symlink-firebase-docs': {
-        command: 'ln -s ./scripts/docs.angularjs.org-firebase/firebase.json ./firebase.json'
-      },
       'install-node-dependencies': {
         command: 'yarn'
       },
