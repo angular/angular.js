@@ -6,8 +6,8 @@ const path = require('path');
 
 const gcsBucketId = `${process.env.GCLOUD_PROJECT}.appspot.com`;
 
-const BROWSER_CACHE_DURATION = 300;
-const CDN_CACHE_DURATION = 600;
+const BROWSER_CACHE_DURATION = 60 * 10;
+const CDN_CACHE_DURATION = 60 * 60 * 12;
 
 function sendStoredFile(request, response) {
   let filePathSegments = request.path.split('/').filter((segment) => {
