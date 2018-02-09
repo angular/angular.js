@@ -328,12 +328,12 @@ module.exports = function(grunt) {
       },
       deployFirebaseCode: {
         files: [
-          // the zip file should not be compressed again.
+          // copy files that are not handled by compress
           {
-            src: 'build/*.zip',
+            cwd: 'build',
+            src: '**/*.{zip,jpg,jpeg,png}',
             dest: 'uploadCode/' + deployVersion + '/',
-            expand: true,
-            flatten: true
+            expand: true
           }
         ]
       },
@@ -370,7 +370,8 @@ module.exports = function(grunt) {
         options: {
           mode: 'gzip'
         },
-        src: ['**', '!*.zip'],
+        // Already compressed files should not be compressed again
+        src: ['**', '!**/*.{zip,png,jpeg,jpg}'],
         cwd: 'build',
         expand: true,
         dest: 'uploadCode/' + deployVersion + '/'
