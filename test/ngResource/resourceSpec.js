@@ -34,10 +34,10 @@ describe('basic usage', function() {
     callback = jasmine.createSpy('callback');
   }));
 
-
   afterEach(function() {
     $httpBackend.verifyNoOutstandingExpectation();
   });
+
 
   describe('isValidDottedPath', function() {
     /* global isValidDottedPath: false */
@@ -1312,102 +1312,225 @@ describe('basic usage', function() {
       });
     });
 
-    it('should allow per action response interceptor that gets full response', function() {
-      CreditCard = $resource('/CreditCard', {}, {
-        query: {
-          method: 'get',
-          isArray: true,
-          interceptor: {
-            response: function(response) {
-              return response;
-            }
-          }
-        }
-      });
 
-      $httpBackend.expect('GET', '/CreditCard').respond([{id: 1}]);
+    describe('responseInterceptor', function() {
+      it('should allow per action response interceptor that gets full response', function() {
+        var response;
 
-      var ccs = CreditCard.query();
-
-      ccs.$promise.then(callback);
-
-      $httpBackend.flush();
-      expect(callback).toHaveBeenCalledOnce();
-
-      var response = callback.calls.mostRecent().args[0];
-      expect(response.resource).toBe(ccs);
-      expect(response.status).toBe(200);
-      expect(response.config).toBeDefined();
-    });
-
-
-    it('should allow per action responseError interceptor that gets full response', function() {
-      CreditCard = $resource('/CreditCard', {}, {
-        query: {
-          method: 'get',
-          isArray: true,
-          interceptor: {
-            responseError: function(response) {
-              return response;
-            }
-          }
-        }
-      });
-
-      $httpBackend.expect('GET', '/CreditCard').respond(404);
-
-      var ccs = CreditCard.query();
-
-      ccs.$promise.then(callback);
-
-      $httpBackend.flush();
-      expect(callback).toHaveBeenCalledOnce();
-
-      var response = callback.calls.mostRecent().args[0];
-      expect(response.resource).toBe(ccs);
-      expect(response.status).toBe(404);
-      expect(response.config).toBeDefined();
-    });
-
-
-    it('should fulfill the promise with the value returned by the responseError interceptor',
-      inject(function($q) {
+        $httpBackend.expect('GET', '/CreditCard').respond(201, {id: 1}, {foo: 'bar'}, 'Ack');
         CreditCard = $resource('/CreditCard', {}, {
-          test1: {
-            method: 'GET',
-            interceptor: {responseError: function() { return 'foo'; }}
-          },
-          test2: {
-            method: 'GET',
-            interceptor: {responseError: function() { return $q.resolve('bar'); }}
-          },
-          test3: {
-            method: 'GET',
-            interceptor: {responseError: function() { return $q.reject('baz'); }}
+          get: {
+            method: 'get',
+            interceptor: {response: function(resp) { response = resp; }}
           }
         });
 
-        $httpBackend.whenGET('/CreditCard').respond(404);
-
-        callback.calls.reset();
-        CreditCard.test1().$promise.then(callback);
+        var cc = CreditCard.get();
         $httpBackend.flush();
 
+        expect(response.resource).toBe(cc);
+        expect(response.config).toBeDefined();
+        expect(response.status).toBe(201);
+        expect(response.statusText).toBe('Ack');
+        expect(response.headers()).toEqual({foo: 'bar'});
+      });
+
+
+      it('should allow per action responseError interceptor that gets full response', function() {
+        var response;
+
+        $httpBackend.expect('GET', '/CreditCard').respond(404, {ignored: 'stuff'}, {foo: 'bar'}, 'Ack');
+        CreditCard = $resource('/CreditCard', {}, {
+          get: {
+            method: 'get',
+            interceptor: {responseError: function(resp) { response = resp; }}
+          }
+        });
+
+        var cc = CreditCard.get();
+        $httpBackend.flush();
+
+        expect(response.resource).toBe(cc);
+        expect(response.config).toBeDefined();
+        expect(response.status).toBe(404);
+        expect(response.statusText).toBe('Ack');
+        expect(response.headers()).toEqual({foo: 'bar'});
+      });
+
+
+      it('should fulfill the promise with the value returned by the response interceptor',
+        function() {
+          $httpBackend.whenGET('/CreditCard').respond(200);
+          CreditCard = $resource('/CreditCard', {}, {
+            test1: {
+              method: 'get',
+              interceptor: {response: function() { return 'foo'; }}
+            },
+            test2: {
+              method: 'get',
+              interceptor: {response: function() { return $q.resolve('bar'); }}
+            },
+            test3: {
+              method: 'get',
+              interceptor: {response: function() { return $q.reject('baz'); }}
+            }
+          });
+
+          CreditCard.test1().$promise.then(callback);
+          $httpBackend.flush();
+          expect(callback).toHaveBeenCalledOnceWith('foo');
+
+          callback.calls.reset();
+
+          CreditCard.test2().$promise.then(callback);
+          $httpBackend.flush();
+          expect(callback).toHaveBeenCalledOnceWith('bar');
+
+          callback.calls.reset();
+
+          CreditCard.test3().$promise.then(null, callback);
+          $httpBackend.flush();
+          expect(callback).toHaveBeenCalledOnceWith('baz');
+        }
+      );
+
+
+      it('should fulfill the promise with the value returned by the responseError interceptor',
+        function() {
+          $httpBackend.whenGET('/CreditCard').respond(404);
+          CreditCard = $resource('/CreditCard', {}, {
+            test1: {
+              method: 'get',
+              interceptor: {responseError: function() { return 'foo'; }}
+            },
+            test2: {
+              method: 'get',
+              interceptor: {responseError: function() { return $q.resolve('bar'); }}
+            },
+            test3: {
+              method: 'get',
+              interceptor: {responseError: function() { return $q.reject('baz'); }}
+            }
+          });
+
+          CreditCard.test1().$promise.then(callback);
+          $httpBackend.flush();
+          expect(callback).toHaveBeenCalledOnceWith('foo');
+
+          callback.calls.reset();
+
+          CreditCard.test2().$promise.then(callback);
+          $httpBackend.flush();
+          expect(callback).toHaveBeenCalledOnceWith('bar');
+
+          callback.calls.reset();
+
+          CreditCard.test3().$promise.then(null, callback);
+          $httpBackend.flush();
+          expect(callback).toHaveBeenCalledOnceWith('baz');
+        }
+      );
+
+
+      it('should call the success callback when response interceptor succeeds', function() {
+        $httpBackend.whenGET('/CreditCard').respond(200);
+        CreditCard = $resource('/CreditCard', {}, {
+          test1: {
+            method: 'get',
+            interceptor: {response: function() { return 'foo'; }}
+          },
+          test2: {
+            method: 'get',
+            interceptor: {response: function() { return $q.resolve('bar'); }}
+          }
+        });
+
+        CreditCard.test1(callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnceWith('foo', jasmine.any(Function), 200, '');
+
+        callback.calls.reset();
+
+        CreditCard.test2(callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnceWith('bar', jasmine.any(Function), 200, '');
+      });
+
+
+      it('should call the error callback when response interceptor fails', function() {
+        $httpBackend.whenGET('/CreditCard').respond(200);
+        CreditCard = $resource('/CreditCard', {}, {
+          test1: {
+            method: 'get',
+            interceptor: {response: function() { throw 'foo'; }}
+          },
+          test2: {
+            method: 'get',
+            interceptor: {response: function() { return $q.reject('bar'); }}
+          }
+        });
+
+        CreditCard.test1(noop, callback);
+        $httpBackend.flush();
         expect(callback).toHaveBeenCalledOnceWith('foo');
 
         callback.calls.reset();
-        CreditCard.test2().$promise.then(callback);
-        $httpBackend.flush();
 
+        CreditCard.test2(noop, callback);
+        $httpBackend.flush();
         expect(callback).toHaveBeenCalledOnceWith('bar');
+      });
+
+
+      it('should call the success callback when responseError interceptor succeeds', function() {
+        $httpBackend.whenGET('/CreditCard').respond(404);
+        CreditCard = $resource('/CreditCard', {}, {
+          test1: {
+            method: 'get',
+            interceptor: {responseError: function() { return 'foo'; }}
+          },
+          test2: {
+            method: 'get',
+            interceptor: {responseError: function() { return $q.resolve('bar'); }}
+          }
+        });
+
+        CreditCard.test1(callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnceWith('foo', jasmine.any(Function), 404, '');
 
         callback.calls.reset();
-        CreditCard.test3().$promise.then(null, callback);
-        $httpBackend.flush();
 
-        expect(callback).toHaveBeenCalledOnceWith('baz');
-      })
-    );
+        CreditCard.test2(callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnceWith('bar', jasmine.any(Function), 404, '');
+      });
+
+
+      it('should call the error callback when responseError interceptor fails', function() {
+        $httpBackend.whenGET('/CreditCard').respond(404);
+        CreditCard = $resource('/CreditCard', {}, {
+          test1: {
+            method: 'get',
+            interceptor: {responseError: function() { throw 'foo'; }}
+          },
+          test2: {
+            method: 'get',
+            interceptor: {responseError: function() { return $q.reject('bar'); }}
+          }
+        });
+
+        CreditCard.test1(noop, callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnceWith('foo');
+
+        callback.calls.reset();
+
+        CreditCard.test2(noop, callback);
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnceWith('bar');
+      });
+    });
   });
 
 
@@ -1810,7 +1933,7 @@ describe('extra params', function() {
 });
 
 describe('errors', function() {
-  var $httpBackend, $resource, $q, $rootScope;
+  var $httpBackend, $resource;
 
   beforeEach(module(function($exceptionHandlerProvider) {
     $exceptionHandlerProvider.mode('log');
@@ -1821,8 +1944,6 @@ describe('errors', function() {
   beforeEach(inject(function($injector) {
     $httpBackend = $injector.get('$httpBackend');
     $resource = $injector.get('$resource');
-    $q = $injector.get('$q');
-    $rootScope = $injector.get('$rootScope');
   }));
 
 
@@ -1961,7 +2082,7 @@ describe('handling rejections', function() {
     function() {
       $httpBackend.expectGET('/CreditCard/123').respond(null);
       var CreditCard = $resource('/CreditCard/:id');
-      var cc = CreditCard.get({id: 123},
+      CreditCard.get({id: 123},
           function(res) { throw new Error('should be caught'); },
           function() {});
 
@@ -1976,7 +2097,7 @@ describe('handling rejections', function() {
     function() {
       $httpBackend.expectGET('/CreditCard/123').respond(null);
       var CreditCard = $resource('/CreditCard/:id');
-      var cc = CreditCard.get({id: 123},
+      CreditCard.get({id: 123},
           function(res) { throw new Error('should be caught'); });
 
       $httpBackend.flush();
@@ -1996,7 +2117,7 @@ describe('handling rejections', function() {
         }
       });
 
-      var cc = CreditCard.get({id: 123},
+      CreditCard.get({id: 123},
           function(res) { throw new Error('should be caught'); },
           function() {});
 
@@ -2017,7 +2138,7 @@ describe('handling rejections', function() {
         }
       });
 
-      var cc = CreditCard.get({id: 123},
+      CreditCard.get({id: 123},
           function(res) { throw new Error('should be caught'); });
 
       $httpBackend.flush();
@@ -2025,6 +2146,41 @@ describe('handling rejections', function() {
       expect($exceptionHandler.errors[0]).toMatch(/^Error: should be caught/);
     }
   );
+
+
+  it('should not propagate exceptions in success callback to the returned promise', function() {
+    var successCallbackSpy = jasmine.createSpy('successCallback').and.throwError('error');
+    var promiseResolveSpy = jasmine.createSpy('promiseResolve');
+    var promiseRejectSpy = jasmine.createSpy('promiseReject');
+
+    $httpBackend.expectGET('/CreditCard/123').respond(null);
+    var CreditCard = $resource('/CreditCard/:id');
+    CreditCard.get({id: 123}, successCallbackSpy).
+      $promise.then(promiseResolveSpy, promiseRejectSpy);
+
+    $httpBackend.flush();
+    expect(successCallbackSpy).toHaveBeenCalled();
+    expect(promiseResolveSpy).toHaveBeenCalledWith(jasmine.any(CreditCard));
+    expect(promiseRejectSpy).not.toHaveBeenCalled();
+  });
+
+
+  it('should not be able to recover from inside the error callback', function() {
+    var errorCallbackSpy = jasmine.createSpy('errorCallback').and.returnValue({id: 123});
+    var promiseResolveSpy = jasmine.createSpy('promiseResolve');
+    var promiseRejectSpy = jasmine.createSpy('promiseReject');
+
+    $httpBackend.expectGET('/CreditCard/123').respond(404);
+    var CreditCard = $resource('/CreditCard/:id');
+    CreditCard.get({id: 123}, noop, errorCallbackSpy).
+      $promise.then(promiseResolveSpy, promiseRejectSpy);
+
+    $httpBackend.flush();
+    expect(errorCallbackSpy).toHaveBeenCalled();
+    expect(promiseResolveSpy).not.toHaveBeenCalled();
+    expect(promiseRejectSpy).toHaveBeenCalledWith(jasmine.objectContaining({status: 404}));
+  });
+
 
   describe('requestInterceptor', function() {
     var rejectReason = {'lol':'cat'};
