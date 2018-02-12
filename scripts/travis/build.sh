@@ -79,7 +79,7 @@ case "$JOB" in
     fi
 
     if [[ "$DEPLOY_DOCS" == true || "$DEPLOY_CODE" == true ]]; then
-      grunt prepareFirebaseDeploy
+      grunt prepareDeploy
     else
       echo "Skipping deployment build because conditions have not been met."
     fi
