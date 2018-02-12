@@ -2,6 +2,9 @@
 
 set -e
 
+readonly THIS_DIR=$(cd $(dirname $0); pwd)
+readonly ROOT_DIR="$THIS_DIR/../.."
+
 export BROWSER_STACK_ACCESS_KEY
 export SAUCE_ACCESS_KEY
 
@@ -80,6 +83,14 @@ case "$JOB" in
 
     if [[ "$DEPLOY_DOCS" == true || "$DEPLOY_CODE" == true ]]; then
       grunt prepareDeploy
+
+      if [[ "$DEPLOY_DOCS" == true ]]; then
+        # Install npm dependencies for Firebase functions.
+        (
+          cd "$ROOT_DIR/scripts/docs.angularjs.org-firebase/functions"
+          npm install
+        )
+      fi
     else
       echo "Skipping deployment build because conditions have not been met."
     fi
