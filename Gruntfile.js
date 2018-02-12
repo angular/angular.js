@@ -163,7 +163,10 @@ module.exports = function(grunt) {
     clean: {
       build: ['build'],
       tmp: ['tmp'],
-      deploy: ['uploadDocs', 'uploadCode']
+      deploy: [
+        'deploy/docs',
+        'deploy/code'
+      ]
     },
 
     eslint: {
@@ -319,7 +322,7 @@ module.exports = function(grunt) {
           {
             cwd: 'build',
             src: '**/*.{zip,jpg,jpeg,png}',
-            dest: 'uploadCode/' + deployVersion + '/',
+            dest: 'deploy/code/' + deployVersion + '/',
             expand: true
           }
         ]
@@ -329,14 +332,16 @@ module.exports = function(grunt) {
           // The source files are needed by the embedded examples in the docs app.
           {
             src: ['build/angular*.{js,js.map,min.js}', 'build/sitemap.xml'],
-            dest: 'uploadDocs/',
+            dest: 'deploy/docs/',
             expand: true,
             flatten: true
           },
           {
             cwd: 'build/docs',
             src: '**',
-            dest: 'uploadDocs/',
+            dest: 'deploy/docs/',
+            expand: true
+          }
             expand: true
           }
         ]
@@ -361,7 +366,7 @@ module.exports = function(grunt) {
         src: ['**', '!**/*.{zip,png,jpeg,jpg}'],
         cwd: 'build',
         expand: true,
-        dest: 'uploadCode/' + deployVersion + '/'
+        dest: 'deploy/code/' + deployVersion + '/'
       }
     },
 
@@ -461,7 +466,7 @@ module.exports = function(grunt) {
     'merge-conflict',
     'eslint'
   ]);
-  grunt.registerTask('prepareFirebaseDeploy', [
+  grunt.registerTask('prepareDeploy', [
     'package',
     'compress:deployFirebaseCode',
     'copy:deployFirebaseCode',

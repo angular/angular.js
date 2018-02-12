@@ -94,7 +94,7 @@ jobs:
           secret_access_key:
             secure: tHIFdSq55qkyZf9zT/3+VkhUrTvOTMuswxXU3KyWaBrSieZqG0UnUDyNm+n3lSfX95zEl/+rJAWbfvhVSxZi13ndOtvRF+MdI1cvow2JynP0aDSiPffEvVrZOmihD6mt2SlMfhskr5FTduQ69kZG6DfLcve1PPDaIwnbOv3phb8=
           bucket: code-angularjs-org-338b8.appspot.com
-          local-dir: uploadCode
+          local-dir: deploy/code
           detect_encoding: true # detects gzip compression
           on:
             repo: angular/angular.js

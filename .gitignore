@@ -1,4 +1,5 @@
 /build/
+/deploy/
 /benchpress-build/
 .DS_Store
 gen_docs.disable
