@@ -23,9 +23,14 @@
         "destination": "/index-production.html"
       },
       {
-        "source": "**/*!(.jpg|.jpeg|.gif|.png|.html|.js|.map|.json|.css|.svg|.ttf|.txt|.woff|.woff2|.eot|.xml)",
-        "destination": "/index-production.html"
+        "source": "**/*!(.@(jpg|jpeg|gif|png|html|js|map|json|css|svg|ttf|txt|woff|woff2|eot|xml))",
+        "function": "sendFile"
       }
+    ]
+  },
+  "functions": {
+    "predeploy": [
+      "npm --prefix $RESOURCE_DIR run lint"
     ]
   }
 }
