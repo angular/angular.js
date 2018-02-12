@@ -174,6 +174,7 @@ module.exports = function(grunt) {
           'docs/**/*.js',
           'lib/**/*.js',
           'scripts/**/*.js',
+          '!scripts/*/*/node_modules/**',
           'src/**/*.js',
           'test/**/*.js',
           'i18n/**/*.js',
