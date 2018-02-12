@@ -13,6 +13,8 @@ var semver = require('semver');
 var exec = require('shelljs').exec;
 var pkg = require(__dirname + '/package.json');
 
+var docsScriptFolder = 'scripts/docs.angularjs.org-firebase';
+
 // Node.js version checks
 if (!semver.satisfies(process.version, pkg.engines.node)) {
   reportOrFail('Invalid node version (' + process.version + '). ' +
@@ -165,7 +167,8 @@ module.exports = function(grunt) {
       tmp: ['tmp'],
       deploy: [
         'deploy/docs',
-        'deploy/code'
+        'deploy/code',
+        docsScriptFolder + '/functions/html'
       ]
     },
 
@@ -341,7 +344,17 @@ module.exports = function(grunt) {
             src: '**',
             dest: 'deploy/docs/',
             expand: true
-          }
+          },
+          {
+            src: ['build/docs/index-production.html'],
+            dest: docsScriptFolder + '/functions/content',
+            expand: true,
+            flatten: true
+          },
+          {
+            cwd: 'build/docs',
+            src: 'partials/**',
+            dest: docsScriptFolder + '/functions/content',
             expand: true
           }
         ]
