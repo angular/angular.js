@@ -26,6 +26,15 @@
         "source": "**/*!(.@(jpg|jpeg|gif|png|html|js|map|json|css|svg|ttf|txt|woff|woff2|eot|xml))",
         "function": "sendFile"
       }
+    ],
+    "headers": [
+      {
+        "source": "/partials/**",
+        "headers" : [{
+          "key" : "X-Robots-Tag",
+          "value" : "noindex"
+        }]
+      }
     ]
   }
 }

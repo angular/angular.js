@@ -1,7 +1,6 @@
 User-agent: *
 
 Disallow: /examples/
-Disallow: /partials/
 Disallow: /ptore2e/
 Disallow: /Error404.html
 
