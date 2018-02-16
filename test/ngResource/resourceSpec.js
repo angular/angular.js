@@ -2143,6 +2143,41 @@ describe('handling rejections', function() {
     }
   );
 
+
+  it('should not propagate exceptions in success callback to the returned promise', function() {
+    var successCallbackSpy = jasmine.createSpy('successCallback').and.throwError('error');
+    var promiseResolveSpy = jasmine.createSpy('promiseResolve');
+    var promiseRejectSpy = jasmine.createSpy('promiseReject');
+
+    $httpBackend.expectGET('/CreditCard/123').respond(null);
+    var CreditCard = $resource('/CreditCard/:id');
+    CreditCard.get({id: 123}, successCallbackSpy).
+      $promise.then(promiseResolveSpy, promiseRejectSpy);
+
+    $httpBackend.flush();
+    expect(successCallbackSpy).toHaveBeenCalled();
+    expect(promiseResolveSpy).toHaveBeenCalledWith(jasmine.any(CreditCard));
+    expect(promiseRejectSpy).not.toHaveBeenCalled();
+  });
+
+
+  it('should not be able to recover from inside the error callback', function() {
+    var errorCallbackSpy = jasmine.createSpy('errorCallback').and.returnValue({id: 123});
+    var promiseResolveSpy = jasmine.createSpy('promiseResolve');
+    var promiseRejectSpy = jasmine.createSpy('promiseReject');
+
+    $httpBackend.expectGET('/CreditCard/123').respond(404);
+    var CreditCard = $resource('/CreditCard/:id');
+    CreditCard.get({id: 123}, noop, errorCallbackSpy).
+      $promise.then(promiseResolveSpy, promiseRejectSpy);
+
+    $httpBackend.flush();
+    expect(errorCallbackSpy).toHaveBeenCalled();
+    expect(promiseResolveSpy).not.toHaveBeenCalled();
+    expect(promiseRejectSpy).toHaveBeenCalledWith(jasmine.objectContaining({status: 404}));
+  });
+
+
   describe('requestInterceptor', function() {
     var rejectReason = {'lol':'cat'};
     var $q, $rootScope;
