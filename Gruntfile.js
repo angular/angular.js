@@ -341,15 +341,17 @@ module.exports = function(grunt) {
           },
           {
             cwd: 'build/docs',
-            src: ['**', '!ptore2e/**'],
+            src: ['**', '!ptore2e/**', '!index*.html'],
             dest: 'deploy/docs/',
             expand: true
           },
           {
-            src: ['build/docs/index-production.html'],
-            dest: docsScriptFolder + '/functions/content',
-            expand: true,
-            flatten: true
+            src: 'build/docs/index-production.html',
+            dest: 'deploy/docs/index.html'
+          },
+          {
+            src: 'build/docs/index-production.html',
+            dest: docsScriptFolder + '/functions/content/index.html'
           },
           {
             cwd: 'build/docs',
