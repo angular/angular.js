@@ -29,7 +29,14 @@
     ],
     "headers": [
       {
-        "source": "/partials/**",
+        "source": "/Error404.html",
+        "headers" : [{
+          "key" : "X-Robots-Tag",
+          "value" : "noindex"
+        }]
+      },
+      {
+        "source": "/@(partials|examples)/**",
         "headers" : [{
           "key" : "X-Robots-Tag",
           "value" : "noindex"
