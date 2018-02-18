@@ -25,7 +25,7 @@ const buildSnapshot = data => `<!DOCTYPE html>
 function sendFile(request, response) {
 
   const snapshotRequested = typeof request.query._escaped_fragment_ !== 'undefined';
-  const filePath = `content/${snapshotRequested ? `partials${request.path}` : 'index-production'}.html`;
+  const filePath = `content/${snapshotRequested ? `partials${request.path}` : 'index'}.html`;
 
   if (snapshotRequested) {
     fs.readFile(filePath, {encoding: 'utf8'}, (error, data) => {
