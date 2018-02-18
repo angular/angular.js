@@ -341,7 +341,7 @@ module.exports = function(grunt) {
           },
           {
             cwd: 'build/docs',
-            src: '**',
+            src: ['**', '!ptore2e/**'],
             dest: 'deploy/docs/',
             expand: true
           },
