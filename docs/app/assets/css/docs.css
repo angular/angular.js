@@ -934,6 +934,14 @@ toc-container > div > toc-tree > ul > li > toc-tree > ul > li toc-tree > ul li {
   font-size: 13px;
 }
 
+.dev-status span {
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+.security span { background-color: orange; }
+.stable span { background-color: green; color: white; }
+.current span { background-color: blue; color: white; }
+
 @media handheld and (max-width:800px), screen and (max-device-width:800px), screen and (max-width:800px) {
   .navbar {
     min-height: auto;
