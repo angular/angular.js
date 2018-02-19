@@ -1,0 +1,10 @@
+@ngdoc error
+@name $parse:esc
+@fullName Value cannot be escaped
+@description
+
+Occurs when the parser tries to escape a value that is not known.
+
+This should never occur in practice. If it does then that indicates a programming
+error in the AngularJS `$parse` service itself and should be reported as an issue
+at https://github.com/angular/angular.js/issues.
