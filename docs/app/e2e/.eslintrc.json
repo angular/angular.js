@@ -9,6 +9,7 @@
   },
 
   "globals": {
+    "angular": false,
     /* testabilityPatch / matchers */
     "inject": false,
     "module": false,
