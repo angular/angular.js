@@ -169,9 +169,9 @@ function shallowClearAndCopy(src, dst) {
  *     By default, transformResponse will contain one function that checks if the response looks
  *     like a JSON string and deserializes it using `angular.fromJson`. To prevent this behavior,
  *     set `transformResponse` to an empty array: `transformResponse: []`
- *   - **`cache`** – `{boolean|Cache}` – If true, a default `$http` cache will be used to cache the
- *     GET request, otherwise if a cache instance built with {@link ng.$cacheFactory $cacheFactory}
- *     is supplied, this cache will be used for caching.
+ *   - **`cache`** – `{boolean|Cache}` – A boolean value or object created with
+ *     {@link ng.$cacheFactory `$cacheFactory`} to enable or disable caching of the HTTP response.
+ *     See {@link $http#caching $http Caching} for more information.
  *   - **`timeout`** – `{number}` – Timeout in milliseconds.<br />
  *     **Note:** In contrast to {@link ng.$http#usage $http.config}, {@link ng.$q promises} are
  *     **not** supported in `$resource`, because the same value would be used for multiple requests.
@@ -180,13 +180,13 @@ function shallowClearAndCopy(src, dst) {
  *     cancelled (if not already completed) by calling `$cancelRequest()` on the call's return
  *     value. Calling `$cancelRequest()` for a non-cancellable or an already completed/cancelled
  *     request will have no effect.
- *   - **`withCredentials`** - `{boolean}` - Whether to set the `withCredentials` flag on the
+ *   - **`withCredentials`** – `{boolean}` – Whether to set the `withCredentials` flag on the
  *     XHR object. See
  *     [XMLHttpRequest.withCredentials](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials)
  *     for more information.
- *   - **`responseType`** - `{string}` - See
+ *   - **`responseType`** – `{string}` – See
  *     [XMLHttpRequest.responseType](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType).
- *   - **`interceptor`** - `{Object=}` - The interceptor object has four optional methods -
+ *   - **`interceptor`** – `{Object=}` – The interceptor object has four optional methods -
  *     `request`, `requestError`, `response`, and `responseError`. See
  *     {@link ng.$http#interceptors $http interceptors} for details. Note that
  *     `request`/`requestError` interceptors are applied before calling `$http`, thus before any
@@ -198,9 +198,8 @@ function shallowClearAndCopy(src, dst) {
  *     response interceptors. Make sure you return an appropriate value and not the `response`
  *     object passed as input. For example, the default `response` interceptor (which gets applied
  *     if you don't specify a custom one) returns `response.resource`.
- *   - **`hasBody`** - `{boolean}` - Allows to specify if a request body should be included or not.
- *     If not specified only POST, PUT and PATCH requests will have a body.
- *
+ *   - **`hasBody`** – `{boolean}` – If true, then the request will have a body.
+ *     If not specified, then only POST, PUT and PATCH requests will have a body. *
  * @param {Object} options Hash with custom settings that should extend the
  *   default `$resourceProvider` behavior.  The supported options are:
  *
@@ -299,18 +298,18 @@ function shallowClearAndCopy(src, dst) {
  *
  * @example
  *
- * ### Credit card resource
+ * ### Basic usage
  *
    ```js
-     // Define CreditCard class
-     var CreditCard = $resource('/user/:userId/card/:cardId',
+     // Define a CreditCard class
+     var CreditCard = $resource('/users/:userId/cards/:cardId',
        {userId: 123, cardId: '@id'}, {
          charge: {method: 'POST', params: {charge: true}}
        });
 
      // We can retrieve a collection from the server
      var cards = CreditCard.query();
-         // GET: /user/123/card
+         // GET: /users/123/cards
          // server returns: [{id: 456, number: '1234', name: 'Smith'}]
 
      // Wait for the request to complete
@@ -323,12 +322,12 @@ function shallowClearAndCopy(src, dst) {
        // Non-GET methods are mapped onto the instances
        card.name = 'J. Smith';
        card.$save();
-           // POST: /user/123/card/456 {id: 456, number: '1234', name: 'J. Smith'}
+           // POST: /users/123/cards/456 {id: 456, number: '1234', name: 'J. Smith'}
            // server returns: {id: 456, number: '1234', name: 'J. Smith'}
 
        // Our custom method is mapped as well (since it uses POST)
        card.$charge({amount: 9.99});
-           // POST: /user/123/card/456?amount=9.99&charge=true {id: 456, number: '1234', name: 'J. Smith'}
+           // POST: /users/123/cards/456?amount=9.99&charge=true {id: 456, number: '1234', name: 'J. Smith'}
      });
 
      // We can create an instance as well
@@ -336,10 +335,12 @@ function shallowClearAndCopy(src, dst) {
      newCard.name = 'Mike Smith';
 
      var savePromise = newCard.$save();
-         // POST: /user/123/card {number: '0123', name: 'Mike Smith'}
+         // POST: /users/123/cards {number: '0123', name: 'Mike Smith'}
          // server returns: {id: 789, number: '0123', name: 'Mike Smith'}
 
      savePromise.then(function() {
+       // Once the promise is resolved, the created instance
+       // is populated with the data returned by the server
        expect(newCard.id).toEqual(789);
      });
    ```
@@ -352,14 +353,14 @@ function shallowClearAndCopy(src, dst) {
  *
  * @example
  *
- * ### User resource
+ * ### Accessing the response
  *
  * When the data is returned from the server then the object is an instance of the resource type and
  * all of the non-GET methods are available with `$` prefix. This allows you to easily support CRUD
  * operations (create, read, update, delete) on server-side data.
  *
    ```js
-     var User = $resource('/user/:userId', {userId: '@id'});
+     var User = $resource('/users/:userId', {userId: '@id'});
      User.get({userId: 123}).$promise.then(function(user) {
        user.abc = true;
        user.$save();
@@ -372,7 +373,7 @@ function shallowClearAndCopy(src, dst) {
  * the above example and get access to HTTP headers as follows:
  *
    ```js
-     var User = $resource('/user/:userId', {userId: '@id'});
+     var User = $resource('/users/:userId', {userId: '@id'});
      User.get({userId: 123}, function(user, getResponseHeaders) {
        user.abc = true;
        user.$save(function(user, putResponseHeaders) {
@@ -384,7 +385,7 @@ function shallowClearAndCopy(src, dst) {
  *
  * @example
  *
- * ### Creating a custom 'PUT' request
+ * ### Creating custom actions
  *
  * In this example we create a custom method on our resource to make a PUT request:
  *
@@ -429,7 +430,7 @@ function shallowClearAndCopy(src, dst) {
  *
    ```js
      // ...defining the `Hotel` resource...
-     var Hotel = $resource('/api/hotel/:id', {id: '@id'}, {
+     var Hotel = $resource('/api/hotels/:id', {id: '@id'}, {
        // Let's make the `query()` method cancellable
        query: {method: 'get', isArray: true, cancellable: true}
      });
@@ -444,7 +445,7 @@ function shallowClearAndCopy(src, dst) {
        }
 
        // Let's query for hotels in `destination`
-       // (calls: /api/hotel?location=<destination>)
+       // (calls: /api/hotels?location=<destination>)
        this.availableHotels = Hotel.query({location: destination});
      };
    ```

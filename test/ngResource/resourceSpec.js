@@ -1317,7 +1317,7 @@ describe('basic usage', function() {
       it('should allow per action response interceptor that gets full response', function() {
         var response;
 
-        $httpBackend.expect('GET', '/CreditCard').respond({id: 1});
+        $httpBackend.expect('GET', '/CreditCard').respond(201, {id: 1}, {foo: 'bar'}, 'Ack');
         CreditCard = $resource('/CreditCard', {}, {
           get: {
             method: 'get',
@@ -1329,15 +1329,17 @@ describe('basic usage', function() {
         $httpBackend.flush();
 
         expect(response.resource).toBe(cc);
-        expect(response.status).toBe(200);
         expect(response.config).toBeDefined();
+        expect(response.status).toBe(201);
+        expect(response.statusText).toBe('Ack');
+        expect(response.headers()).toEqual({foo: 'bar'});
       });
 
 
       it('should allow per action responseError interceptor that gets full response', function() {
         var response;
 
-        $httpBackend.expect('GET', '/CreditCard').respond(404);
+        $httpBackend.expect('GET', '/CreditCard').respond(404, {ignored: 'stuff'}, {foo: 'bar'}, 'Ack');
         CreditCard = $resource('/CreditCard', {}, {
           get: {
             method: 'get',
@@ -1349,8 +1351,10 @@ describe('basic usage', function() {
         $httpBackend.flush();
 
         expect(response.resource).toBe(cc);
-        expect(response.status).toBe(404);
         expect(response.config).toBeDefined();
+        expect(response.status).toBe(404);
+        expect(response.statusText).toBe('Ack');
+        expect(response.headers()).toEqual({foo: 'bar'});
       });
 
 
