@@ -1917,7 +1917,7 @@ describe('$compile', function() {
 
             expect(function() {
               $httpBackend.flush();
-            }).toThrowMinErr('$compile', 'tpload', 'Failed to load template: hello.html');
+            }).toThrowMinErr('$templateRequest', 'tpload', 'Failed to load template: hello.html');
             expect(sortedHtml(element)).toBe('<div><b class="hello"></b></div>');
           })
         );

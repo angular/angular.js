@@ -892,7 +892,7 @@ describe('$route', function() {
 
         $httpBackend.flush();
         expect($exceptionHandler.errors.pop()).
-            toEqualMinErr('$compile', 'tpload', 'Failed to load template: r1.html');
+            toEqualMinErr('$templateRequest', 'tpload', 'Failed to load template: r1.html');
 
         $httpBackend.expectGET('r2.html').respond('');
         $location.path('/r2');
