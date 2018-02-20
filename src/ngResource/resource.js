@@ -192,12 +192,14 @@ function shallowClearAndCopy(src, dst) {
  *     `request`/`requestError` interceptors are applied before calling `$http`, thus before any
  *     global `$http` interceptors. Also, rejecting or throwing an error inside the `request`
  *     interceptor will result in calling the `responseError` interceptor.
-       The resource instance or collection is available on the `resource` property of the
+ *     The resource instance or collection is available on the `resource` property of the
  *     `http response` object passed to `response`/`responseError` interceptors.
  *     Keep in mind that the associated promise will be resolved with the value returned by the
  *     response interceptors. Make sure you return an appropriate value and not the `response`
- *     object passed as input. For example, the default `response` interceptor (which gets applied
- *     if you don't specify a custom one) returns `response.resource`.
+ *     object passed as input. For reference, the default `response` interceptor (which gets applied
+ *     if you don't specify a custom one) returns `response.resource`.<br />
+ *     See {@link ngResource.$resource#using-interceptors below} for an example of using
+ *     interceptors in `$resource`.
  *   - **`hasBody`** – `{boolean}` – If true, then the request will have a body.
  *     If not specified, then only POST, PUT and PATCH requests will have a body. *
  * @param {Object} options Hash with custom settings that should extend the
