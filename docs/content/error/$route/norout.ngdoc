@@ -1,6 +1,6 @@
 @ngdoc error
 @name $route:norout
-@fullName Tried updating route when with no current route
+@fullName Tried updating route with no current route
 @description
 
 Occurs when an attempt is made to update the parameters on the current route when
