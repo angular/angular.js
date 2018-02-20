@@ -12,7 +12,7 @@ This page describes the support status of the significant versions of AngularJS.
 
 ### Until July 1st 2018
 
-Any version branch not shown (e.g. 1.5.x) is no longer being developed.
+Any version branch not shown in the following table (e.g. 1.5.x) is no longer being developed.
 
 <table class="dev-status table table-bordered">
 <thead>
@@ -27,7 +27,7 @@ Any version branch not shown (e.g. 1.5.x) is no longer being developed.
 
 ### After July 1st 2018
 
-Any version branch not shown (e.g. 1.6.x) is no longer being developed.
+Any version branch not shown in the following table (e.g. 1.6.x) is no longer being developed.
 
 <table class="dev-status table table-bordered">
 <thead>
@@ -35,7 +35,7 @@ Any version branch not shown (e.g. 1.6.x) is no longer being developed.
 </thead>
 <tbody>
   <tr class="security"><td><span>1.2.x</span></td><td>Long Term Support</td><td>Last version to provide IE 8 support</td></tr>
-  <tr class="stable"><td><span>1.7.x</span></td><td>Long Term Support</td><td>1.7.0 will be the last release of AngularJS to contain breaking changes</td></tr>
+  <tr class="stable"><td><span>1.7.x</span></td><td>Long Term Support</td><td>See [Long Term Support](#long-term-support) section below.</td></tr>
 </tbody>
 </table>
 
