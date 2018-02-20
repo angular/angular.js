@@ -21,6 +21,9 @@ describe('docs.angularjs.org', function() {
         console.log('browser console errors: ' + require('util').inspect(filteredLog));
       }
     });
+
+    browser.ignoreSynchronization = false;
+    browser.clearMockModules();
   });
 
 
@@ -100,6 +103,66 @@ describe('docs.angularjs.org', function() {
       browser.get('build/docs/index-production.html#!/api/does/not/exist');
       var mainHeader = element(by.css('.main-body h1 '));
       expect(mainHeader.getText()).toEqual('Oops!');
+    });
+
+    it('should set "noindex" if the page does not exist', function() {
+      browser.get('build/docs/index-production.html#!/api/does/not/exist');
+      var robots = element(by.css('meta[name="robots"][content="noindex"]'));
+      var googleBot = element(by.css('meta[name="googlebot"][content="noindex"]'));
+      expect(robots.isPresent()).toBe(true);
+      expect(googleBot.isPresent()).toBe(true);
+    });
+
+    it('should remove "noindex" if the page exists', function() {
+      browser.get('build/docs/index-production.html#!/api');
+      var robots = element(by.css('meta[name="robots"][content="noindex"]'));
+      var googleBot = element(by.css('meta[name="googlebot"][content="noindex"]'));
+      expect(robots.isPresent()).toBe(false);
+      expect(googleBot.isPresent()).toBe(false);
+    });
+
+    describe('template request error', function() {
+      beforeEach(function() {
+        browser.addMockModule('httpMocker', function() {
+          angular.module('httpMocker', ['ngMock'])
+            .run(['$httpBackend', function($httpBackend) {
+              $httpBackend.whenGET('localhost:8000/build/docs/partials/api.html').respond(500, '');
+            }]);
+          });
+      });
+
+      it('should set "noindex" for robots if the request fails', function() {
+        // index-test includes ngMock
+        browser.get('build/docs/index-test.html#!/api');
+        var robots = element(by.css('meta[name="robots"][content="noindex"]'));
+        var googleBot = element(by.css('meta[name="googlebot"][content="noindex"]'));
+        expect(robots.isPresent()).toBe(true);
+        expect(googleBot.isPresent()).toBe(true);
+      });
+    });
+
+
+    describe('page bootstrap error', function() {
+      beforeEach(function() {
+        browser.addMockModule('httpMocker', function() {
+          // Require a module that does not exist to break the bootstrapping
+          angular.module('httpMocker', ['doesNotExist']);
+        });
+    });
+
+      it('should have "noindex" for robots if bootstrapping fails', function() {
+        browser.get('build/docs/index.html#!/api').catch(function() {
+          // get() will fail on AngularJS bootstrap, but if we continue here, protractor
+          // will assume the app is ready
+          browser.ignoreSynchronization = true;
+          var robots = element(by.css('meta[name="robots"][content="noindex"]'));
+          var googleBot = element(by.css('meta[name="googlebot"][content="noindex"]'));
+          expect(robots.isPresent()).toBe(true);
+          expect(googleBot.isPresent()).toBe(true);
+        });
+      });
+
+
     });
 
   });

@@ -8,6 +8,8 @@ angular.module('DocsController', ['currentVersionData'])
   function($scope, $rootScope, $location, $window, $cookies,
               NG_PAGES, NG_NAVIGATION, CURRENT_NG_VERSION) {
 
+  var errorPartialPath = 'Error404.html';
+
   $scope.navClass = function(navItem) {
     return {
       active: navItem.href && this.currentPage && this.currentPage.path,
@@ -15,8 +17,6 @@ angular.module('DocsController', ['currentVersionData'])
       'nav-index-section': navItem.type === 'section'
     };
   };
-
-
 
   $scope.$on('$includeContentLoaded', function() {
     var pagePath = $scope.currentPage ? $scope.currentPage.path : $location.path();
@@ -26,6 +26,7 @@ angular.module('DocsController', ['currentVersionData'])
 
   $scope.$on('$includeContentError', function() {
     $scope.loading = false;
+    $scope.loadingError = true;
   });
 
   $scope.$watch(function docsPathWatch() {return $location.path(); }, function docsPathWatchAction(path) {
@@ -35,6 +36,7 @@ angular.module('DocsController', ['currentVersionData'])
     var currentPage = $scope.currentPage = NG_PAGES[path];
 
     $scope.loading = true;
+    $scope.loadingError = false;
 
     if (currentPage) {
       $scope.partialPath = 'partials/' + path + '.html';
@@ -50,9 +52,13 @@ angular.module('DocsController', ['currentVersionData'])
     } else {
       $scope.currentArea = NG_NAVIGATION['api'];
       $scope.breadcrumb = [];
-      $scope.partialPath = 'Error404.html';
+      $scope.partialPath = errorPartialPath;
     }
   });
+
+  $scope.hasError = function() {
+    return $scope.partialPath === errorPartialPath || $scope.loadingError;
+  };
 
   /**********************************
    Initialize
@@ -60,8 +66,8 @@ angular.module('DocsController', ['currentVersionData'])
 
   $scope.versionNumber = CURRENT_NG_VERSION.full;
   $scope.version = CURRENT_NG_VERSION.full + ' ' + CURRENT_NG_VERSION.codeName;
-  $scope.loading = 0;
-
+  $scope.loading = false;
+  $scope.loadingError = false;
 
   var INDEX_PATH = /^(\/|\/index[^.]*.html)$/;
   if (!$location.path() || INDEX_PATH.test($location.path())) {
