@@ -109,7 +109,6 @@ var angularFiles = {
     ],
     'ngCookies': [
       'src/ngCookies/cookies.js',
-      'src/ngCookies/cookieStore.js',
       'src/ngCookies/cookieWriter.js'
     ],
     'ngMessageFormat': [

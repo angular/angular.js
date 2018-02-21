@@ -222,11 +222,7 @@ Use the ngCookies module to handle cookie management within your application.
       {@link ngCookies#service Services / Factories}
     </td>
     <td>
-      The following services are used for cookie management:
-      <ul>
-        <li>The {@link ngCookies.$cookies $cookie} service is a convenient wrapper to store simple data within browser cookies.</li>
-        <li>{@link ngCookies.$cookieStore $cookieStore} is used to store more complex data using serialization.</li>
-      </ul>
+      The {@link ngCookies.$cookies $cookies} service is a convenient wrapper to store simple data within browser cookies.
     </td>
   </tr>
 </table>
