@@ -42,7 +42,7 @@ case "$JOB" in
     ;;
   "docs-app")
     grunt tests:docs --browsers="$BROWSERS" --reporters=spec
-    grunt test:travis-protractor --specs="docs/app/e2e/**/*.scenario.js"
+    yarn testcafe 'saucelabs:$BROWSERS' docs/app/e2e/app.scenario.ts
     ;;
   "e2e")
     if [[ $TEST_TARGET == jquery* ]]; then
