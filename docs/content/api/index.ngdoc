@@ -3,7 +3,15 @@
 @description
 
 # AngularJS API Docs
-Welcome to the AngularJS API docs page. These pages contain the AngularJS reference materials for version <strong ng-bind="version"></strong>.
+
+<div class="alert alert-warning">
+**AngularJS will be moving to Long Term Support (LTS) mode on July 1st 2018.**: [Find out more](misc/version-support-status).
+</div>
+
+## Welcome to the AngularJS API docs page.
+
+These pages contain the AngularJS reference materials for version <strong ng-bind="version"></strong>.
+
 
 The documentation is organized into **{@link guide/module modules}** which contain various components of an AngularJS application.
 These components are {@link guide/directive directives}, {@link guide/services services}, {@link guide/filter filters}, {@link guide/providers providers}, {@link guide/templates templates}, global APIs, and testing mocks.
