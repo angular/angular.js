@@ -12,6 +12,14 @@ It also helps with server-side communication, taming async callbacks with promis
 and it makes client-side navigation and deep linking with hashbang urls or HTML5 pushState a
 piece of cake. Best of all? It makes development fun!
 
+--------------------
+
+##### AngularJS will be moving to Long Term Support (LTS) mode on July 1st 2018: [Find out more](misc/version-support-status)
+
+##### Looking for the new Angular? Go here: https://github.com/angular/angular
+
+--------------------
+
 * Web site: https://angularjs.org
 * Tutorial: https://docs.angularjs.org/tutorial
 * API Docs: https://docs.angularjs.org/api
@@ -20,7 +28,6 @@ piece of cake. Best of all? It makes development fun!
 * Core Development: [DEVELOPERS.md](DEVELOPERS.md)
 * Dashboard: https://dashboard.angularjs.org
 
-##### Looking for the new Angular? Go here: https://github.com/angular/angular
 
 Documentation
 --------------------

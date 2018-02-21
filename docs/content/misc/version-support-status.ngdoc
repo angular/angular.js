@@ -1,0 +1,54 @@
+@ngdoc overview
+@name Version Support Status
+@description
+
+# Version Support Status
+
+This page describes the support status of the significant versions of AngularJS.
+
+<div class="alert alert-info">
+  AngularJS is planning one more significant release, version 1.7, and on July 1, 2018 it will enter a 3 year Long Term Support period.
+</div>
+
+### Until July 1st 2018
+
+Any version branch not shown in the following table (e.g. 1.5.x) is no longer being developed.
+
+<table class="dev-status table table-bordered">
+<thead>
+  <tr><th>Version</th><th>Status</th><th>Comments</th></tr>
+</thead>
+<tbody>
+  <tr class="security"><td><span>1.2.x</span></td><td>Security patches only</td><td>Last version to provide IE 8 support</td></tr>
+  <tr class="stable"><td><span>1.6.x</span></td><td>Patch Releases</td><td>Minor features, bug fixes, security patches - no breaking changes</td></tr>
+  <tr class="current"><td><span>1.7.x</span></td><td>Active Development</td><td>1.7.0 (not yet released) will be the last release of AngularJS to contain breaking changes</td></tr>
+</tbody>
+</table>
+
+### After July 1st 2018
+
+Any version branch not shown in the following table (e.g. 1.6.x) is no longer being developed.
+
+<table class="dev-status table table-bordered">
+<thead>
+  <tr><th>Version</th><th>Status</th><th>Comments</th></tr>
+</thead>
+<tbody>
+  <tr class="security"><td><span>1.2.x</span></td><td>Long Term Support</td><td>Last version to provide IE 8 support</td></tr>
+  <tr class="stable"><td><span>1.7.x</span></td><td>Long Term Support</td><td>See [Long Term Support](#long-term-support) section below.</td></tr>
+</tbody>
+</table>
+
+### Long Term Support
+
+On July 1st 2018, we will enter a Long Term Support period for AngularJS.
+
+At this time we will focus exclusively on providing fixes to bugs that satisfy at least one of the following criteria:
+
+* A security flaw is detected in the 1.7.x branch of the framework
+* One of the major browsers releases a version that will cause current production applications using AngularJS 1.7.x to stop working
+* The jQuery library releases a version that will cause current production applications using AngularJS 1.7.x to stop working.
+
+### Blog Post
+
+You can read more about these plans in our [blog post announcement](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c).
