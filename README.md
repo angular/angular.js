@@ -14,7 +14,7 @@ piece of cake. Best of all? It makes development fun!
 
 --------------------
 
-##### AngularJS will be moving to Long Term Support (LTS) mode on July 1st 2018: [Find out more](misc/version-support-status)
+##### AngularJS will be moving to Long Term Support (LTS) mode on July 1st 2018: [Find out more](https://docs.angularjs.org/misc/version-support-status)
 
 ##### Looking for the new Angular? Go here: https://github.com/angular/angular
 
