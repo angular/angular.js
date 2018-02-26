@@ -677,10 +677,11 @@ function qFactory(nextTick, exceptionHandler, errorOnUnhandledRejections) {
 }
 
 function isStateExceptionHandled(state) {
+  if (!state) return true;
   return !!state.pur;
 }
 function markQStateExceptionHandled(state) {
-  state.pur = true;
+  if (state) state.pur = true;
 }
 function markQExceptionHandled(q) {
   markQStateExceptionHandled(q.$$state);
