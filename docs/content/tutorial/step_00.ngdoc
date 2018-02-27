@@ -5,7 +5,6 @@
 
 <ul doc-tutorial-nav="0"></ul>
 
-
 In this step of the tutorial, you will become familiar with the most important source code files of
 the AngularJS Phonecat App. You will also learn how to start the development servers bundled with
 [angular-seed][angular-seed], and run the application in the browser.
@@ -167,7 +166,7 @@ For the purposes of this tutorial, we modified the angular-seed with the followi
 * Added a dependency on [Bootstrap](http://getbootstrap.com) in the `bower.json` file.
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -178,7 +177,7 @@ For the purposes of this tutorial, we modified the angular-seed with the followi
   ```
 
 
-# Summary
+## Summary
 
 Now let's go to {@link step_01 step 1} and add some content to the web app.
 

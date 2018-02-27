@@ -124,7 +124,7 @@ will be reordered. That is the data-binding doing its job in the opposite direct
 the model.
 
 
-# Testing
+## Testing
 
 The changes we made should be verified with both a unit test and an E2E test. Let's look at the unit
 test first.
@@ -217,7 +217,7 @@ The E2E test verifies that the ordering mechanism of the select box is working c
 You can now rerun `npm run protractor` to see the tests run.
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -232,7 +232,7 @@ You can now rerun `npm run protractor` to see the tests run.
   `<option value="-age">Oldest</option>`
 
 
-# Summary
+## Summary
 
 Now that you have added list sorting and tested the application, go to {@link step_07 step 7} to
 learn about AngularJS services and how AngularJS uses dependency injection.

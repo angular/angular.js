@@ -503,7 +503,7 @@ element). A boolean parameter (`wasCanceled`) is passed to the function, letting
 if the animation was canceled or not. Use this function to do any necessary clean-up.
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -544,7 +544,7 @@ if the animation was canceled or not. Use this function to do any necessary clea
 * Go crazy and come up with your own funky animations!
 
 
-# Summary
+## Summary
 
 Our application is now much more pleasant to use, thanks to the smooth transitions between pages
 and UI states.

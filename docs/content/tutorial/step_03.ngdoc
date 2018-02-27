@@ -5,7 +5,6 @@
 
 <ul doc-tutorial-nav="3"></ul>
 
-
 In the previous step, we saw how a controller and a template worked together to convert a static
 HTML page into a dynamic view. This is a very common pattern in Single-Page Applications in general
 (and AngularJS applications in particular):
@@ -197,7 +196,7 @@ Voilà! The resulting output should look the same, but let's see what we have ga
 </div>
 
 
-# Testing
+## Testing
 
 Although we have combined our controller with a template into a component, we still can (and should)
 unit test the controller separately, since this is where our application logic and data reside.
@@ -240,12 +239,12 @@ verifies that the phones array property on it contains three records. Note that 
 the controller instance itself, not on a `scope`.
 
 
-## Running Tests
+### Running Tests
 
 Same as before, execute `npm test` to run the tests and then watch the files for changes.
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -267,7 +266,7 @@ Same as before, execute `npm test` to run the tests and then watch the files for
   throughout the application, is a big win.
 
 
-# Summary
+## Summary
 
 You have learned how to organize your application and presentation logic into isolated, reusable
 components. Let's go to {@link step_04 step 4} to learn how to organize our code in directories and

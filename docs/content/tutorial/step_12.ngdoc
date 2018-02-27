@@ -73,7 +73,7 @@ thumbnail image.
 <img class="diagram" src="img/tutorial/tutorial_12.png">
 
 
-# Testing
+## Testing
 
 To verify this new feature, we added two E2E tests. One verifies that `mainImageUrl` is set to the
 first phone image URL by default. The second test clicks on several thumbnail images and verifies
@@ -151,7 +151,7 @@ property to the controller. As previously, we will use a mocked response.
 Our unit tests should now be passing again.
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -176,7 +176,7 @@ Our unit tests should now be passing again.
   Now, whenever you double-click on a thumbnail, an alert pops-up. Pretty annoying!
 
 
-# Summary
+## Summary
 
 With the phone image swapper in place, we are ready for {@link step_13 step 13} to learn an even
 better way to fetch data.

@@ -334,7 +334,7 @@ The takeaway here is:
 </div>
 
 
-# Testing
+## Testing
 
 Since some of our modules depend on {@link ngRoute ngRoute} now, it is necessary to update the Karma
 configuration file with angular-route. Other than that, the unit tests should (still) pass without
@@ -398,7 +398,7 @@ various URLs and verifying that the correct view was rendered.
 You can now rerun `npm run protractor` to see the tests run (and hopefully pass).
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -415,7 +415,7 @@ You can now rerun `npm run protractor` to see the tests run (and hopefully pass)
   component isolation at work!
 
 
-# Summary
+## Summary
 
 With the routing set up and the phone list view implemented, we are ready to go to
 {@link step_10 step 10} and implement a proper phone details view.

@@ -78,7 +78,7 @@ following:
   by the `filter` filter. The process is completely transparent to the developer.
 
 
-# Testing
+## Testing
 
 In previous steps, we learned how to write and run unit tests. Unit tests are perfect for testing
 controllers and other parts of our application written in JavaScript, but they can't easily
@@ -124,7 +124,7 @@ easy it is to write E2E tests in AngularJS. Although this example is for a simpl
 that easy to set up any functional, readable, E2E test.
 
 
-## Running E2E Tests with Protractor
+### Running E2E Tests with Protractor
 
 Even though the syntax of this test looks very much like our controller unit test written with
 Jasmine, the E2E test uses APIs of [Protractor][protractor]. Read about the Protractor APIs in the
@@ -142,7 +142,7 @@ To rerun the test suite, execute `npm run protractor` again.
 </div>
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -155,7 +155,7 @@ To rerun the test suite, execute `npm run protractor` again.
   Component isolation at work!
 
 
-# Summary
+## Summary
 
 We have now added full-text search and included a test to verify that it works! Now let's go on to
 {@link step_06 step 6} to learn how to add sorting capabilities to the PhoneCat application.
