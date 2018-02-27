@@ -180,7 +180,7 @@ let's add the annotations to our `PhoneListController`:
 ```
 
 
-# Testing
+## Testing
 
 Because we started using dependency injection and our controller has dependencies, constructing the
 controller in our tests is a bit more complicated. We could use the `new` operator and provide the
@@ -283,7 +283,7 @@ Chrome 49.0: Executed 2 of 2 SUCCESS (0.133 secs / 0.097 secs)
 ```
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -299,7 +299,7 @@ Chrome 49.0: Executed 2 of 2 SUCCESS (0.133 secs / 0.097 secs)
   ```
 
 
-# Summary
+## Summary
 
 Now that you have learned how easy it is to use AngularJS services (thanks to AngularJS's dependency
 injection), go to {@link step_08 step 8}, where you will add some thumbnail images of phones and

@@ -122,7 +122,7 @@ including lists and bindings that comprise the phone details. Note how we use th
 <img class="diagram" src="img/tutorial/tutorial_10.png">
 
 
-# Testing
+## Testing
 
 We wrote a new unit test that is similar to the one we wrote for the `phoneList` component's
 controller in {@link step_07#testing step 7}.
@@ -194,7 +194,7 @@ heading on the page is "Nexus S".
 You can run the tests with `npm run protractor`.
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -202,7 +202,7 @@ You can run the tests with `npm run protractor`.
   images on the 'Nexus S' details page.
 
 
-# Summary
+## Summary
 
 Now that the phone details view is in place, proceed to {@link step_11 step 11} to learn how to
 write your own custom display filter.

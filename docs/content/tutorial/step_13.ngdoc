@@ -310,7 +310,7 @@ Chrome 49.0: Executed 5 of 5 SUCCESS (0.123 secs / 0.104 secs)
 ```
 
 
-# Summary
+## Summary
 
 Now that we have seen how to build a custom service as a RESTful client, we are ready for
 {@link step_14 step 14} to learn how to enhance the user experience with animations.

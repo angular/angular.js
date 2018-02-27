@@ -265,7 +265,7 @@ After all the refactorings that took place, this is how our application looks fr
 ```
 
 
-# Testing
+## Testing
 
 Since this was just a refactoring step (no actual code addition/deletions), we shouldn't need to
 change much (if anything) as far as our specs are concerned.
@@ -301,7 +301,7 @@ pass.
 </div>
 
 
-# Summary
+## Summary
 
 Even if we didn't add any new and exciting functionality to our application, we have made a great
 step towards a well-architected and maintainable application. Time to spice things up. Let's go to

@@ -104,7 +104,7 @@ Let's employ the filter in the phone details template:
 ```
 
 
-# Testing
+## Testing
 
 Filters, like any other code, should be tested. Luckily, these tests are very easy to write.
 
@@ -146,7 +146,7 @@ Chrome 49.0: Executed 4 of 4 SUCCESS (0.091 secs / 0.075 secs)
 ```
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -167,7 +167,7 @@ Chrome 49.0: Executed 4 of 4 SUCCESS (0.091 secs / 0.075 secs)
   ```
 
 
-# Summary
+## Summary
 
 Now that we have learned how to write and test a custom filter, let's go to {@link step_12 step 12}
 to learn how we can use AngularJS to enhance the phone details page further.

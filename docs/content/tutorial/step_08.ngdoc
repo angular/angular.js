@@ -70,7 +70,7 @@ which it would have done if we had only specified an attribute binding in a regu
 HTTP request to an invalid location.
 
 
-# Testing
+## Testing
 
 <br />
 **`e2e-tests/scenarios.js`**:
@@ -95,7 +95,7 @@ views, that we will implement in the upcoming steps.
 You can now rerun `npm run protractor` to see the tests run.
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -108,7 +108,7 @@ You can now rerun `npm run protractor` to see the tests run.
   inject the valid address.
 
 
-# Summary
+## Summary
 
 Now that you have added phone images and links, go to {@link step_09 step 9} to learn about AngularJS
 layout templates and how AngularJS makes it easy to create applications that have multiple views.

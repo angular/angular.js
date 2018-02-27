@@ -5,7 +5,6 @@
 
 <ul doc-tutorial-nav="2"></ul>
 
-
 Now, it's time to make the web page dynamic — with AngularJS. We will also add a test that verifies
 the code for the controller we are going to add.
 
@@ -148,9 +147,9 @@ To learn more about AngularJS scopes, see the {@link ng.$rootScope.Scope Angular
 </div>
 
 
-# Testing
+## Testing
 
-## Testing Controllers
+### Testing Controllers
 
 The "AngularJS way" of separating the controller from the view makes it easy to test code as it is being
 developed. In the section "Model and Controller" we have registered our controller via a constructor
@@ -206,7 +205,7 @@ describe('PhoneListController', function() {
 </div>
 
 
-## Writing and Running Tests
+### Writing and Running Tests
 
 Many AngularJS developers prefer the syntax of
 [Jasmine's Behavior-Driven Development (BDD) framework][jasmine-home], when writing tests. Although
@@ -253,7 +252,7 @@ To run the tests, and then watch the files for changes execute: `npm test`
 </div>
 
 
-# Experiments
+## Experiments
 
 <div></div>
 
@@ -308,7 +307,7 @@ To run the tests, and then watch the files for changes execute: `npm test`
   `toBe(4)`.
 
 
-# Summary
+## Summary
 
 We now have a dynamic application which separates models, views, and controllers, and we are testing
 as we go. Let's go to {@link step_03 step 3} to learn how to improve our application's architecture,
