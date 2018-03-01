@@ -16,6 +16,13 @@
     ],
     "headers": [
       {
+        "source": "/examples/**.csp/*.html",
+        "headers": [{
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'"
+        }]
+      },
+      {
         "source": "/Error404.html",
         "headers" : [{
           "key" : "X-Robots-Tag",
