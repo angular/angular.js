@@ -437,7 +437,9 @@ function $HttpProvider() {
      *
      * ## General usage
      * The `$http` service is a function which takes a single argument — a {@link $http#usage configuration object} —
-     * that is used to generate an HTTP request and returns  a {@link ng.$q promise}.
+     * that is used to generate an HTTP request and returns  a {@link ng.$q promise} that is
+     * resolved (request success) or rejected (request failure) with a
+     * {@link ng.$http#$http-returns response} object.
      *
      * ```js
      *   // Simple GET request example:
@@ -452,24 +454,6 @@ function $HttpProvider() {
      *       // or server returns response with an error status.
      *     });
      * ```
-     *
-     * The response object has these properties:
-     *
-     *   - **data** – `{string|Object}` – The response body transformed with the transform
-     *     functions.
-     *   - **status** – `{number}` – HTTP status code of the response.
-     *   - **headers** – `{function([headerName])}` – Header getter function.
-     *   - **config** – `{Object}` – The configuration object that was used to generate the request.
-     *   - **statusText** – `{string}` – HTTP status text of the response.
-     *   - **xhrStatus** – `{string}` – Status of the XMLHttpRequest (`complete`, `error`, `timeout` or `abort`).
-     *
-     * A response status code between 200 and 299 is considered a success status and will result in
-     * the success callback being called. Any response status code outside of that range is
-     * considered an error status and will result in the error callback being called.
-     * Also, status codes less than -1 are normalized to zero. -1 usually means the request was
-     * aborted, e.g. using a `config.timeout`.
-     * Note that if the response is a redirect, XMLHttpRequest will transparently follow it, meaning
-     * that the outcome (success or error) will be determined by the final response status code.
      *
      *
      * ## Shortcut methods
@@ -856,8 +840,33 @@ function $HttpProvider() {
      *    - **responseType** - `{string}` - see
      *      [XMLHttpRequest.responseType](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#xmlhttprequest-responsetype).
      *
-     * @returns {HttpPromise} Returns a {@link ng.$q `Promise}` that will be resolved to a response object
-     *                        when the request succeeds or fails.
+     * @returns {HttpPromise} A {@link ng.$q `Promise}` that will be resolved (request success)
+     *   or rejected (request failure) with a response object.
+     *
+     *   The response object has these properties:
+     *
+     *   - **data** – `{string|Object}` – The response body transformed with
+     *     the transform functions.
+     *   - **status** – `{number}` – HTTP status code of the response.
+     *   - **headers** – `{function([headerName])}` – Header getter function.
+     *   - **config** – `{Object}` – The configuration object that was used
+     *     to generate the request.
+     *   - **statusText** – `{string}` – HTTP status text of the response.
+     *   - **xhrStatus** – `{string}` – Status of the XMLHttpRequest
+     *     (`complete`, `error`, `timeout` or `abort`).
+     *
+     *
+     *   A response status code between 200 and 299 is considered a success status
+     *   and will result in the success callback being called. Any response status
+     *   code outside of that range is considered an error status and will result
+     *   in the error callback being called.
+     *   Also, status codes less than -1 are normalized to zero. -1 usually means
+     *   the request was aborted, e.g. using a `config.timeout`. More information
+     *   about the status might be available in the `xhrStatus` property.
+     *
+     *   Note that if the response is a redirect, XMLHttpRequest will transparently
+     *   follow it, meaning that the outcome (success or error) will be determined
+     *   by the final response status code.
      *
      *
      * @property {Array.<Object>} pendingRequests Array of config objects for currently pending
@@ -1107,8 +1116,9 @@ function $HttpProvider() {
      *
      * @param {string|TrustedObject} url Absolute or relative URL of the resource that is being requested;
      *                                   or an object created by a call to `$sce.trustAsResourceUrl(url)`.
-     * @param {Object=} config Optional configuration object. See https://docs.angularjs.org/api/ng/service/$http#usage
-     * @returns {HttpPromise} Future object
+     * @param {Object=} config Optional configuration object. See {@link ng.$http#$http-arguments `$http()` arguments}.
+     * @returns {HttpPromise}  A Promise that will be resolved or rejected with a response object.
+     * See {@link ng.$http#$http-returns `$http()` return value}.
      */
 
     /**
@@ -1120,8 +1130,9 @@ function $HttpProvider() {
      *
      * @param {string|TrustedObject} url Absolute or relative URL of the resource that is being requested;
      *                                   or an object created by a call to `$sce.trustAsResourceUrl(url)`.
-     * @param {Object=} config Optional configuration object. See https://docs.angularjs.org/api/ng/service/$http#usage
-     * @returns {HttpPromise} Future object
+     * @param {Object=} config Optional configuration object. See {@link ng.$http#$http-arguments `$http()` arguments}.
+     * @returns {HttpPromise}  A Promise that will be resolved or rejected with a response object.
+     * See {@link ng.$http#$http-returns `$http()` return value}.
      */
 
     /**
@@ -1133,8 +1144,9 @@ function $HttpProvider() {
      *
      * @param {string|TrustedObject} url Absolute or relative URL of the resource that is being requested;
      *                                   or an object created by a call to `$sce.trustAsResourceUrl(url)`.
-     * @param {Object=} config Optional configuration object. See https://docs.angularjs.org/api/ng/service/$http#usage
-     * @returns {HttpPromise} Future object
+     * @param {Object=} config Optional configuration object. See {@link ng.$http#$http-arguments `$http()` arguments}.
+     * @returns {HttpPromise}  A Promise that will be resolved or rejected with a response object.
+     * See {@link ng.$http#$http-returns `$http()` return value}.
      */
 
     /**
@@ -1175,8 +1187,9 @@ function $HttpProvider() {
      *
      * @param {string|TrustedObject} url Absolute or relative URL of the resource that is being requested;
      *                                   or an object created by a call to `$sce.trustAsResourceUrl(url)`.
-     * @param {Object=} config Optional configuration object. See https://docs.angularjs.org/api/ng/service/$http#usage
-     * @returns {HttpPromise} Future object
+     * @param {Object=} config Optional configuration object. See {@link ng.$http#$http-arguments `$http()` arguments}.
+     * @returns {HttpPromise}  A Promise that will be resolved or rejected with a response object.
+     * See {@link ng.$http#$http-returns `$http()` return value}.
      */
     createShortMethods('get', 'delete', 'head', 'jsonp');
 
@@ -1189,8 +1202,9 @@ function $HttpProvider() {
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {*} data Request content
-     * @param {Object=} config Optional configuration object. See https://docs.angularjs.org/api/ng/service/$http#usage
-     * @returns {HttpPromise} Future object
+     * @param {Object=} config Optional configuration object. See {@link ng.$http#$http-arguments `$http()` arguments}.
+     * @returns {HttpPromise}  A Promise that will be resolved or rejected with a response object.
+     * See {@link ng.$http#$http-returns `$http()` return value}.
      */
 
     /**
@@ -1202,8 +1216,9 @@ function $HttpProvider() {
      *
      * @param {string} url Relative or absolute URL specifying the destination of the request
      * @param {*} data Request content
-     * @param {Object=} config Optional configuration object. See https://docs.angularjs.org/api/ng/service/$http#usage
-     * @returns {HttpPromise} Future object
+     * @param {Object=} config Optional configuration object. See {@link ng.$http#$http-arguments `$http()` arguments}.
+     * @returns {HttpPromise}  A Promise that will be resolved or rejected with a response object.
+     * See {@link ng.$http#$http-returns `$http()` return value}.
      */
 
      /**
@@ -1215,8 +1230,9 @@ function $HttpProvider() {
       *
       * @param {string} url Relative or absolute URL specifying the destination of the request
       * @param {*} data Request content
-      * @param {Object=} config Optional configuration object. See https://docs.angularjs.org/api/ng/service/$http#usage
-      * @returns {HttpPromise} Future object
+      * @param {Object=} config Optional configuration object. See {@link ng.$http#$http-arguments `$http()` arguments}.
+      * @returns {HttpPromise}  A Promise that will be resolved or rejected with a response object.
+      * See {@link ng.$http#$http-returns `$http()` return value}.
       */
     createShortMethodsWithData('post', 'put', 'patch');
 
