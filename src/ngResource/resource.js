@@ -6,6 +6,15 @@ var $resourceMinErr = angular.$$minErr('$resource');
 // stopping at undefined/null.  The path must be composed of ASCII
 // identifiers (just like $parse)
 var MEMBER_NAME_REGEX = /^(\.[a-zA-Z_$@][0-9a-zA-Z_$@]*)+$/;
+var PROTOCOL_AND_IPV6_REGEX = /^https?:\/\/\[[^\]]*][^/]*/;
+var ESCAPED_COLONS_REGEX = /\\:/g;
+var ONLY_DIGITS_REGEX = /^\d+$/;
+
+function containsParam(url, paramName) {
+  // segment is a param if it matches:
+  //   "start of line or non-escaped colon" then "segment" then "symbol or end of line"
+  return new RegExp('(^|[^\\\\]):' + paramName + '(\\W|$)').test(url);
+}
 
 function isValidDottedPath(path) {
   return (path != null && path !== '' && path !== 'hasOwnProperty' &&
@@ -42,6 +51,112 @@ function shallowClearAndCopy(src, dst) {
 
   return dst;
 }
+
+function parseTemplateParams(template) {
+  var urlParams = Object.create(null);
+  forEach(template.split(/\W/), function(segment) {
+    if (segment === 'hasOwnProperty') {
+      throw $resourceMinErr('badname', 'hasOwnProperty is not a valid parameter name.');
+    }
+    // ignore segments that look like port numbers (e.g. `:8080`)
+    if (segment && !ONLY_DIGITS_REGEX.test(segment) && containsParam(template, segment)) {
+      // does this param appear in the query part of the URL?
+      var isQueryParamValue = (new RegExp('\\?.*=:' + segment + '(?:\\W|$)')).test(template);
+      urlParams[segment] = { isQueryParamValue: isQueryParamValue };
+    }
+  });
+  return urlParams;
+}
+
+var $composeResourceUrlFactory = ['$httpParamSerializer', function ($httpParamSerializer) {
+  /**
+   * @ngdoc service
+   * @name $composeResourceUrl
+   * @description
+   *
+   * Compose a URL template and a collectio of parameter values into a URL string.
+   * The `$resource` service uses this service to compose URLs that are used to make requests
+   * to the server.
+   *
+   * @param {string} template A string that defines placeholders for param values.
+   * @param {Object} params   A hash of param names (as defined in the template) to param values.
+   * @param {Object} options  A hash of options that modify the compostion behaviour.
+   *                          See the `options` argument of {@link $resource#$resource-arguments} for what options are available.
+   * @returns {string} The composed URL.
+   */
+  return function $composeResourceUrl(template, params, options) {
+    var protocolAndIpv6 = '',
+        templateParams = parseTemplateParams(template),
+        url = template,
+        queryParams,
+        queryParamString;
+
+    params = params || {};
+    options = options || {};
+
+    // unescape colons
+    url = url.replace(ESCAPED_COLONS_REGEX, ':');
+
+    // extract the protocol
+    url = url.replace(PROTOCOL_AND_IPV6_REGEX, function(match) {
+      protocolAndIpv6 = match;
+      return '';
+    });
+
+    // Inject the param values into the template
+    forEach(templateParams, function(paramInfo, paramName) {
+      var encodedVal,
+          val = params.hasOwnProperty(paramName) ? params[paramName] : undefined;
+
+      if (isDefined(val) && val !== null) {
+        // Encode the param value according to its position in the URL
+        encodedVal = paramInfo.isQueryParamValue ? encodeUriQuery(val, true) : encodeUriSegment(val);
+        // Replace the templateParam segment with the matching param value
+        url = url.replace(new RegExp(':' + paramName + '(\\W|$)', 'g'), function(match, p1) {
+          return encodedVal + p1;
+        });
+      } else {
+        // Collapse segments that map to `undefined` params
+        url = url.replace(new RegExp('(/?):' + paramName + '(\\W|$)', 'g'), function(match,
+            leadingSlashes, tail) {
+          if (tail.charAt(0) === '/') {
+            return tail;
+          } else {
+            return leadingSlashes + tail;
+          }
+        });
+      }
+    });
+
+    // strip trailing slashes and set the url (unless this behavior is specifically disabled)
+    if (options.stripTrailingSlashes === undefined || options.stripTrailingSlashes) {
+      url = url.replace(/\/+$/, '') || '/';
+    }
+
+    // Collapse `/.` if found in the last URL path segment before the query.
+    // E.g. `http://url.com/id/.format?q=x` becomes `http://url.com/id.format?q=x`.
+    url = url.replace(/\/\.(?=\w+($|\?))/, '.');
+
+    // Replace escaped `/\.` with `/.`.
+    // (If `\.` comes from a param value, it will be encoded as `%5C.`.)
+    url = protocolAndIpv6 + url.replace(/\/(\\|%5C)\./, '/.');
+
+    // Extract the query params. (Delegate param encoding to $http.)
+    forEach(params, function(value, key) {
+      if (!templateParams[key]) {
+        queryParams = queryParams || {};
+        queryParams[key] = value;
+      }
+    });
+
+    queryParamString = $httpParamSerializer(queryParams);
+    if (queryParamString) {
+      queryParamString = (url.indexOf('?') !== -1 ? '&' : '?') + queryParamString;
+    }
+
+    return url + queryParamString;
+  };
+}];
 
 /**
  * @ngdoc module
@@ -493,8 +608,8 @@ function shallowClearAndCopy(src, dst) {
  */
 angular.module('ngResource', ['ng']).
   info({ angularVersion: '"NG_VERSION_FULL"' }).
+  factory('$composeResourceUrl', $composeResourceUrlFactory).
   provider('$resource', function ResourceProvider() {
-    var PROTOCOL_AND_IPV6_REGEX = /^https?:\/\/\[[^\]]*][^/]*/;
 
     var provider = this;
 
@@ -580,7 +695,7 @@ angular.module('ngResource', ['ng']).
       }
     };
 
-    this.$get = ['$http', '$log', '$q', '$timeout', function($http, $log, $q, $timeout) {
+    this.$get = ['$http', '$log', '$q', '$timeout', '$composeResourceUrl', function($http, $log, $q, $timeout, $composeResourceUrl) {
 
       var noop = angular.noop,
           forEach = angular.forEach,
@@ -596,79 +711,11 @@ angular.module('ngResource', ['ng']).
       function Route(template, options) {
         this.template = template;
         this.options = extend({}, provider.defaults, options);
-        this.urlParams = {};
       }
 
       Route.prototype = {
         setUrlParams: function(config, params, actionUrl) {
-          var self = this,
-            url = actionUrl || self.template,
-            val,
-            encodedVal,
-            protocolAndIpv6 = '';
-
-          var urlParams = self.urlParams = Object.create(null);
-          forEach(url.split(/\W/), function(param) {
-            if (param === 'hasOwnProperty') {
-              throw $resourceMinErr('badname', 'hasOwnProperty is not a valid parameter name.');
-            }
-            if (!(new RegExp('^\\d+$').test(param)) && param &&
-              (new RegExp('(^|[^\\\\]):' + param + '(\\W|$)').test(url))) {
-              urlParams[param] = {
-                isQueryParamValue: (new RegExp('\\?.*=:' + param + '(?:\\W|$)')).test(url)
-              };
-            }
-          });
-          url = url.replace(/\\:/g, ':');
-          url = url.replace(PROTOCOL_AND_IPV6_REGEX, function(match) {
-            protocolAndIpv6 = match;
-            return '';
-          });
-
-          params = params || {};
-          forEach(self.urlParams, function(paramInfo, urlParam) {
-            val = params.hasOwnProperty(urlParam) ? params[urlParam] : undefined;
-            if (isDefined(val) && val !== null) {
-              if (paramInfo.isQueryParamValue) {
-                encodedVal = encodeUriQuery(val, true);
-              } else {
-                encodedVal = encodeUriSegment(val);
-              }
-              url = url.replace(new RegExp(':' + urlParam + '(\\W|$)', 'g'), function(match, p1) {
-                return encodedVal + p1;
-              });
-            } else {
-              url = url.replace(new RegExp('(/?):' + urlParam + '(\\W|$)', 'g'), function(match,
-                  leadingSlashes, tail) {
-                if (tail.charAt(0) === '/') {
-                  return tail;
-                } else {
-                  return leadingSlashes + tail;
-                }
-              });
-            }
-          });
-
-          // strip trailing slashes and set the url (unless this behavior is specifically disabled)
-          if (self.options.stripTrailingSlashes) {
-            url = url.replace(/\/+$/, '') || '/';
-          }
-
-          // Collapse `/.` if found in the last URL path segment before the query.
-          // E.g. `http://url.com/id/.format?q=x` becomes `http://url.com/id.format?q=x`.
-          url = url.replace(/\/\.(?=\w+($|\?))/, '.');
-          // Replace escaped `/\.` with `/.`.
-          // (If `\.` comes from a param value, it will be encoded as `%5C.`.)
-          config.url = protocolAndIpv6 + url.replace(/\/(\\|%5C)\./, '/.');
-
-
-          // set params - delegate param encoding to $http
-          forEach(params, function(value, key) {
-            if (!self.urlParams[key]) {
-              config.params = config.params || {};
-              config.params[key] = value;
-            }
-          });
+          config.url = $composeResourceUrl(actionUrl || this.template, params, this.options);
         }
       };
 

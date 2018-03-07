@@ -2,6 +2,151 @@
 
 describe('ngResource', function() {
 
+  describe('$composeResourceUrl', function() {
+    var $composeResourceUrl;
+    beforeEach(module('ngResource'));
+
+    beforeEach(inject(function(_$composeResourceUrl_) {
+      $composeResourceUrl = _$composeResourceUrl_;
+    }));
+
+    it('should ignore slashes of undefined parameters', function() {
+      var template = '/Path/:a/:b/:c';
+      expect($composeResourceUrl(template, {})).toEqual('/Path');
+      expect($composeResourceUrl(template, {a: 0})).toEqual('/Path/0');
+      expect($composeResourceUrl(template, {a: false})).toEqual('/Path/false');
+      expect($composeResourceUrl(template, {a: null})).toEqual('/Path');
+      expect($composeResourceUrl(template, {a: undefined})).toEqual('/Path');
+      expect($composeResourceUrl(template, {a: ''})).toEqual('/Path');
+      expect($composeResourceUrl(template, {a: 1})).toEqual('/Path/1');
+      expect($composeResourceUrl(template, {a: 2, b: 3})).toEqual('/Path/2/3');
+      expect($composeResourceUrl(template, {a: 4, c: 5})).toEqual('/Path/4/5');
+      expect($composeResourceUrl(template, {a: 6, b: 7, c: 8})).toEqual('/Path/6/7/8');
+    });
+
+    it('should not ignore leading slashes of undefined parameters that have non-slash trailing sequence', function() {
+      var template = '/Path/:a.foo/:b.bar/:c.baz';
+      expect($composeResourceUrl(template, {a: 0})).toEqual('/Path/0.foo/.bar.baz');
+      expect($composeResourceUrl(template, {})).toEqual('/Path/.foo/.bar.baz');
+      expect($composeResourceUrl(template, {a: false})).toEqual('/Path/false.foo/.bar.baz');
+      expect($composeResourceUrl(template, {a: null})).toEqual('/Path/.foo/.bar.baz');
+      expect($composeResourceUrl(template, {a: undefined})).toEqual('/Path/.foo/.bar.baz');
+      expect($composeResourceUrl(template, {a: ''})).toEqual('/Path/.foo/.bar.baz');
+      expect($composeResourceUrl(template, {a: 1})).toEqual('/Path/1.foo/.bar.baz');
+      expect($composeResourceUrl(template, {a: 2, b: 3})).toEqual('/Path/2.foo/3.bar.baz');
+      expect($composeResourceUrl(template, {a: 4, c: 5})).toEqual('/Path/4.foo/.bar/5.baz');
+      expect($composeResourceUrl(template, {a: 6, b: 7, c: 8})).toEqual('/Path/6.foo/7.bar/8.baz');
+    });
+
+    it('should not collapse the url into an empty string', function() {
+      expect($composeResourceUrl('/:foo/:bar/', {})).toEqual('/');
+    });
+
+    it('should support escaping colons in url template', function() {
+      var template = 'http://localhost\\:8080/Path/:a/\\:stillPath/:b';
+      var params = {a: 'foo', b: 'bar'};
+      expect($composeResourceUrl(template, params)).toEqual('http://localhost:8080/Path/foo/:stillPath/bar');
+    });
+
+    it('should support an unescaped url', function() {
+      var template = 'http://localhost:8080/Path/:a';
+      var params = {a: 'foo'};
+      expect($composeResourceUrl(template, params)).toEqual('http://localhost:8080/Path/foo');
+    });
+
+
+    it('should correctly encode url params', function() {
+      var template = '/Path/:a';
+      expect($composeResourceUrl(template, {a: 'foo#1'})).toEqual('/Path/foo%231');
+      expect($composeResourceUrl(template, {a: 'herp$'})).toEqual('/Path/herp$');
+      expect($composeResourceUrl(template, {a: 'foo;bar'})).toEqual('/Path/foo;bar');
+    });
+
+    it('should extract extra params as query params', function() {
+      var template = '/Path/:a';
+      expect($composeResourceUrl(template, {a: 'doh!@foo', bar: 'baz#1'})).toEqual('/Path/doh!@foo?bar=baz%231');
+      expect($composeResourceUrl(template, {a: 'foo', bar: 'baz;qux'})).toEqual('/Path/foo?bar=baz;qux');
+    });
+
+    it('should not encode @ in url params', function() {
+      //encodeURIComponent is too aggressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
+      //with regards to the character set (pchar) allowed in path segments
+      //so we need this test to make sure that we don't over-encode the params
+      var template = '/Path/:a';
+      var params = {a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'};
+      expect($composeResourceUrl(template, params)).toEqual('/Path/doh@fo%20o?!do%26h=g%3Da+h&:bar=$baz@1');
+    });
+
+    it('should serialize query params that are arrays', function() {
+      var template = '/Path/:a';
+      var params = {a: 'doh&foo', bar: ['baz1', 'baz2']};
+      expect($composeResourceUrl(template, params)).toEqual('/Path/doh&foo?bar=baz1&bar=baz2');
+    });
+
+    it('should not encode string "null" to "+" in url params', function() {
+      expect($composeResourceUrl('/Path/:a', {a: 'null'})).toEqual('/Path/null');
+    });
+
+
+    it('should implicitly strip trailing slashes from URLs by default', function() {
+      expect($composeResourceUrl('http://localhost:8080/Path/:a/', {a: 'foo'})).toEqual('http://localhost:8080/Path/foo');
+    });
+
+    it('should support explicitly stripping trailing slashes from URLs', function() {
+      expect($composeResourceUrl('http://localhost:8080/Path/:a/', {a: 'foo'}, {stripTrailingSlashes: true})).toEqual('http://localhost:8080/Path/foo');
+    });
+
+    it('should support explicitly keeping trailing slashes in URLs', function() {
+      expect($composeResourceUrl('http://localhost:8080/Path/:a/', {a: 'foo'}, {stripTrailingSlashes: false})).toEqual('http://localhost:8080/Path/foo/');
+    });
+
+    it('should support IPv6 URLs', function() {
+      var options = {stripTrailingSlashes: false};
+      expect($composeResourceUrl('http://[2620:0:861:ed1a::1]',        {ed1a: 'foo'}, options)).toEqual('http://[2620:0:861:ed1a::1]');
+      expect($composeResourceUrl('http://[2620:0:861:ed1a::1]/',       {ed1a: 'foo'}, options)).toEqual('http://[2620:0:861:ed1a::1]/');
+      expect($composeResourceUrl('http://[2620:0:861:ed1a::1]/:ed1a',  {ed1a: 'foo'}, options)).toEqual('http://[2620:0:861:ed1a::1]/foo');
+      expect($composeResourceUrl('http://[2620:0:861:ed1a::1]/:ed1a',  {},            options)).toEqual('http://[2620:0:861:ed1a::1]/');
+      expect($composeResourceUrl('http://[2620:0:861:ed1a::1]/:ed1a/', {ed1a: 'foo'}, options)).toEqual('http://[2620:0:861:ed1a::1]/foo/');
+      expect($composeResourceUrl('http://[2620:0:861:ed1a::1]/:ed1a/', {},            options)).toEqual('http://[2620:0:861:ed1a::1]/');
+    });
+
+    it('should support params in the `hostname` part of the URL', function() {
+      var options = {stripTrailingSlashes: false};
+      expect($composeResourceUrl('http://:hostname',            {hostname: 'foo.com'},              options)).toEqual('http://foo.com');
+      expect($composeResourceUrl('http://:hostname/',           {hostname: 'foo.com'},              options)).toEqual('http://foo.com/');
+      expect($composeResourceUrl('http://:l2Domain.:l1Domain',  {l1Domain: 'com', l2Domain: 'bar'}, options)).toEqual('http://bar.com');
+      expect($composeResourceUrl('http://:l2Domain.:l1Domain/', {l1Domain: 'com', l2Domain: 'bar'}, options)).toEqual('http://bar.com/');
+      expect($composeResourceUrl('http://127.0.0.:octet',       {octet: 42},                       options)).toEqual('http://127.0.0.42');
+      expect($composeResourceUrl('http://127.0.0.:octet/',      {octet: 42},                       options)).toEqual('http://127.0.0.42/');
+    });
+
+    it('should support relative paths', function() {
+      expect($composeResourceUrl(':relativePath', { relativePath: 'data.json' })).toEqual('data.json');
+    });
+
+    it('should handle + in param value', function() {
+      var template = '/api/myapp/:myresource';
+      var params = {myresource: 'pear+apple'};
+      expect($composeResourceUrl(template, params)).toEqual('/api/myapp/pear+apple');
+    });
+
+    it('should encode & in query params unless passed through `params` property', function() {
+      expect($composeResourceUrl('/Path/:a', {a: 'doh&foo', bar: 'baz&1'})).toEqual('/Path/doh&foo?bar=baz%261');
+      expect($composeResourceUrl('/api/myapp/resource?:query', {query: 'foo&bar'})).toEqual('/api/myapp/resource?foo&bar');
+      expect($composeResourceUrl('/api/myapp/resource?from=:from', {from: 'bar & blanks'})).toEqual('/api/myapp/resource?from=bar%20%26%20blanks');
+    });
+
+    it('should handle multiple params with same name', function() {
+      expect($composeResourceUrl('/:id/:id', {id:1})).toEqual('/1/1');
+    });
+
+    it('should throw an exception if a param is called "hasOwnProperty"', function() {
+      expect(function() {
+        $composeResourceUrl('/:hasOwnProperty');
+      }).toThrowMinErr('$resource','badname', 'hasOwnProperty is not a valid parameter name');
+    });
+  });
+
   describe('$resource', function() {
 
     describe('basic usage', function() {
@@ -1914,14 +2059,10 @@ describe('ngResource', function() {
       });
 
 
-      it('should pass extra params to `$http` as `config.params`', function() {
-        $httpBackend.expectGET('/bar?baz=qux').respond('{}');
-
-        var R = $resource('/:foo');
-        R.get({foo: 'bar', baz: 'qux'});
-
-        $rootScope.$digest();
-        expect($http).toHaveBeenCalledWith(jasmine.objectContaining({params: {baz: 'qux'}}));
+      it('should add encode and add extra params to the query', function() {
+        $httpBackend.expectGET('/bar?x=y&baz=q%3Fux').respond('{}');
+        var R = $resource('/:foo?x=y');
+        R.get({foo: 'bar', baz: 'q?ux'});
       });
 
       it('should pass extra params even if `Object.prototype` has properties with the same name',
