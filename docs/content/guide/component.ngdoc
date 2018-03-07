@@ -102,7 +102,7 @@ responsible for modifying the data. That is why component directives use an isol
 class of scope manipulation is not possible.
 
 - **Components have a well-defined public API - Inputs and Outputs:**
-However, scope isolation only goes so far, because Angular uses two-way binding. So if you pass
+However, scope isolation only goes so far, because AngularJS uses two-way binding. So if you pass
 an object to a component like this - `bindings: {item: '='}`, and modify one of its properties, the
 change will be reflected in the parent component. For components however, only the component that owns
 the data should modify it, to make it easy to reason about what data is changed, and when. For that reason,
