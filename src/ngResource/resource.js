@@ -68,7 +68,10 @@ function parseTemplateParams(template) {
   return urlParams;
 }
 
-var $composeResourceUrlFactory = ['$httpParamSerializer', function ($httpParamSerializer) {
+var $composeResourceUrlFactory = ['$httpParamSerializer', function($httpParamSerializer) {
+  var encodeUriQuery = angular.$$encodeUriQuery,
+      encodeUriSegment = angular.$$encodeUriSegment;
+
   /**
    * @ngdoc service
    * @name $composeResourceUrl
@@ -704,9 +707,7 @@ angular.module('ngResource', ['ng']).
           isArray = angular.isArray,
           isDefined = angular.isDefined,
           isFunction = angular.isFunction,
-          isNumber = angular.isNumber,
-          encodeUriQuery = angular.$$encodeUriQuery,
-          encodeUriSegment = angular.$$encodeUriSegment;
+          isNumber = angular.isNumber;
 
       function Route(template, options) {
         this.template = template;
