@@ -90,6 +90,11 @@ var $$AnimateJsProvider = ['$animateProvider', /** @this */ function($animatePro
             return runner;
           }
 
+          if (options.tempClasses) {
+            $$jqLite.addClass(element, options.tempClasses);
+            options.tempClasses = null;
+          }
+
           runner = new $$AnimateRunner();
           var closeActiveAnimations;
           var chain = [];

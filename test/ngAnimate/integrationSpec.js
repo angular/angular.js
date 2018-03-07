@@ -544,6 +544,71 @@ describe('ngAnimate integration tests', function() {
         expect(child).not.toHaveClass('blue');
       });
     });
+
+    it('should apply a temporary class only for the actual duration of the animation', function() {
+      var elementClassList = [];
+      var hasTempClass = {
+        beforeCssAnimationStart: null,
+        afterCssAnimationStart: null,
+        afterCssAnimationTriggered: null,
+        afterCssAnimationFinished: null
+      };
+
+      module(function($provide) {
+        $provide.decorator('$animateCss', function($delegate) {
+          var decorated = function(element) {
+            var animator = $delegate.apply(null, arguments);
+            var startFn = animator.start;
+
+            animator.start = function() {
+              hasTempClass.beforeCssAnimationStart = element.hasClass('temp-class');
+              var runner = startFn.apply(animator, arguments);
+              hasTempClass.afterCssAnimationStart = element.hasClass('temp-class');
+              return runner;
+            };
+
+            return animator;
+          };
+
+          return decorated;
+        });
+      });
+
+      inject(function($animate, $compile, $rootScope) {
+        element = jqLite('<div class="animate-me"></div>');
+        $compile(element)($rootScope);
+
+        var className = 'klass';
+        var parent = jqLite('<div></div>');
+        html(parent);
+
+        parent.append(element);
+
+        ss.addRule('.animate-me', 'transition: all 2s;');
+
+        var runner = $animate.addClass(element, className, {
+          tempClasses: 'temp-class'
+        });
+
+        $rootScope.$digest();
+        $animate.flush();
+
+        hasTempClass.afterCssAnimationTriggered = element.hasClass('temp-class');
+
+        browserTrigger(element, 'transitionend', {timeStamp: Date.now(), elapsedTime: 2});
+        $rootScope.$digest();
+        $animate.flush();
+
+        hasTempClass.afterCssAnimationFinished = element.hasClass('temp-class');
+
+        expect(hasTempClass).toEqual({
+          beforeCssAnimationStart: false,
+          afterCssAnimationStart: false,
+          afterCssAnimationTriggered: true,
+          afterCssAnimationFinished: false
+        });
+      });
+    });
   });
 
   describe('JS animations', function() {

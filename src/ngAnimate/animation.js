@@ -134,7 +134,6 @@ var $$AnimationProvider = ['$animateProvider', /** @this */ function($animatePro
       var tempClasses = options.tempClasses;
       if (tempClasses) {
         classes += ' ' + tempClasses;
-        options.tempClasses = null;
       }
 
       var prepareClassName;
@@ -185,9 +184,8 @@ var $$AnimationProvider = ['$animateProvider', /** @this */ function($animatePro
           toBeSortedAnimations.push({
             domNode: getDomNode(animationEntry.from ? animationEntry.from.element : animationEntry.element),
             fn: function triggerAnimationStart() {
-              // it's important that we apply the `ng-animate` CSS class and the
-              // temporary classes before we do any driver invoking since these
-              // CSS classes may be required for proper CSS detection.
+              // It is important that we apply the `ng-animate` CSS class before we do any driver
+              // invoking since these CSS classes may be required for proper CSS detection.
               animationEntry.beforeStart();
 
               var startAnimationFn, closeFn = animationEntry.close;
@@ -359,10 +357,11 @@ var $$AnimationProvider = ['$animateProvider', /** @this */ function($animatePro
       }
 
       function beforeStart() {
+        // Note: `tempClasses` are not added here, since the actual animation may not start right
+        // away (`$animateCss` for example forces a reflow first). It is the responsibility of the
+        // respective animation driver to add them (if necessary).
+
         element.addClass(NG_ANIMATE_CLASSNAME);
-        if (tempClasses) {
-          $$jqLite.addClass(element, tempClasses);
-        }
         if (prepareClassName) {
           $$jqLite.removeClass(element, prepareClassName);
           prepareClassName = null;
