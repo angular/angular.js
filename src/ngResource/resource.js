@@ -593,9 +593,9 @@ angular.module('ngResource', ['ng']).
           encodeUriQuery = angular.$$encodeUriQuery,
           encodeUriSegment = angular.$$encodeUriSegment;
 
-      function Route(template, defaults) {
+      function Route(template, options) {
         this.template = template;
-        this.defaults = extend({}, provider.defaults, defaults);
+        this.options = extend({}, provider.defaults, options);
         this.urlParams = {};
       }
 
@@ -627,7 +627,7 @@ angular.module('ngResource', ['ng']).
 
           params = params || {};
           forEach(self.urlParams, function(paramInfo, urlParam) {
-            val = params.hasOwnProperty(urlParam) ? params[urlParam] : self.defaults[urlParam];
+            val = params.hasOwnProperty(urlParam) ? params[urlParam] : undefined;
             if (isDefined(val) && val !== null) {
               if (paramInfo.isQueryParamValue) {
                 encodedVal = encodeUriQuery(val, true);
@@ -650,7 +650,7 @@ angular.module('ngResource', ['ng']).
           });
 
           // strip trailing slashes and set the url (unless this behavior is specifically disabled)
-          if (self.defaults.stripTrailingSlashes) {
+          if (self.options.stripTrailingSlashes) {
             url = url.replace(/\/+$/, '') || '/';
           }
 
@@ -709,7 +709,7 @@ angular.module('ngResource', ['ng']).
           var hasBody = action.hasBody === true || (action.hasBody !== false && /^(POST|PUT|PATCH)$/i.test(action.method));
           var numericTimeout = action.timeout;
           var cancellable = isDefined(action.cancellable) ?
-              action.cancellable : route.defaults.cancellable;
+              action.cancellable : route.options.cancellable;
 
           if (numericTimeout && !isNumber(numericTimeout)) {
             $log.debug('ngResource:\n' +
