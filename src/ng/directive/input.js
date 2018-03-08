@@ -984,9 +984,11 @@ var inputType = {
    * All inputs controlled by {@link ngModel ngModel} (including those of type `radio`) will use the
    * value of their `name` attribute to determine the property under which their
    * {@link ngModel.NgModelController NgModelController} will be published on the parent
-   * {@link form.FormController FormController}. Therefore, you should avoid using the same `name`
-   * for multiple inputs of a form, or else they will overwrite each other's `NgModelController` on
-   * the parent `FormController`.
+   * {@link form.FormController FormController}. Thus, if you use the same `name` for multiple
+   * inputs of a form (e.g. a group of radio inputs), only _one_ `NgModelController` will be
+   * published on the parent `FormController` under that name. The rest of the controllers will
+   * continue to work as expected, but you won't be able to access them as properties on the parent
+   * `FormController`.
    *
    * <div class="alert alert-info">
    *   <p>
