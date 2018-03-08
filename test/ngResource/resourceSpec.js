@@ -1167,7 +1167,8 @@ describe('ngResource', function() {
 
             expect(callback).toHaveBeenCalledWith({
               'method': 'get',
-              'url': '/CreditCard'
+              'url': '/CreditCard',
+              params: {}
             });
           });
 
@@ -1889,45 +1890,45 @@ describe('ngResource', function() {
     });
 
     describe('extra params', function() {
-      var $http;
-      var $httpBackend;
-      var $resource;
-      var $rootScope;
-
       beforeEach(module('ngResource'));
 
-      beforeEach(module(function($provide) {
-        $provide.decorator('$http', function($delegate) {
-          return jasmine.createSpy('$http').and.callFake($delegate);
-        });
-      }));
-
-      beforeEach(inject(function(_$http_, _$httpBackend_, _$resource_, _$rootScope_) {
-        $http = _$http_;
-        $httpBackend = _$httpBackend_;
-        $resource = _$resource_;
-        $rootScope = _$rootScope_;
-      }));
-
-      afterEach(function() {
+      afterEach(inject(function($httpBackend) {
         $httpBackend.verifyNoOutstandingExpectation();
-      });
+      }));
 
 
-      it('should add encode and add extra params to the query', function() {
+      it('should add encode and add extra params to the query', inject(function($httpBackend, $resource) {
         $httpBackend.expectGET('/bar?x=y&baz=q%3Fux').respond('{}');
         var R = $resource('/:foo?x=y');
         R.get({foo: 'bar', baz: 'q?ux'});
-      });
+      }));
 
       it('should pass extra params even if `Object.prototype` has properties with the same name',
-        function() {
+        inject(function($httpBackend, $resource) {
           $httpBackend.expectGET('/foo?toString=bar').respond('{}');
 
           var R = $resource('/foo');
           R.get({toString: 'bar'});
         }
-      );
+      ));
+
+      it('should allow $http interceptors to modify the query params before serialization', function() {
+        // Create an interceptor that modifies the query params
+        module(function($httpProvider) {
+          $httpProvider.interceptors.push(function() {
+            return {
+              request: function(config) { config.params.xtra = 'value'; return config; }
+            };
+          });
+        });
+
+        // Check that these params appear in the final URL
+        inject(function($httpBackend, $resource) {
+          $httpBackend.expectGET('/bar?x=y&a=b&xtra=value').respond('{}');
+          var R = $resource('/:foo?x=y');
+          R.get({foo: 'bar', a: 'b'});
+        });
+      });
     });
 
     describe('errors', function() {
