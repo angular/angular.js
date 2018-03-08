@@ -77,12 +77,13 @@ var $composeResourceUrlFactory = ['$httpParamSerializer', function($httpParamSer
    * @name $composeResourceUrl
    * @description
    *
-   * Compose a URL template and a collectio of parameter values into a URL string.
+   * Compose a URL template and a collection of parameter values into a URL string.
    * The `$resource` service uses this service to compose URLs that are used to make requests
    * to the server.
    *
-   * @param {string} template A string that defines placeholders for param values.
-   * @param {Object} params   A hash of param names (as defined in the template) to param values.
+   * @param {string} template A string that defines placeholders for parameter values.
+   * @param {Object} params   A hash of parameters (names to values) to apply to the template.
+   *                          Any params that do not match placeholders in the template will be added as query parameters.
    * @param {Object} options  A hash of options that modify the compostion behaviour.
    *                          See the `options` argument of {@link $resource#$resource-arguments} for what options are available.
    * @returns {string} The composed URL.
