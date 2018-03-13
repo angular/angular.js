@@ -335,9 +335,14 @@ describe('$interval', function() {
     }));
 
 
-    it('should not throw a runtime exception when given an undefined promise',
-        inject(function($interval) {
+    it('should not throw an error when given an undefined promise', inject(function($interval) {
       expect($interval.cancel()).toBe(false);
+    }));
+
+
+    it('should throw an error when given a non-$interval promise', inject(function($interval) {
+      var promise = $interval(noop).then(noop);
+      expect(function() { $interval.cancel(promise); }).toThrowMinErr('$interval', 'badprom');
     }));
 
 
