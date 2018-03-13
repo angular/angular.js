@@ -280,8 +280,14 @@ describe('$timeout', function() {
     }));
 
 
-    it('should not throw a runtime exception when given an undefined promise', inject(function($timeout) {
+    it('should not throw an error when given an undefined promise', inject(function($timeout) {
       expect($timeout.cancel()).toBe(false);
+    }));
+
+
+    it('should throw an error when given a non-$timeout promise', inject(function($timeout) {
+      var promise = $timeout(noop).then(noop);
+      expect(function() { $timeout.cancel(promise); }).toThrowMinErr('$timeout', 'badprom');
     }));
 
 
