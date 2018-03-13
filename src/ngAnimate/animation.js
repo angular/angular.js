@@ -134,7 +134,6 @@ var $$AnimationProvider = ['$animateProvider', /** @this */ function($animatePro
       var tempClasses = options.tempClasses;
       if (tempClasses) {
         classes += ' ' + tempClasses;
-        options.tempClasses = null;
       }
 
       var prepareClassName;
