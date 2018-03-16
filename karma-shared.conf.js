@@ -104,11 +104,15 @@ module.exports = function(config, specificOptions) {
         platform: 'Windows 10',
         version: 'latest-1'
       },
-      'SL_iOS': {
+      'SL_iOS_10': {
         base: 'SauceLabs',
         browserName: 'iphone',
-        platform: 'OS X 10.10',
-        version: '8.1'
+        version: '10.3'
+      },
+      'SL_iOS_11': {
+        base: 'SauceLabs',
+        browserName: 'iphone',
+        version: '11'
       },
 
       'BS_Chrome': {
@@ -156,23 +160,17 @@ module.exports = function(config, specificOptions) {
         os: 'Windows',
         os_version: '10'
       },
-      'BS_iOS_8': {
-        base: 'BrowserStack',
-        device: 'iPhone 6',
-        os: 'ios',
-        os_version: '8.3'
-      },
-      'BS_iOS_9': {
-        base: 'BrowserStack',
-        device: 'iPhone 6S',
-        os: 'ios',
-        os_version: '9.3'
-      },
       'BS_iOS_10': {
         base: 'BrowserStack',
         device: 'iPhone 7',
         os: 'ios',
         os_version: '10.0'
+      },
+      'BS_iOS_11': {
+        base: 'BrowserStack',
+        device: 'iPhone 8',
+        os: 'ios',
+        os_version: '11.0'
       }
     }
   });
