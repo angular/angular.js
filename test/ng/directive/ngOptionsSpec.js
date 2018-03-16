@@ -2928,7 +2928,7 @@ describe('ngOptions', function() {
     // getter/setter is not defined on the prototype (probably due to some bug). On Safari 9, the
     // getter/setter that is already defined on the `<option>` element's prototype is not
     // configurable, so we can't overwrite it with our spy.
-    if (!/\b(9|\d{2})(?:\.\d+)+ safari/i.test(window.navigator.userAgent)) {
+    if (!/\b(9|\d{2})(?:\.\d+)+[\s\S]*safari/i.test(window.navigator.userAgent)) {
       it('should not re-set the `selected` property if it already has the correct value', function() {
         scope.values = [{name: 'A'}, {name: 'B'}];
         createMultiSelect();
