@@ -10,7 +10,7 @@
   splice,
   push,
   toString,
-  minErrConfig,
+  errConfigObj,
   errorHandlingConfig,
   isValidObjectMaxDepth,
   ngMinErr,

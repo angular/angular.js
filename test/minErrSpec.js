@@ -1,33 +1,86 @@
 'use strict';
 
 describe('errors', function() {
-  var originalObjectMaxDepthInErrorMessage = minErrConfig.objectMaxDepth;
+  var originalObj = angular.copy(errConfigObj);
 
   afterEach(function() {
-    minErrConfig.objectMaxDepth = originalObjectMaxDepthInErrorMessage;
+    errConfigObj.objectMaxDepth = originalObj.objectMaxDepth;
+    errConfigObj.isUrlParameters = originalObj.isUrlParameters;
+    errConfigObj.isModuleError = originalObj.isModuleError;
+    errConfigObj.isModuleStack = originalObj.isModuleStack;
   });
 
   describe('errorHandlingConfig', function() {
-    it('should get default objectMaxDepth', function() {
-      expect(errorHandlingConfig().objectMaxDepth).toBe(5);
+    describe('objectMaxDepth',function() {
+      it('should get default objectMaxDepth', function() {
+        expect(errorHandlingConfig().objectMaxDepth).toBe(5);
+      });
+
+      it('should set objectMaxDepth', function() {
+        errorHandlingConfig({objectMaxDepth: 3});
+        expect(errorHandlingConfig().objectMaxDepth).toBe(3);
+      });
+
+      it('should not change objectMaxDepth when undefined is supplied', function() {
+        errorHandlingConfig({objectMaxDepth: undefined});
+        expect(errorHandlingConfig().objectMaxDepth).toBe(originalObj.objectMaxDepth);
+      });
+
+      they('should set objectMaxDepth to NaN when $prop is supplied',
+          [NaN, null, true, false, -1, 0], function(maxDepth) {
+            errorHandlingConfig({objectMaxDepth: maxDepth});
+            expect(errorHandlingConfig().objectMaxDepth).toBeNaN();
+          }
+      );
     });
 
-    it('should set objectMaxDepth', function() {
-      errorHandlingConfig({objectMaxDepth: 3});
-      expect(errorHandlingConfig().objectMaxDepth).toBe(3);
+
+    describe('isUrlParameters',function() {
+      it('should get default isUrlParameters', function() {
+        expect(errorHandlingConfig().isUrlParameters).toBe(true);
+      });
+      it('should set isUrlParameters', function() {
+        errorHandlingConfig({isUrlParameters:false});
+        expect(errorHandlingConfig().isUrlParameters).toBe(false);
+        errorHandlingConfig({isUrlParameters:true});
+        expect(errorHandlingConfig().isUrlParameters).toBe(true);
+      });
+      it('should not change its value when non-boolean is supplied', function() {
+        errorHandlingConfig({isUrlParameters:123});
+        expect(errorHandlingConfig().isUrlParameters).toBe(originalObj.isUrlParameters);
+      });
+    });
+    describe('isModuleStack',function() {
+      it('should get default isModuleStack', function() {
+        expect(errorHandlingConfig().isModuleStack).toBe(true);
+      });
+      it('should set isModuleStack', function() {
+        errorHandlingConfig({isModuleStack:false});
+        expect(errorHandlingConfig().isModuleStack).toBe(false);
+        errorHandlingConfig({isModuleStack:true});
+        expect(errorHandlingConfig().isModuleStack).toBe(true);
+      });
+      it('should not change its value when non-boolean is supplied', function() {
+        errorHandlingConfig({isModuleStack:123});
+        expect(errorHandlingConfig().isModuleStack).toBe(originalObj.isModuleStack);
+      });
+    });
+    describe('isModuleError',function() {
+      it('should get default isModuleError', function() {
+        expect(errorHandlingConfig().isModuleError).toBe(true);
+      });
+      it('should set isModuleError', function() {
+        errorHandlingConfig({isModuleError:false});
+        expect(errorHandlingConfig().isModuleError).toBe(false);
+        errorHandlingConfig({isModuleError:true});
+        expect(errorHandlingConfig().isModuleError).toBe(true);
+      });
+      it('should not change its value when non-boolean is supplied', function() {
+        errorHandlingConfig({isModuleError:123});
+        expect(errorHandlingConfig().isModuleError).toBe(originalObj.isModuleError);
+      });
     });
 
-    it('should not change objectMaxDepth when undefined is supplied', function() {
-      errorHandlingConfig({objectMaxDepth: undefined});
-      expect(errorHandlingConfig().objectMaxDepth).toBe(originalObjectMaxDepthInErrorMessage);
-    });
-
-    they('should set objectMaxDepth to NaN when $prop is supplied',
-        [NaN, null, true, false, -1, 0], function(maxDepth) {
-          errorHandlingConfig({objectMaxDepth: maxDepth});
-          expect(errorHandlingConfig().objectMaxDepth).toBeNaN();
-        }
-    );
   });
 
   describe('minErr', function() {
@@ -164,5 +217,13 @@ describe('errors', function() {
       expect(testError('acode', 'aproblem', 'a', 'b', 'value with space').message)
         .toMatch(/^[\s\S]*\?p0=a&p1=b&p2=value%20with%20space$/);
     });
+
+    it('should not generate URL query parameters when isUrlParameters is  false', function() {
+
+      errorHandlingConfig({isUrlParameters:false});
+      expect(testError('acode', 'aproblem', 'a', 'b', 'c').message)
+        .not.toContain('?p0=a&p1=b&p2=c');
+    });
+
   });
 });

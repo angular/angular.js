@@ -1,15 +1,17 @@
 'use strict';
 
 /* exported
-  minErrConfig,
+  errConfigObj,
   errorHandlingConfig,
   isValidObjectMaxDepth
 */
 
-var minErrConfig = {
-  objectMaxDepth: 5
+var errConfigObj = {
+  objectMaxDepth: 5,
+  isUrlParameters:true,
+  isModuleStack:true,
+  isModuleError:true
 };
-
 /**
  * @ngdoc function
  * @name angular.errorHandlingConfig
@@ -30,14 +32,29 @@ var minErrConfig = {
  * * `objectMaxDepth`  **{Number}** - The max depth for stringifying objects. Setting to a
  *   non-positive or non-numeric value, removes the max depth limit.
  *   Default: 5
+ * * `isUrlParameters`  **{Boolean}** - Specifies wether the generated url error will contain the paramters or not.
+ *   Default: true
+ * * `isModuleStack`  **{Boolean}** - Specifies wether the generated error for a module has a stack
+ *   Default: true
+ * * `isModuleError`  **{Boolean}** - Specifies wether the error will be rethrown for each module
+ *   Default: true
  */
 function errorHandlingConfig(config) {
   if (isObject(config)) {
     if (isDefined(config.objectMaxDepth)) {
-      minErrConfig.objectMaxDepth = isValidObjectMaxDepth(config.objectMaxDepth) ? config.objectMaxDepth : NaN;
+      errConfigObj.objectMaxDepth = isValidObjectMaxDepth(config.objectMaxDepth) ? config.objectMaxDepth : NaN;
+    }
+    if (isDefined(config.isUrlParameters) && isBoolean(config.isUrlParameters)) {
+      errConfigObj.isUrlParameters =   config.isUrlParameters;
+    }
+    if (isDefined(config.isModuleStack) && isBoolean(config.isModuleStack)) {
+      errConfigObj.isModuleStack =   config.isModuleStack;
+    }
+    if (isDefined(config.isModuleError) && isBoolean(config.isModuleError)) {
+      errConfigObj.isModuleError =   config.isModuleError;
     }
   } else {
-    return minErrConfig;
+    return  errConfigObj;
   }
 }
 
@@ -49,6 +66,7 @@ function errorHandlingConfig(config) {
 function isValidObjectMaxDepth(maxDepth) {
   return isNumber(maxDepth) && maxDepth > 0;
 }
+
 
 /**
  * @description
@@ -87,7 +105,7 @@ function minErr(module, ErrorConstructor) {
       template = arguments[1],
       message = '[' + (module ? module + ':' : '') + code + '] ',
       templateArgs = sliceArgs(arguments, 2).map(function(arg) {
-        return toDebugString(arg, minErrConfig.objectMaxDepth);
+        return toDebugString(arg, errConfigObj.objectMaxDepth);
       }),
       paramPrefix, i;
 
@@ -103,9 +121,10 @@ function minErr(module, ErrorConstructor) {
 
     message += '\nhttp://errors.angularjs.org/"NG_VERSION_FULL"/' +
       (module ? module + '/' : '') + code;
-
-    for (i = 0, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
-      message += paramPrefix + 'p' + i + '=' + encodeURIComponent(templateArgs[i]);
+    if (errConfigObj.isUrlParameters) {
+      for (i = 0, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
+        message += paramPrefix + 'p' + i + '=' + encodeURIComponent(templateArgs[i]);
+      }
     }
 
     return new ErrorConstructor(message);
