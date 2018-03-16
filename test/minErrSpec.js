@@ -164,5 +164,18 @@ describe('errors', function() {
       expect(testError('acode', 'aproblem', 'a', 'b', 'value with space').message)
         .toMatch(/^[\s\S]*\?p0=a&p1=b&p2=value%20with%20space$/);
     });
+
+
+    it('should strip error reference urls from the error message parameters', function() {
+      var firstError = testError('firstcode', 'longer string and so on');
+
+      var error = testError('secondcode', 'description {0}, and {1}', 'a', firstError.message);
+
+      expect(error.message).toBe('[test:secondcode] description a, and [test:firstcode] longer ' +
+        'string and so on\n\nhttps://errors.angularjs.org/"NG_VERSION_FULL"/test/' +
+        'secondcode?p0=a&p1=%5Btest%3Afirstcode%5D%20longer%20string%20and%20so%20on%0Ahttps' +
+        '%3A%2F%2Ferrors.angularjs.org%2F%22NG_VERSION_FULL%22%2Ftest%2Ffirstcode');
+    });
+
   });
 });
