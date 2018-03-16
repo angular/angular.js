@@ -101,7 +101,7 @@ function minErr(module, ErrorConstructor) {
       return match;
     });
 
-    message += '\nhttp://errors.angularjs.org/"NG_VERSION_FULL"/' +
+    message += '\nhttps://errors.angularjs.org/"NG_VERSION_FULL"/' +
       (module ? module + '/' : '') + code;
 
     for (i = 0, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
