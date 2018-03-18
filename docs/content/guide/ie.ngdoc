@@ -40,7 +40,7 @@ To ensure your AngularJS application works on IE please consider:
    on accessing the `nodeValue` on a parentless `TextNode` in Internet Explorer 10 & 11
    (see [issue 5025](https://github.com/angular/angular.js/issues/5025)).
 5. Using `disabled` as the identifier of a custom attribute on an element that has
-   descedant form controls can result in unexpected behavior in Internet Explorer 11.
+   descendant form controls can result in unexpected behavior in Internet Explorer 11.
    Examples include the value of descendant input elements with `ng-model` not being reflective
    of the model (or changes to the model), and the value of the `placeholder` attribute being
    inserted as the input's value. Descendant select elements will also be inoperable, as if they
