@@ -39,3 +39,12 @@ To ensure your AngularJS application works on IE please consider:
    of `placeholder="{{ someExpression }}"`. If using the latter, Internet Explorer will error
    on accessing the `nodeValue` on a parentless `TextNode` in Internet Explorer 10 & 11
    (see [issue 5025](https://github.com/angular/angular.js/issues/5025)).
+5. Using the `disabled` attribute on an element that has
+   descendant form controls can result in unexpected behavior in Internet Explorer 11.
+   For example, the value of descendant input elements with `ng-model` will not reflect
+   the model (or changes to the model), and the value of the `placeholder` attribute will be
+   inserted as the input's value. Descendant select elements will also be inoperable, as if they
+   had the `disabled` attribute applied to them, which may not be the intended effect.
+   To work around this unexpected behavior, 1) avoid using the identifier `disabled` for custom attribute
+   directives that are on elements with descendant form controls, and 2) avoid using `disabled` as an identifier
+   for an attribute passed to a custom directive that has descendant form controls.
