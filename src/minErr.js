@@ -79,7 +79,6 @@ function isValidObjectMaxDepth(maxDepth) {
  *   error from returned function, for cases when a particular type of error is useful.
  * @returns {function(code:string, template:string, ...templateArgs): Error} minErr instance
  */
-
 function minErr(module, ErrorConstructor) {
   ErrorConstructor = ErrorConstructor || Error;
 
@@ -119,4 +118,39 @@ function minErr(module, ErrorConstructor) {
 
     return new ErrorConstructor(message);
   };
+}
+
+/**
+ * @description
+ *
+ * In certain case (e.g. when catching and rethrowing an error), it is neither desirable nor
+ * necessary to pass the error through `minErr()`. You can use this function to avoid warnings
+ * produced by `ng-closire-runner` during `grunt minall`.
+ *
+ * Due to what arguments `ng-closure-runner` expects, the first two arguments must be static
+ * strings. Therefore, you have to pass the actual error as 3rd argument (see example below).
+ *
+ * **WARNING**
+ * Only use this function when you are certain that the thrown error should NOT be a `minErr`
+ * instance;
+ *
+ * Example usage:
+ *
+ * ```js
+ * try {
+ *   tryAndFail();
+ * } catch (err) {
+ *   doSomeThing(err);
+ *   throw noMinErr('', '', err);   // Functionally equivalent to `throw err`,
+ *                                  // but avoids `ng-closure-runner` warnings.
+ * }
+ * ```
+ *
+ * @param {string} ignoredCode - Ignored, but necessary for `ng-closure-runner`.
+ * @param {string} ignoredTemplate - Ignored, but necessary for `ng-closure-runner`.
+ * @param {*} error - The error object that will be returned.
+ * @returns {*} - The passed in error.
+ */
+function noMinErr(ignoredCode, ignoredTemplate, err) {
+  return err;
 }

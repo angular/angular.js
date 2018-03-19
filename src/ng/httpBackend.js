@@ -148,7 +148,7 @@ function createHttpBackend($browser, createXhr, $browserDefer, callbacks, rawDoc
           // The json response type can be ignored if not supported, because JSON payloads are
           // parsed on the client-side regardless.
           if (responseType !== 'json') {
-            throw e;
+            throw noMinErr('', '', e);
           }
         }
       }

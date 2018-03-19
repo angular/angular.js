@@ -179,3 +179,13 @@ describe('errors', function() {
 
   });
 });
+
+describe('noMinErr', function() {
+  it('should return the 3rd argument', function() {
+    expect(noMinErr('foo', 'bar', 'baz')).toBe('baz');
+    expect(noMinErr('foo', 'bar', null)).toBe(null);
+    expect(noMinErr('foo', 'bar')).toBeUndefined();
+    expect(noMinErr('foo')).toBeUndefined();
+    expect(noMinErr()).toBeUndefined();
+  });
+});

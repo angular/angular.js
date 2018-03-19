@@ -894,7 +894,7 @@ function $LocationProvider() {
         $location.url(oldUrl);
         $location.$$state = oldState;
 
-        throw e;
+        throw noMinErr('', '', e);
       }
     }
 

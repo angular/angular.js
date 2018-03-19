@@ -890,7 +890,7 @@ function createInjector(modulesToLoad, strictDi) {
           if (cache[serviceName] === INSTANTIATING) {
             delete cache[serviceName];
           }
-          throw err;
+          throw noMinErr('', '', err);
         } finally {
           path.shift();
         }
