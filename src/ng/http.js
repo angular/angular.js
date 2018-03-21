@@ -391,9 +391,9 @@ function $HttpProvider() {
    * @name $httpProvider#xsrfWhitelistedOrigins
    * @description
    *
-   * Array containing URLs whose origins are considered trusted enough to receive the XSRF token.
-   * See the {@link ng.$http#security-considerations Security Considerations} sections for more
-   * details on XSRF.
+   * Array containing URLs whose origins are trusted to receive the XSRF token. See the
+   * {@link ng.$http#security-considerations Security Considerations} sections for more details on
+   * XSRF.
    *
    * **Note:** An "origin" consists of the [URI scheme](https://en.wikipedia.org/wiki/URI_scheme),
    * the [hostname](https://en.wikipedia.org/wiki/Hostname) and the
@@ -452,7 +452,7 @@ function $HttpProvider() {
     /**
      * A function to check request URLs against a list of allowed origins.
      */
-    var urlIsAllowedOrigin = urlIsAllowedOriginChecker(xsrfWhitelistedOrigins);
+    var urlIsAllowedOrigin = urlIsAllowedOriginFactory(xsrfWhitelistedOrigins);
 
     /**
      * @ngdoc service
@@ -824,7 +824,7 @@ function $HttpProvider() {
      * for added security.
      *
      * The header will &mdash; by default &mdash; **not** be set for cross-domain requests. This
-     * prevents unauthorized servers (e.g. malicious or compromized 3rd-party APIs) from gaining
+     * prevents unauthorized servers (e.g. malicious or compromised 3rd-party APIs) from gaining
      * access to your users' XSRF tokens and exposing them to Cross Site Request Forgery. If you
      * want to, you can whitelist additional origins to also receive the XSRF token, by adding them
      * to {@link ng.$httpProvider#xsrfWhitelistedOrigins xsrfWhitelistedOrigins}. This might be

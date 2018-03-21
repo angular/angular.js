@@ -58,12 +58,12 @@ describe('urlUtils', function() {
   });
 
 
-  describe('urlIsAllowedOriginChecker', function() {
+  describe('urlIsAllowedOriginFactory', function() {
     var origin = urlResolve(window.location.href);
     var urlIsAllowedOrigin;
 
     beforeEach(function() {
-      urlIsAllowedOrigin = urlIsAllowedOriginChecker([
+      urlIsAllowedOrigin = urlIsAllowedOriginFactory([
         'https://foo.com/',
         origin.protocol + '://bar.com:1337/'
       ]);

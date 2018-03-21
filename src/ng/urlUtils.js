@@ -118,7 +118,7 @@ function urlIsSameOriginAsBaseUrl(requestUrl) {
  * @returns {Function} - A function that receives a URL (string or parsed URL object) and returns
  *     whether it is of an allowed origin.
  */
-function urlIsAllowedOriginChecker(whitelistedOriginUrls) {
+function urlIsAllowedOriginFactory(whitelistedOriginUrls) {
   var parsedAllowedOriginUrls = [originUrl].concat(whitelistedOriginUrls.map(urlResolve));
 
   /**
