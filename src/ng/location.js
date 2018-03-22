@@ -106,6 +106,121 @@ function serverBase(url) {
   return url.substring(0, url.indexOf('/', url.indexOf('//') + 2));
 }
 
+/**
+ * LocationMatrixUrl represents a URL
+ * This object is exposed as $location service when "matrix" mode is enabled
+ *
+ * @constructor
+ * @param {string} appBase application base URL
+ * @param {string} appBaseNoFile application base URL stripped off any filename
+ * @param {string} basePrefix URL path prefix
+ */
+function LocationMatrixUrl(appBase, appBaseNoFile, basePrefix) {
+  this.$$html5 = true;
+  basePrefix = basePrefix || '';
+  parseAbsoluteUrl(appBase, this);
+
+
+  /**
+   * Parse given Matrix URL string into properties
+   * @param {string} url HTML5 URL
+   * @private
+   */
+  this.$$parse = function(url) {
+    var pathUrl = stripBaseUrl(appBaseNoFile, url);
+    if (!isString(pathUrl)) {
+      throw $locationMinErr('ipthprfx', 'Invalid url "{0}", missing path prefix "{1}".', url,
+          appBaseNoFile);
+    }
+
+    if (DOUBLE_SLASH_REGEX.test(pathUrl)) {
+      throw $locationMinErr('badpath', 'Invalid url "{0}".', pathUrl);
+    }
+
+    var prefixed = (pathUrl.charAt(0) !== '/');
+    if (prefixed) {
+      pathUrl = '/' + pathUrl;
+    }
+
+    var match = urlResolve(pathUrl);
+    this.$$parsePath(match.pathname);
+    this.$$search = parseKeyValue(match.search);
+    this.$$hash = decodeURIComponent(match.hash);
+
+    this.$$compose();
+  };
+
+  this.$$parsePath = function(path) {
+    var $location = this;
+    var segments = path.split('/');
+
+    // first segment is always empty as the url starts with `/`.
+    segments.shift();
+
+    $location.$$matrixParams = segments.map(function(segment, index) {
+      var params = segment.split(';');
+      // the first param is actually the path segment
+      segments[index] = decodePath(params.shift());
+      return params;
+    });
+    $location.$$path = '/' + segments.join('/');
+  }
+
+  this.$$composePath = function() {
+    var $location = this;
+    var segments =this.$$path.split('/');
+
+    // first segment is always empty as the url starts with `/`.
+    segments.shift();
+
+    return '/' + segments.map(function(segment, index) {
+      return [encodePath(segment)].concat($location.$$matrixParams[index]).join(';');
+    }).join('/');
+  }
+
+  /**
+   * Compose url and update `absUrl` property
+   * @private
+   */
+  this.$$compose = function() {
+    var search = toKeyValue(this.$$search),
+        hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
+
+    this.$$url = this.$$composePath() + (search ? '?' + search : '') + hash;
+    this.$$absUrl = appBaseNoFile + this.$$url.substr(1); // first char is always '/'
+
+    this.$$urlUpdatedByLocation = true;
+  };
+
+  this.$$parseLinkUrl = function(url, relHref) {
+    if (relHref && relHref[0] === '#') {
+      // special case for links to hash fragments:
+      // keep the old url and only replace the hash fragment
+      this.hash(relHref.slice(1));
+      return true;
+    }
+    var appUrl, prevAppUrl;
+    var rewrittenUrl;
+
+
+    if (isDefined(appUrl = stripBaseUrl(appBase, url))) {
+      prevAppUrl = appUrl;
+      if (basePrefix && isDefined(appUrl = stripBaseUrl(basePrefix, appUrl))) {
+        rewrittenUrl = appBaseNoFile + (stripBaseUrl('/', appUrl) || appUrl);
+      } else {
+        rewrittenUrl = appBase + prevAppUrl;
+      }
+    } else if (isDefined(appUrl = stripBaseUrl(appBaseNoFile, url))) {
+      rewrittenUrl = appBaseNoFile + appUrl;
+    } else if (appBaseNoFile === url + '/') {
+      rewrittenUrl = appBaseNoFile;
+    }
+    if (rewrittenUrl) {
+      this.$$parse(rewrittenUrl);
+    }
+    return !!rewrittenUrl;
+  };
+}
 
 /**
  * LocationHtml5Url represents a URL
@@ -643,7 +758,7 @@ var locationPrototype = {
   }
 };
 
-forEach([LocationHashbangInHtml5Url, LocationHashbangUrl, LocationHtml5Url], function(Location) {
+forEach([LocationHashbangInHtml5Url, LocationHashbangUrl, LocationHtml5Url, LocationMatrixUrl], function(Location) {
   Location.prototype = Object.create(locationPrototype);
 
   /**
@@ -684,6 +799,7 @@ forEach([LocationHashbangInHtml5Url, LocationHashbangUrl, LocationHtml5Url], fun
   };
 });
 
+LocationMatrixUrl.prototype.matrixParams = locationGetterSetter('$$matrixParams');
 
 function locationGetter(property) {
   return /** @this */ function() {
@@ -746,7 +862,8 @@ function $LocationProvider() {
         enabled: false,
         requireBase: true,
         rewriteLinks: true
-      };
+      },
+      matrixMode = false;
 
   /**
    * @ngdoc method
@@ -812,6 +929,16 @@ function $LocationProvider() {
     }
   };
 
+
+  this.matrixParamMode = function(mode) {
+    if (isDefined(mode)) {
+      matrixMode = mode;
+      return this;
+    } else {
+      return matrixMode;
+    }
+  }
+
   /**
    * @ngdoc event
    * @name $location#$locationChangeStart
@@ -859,7 +986,10 @@ function $LocationProvider() {
         initialUrl = $browser.url(),
         appBase;
 
-    if (html5Mode.enabled) {
+    if (matrixMode) {
+      appBase = serverBase(initialUrl) + (baseHref || '/');
+      LocationMode = LocationMatrixUrl;
+    } else if (html5Mode.enabled) {
       if (!baseHref && html5Mode.requireBase) {
         throw $locationMinErr('nobase',
           '$location in HTML5 mode requires a <base> tag to be present!');
