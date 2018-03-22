@@ -1557,19 +1557,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
         // We must run this hook in an apply since the $$postDigest runs outside apply
         $rootScope.$apply(function() {
-          var errors = [];
           for (var i = 0, ii = onChangesQueue.length; i < ii; ++i) {
             try {
               onChangesQueue[i]();
             } catch (e) {
-              errors.push(e);
+              $exceptionHandler(e);
             }
           }
           // Reset the queue to trigger a new schedule next time there is a change
           onChangesQueue = undefined;
-          if (errors.length) {
-            throw errors;
-          }
         });
       } finally {
         onChangesTtl++;
