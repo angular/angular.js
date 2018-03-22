@@ -1191,66 +1191,142 @@ describe('angular', function() {
 
 
   describe('parseKeyValue', function() {
-    it('should parse a string into key-value pairs', function() {
-      expect(parseKeyValue('')).toEqual({});
-      expect(parseKeyValue('simple=pair')).toEqual({simple: 'pair'});
-      expect(parseKeyValue('first=1&second=2')).toEqual({first: '1', second: '2'});
-      expect(parseKeyValue('escaped%20key=escaped%20value')).
-      toEqual({'escaped key': 'escaped value'});
-      expect(parseKeyValue('emptyKey=')).toEqual({emptyKey: ''});
-      expect(parseKeyValue('flag1&key=value&flag2')).
-      toEqual({flag1: true, key: 'value', flag2: true});
-    });
-    it('should ignore key values that are not valid URI components', function() {
-      expect(function() { parseKeyValue('%'); }).not.toThrow();
-      expect(parseKeyValue('%')).toEqual({});
-      expect(parseKeyValue('invalid=%')).toEqual({ invalid: undefined });
-      expect(parseKeyValue('invalid=%&valid=good')).toEqual({ invalid: undefined, valid: 'good' });
-    });
-    it('should parse a string into key-value pairs with duplicates grouped in an array', function() {
-      expect(parseKeyValue('')).toEqual({});
-      expect(parseKeyValue('duplicate=pair')).toEqual({duplicate: 'pair'});
-      expect(parseKeyValue('first=1&first=2')).toEqual({first: ['1','2']});
-      expect(parseKeyValue('escaped%20key=escaped%20value&&escaped%20key=escaped%20value2')).
-      toEqual({'escaped key': ['escaped value','escaped value2']});
-      expect(parseKeyValue('flag1&key=value&flag1')).
-      toEqual({flag1: [true,true], key: 'value'});
-      expect(parseKeyValue('flag1&flag1=value&flag1=value2&flag1')).
-      toEqual({flag1: [true,'value','value2',true]});
-    });
+    var toUpperCase = function(x) { return isString(x) ? x.toUpperCase() : x; };
+    var decoders = [
+      undefined,
+      function(x) { return toUpperCase(tryDecodeURIComponent(x)); }
+    ];
+    var expectedGetters = [
+      identity,
+      function(x) {
+        var y = {};
+        Object.keys(x).forEach(function(key) {
+          var value = x[key];
+          y[toUpperCase(key)] = isArray(value) ? value.map(toUpperCase) : toUpperCase(value);
+        });
+        return y;
+      }
+    ];
+
+    forEach(decoders, function(decoder, i) {
+      var description = '(with ' + (decoder ? 'custom' : 'default') + ' decoder)';
+      var actual = function(input) { return parseKeyValue(input, decoder); };
+      var expected = expectedGetters[i];
+
+      describe(description, function() {
+        it('should parse a string into key-value pairs', function() {
+          expect(actual('')).toEqual(expected({}));
+          expect(actual('simple=pair')).toEqual(expected({simple: 'pair'}));
+          expect(actual('first=1&second=2')).toEqual(expected({first: '1', second: '2'}));
+          expect(actual('escaped%20key=escaped%20value')).
+              toEqual(expected({'escaped key': 'escaped value'}));
+          expect(actual('emptyKey=')).toEqual(expected({emptyKey: ''}));
+          expect(actual('flag1&key=value&flag2')).
+              toEqual(expected({flag1: true, key: 'value', flag2: true}));
+        });
+
+        it('should ignore key values that are not valid URI components', function() {
+          expect(function() { actual('%'); }).not.toThrow();
+          expect(actual('%')).toEqual(expected({}));
+          expect(actual('invalid=%')).toEqual(expected({invalid: undefined}));
+          expect(actual('invalid=%&valid=good')).
+              toEqual(expected({invalid: undefined, valid: 'good'}));
+        });
+
+        it('should parse a string into key-value pairs with duplicates grouped in an array', function() {
+          expect(actual('')).toEqual(expected({}));
+          expect(actual('duplicate=pair')).toEqual(expected({duplicate: 'pair'}));
+          expect(actual('first=1&first=2')).toEqual(expected({first: ['1', '2']}));
+          expect(actual('escaped%20key=escaped%20value&&escaped%20key=escaped%20value2')).
+              toEqual(expected({'escaped key': ['escaped value', 'escaped value2']}));
+          expect(actual('flag1&key=value&flag1')).
+              toEqual(expected({flag1: [true, true], key: 'value'}));
+          expect(actual('flag1&flag1=value&flag1=value2&flag1')).
+              toEqual(expected({flag1: [true, 'value', 'value2', true]}));
+        });
 
 
-    it('should ignore properties higher in the prototype chain', function() {
-      expect(parseKeyValue('toString=123')).toEqual({
-        'toString': '123'
-      });
-    });
+        it('should ignore properties higher in the prototype chain', function() {
+          expect(actual('toString=123')).toEqual(expected({toString: '123'}));
+        });
 
-    it('should ignore badly escaped = characters', function() {
-      expect(parseKeyValue('test=a=b')).toEqual({
-          'test': 'a=b'
+        it('should ignore badly escaped = characters', function() {
+          expect(actual('test=a=b')).toEqual(expected({test: 'a=b'}));
+        });
+
+        if (decoder) {
+          it('should call the decoder with each key and value', function() {
+            const decoderSpy = jasmine.createSpy('decoder').and.callFake(decoder);
+
+            // Flags have no value.
+            parseKeyValue('key=value&num=123&flag', decoderSpy);
+            var allArgs = decoderSpy.calls.allArgs().map(function(arr) { return arr[0]; });
+            expect(decoderSpy).toHaveBeenCalledTimes(5);
+            expect(allArgs).toEqual(['key', 'value', 'num', '123', 'flag']);
+
+            decoderSpy.calls.reset();
+
+            // Decoder called with key for each value; flags have no value.
+            parseKeyValue('arr=val&arr=456&arr', decoderSpy);
+            allArgs = decoderSpy.calls.allArgs().map(function(arr) { return arr[0]; });
+            expect(decoderSpy).toHaveBeenCalledTimes(5);
+            expect(allArgs).toEqual(['arr', 'val', 'arr', '456', 'arr']);
+          });
+        }
       });
     });
   });
 
   describe('toKeyValue', function() {
-    it('should serialize key-value pairs into string', function() {
-      expect(toKeyValue({})).toEqual('');
-      expect(toKeyValue({simple: 'pair'})).toEqual('simple=pair');
-      expect(toKeyValue({first: '1', second: '2'})).toEqual('first=1&second=2');
-      expect(toKeyValue({'escaped key': 'escaped value'})).
-      toEqual('escaped%20key=escaped%20value');
-      expect(toKeyValue({emptyKey: ''})).toEqual('emptyKey=');
-    });
+    var encoders = [undefined, function(x) { return encodeUriQuery(x, true).toUpperCase(); }];
+    var expectedGetters = [identity, function(x) { return x.toUpperCase(); }];
 
-    it('should serialize true values into flags', function() {
-      expect(toKeyValue({flag1: true, key: 'value', flag2: true})).toEqual('flag1&key=value&flag2');
-    });
+    forEach(encoders, function(encoder, i) {
+      var description = '(with ' + (encoder ? 'custom' : 'default') + ' encoder)';
+      var actual = function(input) { return toKeyValue(input, encoder); };
+      var expected = expectedGetters[i];
 
-    it('should serialize duplicates into duplicate param strings', function() {
-      expect(toKeyValue({key: [323,'value',true]})).toEqual('key=323&key=value&key');
-      expect(toKeyValue({key: [323,'value',true, 1234]})).
-      toEqual('key=323&key=value&key&key=1234');
+      describe(description, function() {
+        it('should serialize key-value pairs into string', function() {
+          expect(actual({})).toBe(expected(''));
+          expect(actual({simple: 'pair'})).toBe(expected('simple=pair'));
+          expect(actual({first: '1', second: '2'})).toBe(expected('first=1&second=2'));
+          expect(actual({'escaped key': 'escaped value'})).
+              toBe(expected('escaped%20key=escaped%20value'));
+          expect(actual({emptyKey: ''})).toBe(expected('emptyKey='));
+        });
+
+        it('should serialize true values into flags', function() {
+          expect(actual({flag1: true, key: 'value', flag2: true})).
+              toBe(expected('flag1&key=value&flag2'));
+        });
+
+        it('should serialize duplicates into duplicate param strings', function() {
+          expect(actual({key: [323, 'value', true]})).toBe(expected('key=323&key=value&key'));
+          expect(actual({key: [323, 'value', true, 1234]})).
+              toBe(expected('key=323&key=value&key&key=1234'));
+        });
+
+        if (encoder) {
+          it('should call the encoder with each key and value', function() {
+            const encoderSpy = jasmine.createSpy('encoder').and.callFake(encoder);
+
+            // Numbers are stringified first; flags have no value.
+            toKeyValue({key: 'value', num: 123, flag: true}, encoderSpy);
+            var allArgs = encoderSpy.calls.allArgs().map(function(arr) { return arr[0]; });
+            expect(encoderSpy).toHaveBeenCalledTimes(5);
+            expect(allArgs).toEqual(['key', 'value', 'num', '123', 'flag']);
+
+            encoderSpy.calls.reset();
+
+            // Encoder called with key for each value; flags have no value.
+            toKeyValue({arr: ['val', 456, true]}, encoderSpy);
+            allArgs = encoderSpy.calls.allArgs().map(function(arr) { return arr[0]; });
+            expect(encoderSpy).toHaveBeenCalledTimes(5);
+            expect(allArgs).toEqual(['arr', 'val', 'arr', '456', 'arr']);
+          });
+        }
+      });
     });
   });
 

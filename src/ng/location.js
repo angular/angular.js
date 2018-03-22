@@ -9,30 +9,26 @@ var $locationMinErr = minErr('$location');
  * Encode path using encodeUriSegment, ignoring forward slashes
  *
  * @param {string} path Path to encode
+ * @param {Function} encodePathSegment Function for encoding a path segment
  * @returns {string}
  */
-function encodePath(path) {
+function encodePath(path, encodePathSegment) {
   var segments = path.split('/'),
       i = segments.length;
 
   while (i--) {
-    // decode forward slashes to prevent them from being double encoded
-    segments[i] = encodeUriSegment(segments[i].replace(/%2F/g, '/'));
+    segments[i] = encodePathSegment(segments[i]);
   }
 
   return segments.join('/');
 }
 
-function decodePath(path, html5Mode) {
+function decodePath(path, decodePathSegment) {
   var segments = path.split('/'),
       i = segments.length;
 
   while (i--) {
-    segments[i] = decodeURIComponent(segments[i]);
-    if (html5Mode) {
-      // encode forward slashes to prevent them from being mistaken for path separators
-      segments[i] = segments[i].replace(/\//g, '%2F');
-    }
+    segments[i] = decodePathSegment(segments[i]);
   }
 
   return segments.join('/');
@@ -47,7 +43,7 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
 }
 
 var DOUBLE_SLASH_REGEX = /^\s*[\\/]{2,}/;
-function parseAppUrl(url, locationObj, html5Mode) {
+function parseAppUrl(url, locationObj) {
 
   if (DOUBLE_SLASH_REGEX.test(url)) {
     throw $locationMinErr('badpath', 'Invalid url "{0}".', url);
@@ -59,9 +55,9 @@ function parseAppUrl(url, locationObj, html5Mode) {
   }
   var match = urlResolve(url);
   var path = prefixed && match.pathname.charAt(0) === '/' ? match.pathname.substring(1) : match.pathname;
-  locationObj.$$path = decodePath(path, html5Mode);
-  locationObj.$$search = parseKeyValue(match.search);
-  locationObj.$$hash = decodeURIComponent(match.hash);
+  locationObj.$$path = decodePath(path, locationObj.$$decodePathSegment);
+  locationObj.$$search = parseKeyValue(match.search, locationObj.$$decodeQueryKeyValue);
+  locationObj.$$hash = locationObj.$$decodeHash(match.hash);
 
   // make sure path starts with '/';
   if (locationObj.$$path && locationObj.$$path.charAt(0) !== '/') {
@@ -134,7 +130,7 @@ function LocationHtml5Url(appBase, appBaseNoFile, basePrefix) {
           appBaseNoFile);
     }
 
-    parseAppUrl(pathUrl, this, true);
+    parseAppUrl(pathUrl, this);
 
     if (!this.$$path) {
       this.$$path = '/';
@@ -148,10 +144,11 @@ function LocationHtml5Url(appBase, appBaseNoFile, basePrefix) {
    * @private
    */
   this.$$compose = function() {
-    var search = toKeyValue(this.$$search),
-        hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
+    var path = encodePath(this.$$path, this.$$encodePathSegment),
+        search = toKeyValue(this.$$search, this.$$encodeQueryKeyValue),
+        hash = this.$$hash ? '#' + this.$$encodeHash(this.$$hash) : '';
 
-    this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
+    this.$$url = path + (search ? '?' + search : '') + hash;
     this.$$absUrl = appBaseNoFile + this.$$url.substr(1); // first char is always '/'
 
     this.$$urlUpdatedByLocation = true;
@@ -237,7 +234,7 @@ function LocationHashbangUrl(appBase, appBaseNoFile, hashPrefix) {
       }
     }
 
-    parseAppUrl(withoutHashUrl, this, false);
+    parseAppUrl(withoutHashUrl, this);
 
     this.$$path = removeWindowsDriveName(this.$$path, withoutHashUrl, appBase);
 
@@ -283,10 +280,11 @@ function LocationHashbangUrl(appBase, appBaseNoFile, hashPrefix) {
    * @private
    */
   this.$$compose = function() {
-    var search = toKeyValue(this.$$search),
-        hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
+    var path = encodePath(this.$$path, this.$$encodePathSegment),
+        search = toKeyValue(this.$$search, this.$$encodeQueryKeyValue),
+        hash = this.$$hash ? '#' + this.$$encodeHash(this.$$hash) : '';
 
-    this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
+    this.$$url = path + (search ? '?' + search : '') + hash;
     this.$$absUrl = appBase + (this.$$url ? hashPrefix + this.$$url : '');
 
     this.$$urlUpdatedByLocation = true;
@@ -341,16 +339,15 @@ function LocationHashbangInHtml5Url(appBase, appBaseNoFile, hashPrefix) {
   };
 
   this.$$compose = function() {
-    var search = toKeyValue(this.$$search),
-        hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
+    var path = encodePath(this.$$path, this.$$encodePathSegment),
+        search = toKeyValue(this.$$search, this.$$encodeQueryKeyValue),
+        hash = this.$$hash ? '#' + this.$$encodeHash(this.$$hash) : '';
 
-    this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
-    // include hashPrefix in $$absUrl when $$url is empty so IE9 does not reload page because of removal of '#'
+    this.$$url = path + (search ? '?' + search : '') + hash;
     this.$$absUrl = appBase + hashPrefix + this.$$url;
 
     this.$$urlUpdatedByLocation = true;
   };
-
 }
 
 
@@ -422,9 +419,9 @@ var locationPrototype = {
     }
 
     var match = PATH_MATCH.exec(url);
-    if (match[1] || url === '') this.path(decodeURIComponent(match[1]));
+    if (match[1] || url === '') this.path(decodePath(match[1], this.$$decodePathSegment));
     if (match[2] || match[1] || url === '') this.search(match[3] || '');
-    this.hash(match[5] || '');
+    this.hash(this.$$decodeHash(match[5] || ''));
 
     return this;
   },
@@ -578,7 +575,7 @@ var locationPrototype = {
       case 1:
         if (isString(search) || isNumber(search)) {
           search = search.toString();
-          this.$$search = parseKeyValue(search);
+          this.$$search = parseKeyValue(search, this.$$decodeQueryKeyValue);
         } else if (isObject(search)) {
           search = copy(search, {});
           // remove object undefined or null properties
@@ -702,6 +699,83 @@ function locationGetterSetter(property, preprocess) {
     this.$$compose();
 
     return this;
+  };
+}
+
+
+/**
+ * @private
+ * A function for decoding URL path segments.
+ */
+$$DecodePathSegmentProvider.$inject = ['$locationProvider'];
+/** @this */ function $$DecodePathSegmentProvider($locationProvider) {
+  this.$get = ['$sniffer', function($sniffer) {
+    var html5Mode = $locationProvider.html5Mode().enabled && $sniffer.history;
+
+    return function(segment) {
+      segment = decodeURIComponent(segment);
+      if (html5Mode) {
+        // encode forward slashes to prevent them from being mistaken for path separators
+        segment = segment.replace(/\//g, '%2F');
+      }
+      return segment;
+    };
+  }];
+}
+/**
+ * @private
+ * A function for decoding URL query keys/values.
+ */
+/** @this */ function $$DecodeQueryKeyValueProvider() {
+  this.$get = function() {
+    return function(keyOrValue) {
+      return tryDecodeURIComponent(keyOrValue.replace(/\+/g, '%20'));
+    };
+  };
+}
+/**
+ * @private
+ * A function for decoding URL hash fragments.
+ */
+/** @this */ function $$DecodeHashProvider() {
+  this.$get = function() {
+    return function(hash) {
+      return decodeURIComponent(hash);
+    };
+  };
+}
+/**
+ * @private
+ * A function for encoding URL path segments.
+ */
+/** @this */ function $$EncodePathSegmentProvider() {
+  this.$get = function() {
+    return function(segment) {
+      // decode forward slashes to prevent them from being double encoded
+      return encodeUriSegment(segment.replace(/%2F/g, '/'));
+    };
+  };
+}
+/**
+ * @private
+ * A function for encoding URL query keys/values.
+ */
+/** @this */ function $$EncodeQueryKeyValueProvider() {
+  this.$get = function() {
+    return function(keyOrValue) {
+      return encodeUriQuery(keyOrValue, true);
+    };
+  };
+}
+/**
+ * @private
+ * A function for encoding URL hash fragments.
+ */
+/** @this */ function $$EncodeHashProvider() {
+  this.$get = function() {
+    return function(hash) {
+      return encodeUriSegment(hash);
+    };
   };
 }
 
@@ -852,7 +926,11 @@ function $LocationProvider() {
    */
 
   this.$get = ['$rootScope', '$browser', '$sniffer', '$rootElement', '$window',
-      function($rootScope, $browser, $sniffer, $rootElement, $window) {
+               '$$decodePathSegment', '$$decodeQueryKeyValue', '$$decodeHash',
+               '$$encodePathSegment', '$$encodeQueryKeyValue', '$$encodeHash',
+      function($rootScope, $browser, $sniffer, $rootElement, $window,
+               $$decodePathSegment, $$decodeQueryKeyValue, $$decodeHash,
+               $$encodePathSegment, $$encodeQueryKeyValue, $$encodeHash) {
     var $location,
         LocationMode,
         baseHref = $browser.baseHref(), // if base[href] is undefined, it defaults to ''
@@ -871,6 +949,15 @@ function $LocationProvider() {
       LocationMode = LocationHashbangUrl;
     }
     var appBaseNoFile = stripFile(appBase);
+
+    extend(LocationMode.prototype, {
+      $$decodePathSegment: $$decodePathSegment,
+      $$decodeQueryKeyValue: $$decodeQueryKeyValue,
+      $$decodeHash: $$decodeHash,
+      $$encodePathSegment: $$encodePathSegment,
+      $$encodeQueryKeyValue: $$encodeQueryKeyValue,
+      $$encodeHash: $$encodeHash
+    });
 
     $location = new LocationMode(appBase, appBaseNoFile, '#' + hashPrefix);
     $location.$$parseLinkUrl(initialUrl, initialUrl);
