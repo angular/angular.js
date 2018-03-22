@@ -4956,8 +4956,7 @@ describe('$compile', function() {
               $rootScope.$apply('a = 42');
 
               // The first component's error should be logged
-              var errors = $exceptionHandler.errors.pop();
-              expect(errors[0]).toEqual(new Error('bad hook'));
+              expect($exceptionHandler.errors.pop()).toEqual(new Error('bad hook'));
 
               // The second component's changes should still be called
               expect($log.info.logs.pop()).toEqual(['onChange']);
@@ -4965,7 +4964,7 @@ describe('$compile', function() {
           });
 
 
-          it('should collect up all `$onChanges` errors into one throw', function() {
+          it('should throw `$onChanges` errors immediately', function() {
             function ThrowingController() {
               this.$onChanges = function(change) {
                 throw new Error('bad hook: ' + this.prop);
@@ -4994,10 +4993,9 @@ describe('$compile', function() {
 
               $rootScope.$apply('a = 42');
 
-              // Both component's error should be logged
-              var errors = $exceptionHandler.errors.pop();
-              expect(errors.pop()).toEqual(new Error('bad hook: 84'));
-              expect(errors.pop()).toEqual(new Error('bad hook: 42'));
+              // Both component's error should be logged individually
+              expect($exceptionHandler.errors.pop()).toEqual(new Error('bad hook: 84'));
+              expect($exceptionHandler.errors.pop()).toEqual(new Error('bad hook: 42'));
             });
           });
         });
