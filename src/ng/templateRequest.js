@@ -84,6 +84,14 @@ function $TemplateRequestProvider() {
         } else if (transformResponse === defaultHttpResponseTransform) {
           transformResponse = null;
         }
+		
+		var cachedTpl = $templateCache.get(tpl);
+        if(cachedTpl){
+          var q = $q.defer();
+          handleRequestFn.totalPendingRequests--;
+          q.resolve(cachedTpl);
+          return q.promise;
+        }
 
         return $http.get(tpl, extend({
             cache: $templateCache,
