@@ -397,12 +397,14 @@ function $HttpProvider() {
    *
    * **Note:** An "origin" consists of the [URI scheme](https://en.wikipedia.org/wiki/URI_scheme),
    * the [hostname](https://en.wikipedia.org/wiki/Hostname) and the
-   * [port number](https://en.wikipedia.org/wiki/Port_(computer_networking).
+   * [port number](https://en.wikipedia.org/wiki/Port_(computer_networking). For `http:` and
+   * `https:`, the port number can be omitted if using th default ports (80 and 443 respectively).
+   * Examples: `http://example.com`, `https://api.example.com:9876`
    *
    * <div class="alert alert-warning">
    *   It is not possible to whitelist specific URLs/paths. The `path`, `query` and `fragment` parts
    *   of a URL will be ignored. For example, `https://foo.com/path/bar?query=baz#fragment` will be
-   *   treated as `https://foo.com/`, meaning that **all** requests to URLs starting with
+   *   treated as `https://foo.com`, meaning that **all** requests to URLs starting with
    *   `https://foo.com/` will include the XSRF token.
    * </div>
    *
@@ -413,7 +415,7 @@ function $HttpProvider() {
    * angular.
    *   module('xsrfWhitelistedOriginsExample', []).
    *   config(['$httpProvider', function($httpProvider) {
-   *     $httpProvider.xsrfWhitelistedOrigins.push('https://api.example.com/');
+   *     $httpProvider.xsrfWhitelistedOrigins.push('https://api.example.com');
    *   }]).
    *   run(['$http', function($http) {
    *     // The XSRF token will be sent.

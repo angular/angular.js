@@ -2213,7 +2213,9 @@ describe('$http', function() {
     var $httpBackend;
 
     beforeEach(module(function($httpProvider) {
-      $httpProvider.xsrfWhitelistedOrigins.push('https://whitelisted.example.com/');
+      $httpProvider.xsrfWhitelistedOrigins.push(
+          'https://whitelisted.example.com',
+          'https://whitelisted2.example.com:1337/ignored/path');
     }));
 
     beforeEach(inject(function(_$http_, _$httpBackend_) {
@@ -2308,15 +2310,19 @@ describe('$http', function() {
       function checkHeaders(headers) {
         return isUndefined(headers['X-XSRF-TOKEN']);
       }
-      var currentUrl = 'https://example.com/path';
-      var requestUrl = 'https://api.example.com/path';
+      var requestUrls = [
+        'https://api.example.com/path',
+        'http://whitelisted.example.com',
+        'https://whitelisted2.example.com:1338'
+      ];
 
       mockedCookies['XSRF-TOKEN'] = 'secret';
-      $httpBackend.expect('GET', requestUrl, null, checkHeaders).respond(null);
 
-      $http.get(requestUrl);
-
-      $httpBackend.flush();
+      requestUrls.forEach(function(url) {
+        $httpBackend.expect('GET', url, null, checkHeaders).respond(null);
+        $http.get(url);
+        $httpBackend.flush();
+      });
     });
 
 
@@ -2326,16 +2332,19 @@ describe('$http', function() {
           return headers['X-XSRF-TOKEN'] === 'secret';
         }
         var currentUrl = 'https://example.com/path';
-        var requestUrl = 'https://whitelisted.example.com/path';
+        var requestUrls = [
+          'https://whitelisted.example.com/path',
+          'https://whitelisted2.example.com:1337/path'
+        ];
 
         $browser.url(currentUrl);
-
         mockedCookies['XSRF-TOKEN'] = 'secret';
-        $httpBackend.expect('GET', requestUrl, null, checkHeaders).respond(null);
 
-        $http.get(requestUrl);
-
-        $httpBackend.flush();
+        requestUrls.forEach(function(url) {
+          $httpBackend.expect('GET', url, null, checkHeaders).respond(null);
+          $http.get(url);
+          $httpBackend.flush();
+        });
       })
     );
   });
