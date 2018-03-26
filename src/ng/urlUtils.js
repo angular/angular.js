@@ -40,7 +40,8 @@ var baseUrlParsingNode;
  *   http://james.padolsey.com/javascript/parsing-urls-with-the-dom/
  *
  * @kind function
- * @param {string} url The URL to be parsed.
+ * @param {string|object} url The URL to be parsed. If `url` is not a string, it will be returned
+ *     unchanged.
  * @description Normalizes and parses a URL.
  * @returns {object} Returns the normalized URL as a dictionary.
  *
@@ -57,6 +58,8 @@ var baseUrlParsingNode;
  *
  */
 function urlResolve(url) {
+  if (!isString(url)) return url;
+
   var href = url;
 
   // Support: IE 9-11 only
@@ -132,7 +135,7 @@ function urlIsAllowedOriginFactory(whitelistedOriginUrls) {
    * @returns {boolean} - Whether the specified URL is of an allowed origin.
    */
   return function urlIsAllowedOrigin(requestUrl) {
-    var parsedUrl = isString(requestUrl) ? urlResolve(requestUrl) : requestUrl;
+    var parsedUrl = urlResolve(requestUrl);
     return parsedAllowedOriginUrls.some(urlsAreSameOrigin.bind(null, parsedUrl));
   };
 }
@@ -148,8 +151,8 @@ function urlIsAllowedOriginFactory(whitelistedOriginUrls) {
  * @returns {boolean} - True if both URLs have the same origin, and false otherwise.
  */
 function urlsAreSameOrigin(url1, url2) {
-  url1 = isString(url1) ? urlResolve(url1) : url1;
-  url2 = isString(url2) ? urlResolve(url2) : url2;
+  url1 = urlResolve(url1);
+  url2 = urlResolve(url2);
 
   return (url1.protocol === url2.protocol &&
           url1.host === url2.host);
