@@ -2,6 +2,15 @@
 
 describe('urlUtils', function() {
   describe('urlResolve', function() {
+    it('should returned already parsed URLs unchanged', function() {
+      var urlObj = urlResolve('/foo?bar=baz#qux');
+      expect(urlResolve(urlObj)).toBe(urlObj);
+      expect(urlResolve(true)).toBe(true);
+      expect(urlResolve(null)).toBeNull();
+      expect(urlResolve(undefined)).toBeUndefined();
+    });
+
+
     it('should normalize a relative url', function() {
       expect(urlResolve('foo').href).toMatch(/^https?:\/\/[^/]+\/foo$/);
     });
