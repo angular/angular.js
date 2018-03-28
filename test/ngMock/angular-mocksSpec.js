@@ -3206,10 +3206,6 @@ describe('sharedInjector', function() {
         define();
         sdescribe.root.run();
       } finally {
-        // avoid failing testability for the additional
-        // injectors etc created
-        angular.element.cache = {};
-
         // clear up
         module.$$beforeAllHook = null;
         module.$$afterAllHook = null;
