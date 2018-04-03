@@ -2840,6 +2840,46 @@ describe('parser', function() {
             expect(filterCalled).toBe(true);
           });
 
+          it('should not be invoked unless the input/arguments change within literals', function() {
+            var filterCalls = [];
+            $filterProvider.register('foo', valueFn(function(input) {
+              filterCalls.push(input);
+              return input;
+            }));
+
+            scope.$watch('[(a | foo:b:1), undefined]');
+            scope.a = 0;
+            scope.$digest();
+            expect(filterCalls).toEqual([0]);
+
+            scope.$digest();
+            expect(filterCalls).toEqual([0]);
+
+            scope.a++;
+            scope.$digest();
+            expect(filterCalls).toEqual([0, 1]);
+          });
+
+          it('should not be invoked unless the input/arguments change within literals (one-time)', function() {
+            var filterCalls = [];
+            $filterProvider.register('foo', valueFn(function(input) {
+              filterCalls.push(input);
+              return input;
+            }));
+
+            scope.$watch('::[(a | foo:b:1), undefined]');
+            scope.a = 0;
+            scope.$digest();
+            expect(filterCalls).toEqual([0]);
+
+            scope.$digest();
+            expect(filterCalls).toEqual([0]);
+
+            scope.a++;
+            scope.$digest();
+            expect(filterCalls).toEqual([0, 1]);
+          });
+
           it('should always be invoked if they are marked as having $stateful', function() {
             var filterCalled = false;
             $filterProvider.register('foo', valueFn(extend(function(input) {
@@ -2882,6 +2922,52 @@ describe('parser', function() {
             expect(filterCalls).toBe(1);
             expect(watcherCalls).toBe(1);
           }));
+
+          it('should ignore changes within nested objects', function() {
+            var watchCalls = [];
+            scope.$watch('[a]', function(a) { watchCalls.push(a[0]); });
+            scope.a = 0;
+            scope.$digest();
+            expect(watchCalls).toEqual([0]);
+
+            scope.$digest();
+            expect(watchCalls).toEqual([0]);
+
+            scope.a++;
+            scope.$digest();
+            expect(watchCalls).toEqual([0, 1]);
+
+            scope.a = {};
+            scope.$digest();
+            expect(watchCalls).toEqual([0, 1, {}]);
+
+            scope.a.foo = 42;
+            scope.$digest();
+            expect(watchCalls).toEqual([0, 1, {foo: 42}]);
+          });
+
+          it('should ignore changes within nested objects (one-time)', function() {
+            var watchCalls = [];
+            scope.$watch('::[a, undefined]', function(a) { watchCalls.push(a[0]); });
+            scope.a = 0;
+            scope.$digest();
+            expect(watchCalls).toEqual([0]);
+
+            scope.$digest();
+            expect(watchCalls).toEqual([0]);
+
+            scope.a++;
+            scope.$digest();
+            expect(watchCalls).toEqual([0, 1]);
+
+            scope.a = {};
+            scope.$digest();
+            expect(watchCalls).toEqual([0, 1, {}]);
+
+            scope.a.foo = 42;
+            scope.$digest();
+            expect(watchCalls).toEqual([0, 1, {foo: 42}]);
+          });
 
           describe('with non-primitive input', function() {
 
