@@ -362,18 +362,23 @@ describe('ngInclude', function() {
 
     it('should construct SVG template elements with correct namespace', function() {
       if (!window.SVGRectElement) return;
-      module(function($compileProvider) {
+      module(function($compileProvider, $provide) {
         $compileProvider.directive('test', valueFn({
           templateNamespace: 'svg',
           templateUrl: 'my-rect.html',
           replace: true
         }));
+        $provide.decorator('$templateRequest', function($delegate) {
+          return jasmine.createSpy('$templateRequest').and.callFake($delegate);
+        });
       });
-      inject(function($compile, $rootScope, $httpBackend) {
+      inject(function($compile, $rootScope, $httpBackend, $templateRequest) {
         $httpBackend.expectGET('my-rect.html').respond('<g ng-include="\'include.svg\'"></g>');
         $httpBackend.expectGET('include.svg').respond('<rect></rect><rect></rect>');
         element = $compile('<svg><test></test></svg>')($rootScope);
-        $httpBackend.flush();
+        expect($templateRequest).toHaveBeenCalledTimes(1);
+        $httpBackend.flush(2);
+        expect($templateRequest).toHaveBeenCalledTimes(2);
         var child = element.find('rect');
         expect(child.length).toBe(2);
         // eslint-disable-next-line no-undef

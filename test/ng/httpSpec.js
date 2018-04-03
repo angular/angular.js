@@ -303,7 +303,6 @@ describe('$http', function() {
       $http = $h;
       $rootScope = $rs;
       $sce = $sc;
-      spyOn($rootScope, '$apply').and.callThrough();
     }]));
 
     it('should throw error if the request configuration is not an object', function() {
@@ -1075,35 +1074,7 @@ describe('$http', function() {
 
     describe('callbacks', function() {
 
-      it('should $apply after success callback', function() {
-        $httpBackend.when('GET').respond(200);
-        $http({method: 'GET', url: '/some'});
-        $httpBackend.flush();
-        expect($rootScope.$apply).toHaveBeenCalledOnce();
-      });
-
-
-      it('should $apply after error callback', function() {
-        $httpBackend.when('GET').respond(404);
-        $http({method: 'GET', url: '/some'}).catch(noop);
-        $httpBackend.flush();
-        expect($rootScope.$apply).toHaveBeenCalledOnce();
-      });
-
-
-      it('should $apply even if exception thrown during callback', inject(function($exceptionHandler) {
-        $httpBackend.when('GET').respond(200);
-        callback.and.throwError('error in callback');
-
-        $http({method: 'GET', url: '/some'}).then(callback);
-        $httpBackend.flush();
-        expect($rootScope.$apply).toHaveBeenCalledOnce();
-
-        $exceptionHandler.errors = [];
-      }));
-
-
-      it('should pass the event handlers through to the backend', function() {
+      it('should pass the event handlers through to the backend', inject(function($browser) {
         var progressFn = jasmine.createSpy('progressFn');
         var uploadProgressFn = jasmine.createSpy('uploadProgressFn');
         $httpBackend.when('GET').respond(200);
@@ -1119,16 +1090,17 @@ describe('$http', function() {
         expect(mockXHR.upload.$$events.progress).toEqual(jasmine.any(Function));
 
         var eventObj = {};
-        spyOn($rootScope, '$digest');
 
         mockXHR.$$events.progress(eventObj);
+        // The invocation of the callback is scheduled via `$evalAsync`,
+        // that's why `flush` is needed here.
+        $browser.defer.flush();
         expect(progressFn).toHaveBeenCalledOnceWith(eventObj);
-        expect($rootScope.$digest).toHaveBeenCalledTimes(1);
 
         mockXHR.upload.$$events.progress(eventObj);
+        $browser.defer.flush();
         expect(uploadProgressFn).toHaveBeenCalledOnceWith(eventObj);
-        expect($rootScope.$digest).toHaveBeenCalledTimes(2);
-      });
+      }));
     });
 
 
@@ -2323,35 +2295,27 @@ describe('$http', function() {
 });
 
 
-describe('$http with $applyAsync', function() {
-  var $http, $httpBackend, $rootScope, $browser, log;
-  beforeEach(module(function($httpProvider) {
-    $httpProvider.useApplyAsync(true);
-  }, provideLog));
+describe('$http interacting with digest cycle', function() {
+  var $http, $httpBackend, $browser, log;
+  beforeEach(module(provideLog));
 
-
-  beforeEach(inject(['$http', '$httpBackend', '$rootScope', '$browser', 'log', function(http, backend, scope, browser, logger) {
+  beforeEach(inject(['$http', '$httpBackend', '$browser', 'log', function(http, backend, browser, logger) {
     $http = http;
     $httpBackend = backend;
-    $rootScope = scope;
     $browser = browser;
-    spyOn($rootScope, '$apply').and.callThrough();
-    spyOn($rootScope, '$applyAsync').and.callThrough();
-    spyOn($rootScope, '$digest').and.callThrough();
-    spyOn($browser.defer, 'cancel').and.callThrough();
     log = logger;
   }]));
 
 
-  it('should schedule coalesced apply on response', function() {
+  it('should execute callbacks asynchronously in $digest', function() {
     var handler = jasmine.createSpy('handler');
     $httpBackend.expect('GET', '/template1.html').respond(200, '<h1>Header!</h1>', {});
     $http.get('/template1.html').then(handler);
-    // Ensure requests are sent
-    $rootScope.$digest();
+    // Ensure requests are sent. ($http is internally promise-based and doesn't start working until
+    // $digest occurs.)
+    $browser.defer.flush();
 
     $httpBackend.flush(null, null, false);
-    expect($rootScope.$applyAsync).toHaveBeenCalledOnce();
     expect(handler).not.toHaveBeenCalled();
 
     $browser.defer.flush();
@@ -2366,11 +2330,14 @@ describe('$http with $applyAsync', function() {
     $http.get('/template1.html').then(log.fn('response 1'));
     $http.get('/template2.html').then(log.fn('response 2'));
     // Ensure requests are sent
-    $rootScope.$digest();
+    $browser.defer.flush();
 
+    // Resolve the promises. When a $q promise is resolved it uses $rootScope.$evalAsync to schedule
+    // the execution of its callbacks.
     $httpBackend.flush(null, null, false);
     expect(log).toEqual([]);
 
+    // Execute the promises' callbacks in the $digest scheduled with $evalAsync
     $browser.defer.flush();
     expect(log).toEqual(['response 1', 'response 2']);
   });
@@ -2384,16 +2351,16 @@ describe('$http with $applyAsync', function() {
     $http.get('/template1.html').then(log.fn('response 1'));
     $http.get('/template2.html').then(log.fn('response 2'));
     $http.get('/template3.html').then(log.fn('response 3'));
-    // Ensure requests are sent
-    $rootScope.$digest();
 
     // Intermediate $digest occurs before 3rd response is received, assert that pending responses
-    /// are handled
+    // are handled. Unless false is passed as the second parameter, $httpBackend.flush calls
+    // $rootScope.$digest at least twice (before and after doing the flush).
     $httpBackend.flush(2);
     expect(log).toEqual(['response 1', 'response 2']);
 
-    // Finally, third response is received, and a second coalesced $apply is started
+    // Finally, third response is received, and its callback is scheduled with $evalAsync
     $httpBackend.flush(null, null, false);
+    // Execute the promises' callbacks in the $digest scheduled with $evalAsync
     $browser.defer.flush();
     expect(log).toEqual(['response 1', 'response 2', 'response 3']);
   });
