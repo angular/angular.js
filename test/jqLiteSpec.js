@@ -420,6 +420,87 @@ describe('jqLite', function() {
       selected.removeData('prop2');
     });
 
+    it('should not remove event handlers on removeData()', function() {
+      var log = '';
+      var elm = jqLite(a);
+      elm.on('click', function() {
+        log += 'click;';
+      });
+
+      elm.removeData();
+      browserTrigger(a, 'click');
+      expect(log).toBe('click;');
+    });
+
+    it('should allow to set data after removeData() with event handlers present', function() {
+      var elm = jqLite(a);
+      elm.on('click', function() {});
+      elm.data('key1', 'value1');
+      elm.removeData();
+      elm.data('key2', 'value2');
+      expect(elm.data('key1')).not.toBeDefined();
+      expect(elm.data('key2')).toBe('value2');
+    });
+
+    it('should allow to set data after removeData() without event handlers present', function() {
+      var elm = jqLite(a);
+      elm.data('key1', 'value1');
+      elm.removeData();
+      elm.data('key2', 'value2');
+      expect(elm.data('key1')).not.toBeDefined();
+      expect(elm.data('key2')).toBe('value2');
+    });
+
+
+    it('should remove user data on cleanData()', function() {
+      var selected = jqLite([a, b, c]);
+
+      selected.data('prop', 'value');
+      jqLite(b).data('prop', 'new value');
+
+      jqLite.cleanData(selected);
+
+      expect(jqLite(a).data('prop')).toBeUndefined();
+      expect(jqLite(b).data('prop')).toBeUndefined();
+      expect(jqLite(c).data('prop')).toBeUndefined();
+    });
+
+    it('should remove event handlers on cleanData()', function() {
+      var selected = jqLite([a, b, c]);
+
+      var log = '';
+      var elm = jqLite(b);
+      elm.on('click', function() {
+        log += 'click;';
+      });
+      jqLite.cleanData(selected);
+
+      browserTrigger(b, 'click');
+      expect(log).toBe('');
+    });
+
+    it('should remove user data & event handlers on cleanData()', function() {
+      var selected = jqLite([a, b, c]);
+
+      var log = '';
+      var elm = jqLite(b);
+      elm.on('click', function() {
+        log += 'click;';
+      });
+
+      selected.data('prop', 'value');
+      jqLite(a).data('prop', 'new value');
+
+      jqLite.cleanData(selected);
+
+      browserTrigger(b, 'click');
+      expect(log).toBe('');
+
+      expect(jqLite(a).data('prop')).toBeUndefined();
+      expect(jqLite(b).data('prop')).toBeUndefined();
+      expect(jqLite(c).data('prop')).toBeUndefined();
+    });
+
 
     it('should add and remove data on SVGs', function() {
       var svg = jqLite('<svg><rect></rect></svg>');
