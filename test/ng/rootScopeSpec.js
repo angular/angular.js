@@ -1462,6 +1462,49 @@ describe('Scope', function() {
     }));
 
 
+    it('should pass same group instance on first call (no expressions)', function() {
+      var newValues;
+      var oldValues;
+      scope.$watchGroup([], function(n, o) {
+        newValues = n;
+        oldValues = o;
+      });
+
+      scope.$apply();
+      expect(newValues).toBe(oldValues);
+    });
+
+
+    it('should pass same group instance on first call (single expression)', function() {
+      var newValues;
+      var oldValues;
+      scope.$watchGroup(['a'], function(n, o) {
+        newValues = n;
+        oldValues = o;
+      });
+
+      scope.$apply();
+      expect(newValues).toBe(oldValues);
+
+      scope.$apply('a = 1');
+      expect(newValues).not.toBe(oldValues);
+    });
+
+    it('should pass same group instance on first call (multiple expressions)', function() {
+      var newValues;
+      var oldValues;
+      scope.$watchGroup(['a', 'b'], function(n, o) {
+        newValues = n;
+        oldValues = o;
+      });
+
+      scope.$apply();
+      expect(newValues).toBe(oldValues);
+
+      scope.$apply('a = 1');
+      expect(newValues).not.toBe(oldValues);
+    });
+
     it('should detect a change to any one expression in the group', function() {
       scope.$watchGroup(['a', 'b'], function(values, oldValues, s) {
         expect(s).toBe(scope);
@@ -1540,6 +1583,72 @@ describe('Scope', function() {
       scope.b = 'yyy';
       scope.$digest();
       expect(log).toEqual('');
+    });
+
+    it('should have each individual old value equal to new values of previous watcher invocation', function() {
+      var newValues;
+      var oldValues;
+      scope.$watchGroup(['a', 'b'], function(n, o) {
+        newValues = n.slice();
+        oldValues = o.slice();
+      });
+
+      scope.$apply(); //skip the initial invocation
+
+      scope.$apply('a = 1');
+      expect(newValues).toEqual([1, undefined]);
+      expect(oldValues).toEqual([undefined, undefined]);
+
+      scope.$apply('a = 2');
+      expect(newValues).toEqual([2, undefined]);
+      expect(oldValues).toEqual([1, undefined]);
+
+      scope.$apply('b = 3');
+      expect(newValues).toEqual([2, 3]);
+      expect(oldValues).toEqual([2, undefined]);
+
+      scope.$apply('a = b = 4');
+      expect(newValues).toEqual([4, 4]);
+      expect(oldValues).toEqual([2, 3]);
+
+      scope.$apply('a = 5');
+      expect(newValues).toEqual([5, 4]);
+      expect(oldValues).toEqual([4, 4]);
+
+      scope.$apply('b = 6');
+      expect(newValues).toEqual([5, 6]);
+      expect(oldValues).toEqual([5, 4]);
+    });
+
+
+    it('should have each individual old value equal to new values of previous watcher invocation, with modifications from other watchers', function() {
+      scope.$watch('a', function() { scope.b++; });
+      scope.$watch('b', function() { scope.c++; });
+
+      var newValues;
+      var oldValues;
+      scope.$watchGroup(['a', 'b', 'c'], function(n, o) {
+        newValues = n.slice();
+        oldValues = o.slice();
+      });
+
+      scope.$apply(); //skip the initial invocation
+
+      scope.$apply('a = b = c = 1');
+      expect(newValues).toEqual([1, 2, 2]);
+      expect(oldValues).toEqual([undefined, NaN, NaN]);
+
+      scope.$apply('a = 3');
+      expect(newValues).toEqual([3, 3, 3]);
+      expect(oldValues).toEqual([1, 2, 2]);
+
+      scope.$apply('b = 5');
+      expect(newValues).toEqual([3, 5, 4]);
+      expect(oldValues).toEqual([3, 3, 3]);
+
+      scope.$apply('c = 7');
+      expect(newValues).toEqual([3, 5, 7]);
+      expect(oldValues).toEqual([3, 5, 4]);
     });
 
     it('should remove all watchers once one-time/constant bindings are stable', function() {
