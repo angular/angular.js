@@ -1464,12 +1464,13 @@ function createDateInputType(type, regexp, parseDate, format) {
   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
     badInputChecker(scope, element, attr, ctrl);
     baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
-    var timezone = ctrl && ctrl.$options.getOption('timezone');
     var previousDate;
+    var previousTimezone;
 
     ctrl.$$parserName = type;
     ctrl.$parsers.push(function(value) {
       if (ctrl.$isEmpty(value)) return null;
+
       if (regexp.test(value)) {
         // Note: We cannot read ctrl.$modelValue, as there might be a different
         // parser/formatter in the processing chain so that the model
@@ -1485,12 +1486,15 @@ function createDateInputType(type, regexp, parseDate, format) {
       }
       if (isValidDate(value)) {
         previousDate = value;
-        if (previousDate && timezone) {
+        var timezone = ctrl.$options.getOption('timezone');
+        if (timezone) {
+          previousTimezone = timezone;
           previousDate = convertTimezoneToLocal(previousDate, timezone, true);
         }
         return $filter('date')(value, format, timezone);
       } else {
         previousDate = null;
+        previousTimezone = null;
         return '';
       }
     });
@@ -1527,7 +1531,16 @@ function createDateInputType(type, regexp, parseDate, format) {
     }
 
     function parseDateAndConvertTimeZoneToLocal(value, previousDate) {
+      var timezone = ctrl.$options.getOption('timezone');
+
+      if (previousTimezone && previousTimezone !== timezone) {
+        // If the timezone has changed, adjust the previousDate to the default timezone
+        // so that the new date is converted with the correct timezone offset
+        previousDate = addDateMinutes(previousDate, timezoneToOffset(previousTimezone));
+      }
+
       var parsedDate = parseDate(value, previousDate);
+
       if (!isNaN(parsedDate) && timezone) {
         parsedDate = convertTimezoneToLocal(parsedDate, timezone);
       }

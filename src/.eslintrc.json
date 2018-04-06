@@ -79,6 +79,7 @@
     "toJsonReplacer": false,
     "toJson": false,
     "fromJson": false,
+    "addDateMinutes": false,
     "convertTimezoneToLocal": false,
     "timezoneToOffset": false,
     "startingTag": false,

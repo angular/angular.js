@@ -75,6 +75,7 @@
   fromJson,
   convertTimezoneToLocal,
   timezoneToOffset,
+  addDateMinutes,
   startingTag,
   tryDecodeURIComponent,
   parseKeyValue,
