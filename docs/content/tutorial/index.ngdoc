@@ -311,6 +311,13 @@ the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Che
 If JDK is not already installed, you can download it [here][jdk-download].
 
 <br />
+**Errors running Protractor**
+
+If your console throws errors like "Failed: unknown error: call function result missing 'value'" when you run 
+"npm run protractor" and you are running Chrome 65 or later, you might need to update the 'chromedriver' parameter to '2.37' in:
+/angular-phonecat/node_modules/protractor/node_modules/webdriver-manager/config.json
+
+<br />
 **Error running the web server**
 
 The web server is configured to use port 8000. If the port is already in use (for example by another
