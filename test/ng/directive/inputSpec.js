@@ -866,6 +866,23 @@ describe('input', function() {
 
         expect($rootScope.form.alias.$error.max).toBeFalsy();
       });
+
+      it('should validate when timezone is provided.', function() {
+        inputElm = helper.compileInput('<input type="month" ng-model="value" name="alias" ' +
+            'max="{{ maxVal }}" ng-model-options="{timezone: \'UTC\', allowInvalid: true}"/>');
+        $rootScope.maxVal = '2013-01';
+        $rootScope.value = new Date(Date.UTC(2013, 0, 1, 0, 0, 0));
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
+
+        $rootScope.value = '';
+        helper.changeInputValueTo('2013-01');
+        expect(inputElm).toBeValid();
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
+      });
     });
   });
 
@@ -1098,6 +1115,25 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect($rootScope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate when timezone is provided.', function() {
+        inputElm = helper.compileInput('<input type="week" ng-model="value" name="alias" ' +
+            'max="{{ maxVal }}" ng-model-options="{timezone: \'-2400\', allowInvalid: true}"/>');
+        // The calendar week comparison date is January 17. Setting the timezone to -2400
+        // makes the January 18 date value valid.
+        $rootScope.maxVal = '2013-W03';
+        $rootScope.value = new Date(Date.UTC(2013, 0, 18));
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
+
+        $rootScope.value = '';
+        helper.changeInputValueTo('2013-W03');
+        expect(inputElm).toBeValid();
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
       });
     });
   });
@@ -1367,6 +1403,23 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect($rootScope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate when timezone is provided.', function() {
+        inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" ' +
+            'max="{{ maxVal }}" ng-model-options="{timezone: \'UTC\', allowInvalid: true}"/>');
+        $rootScope.maxVal = '2013-01-01T00:00:00';
+        $rootScope.value = new Date(Date.UTC(2013, 0, 1, 0, 0, 0));
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
+
+        $rootScope.value = '';
+        helper.changeInputValueTo('2013-01-01T00:00:00');
+        expect(inputElm).toBeValid();
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
       });
     });
 
@@ -1685,6 +1738,23 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect($rootScope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate when timezone is provided.', function() {
+        inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" ' +
+            'max="{{ maxVal }}" ng-model-options="{timezone: \'UTC\', allowInvalid: true}"/>');
+        $rootScope.maxVal = '22:30:00';
+        $rootScope.value = new Date(Date.UTC(1970, 0, 1, 22, 30, 0));
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
+
+        $rootScope.value = '';
+        helper.changeInputValueTo('22:30:00');
+        expect(inputElm).toBeValid();
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
       });
     });
 
@@ -2030,6 +2100,24 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect($rootScope.form.alias.$error.max).toBeFalsy();
+      });
+
+      it('should validate when timezone is provided.', function() {
+        var inputElm = helper.compileInput('<input type="date" ng-model="value" name="alias" ' +
+            'max="{{ maxVal }}" ng-model-options="{timezone: \'UTC\', allowInvalid: true}"/>');
+
+        $rootScope.maxVal = '2013-12-01';
+        $rootScope.value = new Date(Date.UTC(2013, 11, 1, 0, 0, 0));
+        $rootScope.$digest();
+
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
+
+        $rootScope.value = '';
+        helper.changeInputValueTo('2013-12-01');
+        expect(inputElm).toBeValid();
+        expect($rootScope.form.alias.$error.max).toBeFalsy();
+        expect($rootScope.form.alias.$valid).toBeTruthy();
       });
     });
 
