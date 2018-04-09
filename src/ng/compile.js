@@ -1723,7 +1723,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         if ((nodeName === 'a' && (key === 'href' || key === 'xlinkHref')) ||
             (nodeName === 'img' && key === 'src')) {
           // sanitize a[href] and img[src] values
-          this[key] = value = $$sanitizeUri(value, key === 'src');
+          this[key] = value = (value == null) ? value : $$sanitizeUri(value, key === 'src');
         } else if (nodeName === 'img' && key === 'srcset' && isDefined(value)) {
           // sanitize img[srcset] values
           var result = '';
@@ -1761,7 +1761,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         }
 
         if (writeAttr !== false) {
-          if (value === null || isUndefined(value)) {
+          if (value == null) {
             this.$$element.removeAttr(attrName);
           } else {
             if (SIMPLE_ATTR_NAME.test(attrName)) {
