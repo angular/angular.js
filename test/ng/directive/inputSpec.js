@@ -853,6 +853,9 @@ describe('input', function() {
       });
 
       it('should validate when timezone is provided.', function() {
+        // We cannot use the default element
+        dealoc(inputElm);
+
         inputElm = helper.compileInput('<input type="month" ng-model="value" name="alias" ' +
             'max="{{ maxVal }}" ng-model-options="{timezone: \'UTC\', allowInvalid: true}"/>');
         $rootScope.maxVal = '2013-01';
@@ -1127,6 +1130,9 @@ describe('input', function() {
       });
 
       it('should validate when timezone is provided.', function() {
+        // We cannot use the default element
+        dealoc(inputElm);
+
         inputElm = helper.compileInput('<input type="week" ng-model="value" name="alias" ' +
             'max="{{ maxVal }}" ng-model-options="{timezone: \'-2400\', allowInvalid: true}"/>');
         // The calendar week comparison date is January 17. Setting the timezone to -2400
@@ -1434,6 +1440,9 @@ describe('input', function() {
       });
 
       it('should validate when timezone is provided.', function() {
+        // We cannot use the default element
+        dealoc(inputElm);
+
         inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" ' +
             'max="{{ maxVal }}" ng-model-options="{timezone: \'UTC\', allowInvalid: true}"/>');
         $rootScope.maxVal = '2013-01-01T00:00:00';
@@ -1788,6 +1797,9 @@ describe('input', function() {
       });
 
       it('should validate when timezone is provided.', function() {
+        // We cannot use the default element
+        dealoc(inputElm);
+
         inputElm = helper.compileInput('<input type="time" ng-model="value" name="alias" ' +
             'max="{{ maxVal }}" ng-model-options="{timezone: \'UTC\', allowInvalid: true}"/>');
         $rootScope.maxVal = '22:30:00';
