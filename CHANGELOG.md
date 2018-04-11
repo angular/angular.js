@@ -1,3 +1,55 @@
+<a name="1.6.10"></a>
+# 1.6.10 crystalline-persuasion (2018-04-12)
+
+## Bug Fixes
+- **$compile:**
+  - correctly handle `null`/`undefined` href `attrs.$set()`
+  ([f04e04](https://github.com/angular/angular.js/commit/f04e04e0e63e0d30c29718abd5cae634901793b2),
+  [#16520](https://github.com/angular/angular.js/issues/16520))
+  - throw error in `$onChanges` immediately
+  ([b7d1e0fbd](https://github.com/angular/angular.js/commit/983e27b628fd1eab653e2b3966d90a270f27cc93),
+  [#15578](https://github.com/angular/angular.js/issues/15578),
+  [#16492](https://github.com/angular/angular.js/issues/16492))
+- **input:**
+  - allow overriding timezone for date input types
+  ([4355de](https://github.com/angular/angular.js/commit/4355dee21d26667bb7f6f21bf75c081351315033),
+  [#16181](https://github.com/angular/angular.js/issues/16181),
+  [#13382](https://github.com/angular/angular.js/issues/13382),
+  [#16336](https://github.com/angular/angular.js/issues/16336))
+  - take timezone into account when validating minimum and maximum in date types
+  ([2f0ac6](https://github.com/angular/angular.js/commit/2f0ac696cb09aec3e291bb8c9c8a1092cbe3a061),
+  [#16342](https://github.com/angular/angular.js/issues/16342),
+  [#16390](https://github.com/angular/angular.js/issues/16390))
+  - fix composition mode in IE for Korean input
+  ([9a1b7c](https://github.com/angular/angular.js/commit/9a1b7c9fa135d1dae3f9b4ccf48f081675796e92),
+  [#6656](https://github.com/angular/angular.js/issues/6656),
+  [#16273](https://github.com/angular/angular.js/issues/16273))
+- **jqLite:** use XHTML-compliant HTML as input for jqLite
+  ([a0c55a](https://github.com/angular/angular.js/commit/a0c55af9858075ab268a88dd7a4464788a46f4b7),
+  [#6917](https://github.com/angular/angular.js/issues/6917),
+  [#16518](https://github.com/angular/angular.js/issues/16518))
+- **minErr:** update url to https
+  ([52e466](https://github.com/angular/angular.js/commit/52e46683bfcc0ce0dc9a3d2ee42b389508423799))
+- **$http:** set correct xhrStatus in response when using 'timeout'
+  ([1faf7e](https://github.com/angular/angular.js/commit/1faf7ec30d55bba107b18efbcf0ef07732c55b91))
+- **browserTrigger:** support CompositionEvent
+  ([c33fd1](https://github.com/angular/angular.js/commit/c33fd1325417fdc6d7d6abc90cd935130653b149))
+
+
+## New Features
+- **$http:** support sending XSRF token to whitelisted origins
+  ([bc7757](https://github.com/angular/angular.js/commit/bc775759c88b2221c2bb71d2335bc233c93f43b0),
+  [#7862](https://github.com/angular/angular.js/issues/7862))
+- **minErr:** strip error url from error parameters
+  ([980b69](https://github.com/angular/angular.js/commit/980b69dcae73dd8a3d0b9d91b63fa7711cd0ba36))
+- **$sanitize:** support enhancing elements/attributes white-lists
+  ([ee8e05](https://github.com/angular/angular.js/commit/ee8e05cfafe086188fc318ed4115fb56ba335112),
+  [#5900](https://github.com/angular/angular.js/issues/5900),
+  [#16326](https://github.com/angular/angular.js/issues/16326))
+- **$rootScope:** allow suspending and resuming watchers on scope
+  ([efb822c58](https://github.com/angular/angular.js/commit/41d5c90f170cc054b0f8f88220c22ef1ef6cc0a6),
+  [#16308](https://github.com/angular/angular.js/issues/5301))
+
 <a name="1.6.9"></a>
 # 1.6.9 fiery-basilisk (2018-02-02)
 
