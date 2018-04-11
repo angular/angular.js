@@ -1,3 +1,782 @@
+<a name="1.7.0-rc.0"></a>
+# 1.7.0-rc.0 maximum-overdrive (2018-04-19)
+
+## Bug Fixes
+- **input:**
+  - listen on "change" instead of "click" for radio/checkbox ngModels
+  ([656c8f](https://github.com/angular/angular.js/commit/656c8fa8f23b1277cc5c214c4d0237f3393afa1e),
+  [#4516](https://github.com/angular/angular.js/issues/4516),
+  [#14667](https://github.com/angular/angular.js/issues/14667),
+  [#14685](https://github.com/angular/angular.js/issues/14685))
+- **input\[number\]:** validate min/max against viewValue
+  ([aa3f95](https://github.com/angular/angular.js/commit/aa3f951330ec7b10b43ea884d9b5754e296770ec),
+  [#12761](https://github.com/angular/angular.js/issues/12761),
+  [#16325](https://github.com/angular/angular.js/issues/16325))
+- **jqLite:** make removeData() not remove event handlers
+  ([b7d396](https://github.com/angular/angular.js/commit/b7d396b8b6e8f27a1f4556d58fc903321e8d532a),
+  [#15869](https://github.com/angular/angular.js/issues/15869),
+  [#16512](https://github.com/angular/angular.js/issues/16512))
+- **$compile:**
+  - remove the preAssignBindingsEnabled flag
+  ([38f8c9](https://github.com/angular/angular.js/commit/38f8c97af74649ce224b6dd45f433cc665acfbfb),
+  [#15782](https://github.com/angular/angular.js/issues/15782))
+  - add `base[href]` to the list of RESOURCE_URL context attributes
+  ([1cf728](https://github.com/angular/angular.js/commit/1cf728e209a9e0016068fac2769827e8f747760e),
+  [#15597](https://github.com/angular/angular.js/issues/15597))
+- **$interval:** throw when trying to cancel non-$interval promise
+  ([a8bef9](https://github.com/angular/angular.js/commit/a8bef95127775d83d80daa4617c33227c4b443d4),
+  [#16476](https://github.com/angular/angular.js/issues/16476))
+- **$timeout:** throw when trying to cancel non-$timeout promise
+  ([336525](https://github.com/angular/angular.js/commit/3365256502344970f86355d3ace1cb4251ae9828),
+  [#16424](https://github.com/angular/angular.js/issues/16424))
+- **$cookies:** remove the deprecated $cookieStore factory
+  ([73c646](https://github.com/angular/angular.js/commit/73c6467f1468353215dc689c019ed83aa4993c77),
+  [#16465](https://github.com/angular/angular.js/issues/16465))
+- **$resource:** fix interceptors and success/error callbacks
+  ([ea0585](https://github.com/angular/angular.js/commit/ea0585773bb93fd891576e2271254a17e15f1ddd),
+  [#6731](https://github.com/angular/angular.js/issues/6731),
+  [#9334](https://github.com/angular/angular.js/issues/9334),
+  [#6865](https://github.com/angular/angular.js/issues/6865),
+  [#16446](https://github.com/angular/angular.js/issues/16446))
+- **$templateRequest:**
+  - give tpload error the correct namespace
+  ([c617d6](https://github.com/angular/angular.js/commit/c617d6dceee5b000bfceda44ced22fc16b48b18b))
+  - always return the template that is stored in the cache
+  ([fb0099](https://github.com/angular/angular.js/commit/fb00991460cf69ae8bc7f1f826363d09c73c0d5e),
+  [#16225](https://github.com/angular/angular.js/issues/16225))
+- **$animate:** let cancel() reject the runner promise
+  ([16b82c](https://github.com/angular/angular.js/commit/16b82c6afe0ab916fef1d6ca78053b00bf5ada83),
+  [#14204](https://github.com/angular/angular.js/issues/14204),
+  [#16373](https://github.com/angular/angular.js/issues/16373))
+- **ngTouch:**
+  - deprecate the module and its contents
+  ([67f54b](https://github.com/angular/angular.js/commit/67f54b660038de2b4346b3e76d66a8dc8ccb1f9b),
+  [#16427](https://github.com/angular/angular.js/issues/16427),
+  [#16431](https://github.com/angular/angular.js/issues/16431))
+  - remove ngClick override, `$touchProvider`, and `$touch`
+  ([11d9ad](https://github.com/angular/angular.js/commit/11d9ad1eb25eaf5967195e424108207427835d50),
+  [#15761](https://github.com/angular/angular.js/issues/15761),
+  [#15755](https://github.com/angular/angular.js/issues/15755))
+- **ngScenario:** completely remove the angular scenario runner
+  ([0cd392](https://github.com/angular/angular.js/commit/0cd39217828b0ad53eaf731576af17d66c18ff60),
+  [#9405](https://github.com/angular/angular.js/issues/9405))
+- **form:** set $submitted to true on child forms when parent is submitted
+  ([223de5](https://github.com/angular/angular.js/commit/223de59e988dc0cc8b4ec3a045b7c0735eba1c77),
+  [#10071](https://github.com/angular/angular.js/issues/10071))
+- **$rootScope:**
+  - provide correct value of one-time bindings in watchGroup
+  ([c2b8fa](https://github.com/angular/angular.js/commit/c2b8fab0a480204374d561d6b9b3d47347ac5570))
+- **ngAria:** do not set aria attributes on input[type="hidden"]
+  ([6d5ef3](https://github.com/angular/angular.js/commit/6d5ef34fc6a974cde73157ba94f9706723dd8f5b),
+  [#15113](https://github.com/angular/angular.js/issues/15113),
+  [#16367](https://github.com/angular/angular.js/issues/16367))
+- **ngModel, input:** improve handling of built-in named parsers
+  ([74b04c](https://github.com/angular/angular.js/commit/74b04c9403af4fc7df5b6420f22c9f45a3e84140),
+  [#14292](https://github.com/angular/angular.js/issues/14292),
+  [#10076](https://github.com/angular/angular.js/issues/10076),
+  [#16347](https://github.com/angular/angular.js/issues/16347))
+- **$httpParamSerializerJQLike:**
+  - call functions as jQuery does
+  ([a784fa](https://github.com/angular/angular.js/commit/a784fab605d825f1158c6292b3c42f8c4a502fdf),
+  [#16138](https://github.com/angular/angular.js/issues/16138),
+  [#16139](https://github.com/angular/angular.js/issues/16139))
+  - follow jQuery for `null` and `undefined`
+  ([301fdd](https://github.com/angular/angular.js/commit/301fdda648680d89ccab607c413a7ddede7b0165))
+- **$parse:**
+  - do not pass scope/locals to interceptors of one-time bindings
+  ([87a586](https://github.com/angular/angular.js/commit/87a586eb9a23cfd0d0bb681cc778b4b8e5c8451d))
+  - always pass the intercepted value to watchers
+  ([2ee503](https://github.com/angular/angular.js/commit/2ee5033967d5f87a516bad137686b0592e25d26b),
+  [#16021](https://github.com/angular/angular.js/issues/16021))
+  - respect the interceptor.$stateful flag
+  ([de7403](https://github.com/angular/angular.js/commit/de74034ddf6f92505ccdb61be413a6df2c723f87))
+- **Angular:** remove `angular.lowercase` and `angular.uppercase`
+  ([1daa4f](https://github.com/angular/angular.js/commit/1daa4f2231a89ee88345689f001805ffffa9e7de),
+  [#15445](https://github.com/angular/angular.js/issues/15445))
+- **$controller:** remove instantiating controllers defined on window
+  ([e269c1](https://github.com/angular/angular.js/commit/e269c14425a3209040f65c022658770e00a36f16),
+  [#15349](https://github.com/angular/angular.js/issues/15349),
+  [#15762](https://github.com/angular/angular.js/issues/15762))
+
+
+## New Features
+- **angular.isArray:** support Array subclasses in `angular.isArray()`
+  ([e3ece2](https://github.com/angular/angular.js/commit/e3ece2fad9e1e6d47b5f06815ff186d7e6f44948),
+  [#15533](https://github.com/angular/angular.js/issues/15533),
+  [#15541](https://github.com/angular/angular.js/issues/15541))
+- **$sce:** handle URL sanitization through the `$sce` service
+  ([1e9ead](https://github.com/angular/angular.js/commit/1e9eadcd72dbbd5c67dae8328a63e535cfa91ff9))
+- **orderBy:** consider `null` and `undefined` greater than other values
+  ([1d8046](https://github.com/angular/angular.js/commit/1d804645f7656d592c90216a0355b4948807f6b8),
+  [#15294](https://github.com/angular/angular.js/issues/15294),
+  [#16376](https://github.com/angular/angular.js/issues/16376))
+- **$resource:** add support for `request` and `requestError` interceptors (#15674)
+  ([240a3d](https://github.com/angular/angular.js/commit/240a3ddbf12a9bb79754031be95dae4b6bd2dded),
+  [#5146](https://github.com/angular/angular.js/issues/5146))
+- **ngModelOptions:** add debounce catch-all + allow debouncing 'default' only
+  ([55ba44](https://github.com/angular/angular.js/commit/55ba44913e02650b56410aa9ab5eeea5d3492b68),
+  [#15411](https://github.com/angular/angular.js/issues/15411),
+  [#16335](https://github.com/angular/angular.js/issues/16335))
+- **$compile:** lower the `xlink:href` security context for SVG's `a` and `image` elements
+  ([6ccbfa](https://github.com/angular/angular.js/commit/6ccbfa65d60a3dc396d0cf6da21b993ad74653fd),
+  [#15736](https://github.com/angular/angular.js/issues/15736))
+
+
+## Performance Improvements
+- **$rootScope:** allow $watchCollection use of expression input watching
+  ([97b00c](https://github.com/angular/angular.js/commit/97b00ca497676aaff8a803762a9f8c7ff4aa24dd))
+- **ngStyle:** use $watchCollection
+  ([15bbd3](https://github.com/angular/angular.js/commit/15bbd3e18cd89b91f7206a06c73d40e54a8a48a0),
+  [#15947](https://github.com/angular/angular.js/issues/15947))
+- **$compile:** do not use deepWatch in literal one-way bindings
+  ([fd4f01](https://github.com/angular/angular.js/commit/fd4f0111188b62773b99ab6eab38b4d2b5d8d727),
+  [#15301](https://github.com/angular/angular.js/issues/15301))
+
+
+
+
+## Breaking Changes
+
+### **jqLite** due to:
+  - **[b7d396](https://github.com/angular/angular.js/commit/b7d396b8b6e8f27a1f4556d58fc903321e8d532a)**: make removeData() not remove event handlers
+
+Before this commit `removeData()` invoked on an element removed its event
+handlers as well. If you want to trigger a full cleanup of an element, change:
+
+```js
+elem.removeData();
+```
+
+to:
+
+```js
+angular.element.cleanData(elem);
+```
+
+In most cases, though, cleaning up after an element is supposed to be done
+only when it's removed from the DOM as well; in such cases the following:
+
+```js
+elem.remove();
+```
+
+will remove event handlers as well.
+
+### **$cookies** due to:
+  - **[73c646](https://github.com/angular/angular.js/commit/73c6467f1468353215dc689c019ed83aa4993c77)**: remove the deprecated $cookieStore factory
+
+The $cookieStore has been removed. Migrate to the $cookies service. Note that
+for object values you need to use the `putObject` & `getObject` methods as
+`get`/`put` will not correctly save/retrieve them.
+
+Before:
+```js
+$cookieStore.put('name', {key: 'value'});
+$cookieStore.get('name'); // {key: 'value'}
+$cookieStore.remove('name');
+```
+
+After:
+```js
+$cookies.putObject('name', {key: 'value'});
+$cookies.getObject('name'); // {key: 'value'}
+$cookies.remove('name');
+```
+
+### **$resource** due to:
+  - **[ea0585](https://github.com/angular/angular.js/commit/ea0585773bb93fd891576e2271254a17e15f1ddd)**: fix interceptors and success/error callbacks
+
+If you are not using `success` or `error` callbacks with `$resource`,
+your app should not be affected by this change.
+
+If you are using `success` or `error` callbacks (with or without
+response interceptors), one (subtle) difference is that throwing an
+error inside the callbacks will not propagate to the returned
+`$promise`. Therefore, you should try to use the promises whenever
+possible. E.g.:
+
+```js
+// Avoid
+User.query(function onSuccess(users) { throw new Error(); }).
+  $promise.
+  catch(function onError() { /* Will not be called. */ });
+
+// Prefer
+User.query().
+  $promise.
+  then(function onSuccess(users) { throw new Error(); }).
+  catch(function onError() { /* Will be called. */ });
+```
+
+Finally, if you are using `success` or `error` callbacks with response
+interceptors, the callbacks will now always run _after_ the interceptors
+(and wait for them to resolve in case they return a promise).
+Previously, the `error` callback was called before the `responseError`
+interceptor and the `success` callback was synchronously called after
+the `response` interceptor. E.g.:
+
+```js
+var User = $resource('/api/users/:id', {id: '@id'}, {
+  get: {
+    method: 'get',
+    interceptor: {
+      response: function(response) {
+        console.log('responseInterceptor-1');
+        return $timeout(1000).then(function() {
+          console.log('responseInterceptor-2');
+          return response.resource;
+        });
+      },
+      responseError: function(response) {
+        console.log('responseErrorInterceptor-1');
+        return $timeout(1000).then(function() {
+          console.log('responseErrorInterceptor-2');
+          return $q.reject('Ooops!');
+        });
+      }
+    }
+  }
+});
+var onSuccess = function(value) { console.log('successCallback', value); };
+var onError = function(error) { console.log('errorCallback', error); };
+
+// Assuming the following call is successful...
+User.get({id: 1}, onSuccess, onError);
+  // Old behavior:
+  //   responseInterceptor-1
+  //   successCallback, {/* Promise object */}
+  //   responseInterceptor-2
+  // New behavior:
+  //   responseInterceptor-1
+  //   responseInterceptor-2
+  //   successCallback, {/* User object */}
+
+// Assuming the following call returns an error...
+User.get({id: 2}, onSuccess, onError);
+  // Old behavior:
+  //   errorCallback, {/* Response object */}
+  //   responseErrorInterceptor-1
+  //   responseErrorInterceptor-2
+  // New behavior:
+  //   responseErrorInterceptor-1
+  //   responseErrorInterceptor-2
+  //   errorCallback, Ooops!
+```
+
+  - **[240a3d](https://github.com/angular/angular.js/commit/240a3ddbf12a9bb79754031be95dae4b6bd2dded)**: add support for `request` and `requestError` interceptors (#15674)
+
+Previously, calling a `$resource` method would synchronously call
+`$http`. Now, it will be called asynchronously (regardless if a
+`request`/`requestError` interceptor has been defined.
+
+This is not expected to affect applications at runtime, since the
+overall operation is asynchronous already, but may affect assertions in
+tests. For example, if you want to assert that `$http` has been called
+with specific arguments as a result of a `$resource` call, you now need
+to run a `$digest` first, to ensure the (possibly empty) request
+interceptor promise has been resolved.
+
+Before:
+```js
+it('...', function() {
+  $httpBackend.expectGET('/api/things').respond(...);
+  var Things = $resource('/api/things');
+  Things.query();
+
+  expect($http).toHaveBeenCalledWith(...);
+});
+```
+
+After:
+```js
+it('...', function() {
+  $httpBackend.expectGET('/api/things').respond(...);
+  var Things = $resource('/api/things');
+  Things.query();
+  $rootScope.$digest();
+
+  expect($http).toHaveBeenCalledWith(...);
+});
+```
+
+### **$templateRequest**:
+  - due to **[c617d6](https://github.com/angular/angular.js/commit/c617d6dceee5b000bfceda44ced22fc16b48b18b)**: give tpload error the correct namespace
+
+Previously the `tpload` error was namespaced to `$compile`. If you have
+code that matches errors of the form `[$compile:tpload]` it will no
+longer run. You should change the code to match
+`[$templateRequest:tpload]`.
+
+  - due to **([fb0099](https://github.com/angular/angular.js/commit/fb00991460cf69ae8bc7f1f826363d09c73c0d5e)**: always return the template that is stored in the cache
+
+The service now returns the result of `$templateCache.put()` when making a server request to the
+template. Previously it would return the content of the response directly.
+This now means if you are decorating `$templateCache.put()` to manipulate the template, you will
+now get this manipulated result also on the first `$templateRequest` rather than only on subsequent
+calls (when the template is retrived from the cache).
+In practice this should not affect any apps, as it is unlikely that they rely on the template being
+different in the first and subsequent calls.
+
+### **$animate** due to:
+  - **[16b82c](https://github.com/angular/angular.js/commit/16b82c6afe0ab916fef1d6ca78053b00bf5ada83)**: let cancel() reject the runner promise
+
+$animate.cancel(runner) now rejects the underlying
+promise and calls the catch() handler on the runner
+returned by $animate functions (enter, leave, move,
+addClass, removeClass, setClass, animate).
+Previously it would resolve the promise as if the animation
+had ended successfully.
+
+Example:
+
+```js
+var runner = $animate.addClass('red');
+runner.then(function() { console.log('success')});
+runner.catch(function() { console.log('cancelled')});
+
+runner.cancel();
+```
+
+Pre-1.7.0, this logs 'success', 1.7.0 and later it logs 'cancelled'.
+To migrate, add a catch() handler to your animation runners.
+
+### **angular.isArray** due to:
+  - **[e3ece2](https://github.com/angular/angular.js/commit/e3ece2fad9e1e6d47b5f06815ff186d7e6f44948)**: support Array subclasses in `angular.isArray()`
+
+Previously, `angular.isArray()` was an alias for `Array.isArray()`.
+Therefore, objects that prototypally inherit from `Array` where not
+considered arrays. Now such objects are considered arrays too.
+
+This change affects several other methods that use `angular.isArray()`
+under the hood, such as `angular.copy()`, `angular.equals()`,
+`angular.forEach()`, and `angular.merge()`.
+
+This in turn affects how dirty checking treats objects that prototypally
+inherit from `Array` (e.g. MobX observable arrays). AngularJS will now
+be able to handle these objects better when copying or watching.
+
+### **$sce** due to:
+  - **[1e9ead](https://github.com/angular/angular.js/commit/1e9eadcd72dbbd5c67dae8328a63e535cfa91ff9)**: handle URL sanitization through the `$sce` service
+
+If you use `attrs.$set` for URL attributes (a[href] and img[src]) there will no
+longer be any automated sanitization of the value. This is in line with other
+programmatic operations, such as writing to the innerHTML of an element.
+
+If you are programmatically writing URL values to attributes from untrusted
+input then you must sanitize it yourself. You could write your own sanitizer or copy
+the private `$$sanitizeUri` service.
+
+Note that values that have been passed through the `$interpolate` service within the
+`URL` or `MEDIA_URL` will have already been sanitized, so you would not need to sanitize
+these values again.
+
+### **orderBy** due to:
+  - **[1d8046](https://github.com/angular/angular.js/commit/1d804645f7656d592c90216a0355b4948807f6b8)**: consider `null` and `undefined` greater than other values
+
+When using `orderBy` to sort arrays containing `null` values, the `null` values
+will be considered "greater than" all other values, except for `undefined`.
+Previously, they were sorted as strings. This will result in different (but more
+intuitive) sorting order.
+
+Before:
+```js
+orderByFilter(['a', undefined, 'o', null, 'z']);
+//--> 'a', null, 'o', 'z', undefined
+```
+
+After:
+```js
+orderByFilter(['a', undefined, 'o', null, 'z']);
+//--> 'a', 'o', 'z', null, undefined
+```
+
+### **ngScenario** due to:
+  - **[0cd392](https://github.com/angular/angular.js/commit/0cd39217828b0ad53eaf731576af17d66c18ff60)**: completely remove the angular scenario runner
+
+The angular scenario runner end-to-end test framework has been
+removed from the project and will no longer be available on npm
+or bower starting with 1.7.0.
+It was deprecated and removed from the documentation in 2014.
+Applications that still use it should migrate to
+[Protractor](http://www.protractortest.org).
+Technically, it should also be possible to continue using an
+older version of the scenario runner, as the underlying APIs have
+not changed. However, we do not guarantee future compatibility.
+
+### **form** due to:
+  - **[223de5](https://github.com/angular/angular.js/commit/223de59e988dc0cc8b4ec3a045b7c0735eba1c77)**: set $submitted to true on child forms when parent is submitted
+
+Forms will now set $submitted on child forms when they are submitted.
+For example:
+```
+<form name="parentform" ng-submit="$ctrl.submit()">
+  <ng-form name="childform">
+    <input type="text" name="input" ng-model="my.model" />
+  </ng-form>
+  <input type="submit" />
+</form>
+```
+
+Submitting this form will set $submitted on "parentform" and "childform".
+Previously, it was only set on "parentform".
+
+This change was introduced because mixing form and ngForm does not create
+logically separate forms, but rather something like input groups.
+Therefore, child forms should inherit the submission state from their parent form.
+
+### **ngAria** due to:
+  - **[6d5ef3](https://github.com/angular/angular.js/commit/6d5ef34fc6a974cde73157ba94f9706723dd8f5b)**: do not set aria attributes on input[type="hidden"]
+
+ngAria no longer sets aria-* attributes on input[type="hidden"] with ngModel.
+This can affect apps that test for the presence of aria attributes on hidden inputs.
+To migrate, remove these assertions.
+In actual apps, this should not have a user-facing effect, as the previous behavior
+was incorrect, and the new behavior is correct for accessibility.
+
+### **ngModel, input** due to:
+  - **[74b04c](https://github.com/angular/angular.js/commit/74b04c9403af4fc7df5b6420f22c9f45a3e84140)**: improve handling of built-in named parsers
+
+*Custom* parsers that fail to parse on input types "email", "url", "number", "date", "month",
+"time", "datetime-local", "week", do no longer set `ngModelController.$error[inputType]`, and
+the `ng-invalid-[inputType]` class. Also, custom parsers on input type "range" do no
+longer set `ngModelController.$error.number` and the `ng-invalid-number` class.
+
+Instead, any custom parsers on these inputs set `ngModelController.$error.parse` and
+`ng-invalid-parse`. This change was made to make distinguishing errors from built-in parsers
+and custom parsers easier.
+
+### **ngModelOptions** due to:
+  - **[55ba44](https://github.com/angular/angular.js/commit/55ba44913e02650b56410aa9ab5eeea5d3492b68)**: add debounce catch-all + allow debouncing 'default' only
+
+the 'default' key in 'debounce' now only debounces the default event, i.e. the event
+that is added as an update trigger by the different input directives automatically.
+
+Previously, it also applied to other update triggers defined in 'updateOn' that
+did not have a corresponding key in the 'debounce'.
+
+This behavior is now supported via a special wildcard / catch-all key: '*'.
+
+See the following example:
+
+Pre-1.7:
+'mouseup' is also debounced by 500 milliseconds because 'default' is applied:
+```
+ng-model-options="{
+  updateOn: 'default blur mouseup',
+  debounce: { 'default': 500, 'blur': 0 }
+}
+```
+
+1.7:
+The pre-1.7 behavior can be re-created by setting '*' as a catch-all debounce value:
+```
+ng-model-options="{
+  updateOn: 'default blur mouseup',
+  debounce: { '*': 500, 'blur': 0 }
+}
+```
+
+In contrast, when only 'default' is used, 'blur' and 'mouseup' are not debounced:
+```
+ng-model-options="{
+  updateOn: 'default blur mouseup',
+  debounce: { 'default': 500 }
+}
+```
+
+### **input\[number\]** due to:
+  - **[aa3f95](https://github.com/angular/angular.js/commit/aa3f951330ec7b10b43ea884d9b5754e296770ec)**: validate min/max against viewValue
+
+`input[type=number]` with `ngModel` now validates the input for the `max`/`min` restriction against
+the `ngModelController.$viewValue` instead of against the `ngModelController.$modelValue`.
+
+This affects apps that use `$parsers` or `$formatters` to transform the input / model value.
+
+If you rely on the $modelValue validation, you can overwrite the `min`/`max` validator from a custom directive, as seen in the following example directive definition object:
+
+```
+{
+  restrict: 'A',
+  require: 'ngModel',
+  link: function(scope, element, attrs, ctrl) {
+    var maxValidator = ctrl.$validators.max;
+
+    ctrk.$validators.max = function(modelValue, viewValue) {
+      return maxValidator(modelValue, modelValue);
+    };
+  }
+}
+```
+
+### **input** due to:
+  - **[656c8f](https://github.com/angular/angular.js/commit/656c8fa8f23b1277cc5c214c4d0237f3393afa1e)**: listen on "change" instead of "click" for radio/checkbox ngModels
+
+`input[radio]` and `input[checkbox]` now listen to the "change" event instead of the "click" event.
+Most apps should not be affected, as "change" is automatically fired by browsers after "click"
+happens.
+
+Two scenarios might need migration:
+
+- Custom click events:
+
+Before this change, custom click event listeners on radio / checkbox would be called after the
+input element and `ngModel` had been updated, unless they were specifically registered before
+the built-in click handlers.
+After this change, they are called before the input is updated, and can call event.preventDefault()
+to prevent the input from updating.
+
+If an app uses a click event listener that expects ngModel to be updated when it is called, it now
+needs to register a change event listener instead.
+
+- Triggering click events:
+
+Conventional trigger functions:
+
+The change event might not be fired when the input element is not attached to the document. This
+can happen in **tests** that compile input elements and
+trigger click events on them. Depending on the browser (Chrome and Safari) and the trigger method,
+the change event will not be fired when the input isn't attached to the document.
+
+Before:
+
+```js
+    it('should update the model', inject(function($compile, $rootScope) {
+      var inputElm = $compile('<input type="checkbox" ng-model="checkbox" />')($rootScope);
+
+      inputElm[0].click(); // Or different trigger mechanisms, such as jQuery.trigger()
+      expect($rootScope.checkbox).toBe(true);
+    });
+```
+
+With this patch, `$rootScope.checkbox` might not be true, because the click event
+hasn't triggered the change event. To make the test, work append the inputElm to the app's
+`$rootElement`, and the `$rootElement` to the `$document`.
+
+After:
+
+```js
+    it('should update the model', inject(function($compile, $rootScope, $rootElement, $document) {
+      var inputElm = $compile('<input type="checkbox" ng-model="checkbox" />')($rootScope);
+
+      $rootElement.append(inputElm);
+      $document.append($rootElement);
+
+      inputElm[0].click(); // Or different trigger mechanisms, such as jQuery.trigger()
+      expect($rootScope.checkbox).toBe(true);
+    });
+```
+
+`triggerHandler()`:
+
+If you are using this jQuery / jqLite function on the input elements, you don't have to attach
+the elements to the document, but instead change the triggered event to "change". This is because
+`triggerHandler(event)` only triggers the exact event when it has been added by jQuery / jqLite.
+
+### **ngStyle** due to:
+  - **[15bbd3](https://github.com/angular/angular.js/commit/15bbd3e18cd89b91f7206a06c73d40e54a8a48a0)**: use $watchCollection
+
+Previously the use of deep watch by ng-style would trigger styles to be
+re-applied when nested state changed. Now only changes to direct
+properties of the watched object will trigger changes.
+
+### **$compile** due to:
+  - **[38f8c9](https://github.com/angular/angular.js/commit/38f8c97af74649ce224b6dd45f433cc665acfbfb)**: remove the preAssignBindingsEnabled flag
+
+Previously, the `$compileProvider.preAssignBindingsEnabled` flag was supported.
+The flag controlled whether bindings were available inside the controller
+constructor or only in the `$onInit` hook. The bindings are now no longer
+available in the constructor.
+
+To migrate your code:
+
+1. If you haven't invoked `$compileProvider.preAssignBindingsEnabled()` you
+don't have to do anything to migrate.
+
+2. If you specified `$compileProvider.preAssignBindingsEnabled(false)`, you
+can remove that statement - since AngularJS 1.6.0 this is the default so your
+app should still work even in AngularJS 1.6 after such removal. Afterwards,
+migrating to AngularJS 1.7.0 shouldn't require any further action.
+
+3. If you specified `$compileProvider.preAssignBindingsEnabled(true)` you need
+to first migrate your code so that the flag can be flipped to `false`. The
+instructions on how to do that are available in the "Migrating from 1.5 to 1.6"
+guide:
+https://docs.angularjs.org/guide/migration#migrating-from-1-5-to-1-6
+Afterwards, remove the `$compileProvider.preAssignBindingsEnabled(true)`
+statement.
+
+  - **[6ccbfa](https://github.com/angular/angular.js/commit/6ccbfa65d60a3dc396d0cf6da21b993ad74653fd)**: lower the `xlink:href` security context for SVG's `a` and `image` elements
+
+In the unlikely case that an app relied on RESOURCE_URL whitelisting for the
+purpose of binding to the `xlink:href` property of SVG's `<a>` or `<image>`
+elements and if the values do not pass the regular URL sanitization, they will
+break.
+
+To fix this you need to ensure that the values used for binding to the affected
+`xlink:href` contexts are considered safe URLs, e.g. by whitelisting them in
+`$compileProvider`'s `aHrefSanitizationWhitelist` (for `<a>` elements) or
+`imgSrcSanitizationWhitelist` (for `<image>` elements).
+
+  - **[fd4f01](https://github.com/angular/angular.js/commit/fd4f0111188b62773b99ab6eab38b4d2b5d8d727)**: do not use deepWatch in literal one-way bindings
+
+Previously when a literal value was passed into a directive/component via
+one-way binding it would be watched with a deep watcher.
+
+For example, for `<my-component input="[a]">`, a new instance of the array
+would be passed into the directive/component (and trigger $onChanges) not
+only if `a` changed but also if any sub property of `a` changed such as
+`a.b` or `a.b.c.d.e` etc.
+
+This also means a new but equal value for `a` would NOT trigger such a
+change.
+
+Now literal values use an input-based watch similar to other directive/component
+one-way bindings. In this context inputs are the non-constant parts of the
+literal. In the example above the input would be `a`. Changes are only
+triggered when the inputs to the literal change.
+
+  - **[1cf728](https://github.com/angular/angular.js/commit/1cf728e209a9e0016068fac2769827e8f747760e)**: add `base[href]` to the list of RESOURCE_URL context attributes
+
+Previously, `<base href="{{ $ctrl.baseUrl }}" />` would not require `baseUrl` to
+be trusted as a RESOURCE_URL. Now, `baseUrl` will be sent to `$sce`'s
+RESOURCE_URL checks. By default, it will break unless `baseUrl` is of the same
+origin as the application document.
+
+Refer to the
+[`$sce` API docs](https://code.angularjs.org/snapshot/docs/api/ng/service/$sce)
+for more info on how to trust a value in a RESOURCE_URL context.
+
+Also, concatenation in trusted contexts is not allowed, which means that the
+following won't work: `<base href="/something/{{ $ctrl.partialPath }}" />`.
+
+Either construct complex values in a controller (recommended):
+
+```js
+this.baseUrl = '/something/' + this.partialPath;
+```
+```html
+<base href="{{ $ctrl.baseUrl }}" />
+```
+
+Or use string concatenation in the interpolation expression (not recommended
+except for the simplest of cases):
+
+```html
+<base href="{{ '/something/' + $ctrl.partialPath }}" />
+```
+
+### **ngTouch** due to:
+  - **[11d9ad](https://github.com/angular/angular.js/commit/11d9ad1eb25eaf5967195e424108207427835d50)**: remove ngClick override, `$touchProvider`, and `$touch`
+
+The `ngClick` directive from the ngTouch module has been removed, and with it the
+corresponding `$touchProvider` and `$touch` service.
+
+If you have included ngTouch v1.5.0 or higher in your application, and have not
+changed the value of `$touchProvider.ngClickOverrideEnabled()`, or injected and used the `$touch`
+service, then there are no migration steps for your code. Otherwise you must remove references to
+the provider and service.
+
+The `ngClick` override directive had been deprecated and by default disabled since v1.5.0,
+because of buggy behavior in edge cases, and a general trend to avoid special touch based
+overrides of click events. In modern browsers, it should not be necessary to use a touch override
+library:
+
+- Chrome, Firefox, Edge, and Safari remove the 300ms delay when
+  `<meta name="viewport" content="width=device-width">` is set.
+- Internet Explorer 10+, Edge, Safari, and Chrome remove the delay on elements that have the
+  `touch-action` css property is set to `manipulation`.
+
+You can find out more in these articles:
+https://developers.google.com/web/updates/2013/12/300ms-tap-delay-gone-away
+https://developer.apple.com/library/content/releasenotes/General/WhatsNewInSafari/Articles/Safari_9_1.html#//apple_ref/doc/uid/TP40014305-CH10-SW8
+https://blogs.msdn.microsoft.com/ie/2015/02/24/pointer-events-w3c-recommendation-interoperable-touch-and-removing-the-dreaded-300ms-tap-delay/
+
+### **Angular** due to:
+  - **[1daa4f](https://github.com/angular/angular.js/commit/1daa4f2231a89ee88345689f001805ffffa9e7de)**: remove `angular.lowercase` and `angular.uppercase`
+
+The helper functions `angular.lowercase` `and angular.uppercase` have
+been removed.
+
+These functions have been deprecated since 1.5.0. They are internally
+used, but should not be exposed as they contain special locale handling
+(for Turkish) to maintain internal consistency regardless of user-set locale.
+
+Developers should generally use the built-ins `toLowerCase` and `toUpperCase`
+or `toLocaleLowerCase` and `toLocaleUpperCase` for special cases.
+
+Further, we generally discourage using the angular.x helpers in application code.
+
+### **$controller** due to:
+  - **[e269c1](https://github.com/angular/angular.js/commit/e269c14425a3209040f65c022658770e00a36f16)**: remove instantiating controllers defined on window
+
+The option to instantiate controllers from constructors on the global `window` object
+has been removed. Likewise, the deprecated `$controllerProvider.allowGlobals()`
+method that could enable this behavior, has been removed.
+
+This behavior had been deprecated since AngularJS v1.3.0, because polluting the global scope
+is bad. To migrate, remove the call to $controllerProvider.allowGlobals() in the config, and
+register your controller via the Module API or the $controllerProvider, e.g.
+
+```
+angular.module('myModule', []).controller('myController', function() {...});
+
+angular.module('myModule', []).config(function($controllerProvider) {
+  $controllerProvider.register('myController', function() {...});
+});
+
+```
+
+### **$rootScope** due to:
+  - **([c2b8fa](https://github.com/angular/angular.js/commit/c2b8fab0a480204374d561d6b9b3d47347ac5570))**: provide correct value of one-time bindings in watchGroup
+
+Previously when using `$watchGroup` the entries in `newValues` and
+`oldValues` represented the *most recent change of each entry*.
+
+Now the entries in `oldValues` will always equal the `newValues` of the previous
+call of the listener. This means comparing the entries in `newValues` and
+`oldValues` can be used to determine which individual expressions changed.
+
+For example `$scope.$watchGroup(['a', 'b'], fn)` would previously:
+
+|  Action  |  newValue  |  oldValue  |
+|----------|------------|------------|
+|  (init)  | [undefined, undefined] | [undefined, undefined] |
+|  `a=1`   | [1, undefined] | [undefined, undefined] |
+|  `a=2`   | [2, undefined] | [1, undefined] |
+|  `b=3`   | [2, 3] | [1, undefined] |
+
+
+Now the `oldValue` will always equal the previous `newValue`:
+
+|  Action  |  newValue  |  oldValue  |
+|----------|------------|------------|
+|  (init)  | [undefined, undefined] | [undefined, undefined] |
+|  `a=1`   | [1, undefined] | [undefined, undefined] |
+|  `a=2`   | [2, undefined] | [1, undefined] |
+|  `b=3`   | [2, 3] | [2, undefined] |
+
+Note the last call now shows `a === 2` in the `oldValues` array.
+
+This also makes the `oldValue` of one-time watchers more clear. Previously
+the `oldValue` of a one-time watcher would remain `undefined` forever. For
+example `$scope.$watchGroup(['a', '::b'], fn)` would previously:
+
+|  Action  |  newValue  |  oldValue  |
+|----------|------------|------------|
+|  (init)  | [undefined, undefined] | [undefined, undefined] |
+|  `a=1`   | [1, undefined] | [undefined, undefined] |
+|  `b=2`   | [1, 2] | [undefined, undefined] |
+|  `a=b=3` | [3, 2] | [1, undefined] |
+
+Where now the `oldValue` will always equal the previous `newValue`:
+
+|  Action  |  newValue  |  oldValue  |
+|----------|------------|------------|
+|  (init)  | [undefined, undefined] | [undefined, undefined] |
+|  `a=1`   | [1, undefined] | [undefined, undefined] |
+|  `b=2`   | [1, 2] | [1, undefined] |
+|  `a=b=3` | [3, 2] | [1, 2] |
+
 <a name="1.6.10"></a>
 # 1.6.10 crystalline-persuasion (2018-04-17)
 
