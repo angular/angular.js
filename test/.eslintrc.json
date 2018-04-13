@@ -43,8 +43,6 @@
 
     "lowercase": false,
     "uppercase": false,
-    "manualLowercase": false,
-    "manualUppercase": false,
     "isArrayLike": false,
     "forEach": false,
     "reverseParams": false,
