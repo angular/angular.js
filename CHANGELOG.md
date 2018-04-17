@@ -1,5 +1,5 @@
 <a name="1.6.10"></a>
-# 1.6.10 crystalline-persuasion (2018-04-12)
+# 1.6.10 crystalline-persuasion (2018-04-17)
 
 ## Bug Fixes
 - **$compile:**
