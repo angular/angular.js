@@ -3,20 +3,18 @@
 /* globals generateInputCompilerHelper: false */
 
 describe('input', function() {
-  var helper = {}, $compile, $rootScope, $browser, $sniffer, $timeout, $q;
+  var helper = {}, $compile, $rootScope, $browser, $sniffer;
 
   // UA sniffing to exclude Edge from some date input tests
   var isEdge = /\bEdge\//.test(window.navigator.userAgent);
 
   generateInputCompilerHelper(helper);
 
-  beforeEach(inject(function(_$compile_, _$rootScope_, _$browser_, _$sniffer_, _$timeout_, _$q_) {
+  beforeEach(inject(function(_$compile_, _$rootScope_, _$browser_, _$sniffer_) {
     $compile = _$compile_;
     $rootScope = _$rootScope_;
     $browser = _$browser_;
     $sniffer = _$sniffer_;
-    $timeout = _$timeout_;
-    $q = _$q_;
   }));
 
 
@@ -1556,6 +1554,20 @@ describe('input', function() {
 
       expect(inputElm).toBeValid();
     });
+
+
+    it('should correctly handle 2-digit years', function() {
+      helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" />');
+
+      helper.changeInputValueTo('0001-01-01T12:34:00');
+      expect($rootScope.value.getFullYear()).toBe(1);
+
+      helper.changeInputValueTo('0099-01-01T12:34:00');
+      expect($rootScope.value.getFullYear()).toBe(99);
+
+      helper.changeInputValueTo('0100-01-01T12:34:00');
+      expect($rootScope.value.getFullYear()).toBe(100);
+    });
   });
 
 
@@ -2323,9 +2335,9 @@ describe('input', function() {
 
     it('should allow Date objects as valid ng-max values', function() {
       $rootScope.max = new Date(2012, 1, 1, 1, 2, 0);
-      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" ng-max="max" />');
+      var inputElm = helper.compileInput('<input type="date" ng-model="value" name="alias" ng-max="max" />');
 
-      helper.changeInputValueTo('2014-01-01T12:34:00');
+      helper.changeInputValueTo('2014-01-01');
       expect(inputElm).toBeInvalid();
 
       $rootScope.max = new Date(2013, 1, 1, 1, 2, 0);
@@ -2342,9 +2354,9 @@ describe('input', function() {
 
     it('should allow Date objects as valid ng-min values', function() {
       $rootScope.min = new Date(2013, 1, 1, 1, 2, 0);
-      var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" ng-min="min" />');
+      var inputElm = helper.compileInput('<input type="date" ng-model="value" name="alias" ng-min="min" />');
 
-      helper.changeInputValueTo('2010-01-01T12:34:00');
+      helper.changeInputValueTo('2010-01-01');
       expect(inputElm).toBeInvalid();
 
       $rootScope.min = new Date(2014, 1, 1, 1, 2, 0);
@@ -2357,6 +2369,21 @@ describe('input', function() {
 
       expect(inputElm).toBeValid();
     });
+
+
+    it('should correctly handle 2-digit years', function() {
+      helper.compileInput('<input type="date" ng-model="value" name="alias" />');
+
+      helper.changeInputValueTo('0001-01-01');
+      expect($rootScope.value.getFullYear()).toBe(1);
+
+      helper.changeInputValueTo('0099-01-01');
+      expect($rootScope.value.getFullYear()).toBe(99);
+
+      helper.changeInputValueTo('0100-01-01');
+      expect($rootScope.value.getFullYear()).toBe(100);
+    });
+
 
     describe('ISO_DATE_REGEXP', function() {
       var dates = [
