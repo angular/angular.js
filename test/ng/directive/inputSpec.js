@@ -761,6 +761,8 @@ describe('input', function() {
     });
 
 
+    // Support: Edge 16
+    // Edge does not support years with any number of digits other than 4.
     if (!isEdge) {
       it('should allow four or more digits in year', function() {
         var inputElm = helper.compileInput('<input type="month" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
@@ -990,6 +992,8 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    // Support: Edge 16
+    // Edge does not support years with any number of digits other than 4.
     if (!isEdge) {
       it('should allow four or more digits in year', function() {
         var inputElm = helper.compileInput('<input type="week" ng-model="value"  ng-model-options="{timezone: \'UTC\'}"/>');
@@ -1351,6 +1355,8 @@ describe('input', function() {
     });
 
 
+    // Support: Edge 16
+    // Edge does not support years with any number of digits other than 4.
     if (!isEdge) {
       it('should allow four or more digits in year', function() {
         var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" />');
@@ -1556,18 +1562,22 @@ describe('input', function() {
     });
 
 
-    it('should correctly handle 2-digit years', function() {
-      helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" />');
+    // Support: Edge 16
+    // Edge does not support years with any number of digits other than 4.
+    if (!isEdge) {
+      it('should correctly handle 2-digit years', function() {
+        helper.compileInput('<input type="datetime-local" ng-model="value" name="alias" />');
 
-      helper.changeInputValueTo('0001-01-01T12:34:00');
-      expect($rootScope.value.getFullYear()).toBe(1);
+        helper.changeInputValueTo('0001-01-01T12:34:00');
+        expect($rootScope.value.getFullYear()).toBe(1);
 
-      helper.changeInputValueTo('0099-01-01T12:34:00');
-      expect($rootScope.value.getFullYear()).toBe(99);
+        helper.changeInputValueTo('0099-01-01T12:34:00');
+        expect($rootScope.value.getFullYear()).toBe(99);
 
-      helper.changeInputValueTo('0100-01-01T12:34:00');
-      expect($rootScope.value.getFullYear()).toBe(100);
-    });
+        helper.changeInputValueTo('0100-01-01T12:34:00');
+        expect($rootScope.value.getFullYear()).toBe(100);
+      });
+    }
   });
 
 
@@ -2370,19 +2380,22 @@ describe('input', function() {
       expect(inputElm).toBeValid();
     });
 
+    // Support: Edge 16
+    // Edge does not support years with any number of digits other than 4.
+    if (!isEdge) {
+      it('should correctly handle 2-digit years', function() {
+        helper.compileInput('<input type="date" ng-model="value" name="alias" />');
 
-    it('should correctly handle 2-digit years', function() {
-      helper.compileInput('<input type="date" ng-model="value" name="alias" />');
+        helper.changeInputValueTo('0001-01-01');
+        expect($rootScope.value.getFullYear()).toBe(1);
 
-      helper.changeInputValueTo('0001-01-01');
-      expect($rootScope.value.getFullYear()).toBe(1);
+        helper.changeInputValueTo('0099-01-01');
+        expect($rootScope.value.getFullYear()).toBe(99);
 
-      helper.changeInputValueTo('0099-01-01');
-      expect($rootScope.value.getFullYear()).toBe(99);
-
-      helper.changeInputValueTo('0100-01-01');
-      expect($rootScope.value.getFullYear()).toBe(100);
-    });
+        helper.changeInputValueTo('0100-01-01');
+        expect($rootScope.value.getFullYear()).toBe(100);
+      });
+    }
 
 
     describe('ISO_DATE_REGEXP', function() {
