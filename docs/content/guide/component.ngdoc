@@ -25,7 +25,7 @@ When not to use Components:
 
 ## Creating and configuring a Component
 
-Components can be registered using the `.component()` method of an AngularJS module (returned by {@link module `angular.module()`}). The method takes two arguments:
+Components can be registered using the {@link ng.$compileProvider#component `.component()`} method of an AngularJS module (returned by {@link module `angular.module()`}). The method takes two arguments:
 
   * The name of the Component (as string).
   * The Component config object. (Note that, unlike the `.directive()` method, this method does **not** take a factory function.)
