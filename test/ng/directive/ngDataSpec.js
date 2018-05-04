@@ -3,15 +3,15 @@
 describe('ngDataDirective', function() {
     var element;
 
-    beforeEach(function () {
+    beforeEach(function() {
         module(function($provide) {
             var value;
 
             $provide.value('ng_data_test_service', {
-                setter: function (v) {
+                setter: function(v) {
                     value = v;
                 },
-                getter: function () {
+                getter: function() {
                     return value;
                 }
             });

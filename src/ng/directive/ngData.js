@@ -34,13 +34,13 @@ var ngDataDirective = ['$injector', '$parse', function($injector, $parse) {
     return {
         restrict: 'E',
         terminal: true,
-        compile: function (element, attr) {
+        compile: function(element, attr) {
             if (attr.type !== 'text/ng-data') {
                 return angular.noop;
             }
 
             return {
-                pre: function (scope, $element, $attr) {
+                pre: function(scope, $element, $attr) {
                     var target = scope,
                         key = $attr.key,
                         service = $attr.service,
@@ -68,7 +68,7 @@ var ngDataDirective = ['$injector', '$parse', function($injector, $parse) {
 
                     angular.extend(target, value);
                 }
-            }
+            };
         }
     };
 }];
