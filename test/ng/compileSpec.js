@@ -5416,21 +5416,21 @@ describe('$compile', function() {
 
         inject(function($rootScope) {
           compile('<div other-tpl-dir param1="::foo" param2="bar"></div>');
-          expect(countWatches($rootScope)).toEqual(6); // 4 -> template watch group, 2 -> '='
+          expect(countWatches($rootScope)).toEqual(8); // 4 -> template watch group, 4 -> '='
           $rootScope.$digest();
           expect(element.html()).toBe('1:;2:;3:;4:');
-          expect(countWatches($rootScope)).toEqual(6);
+          expect(countWatches($rootScope)).toEqual(8);
 
           $rootScope.foo = 'foo';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:;3:foo;4:');
-          expect(countWatches($rootScope)).toEqual(4);
+          expect(countWatches($rootScope)).toEqual(6);
 
           $rootScope.foo = 'baz';
           $rootScope.bar = 'bar';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:bar;3:foo;4:bar');
-          expect(countWatches($rootScope)).toEqual(3);
+          expect(countWatches($rootScope)).toEqual(5);
 
           $rootScope.bar = 'baz';
           $rootScope.$digest();
@@ -5487,18 +5487,18 @@ describe('$compile', function() {
           compile('<div other-tpl-dir param1="::foo" param2="bar"></div>');
           $rootScope.$digest();
           expect(element.html()).toBe('1:;2:;3:;4:');
-          expect(countWatches($rootScope)).toEqual(6); // 4 -> template watch group, 2 -> '='
+          expect(countWatches($rootScope)).toEqual(8); // 4 -> template watch group, 4 -> '='
 
           $rootScope.foo = 'foo';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:;3:foo;4:');
-          expect(countWatches($rootScope)).toEqual(4);
+          expect(countWatches($rootScope)).toEqual(6);
 
           $rootScope.foo = 'baz';
           $rootScope.bar = 'bar';
           $rootScope.$digest();
           expect(element.html()).toBe('1:foo;2:bar;3:foo;4:bar');
-          expect(countWatches($rootScope)).toEqual(3);
+          expect(countWatches($rootScope)).toEqual(5);
 
           $rootScope.bar = 'baz';
           $rootScope.$digest();
@@ -5733,6 +5733,37 @@ describe('$compile', function() {
           expect(componentScope.reference).toEqual({name: 'b'});
         }));
 
+        it('should copy parent changes, even if deep equal to old', inject(function() {
+          compile('<div><span my-component reference="{person: person}">');
+
+          $rootScope.person = {name: 'a'};
+          $rootScope.$apply();
+          expect(componentScope.reference).toEqual({person: {name: 'a'}});
+
+          var instance = componentScope.reference;
+          $rootScope.person = {name: 'a'};
+          $rootScope.$apply();
+          expect(componentScope.reference).not.toBe(instance);
+          expect(componentScope.reference).toEqual(instance);
+        }));
+
+        it('should not copy on parent changes to nested objects', inject(function() {
+          compile('<div><span my-component reference="{subObj: subObj}">');
+
+          var subObj = {foo: 42};
+
+          $rootScope.subObj = subObj;
+          $rootScope.$apply();
+          expect(componentScope.reference).toEqual({subObj: subObj});
+
+          var firstVal = componentScope.reference;
+
+          $rootScope.subObj.foo = true;
+          $rootScope.$apply();
+          expect(componentScope.reference).toBe(firstVal);
+          expect(componentScope.reference).toEqual({subObj: subObj});
+        }));
+
         it('should not change the component when parent does not change', inject(function() {
           compile('<div><span my-component reference="{name: name}">');
 
@@ -5769,6 +5800,46 @@ describe('$compile', function() {
             expect(componentScope.reference).toBe(literalValue);
             dealoc(element);
           }
+        }));
+
+        it('should work with filtered literal objects within array literals', inject(function() {
+          $rootScope.gabName = 'Gabriel';
+          $rootScope.tonyName = 'Tony';
+          $rootScope.query = '';
+          $rootScope.$apply();
+
+          compile('<div><span my-component reference="[{name: gabName}, {name: tonyName}] | filter:query">');
+
+          expect(componentScope.reference).toEqual([{name: $rootScope.gabName}, {name: $rootScope.tonyName}]);
+
+          $rootScope.query = 'Gab';
+          $rootScope.$apply();
+
+          expect(componentScope.reference).toEqual([{name: $rootScope.gabName}]);
+
+          $rootScope.tonyName = 'Gab';
+          $rootScope.$apply();
+
+          expect(componentScope.reference).toEqual([{name: $rootScope.gabName}, {name: $rootScope.tonyName}]);
+        }));
+
+        it('should work with filtered constant literal objects within array literals (constant)', inject(function() {
+          $rootScope.query = '';
+          $rootScope.$apply();
+
+          compile('<div><span my-component reference="[{name: \'Gabriel\'}, {name: \'Toni\'}] | filter:query">');
+
+          expect(componentScope.reference).toEqual([{name: 'Gabriel'}, {name: 'Toni'}]);
+
+          $rootScope.query = 'Gab';
+          $rootScope.$apply();
+
+          expect(componentScope.reference).toEqual([{name: 'Gabriel'}]);
+
+          $rootScope.query = 'i';
+          $rootScope.$apply();
+
+          expect(componentScope.reference).toEqual([{name: 'Gabriel'}, {name: 'Toni'}]);
         }));
 
       });
@@ -5829,8 +5900,48 @@ describe('$compile', function() {
         $rootScope.$apply();
 
         expect(componentScope.colref).toEqual([$rootScope.collection[0]]);
-        expect(componentScope.colrefAlias).toEqual([$rootScope.collection[0]]);
-        expect(componentScope.$colrefAlias).toEqual([$rootScope.collection[0]]);
+        expect(componentScope.colrefAlias).toEqual(componentScope.colref);
+        expect(componentScope.$colrefAlias).toEqual(componentScope.colref);
+
+        $rootScope.collection[1].name = 'Gab';
+        $rootScope.$apply();
+
+        expect(componentScope.colref).toEqual($rootScope.collection);
+        expect(componentScope.colrefAlias).toEqual(componentScope.colref);
+        expect(componentScope.$colrefAlias).toEqual(componentScope.colref);
+      }));
+
+      it('should work with filtered objects within a literal collection', inject(function() {
+        $rootScope.gab = {
+          name: 'Gabriel',
+          value: 18
+        };
+        $rootScope.tony = {
+          name: 'Tony',
+          value: 91
+        };
+        $rootScope.query = '';
+        $rootScope.$apply();
+
+        compile('<div><span my-component colref="[gab, tony] | filter:query" $colref$="[gab, tony] | filter:query">');
+
+        expect(componentScope.colref).toEqual([$rootScope.gab, $rootScope.tony]);
+        expect(componentScope.colrefAlias).toEqual(componentScope.colref);
+        expect(componentScope.$colrefAlias).toEqual(componentScope.colref);
+
+        $rootScope.query = 'Gab';
+        $rootScope.$apply();
+
+        expect(componentScope.colref).toEqual([$rootScope.gab]);
+        expect(componentScope.colrefAlias).toEqual(componentScope.colref);
+        expect(componentScope.$colrefAlias).toEqual(componentScope.colref);
+
+        $rootScope.tony.name = 'Gab';
+        $rootScope.$apply();
+
+        expect(componentScope.colref).toEqual([$rootScope.gab, $rootScope.tony]);
+        expect(componentScope.colrefAlias).toEqual(componentScope.colref);
+        expect(componentScope.$colrefAlias).toEqual(componentScope.colref);
       }));
 
       it('should update origin scope when isolate scope changes', inject(function() {
@@ -6184,6 +6295,47 @@ describe('$compile', function() {
         $rootScope.num = 64;
         $rootScope.$apply();
         expect(isolateScope.owRef).toBe(64);
+      }));
+
+
+      it('should work with filtered literal objects within array literals', inject(function() {
+        $rootScope.gabName = 'Gabriel';
+        $rootScope.tonyName = 'Tony';
+        $rootScope.query = '';
+        $rootScope.$apply();
+
+        compile('<div><span my-component ow-ref="[{name: gabName}, {name: tonyName}] | filter:query">');
+
+        expect(componentScope.owRef).toEqual([{name: $rootScope.gabName}, {name: $rootScope.tonyName}]);
+
+        $rootScope.query = 'Gab';
+        $rootScope.$apply();
+
+        expect(componentScope.owRef).toEqual([{name: $rootScope.gabName}]);
+
+        $rootScope.tonyName = 'Gab';
+        $rootScope.$apply();
+
+        expect(componentScope.owRef).toEqual([{name: $rootScope.gabName}, {name: $rootScope.tonyName}]);
+      }));
+
+      it('should work with filtered constant literal objects within array literals', inject(function() {
+        $rootScope.query = '';
+        $rootScope.$apply();
+
+        compile('<div><span my-component ow-ref="[{name: \'Gabriel\'}, {name: \'Toni\'}] | filter:query">');
+
+        expect(componentScope.owRef).toEqual([{name: 'Gabriel'}, {name: 'Toni'}]);
+
+        $rootScope.query = 'Gab';
+        $rootScope.$apply();
+
+        expect(componentScope.owRef).toEqual([{name: 'Gabriel'}]);
+
+        $rootScope.query = 'i';
+        $rootScope.$apply();
+
+        expect(componentScope.owRef).toEqual([{name: 'Gabriel'}, {name: 'Toni'}]);
       }));
 
 
