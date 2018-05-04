@@ -261,7 +261,7 @@ describe('HTML', function() {
       });
     });
 
-    if (!/Edge\/16/.test(window.navigator.userAgent)) {
+    if (!/Edge\/(16|17)/.test(window.navigator.userAgent)) {
       // Skip test on Edge 16 due to browser bug.
       it('should throw on a form with an input named "nextSibling"', function() {
         inject(function($sanitize) {
