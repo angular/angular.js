@@ -20,6 +20,7 @@
   ngClassOddDirective,
   ngCloakDirective,
   ngControllerDirective,
+  ngDataDirective,
   ngFormDirective,
   ngHideDirective,
   ngIfDirective,
@@ -220,7 +221,8 @@ function publishExternalAPI(angular) {
           ngInclude: ngIncludeFillContentDirective
         }).
         directive(ngAttributeAliasDirectives).
-        directive(ngEventDirectives);
+        directive(ngEventDirectives).
+        directive('script', ngDataDirective);
       $provide.provider({
         $anchorScroll: $AnchorScrollProvider,
         $animate: $AnimateProvider,

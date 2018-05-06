@@ -64,6 +64,7 @@ var angularFiles = {
     'src/ng/directive/ngCloak.js',
     'src/ng/directive/ngController.js',
     'src/ng/directive/ngCsp.js',
+    'src/ng/directive/ngData.js',
     'src/ng/directive/ngEventDirs.js',
     'src/ng/directive/ngIf.js',
     'src/ng/directive/ngInclude.js',
