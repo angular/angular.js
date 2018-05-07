@@ -1785,21 +1785,9 @@ describe('angular', function() {
             protocol = 'browserext:';  // Upcoming standard scheme.
           }
 
-
-          if (protocol === 'ms-browser-extension:') {
-            // Support: Edge 13-15
-            // In Edge, URLs with protocol 'ms-browser-extension:' return "null" for the origin,
-            // therefore it's impossible to know if a script is same-origin.
-            it('should not bootstrap for same-origin documents', function() {
-              expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something'}, protocol))).toBe(false);
-            });
-
-          } else {
-            it('should bootstrap for same-origin documents', function() {
-
-              expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something'}, protocol))).toBe(true);
-            });
-          }
+          it('should bootstrap for same-origin documents', function() {
+            expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something'}, protocol))).toBe(true);
+          });
 
           it('should not bootstrap for cross-origin documents', function() {
             expect(allowAutoBootstrap(createFakeDoc({src: protocol + '//something-else'}, protocol))).toBe(false);
