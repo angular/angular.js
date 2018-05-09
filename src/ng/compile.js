@@ -309,11 +309,9 @@
  *   to the local value, since it will be impossible to sync them back to the parent scope.
  *
  *   By default, the {@link ng.$rootScope.Scope#$watch `$watch`}
- *   method is used for tracking changes, and the equality check is based on object identity.
- *   However, if an object literal or an array literal is passed as the binding expression, the
- *   equality check is done by value (using the {@link angular.equals} function). It's also possible
- *   to watch the evaluated value shallowly with {@link ng.$rootScope.Scope#$watchCollection
- *   `$watchCollection`}: use `=*` or `=*attr`
+ *   method is used for tracking changes between the local scope property and the expression passed
+ *   via the attribute. It's also possible to watch the evaluated value shallowly with
+ *   {@link ng.$rootScope.Scope#$watchCollection `$watchCollection`}: use `=*` or `=*attr`.
  *
   * * `<` or `<attr` - set up a one-way (one-directional) binding between a local scope property and an
  *   expression passed via the attribute `attr`. The expression is evaluated in the context of the
@@ -3535,7 +3533,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
         optional = definition.optional,
         mode = definition.mode, // @, =, <, or &
         lastValue,
-        parentGet, parentSet, compare, removeWatch;
+        parentGet, parentSet, removeWatch;
 
         switch (mode) {
 
@@ -3576,11 +3574,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             if (optional && !attrs[attrName]) break;
 
             parentGet = $parse(attrs[attrName]);
-            if (parentGet.literal) {
-              compare = equals;
-            } else {
-              compare = simpleCompare;
-            }
             parentSet = parentGet.assign || function() {
               // reset the change, or we will throw this exception on every $digest
               lastValue = destination[scopeName] = parentGet(scope);
@@ -3588,11 +3581,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                   'Expression \'{0}\' in attribute \'{1}\' used with directive \'{2}\' is non-assignable!',
                   attrs[attrName], attrName, directive.name);
             };
+            var childGet = function childGet() { return destination[scopeName]; };
+
             lastValue = destination[scopeName] = parentGet(scope);
-            var parentValueWatch = function parentValueWatch(parentValue) {
-              if (!compare(parentValue, destination[scopeName])) {
+
+            var bidiWatchAction = function bidiWatchAction(newValues) {
+              var parentValue = newValues[0];
+              if (!simpleCompare(parentValue, destination[scopeName])) {
                 // we are out of sync and need to copy
-                if (!compare(parentValue, lastValue)) {
+                if (!simpleCompare(parentValue, lastValue)) {
                   // parent changed and it has precedence
                   destination[scopeName] = parentValue;
                 } else {
@@ -3601,13 +3598,11 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 }
               }
               lastValue = parentValue;
-              return lastValue;
             };
-            parentValueWatch.$stateful = true;
             if (definition.collection) {
-              removeWatch = scope.$watchCollection(attrs[attrName], parentValueWatch);
+              removeWatch = scope.$watchCollection(parentGet, function bidiCollectionWatchAction(parentValue) { destination[scopeName] = parentValue; });
             } else {
-              removeWatch = scope.$watch($parse(attrs[attrName], parentValueWatch), null, parentGet.literal);
+              removeWatch = scope.$watchGroup([parentGet, childGet], bidiWatchAction);
             }
             removeWatchCollection.push(removeWatch);
             break;
