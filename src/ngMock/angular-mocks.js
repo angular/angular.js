@@ -1342,6 +1342,7 @@ angular.mock.$httpBackendDecorator =
 function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   var definitions = [],
       expectations = [],
+      matchLatestDefinition = false,
       responses = [],
       responsesPush = angular.bind(responses, responses.push),
       copy = angular.copy,
@@ -1430,8 +1431,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
       wasExpected = true;
     }
 
-    var i = -1, definition;
-    while ((definition = definitions[++i])) {
+    var i = matchLatestDefinition ? definitions.length : -1, definition;
+
+    while ((definition = definitions[matchLatestDefinition ? --i : ++i])) {
       if (definition.match(method, url, data, headers || {})) {
         if (definition.response) {
           // if $browser specified, we do auto flush all requests
@@ -1505,6 +1507,15 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
 
     definitions.push(definition);
     return chain;
+  };
+
+  $httpBackend.matchLatestDefinition = function(value) {
+
+    if (isDefined(value)) {
+      matchLatestDefinition = value;
+    } else {
+      return matchLatestDefinition;
+    }
   };
 
   /**

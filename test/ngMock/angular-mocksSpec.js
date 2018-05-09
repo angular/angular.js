@@ -1106,6 +1106,27 @@ describe('ngMock', function() {
     });
 
 
+    it('should respond with latest matched definition when $httpBackend.matchLatestDefinition(true)',
+      function() {
+        hb.matchLatestDefinition(true);
+
+        hb.when('GET', '/url1').respond(200, 'content', {});
+        hb.when('GET', '/url1').respond(200, 'middle', {});
+        hb.when('GET', '/url1').respond(201, 'another', {});
+
+        callback.and.callFake(function(status, response) {
+          expect(status).toBe(201);
+          expect(response).toBe('another');
+        });
+
+        hb('GET', '/url1', null, callback);
+        expect(callback).not.toHaveBeenCalled();
+        hb.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      }
+    );
+
+
     it('should respond with a copy of the mock data', function() {
       var mockObject = {a: 'b'};
 
