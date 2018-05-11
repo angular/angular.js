@@ -1,5 +1,5 @@
 <a name="1.7.0"></a>
-# 1.7.0 nonexistent-physiology (2018-05-09)
+# 1.7.0 nonexistent-physiology (2018-05-11)
 
 **Here are the full changes for the release of 1.7.0 that are not already released in the 1.6.x branch,
 which includes commits from 1.7.0-rc.0 and commits from 1.7.0 directly.**
