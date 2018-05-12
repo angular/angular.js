@@ -6,7 +6,7 @@
   "distTag": "latest",
   "repository": {
     "type": "git",
-    "url": "https://github.com/angular/angular.js.git"
+    "url": "https://github.com/angular/angular.js.gittestpull"
   },
   "engines": {
     "node": "^8.9.1",
