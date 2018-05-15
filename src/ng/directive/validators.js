@@ -61,7 +61,7 @@
        });
  *   </file>
  * </example>
- */
+ */ /** CLOSURE HACK COMMENT */
 var requiredDirective = function() {
   return {
     restrict: 'A',
@@ -161,7 +161,7 @@ var requiredDirective = function() {
        });
  *   </file>
  * </example>
- */
+ */ /** CLOSURE HACK COMMENT */
 var patternDirective = function() {
   return {
     restrict: 'A',
@@ -263,7 +263,7 @@ var patternDirective = function() {
        });
  *   </file>
  * </example>
- */
+ */ /** CLOSURE HACK COMMENT */
 var maxlengthDirective = function() {
   return {
     restrict: 'A',
@@ -352,7 +352,7 @@ var maxlengthDirective = function() {
        });
  *   </file>
  * </example>
- */
+ */ /** CLOSURE HACK COMMENT */
 var minlengthDirective = function() {
   return {
     restrict: 'A',
