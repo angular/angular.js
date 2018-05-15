@@ -87,7 +87,7 @@
  *  </file>
  * </example>
  */
-var ngAnimateSwapDirective = ['$animate', '$rootScope', function($animate, $rootScope) {
+var ngAnimateSwapDirective = ['$animate', function($animate) {
   return {
     restrict: 'A',
     transclude: 'element',
