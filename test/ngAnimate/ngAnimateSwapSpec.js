@@ -132,6 +132,53 @@ describe('ngAnimateSwap', function() {
     expect(two).toBeTruthy();
   }));
 
+  it('should create a new (non-isolate) scope for each inserted clone', inject(function() {
+    var parentScope = $rootScope.$new();
+    parentScope.foo = 'bar';
+
+    element = $compile('<div><div ng-animate-swap="value">{{ value }}</div></div>')(parentScope);
+
+    $rootScope.$apply('value = 1');
+    var scopeOne = element.find('div').eq(0).scope();
+    expect(scopeOne.foo).toBe('bar');
+
+    $rootScope.$apply('value = 2');
+    var scopeTwo = element.find('div').eq(0).scope();
+    expect(scopeTwo.foo).toBe('bar');
+
+    expect(scopeOne).not.toBe(scopeTwo);
+  }));
+
+  it('should destroy the previous scope when removing the element', inject(function() {
+    element = $compile('<div><div ng-animate-swap="value">{{ value }}</div></div>')($rootScope);
+
+    $rootScope.$apply('value = 1');
+    var scopeOne = element.find('div').eq(0).scope();
+    expect(scopeOne.$$destroyed).toBe(false);
+
+    // Swapping the old element with a new one.
+    $rootScope.$apply('value = 2');
+    expect(scopeOne.$$destroyed).toBe(true);
+
+    var scopeTwo = element.find('div').eq(0).scope();
+    expect(scopeTwo.$$destroyed).toBe(false);
+
+    // Removing the old element (without inserting a new one).
+    $rootScope.$apply('value = null');
+    expect(scopeTwo.$$destroyed).toBe(true);
+  }));
+
+  it('should destroy the previous scope when swapping elements', inject(function() {
+    element = $compile('<div><div ng-animate-swap="value">{{ value }}</div></div>')($rootScope);
+
+    $rootScope.$apply('value = 1');
+    var scopeOne = element.find('div').eq(0).scope();
+    expect(scopeOne.$$destroyed).toBe(false);
+
+    $rootScope.$apply('value = 2');
+    expect(scopeOne.$$destroyed).toBe(true);
+  }));
+
 
   describe('animations', function() {
     it('should trigger a leave animation followed by an enter animation upon swap',

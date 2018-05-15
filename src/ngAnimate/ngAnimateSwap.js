@@ -104,10 +104,10 @@ var ngAnimateSwapDirective = ['$animate', function($animate) {
           previousScope = null;
         }
         if (value || value === 0) {
-          previousScope = scope.$new();
-          $transclude(previousScope, function(element) {
-            previousElement = element;
-            $animate.enter(element, null, $element);
+          $transclude(function(clone, childScope) {
+            previousElement = clone;
+            previousScope = childScope;
+            $animate.enter(clone, null, $element);
           });
         }
       });
