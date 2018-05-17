@@ -181,6 +181,16 @@ describe('cookie options', function() {
     expect(getLastCookieAssignment('secure')).toBe(true);
   });
 
+  it('should accept samesite option when value is lax', function() {
+    $$cookieWriter('name', 'value', {samesite: 'lax'});
+    expect(getLastCookieAssignment('samesite')).toBe('lax');
+  });
+
+  it('should accept samesite option when value is strict', function() {
+    $$cookieWriter('name', 'value', {samesite: 'strict'});
+    expect(getLastCookieAssignment('samesite')).toBe('strict');
+  });
+
   it('should accept expires option on set', function() {
     $$cookieWriter('name', 'value', {expires: 'Fri, 19 Dec 2014 00:00:00 GMT'});
     expect(getLastCookieAssignment('expires')).toMatch(/^Fri, 19 Dec 2014 00:00:00 (UTC|GMT)$/);

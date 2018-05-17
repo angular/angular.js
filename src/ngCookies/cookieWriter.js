@@ -33,6 +33,7 @@ function $$CookieWriter($document, $log, $browser) {
     str += options.domain ? ';domain=' + options.domain : '';
     str += expires ? ';expires=' + expires.toUTCString() : '';
     str += options.secure ? ';secure' : '';
+    str += options.samesite ? ';samesite=' + options.samesite : '';
 
     // per http://www.ietf.org/rfc/rfc2109.txt browser must allow at minimum:
     // - 300 cookies
