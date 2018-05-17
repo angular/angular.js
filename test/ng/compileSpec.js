@@ -5148,6 +5148,9 @@ describe('$compile', function() {
             owOptref: '<?',
             owOptrefAlias: '<? owOptref',
             $owOptrefAlias: '<? $owOptref$',
+            owColref: '<*',
+            owColrefAlias: '<* owColref',
+            $owColrefAlias: '<* $owColref$',
             expr: '&',
             optExpr: '&?',
             exprAlias: '&expr',
@@ -6325,6 +6328,112 @@ describe('$compile', function() {
           }));
         });
       });
+    });
+
+    describe('one-way collection bindings', function() {
+      it('should update isolate scope when origin scope changes', inject(function() {
+        $rootScope.collection = [{
+          name: 'Gabriel',
+          value: 18
+        }, {
+          name: 'Tony',
+          value: 91
+        }];
+        $rootScope.query = '';
+        $rootScope.$apply();
+
+        compile('<div><span my-component ow-colref="collection | filter:query" $ow-colref$="collection | filter:query">');
+
+        expect(componentScope.owColref).toEqual($rootScope.collection);
+        expect(componentScope.owColrefAlias).toEqual(componentScope.owColref);
+        expect(componentScope.$owColrefAlias).toEqual(componentScope.owColref);
+
+        $rootScope.query = 'Gab';
+        $rootScope.$apply();
+
+        expect(componentScope.owColref).toEqual([$rootScope.collection[0]]);
+        expect(componentScope.owColrefAlias).toEqual([$rootScope.collection[0]]);
+        expect(componentScope.$owColrefAlias).toEqual([$rootScope.collection[0]]);
+      }));
+
+      it('should not update isolate scope when deep state within origin scope changes', inject(function() {
+        $rootScope.collection = [{
+          name: 'Gabriel',
+          value: 18
+        }, {
+          name: 'Tony',
+          value: 91
+        }];
+        $rootScope.$apply();
+
+        compile('<div><span my-component ow-colref="collection" $ow-colref$="collection">');
+
+        expect(componentScope.owColref).toEqual($rootScope.collection);
+        expect(componentScope.owColrefAlias).toEqual(componentScope.owColref);
+        expect(componentScope.$owColrefAlias).toEqual(componentScope.owColref);
+
+        componentScope.owColref = componentScope.owColrefAlias = componentScope.$owColrefAlias = undefined;
+        $rootScope.collection[0].name = 'Joe';
+        $rootScope.$apply();
+
+        expect(componentScope.owColref).toBeUndefined();
+        expect(componentScope.owColrefAlias).toBeUndefined();
+        expect(componentScope.$owColrefAlias).toBeUndefined();
+      }));
+
+      it('should update isolate scope when origin scope changes', inject(function() {
+        $rootScope.gab = {
+          name: 'Gabriel',
+          value: 18
+        };
+        $rootScope.tony = {
+          name: 'Tony',
+          value: 91
+        };
+        $rootScope.query = '';
+        $rootScope.$apply();
+
+        compile('<div><span my-component ow-colref="[gab, tony] | filter:query" $ow-colref$="[gab, tony] | filter:query">');
+
+        expect(componentScope.owColref).toEqual([$rootScope.gab, $rootScope.tony]);
+        expect(componentScope.owColrefAlias).toEqual([$rootScope.gab, $rootScope.tony]);
+        expect(componentScope.$owColrefAlias).toEqual([$rootScope.gab, $rootScope.tony]);
+
+        $rootScope.query = 'Gab';
+        $rootScope.$apply();
+
+        expect(componentScope.owColref).toEqual([$rootScope.gab]);
+        expect(componentScope.owColrefAlias).toEqual([$rootScope.gab]);
+        expect(componentScope.$owColrefAlias).toEqual([$rootScope.gab]);
+      }));
+
+      it('should update isolate scope when origin literal object content changes', inject(function() {
+        $rootScope.gab = {
+          name: 'Gabriel',
+          value: 18
+        };
+        $rootScope.tony = {
+          name: 'Tony',
+          value: 91
+        };
+        $rootScope.$apply();
+
+        compile('<div><span my-component ow-colref="[gab, tony]" $ow-colref$="[gab, tony]">');
+
+        expect(componentScope.owColref).toEqual([$rootScope.gab, $rootScope.tony]);
+        expect(componentScope.owColrefAlias).toEqual([$rootScope.gab, $rootScope.tony]);
+        expect(componentScope.$owColrefAlias).toEqual([$rootScope.gab, $rootScope.tony]);
+
+        $rootScope.tony = {
+          name: 'Bob',
+          value: 42
+        };
+        $rootScope.$apply();
+
+        expect(componentScope.owColref).toEqual([$rootScope.gab, $rootScope.tony]);
+        expect(componentScope.owColrefAlias).toEqual([$rootScope.gab, $rootScope.tony]);
+        expect(componentScope.$owColrefAlias).toEqual([$rootScope.gab, $rootScope.tony]);
+      }));
     });
 
     describe('executable expression', function() {

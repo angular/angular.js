@@ -339,6 +339,11 @@
  *   One-way binding is useful if you do not plan to propagate changes to your isolated scope bindings
  *   back to the parent. However, it does not make this completely impossible.
  *
+ *   By default, the {@link ng.$rootScope.Scope#$watch `$watch`}
+ *   method is used for tracking changes, and the equality check is based on object identity.
+ *   It's also possible to watch the evaluated value shallowly with
+ *   {@link ng.$rootScope.Scope#$watchCollection `$watchCollection`}: use `<*` or `<*attr`
+ *
  * * `&` or `&attr` - provides a way to execute an expression in the context of the parent scope. If
  *   no `attr` name is specified then the attribute name is assumed to be the same as the local name.
  *   Given `<my-component my-attr="count = count + value">` and the isolate scope definition `scope: {
@@ -1068,7 +1073,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
   var bindingCache = createMap();
 
   function parseIsolateBindings(scope, directiveName, isController) {
-    var LOCAL_REGEXP = /^([@&<]|=(\*?))(\??)\s*([\w$]*)$/;
+    var LOCAL_REGEXP = /^([@&]|[=<](\*?))(\??)\s*([\w$]*)$/;
 
     var bindings = createMap();
 
@@ -3615,7 +3620,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             var initialValue = destination[scopeName] = parentGet(scope);
             initialChanges[scopeName] = new SimpleChange(_UNINITIALIZED_VALUE, destination[scopeName]);
 
-            removeWatch = scope.$watch(parentGet, function parentValueWatchAction(newValue, oldValue) {
+            removeWatch = scope[definition.collection ? '$watchCollection' : '$watch'](parentGet, function parentValueWatchAction(newValue, oldValue) {
               if (oldValue === newValue) {
                 if (oldValue === initialValue || (isLiteral && equals(oldValue, initialValue))) {
                   return;
