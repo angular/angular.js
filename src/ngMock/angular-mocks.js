@@ -1342,6 +1342,7 @@ angular.mock.$httpBackendDecorator =
 function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
   var definitions = [],
       expectations = [],
+      matchLatestDefinition = false,
       responses = [],
       responsesPush = angular.bind(responses, responses.push),
       copy = angular.copy,
@@ -1430,8 +1431,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
       wasExpected = true;
     }
 
-    var i = -1, definition;
-    while ((definition = definitions[++i])) {
+    var i = matchLatestDefinition ? definitions.length : -1, definition;
+
+    while ((definition = definitions[matchLatestDefinition ? --i : ++i])) {
       if (definition.match(method, url, data, headers || {})) {
         if (definition.response) {
           // if $browser specified, we do auto flush all requests
@@ -1505,6 +1507,47 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
 
     definitions.push(definition);
     return chain;
+  };
+
+  /**
+   * @ngdoc method
+   * @name  $httpBackend#matchLatestDefinition
+   * @description
+   * This method can be used to change which mocked responses `$httpBackend` returns, when defining
+   * them with {@link ngMock.$httpBackend#when $httpBackend.when()} (and shortcut methods).
+   * By default, `$httpBackend` returns the first definition that matches. When setting
+   * `$http.matchLatestDefinition(true)`, it will use the last response that matches, i.e. the
+   * one that was added last.
+   *
+   * ```js
+   * hb.when('GET', '/url1').respond(200, 'content', {});
+   * hb.when('GET', '/url1').respond(201, 'another', {});
+   * hb('GET', '/url1'); // receives "content"
+   *
+   * $http.matchLatestDefinition(true)
+   * hb('GET', '/url1'); // receives "another"
+   *
+   * hb.when('GET', '/url1').respond(201, 'onemore', {});
+   * hb('GET', '/url1'); // receives "onemore"
+   * ```
+   *
+   * This is useful if a you have a default response that is overriden inside specific tests.
+   *
+   * Note that different from config methods on providers, `matchLatestDefinition()` can be changed
+   * even when the application is already running.
+   *
+   * @param  {Boolean=} value value to set, either `true` or `false`. Default is `false`.
+   *                          If omitted, it will return the current value.
+   * @return {$httpBackend|Boolean} self when used as a setter, and the current value when used
+   *                                as a getter
+   */
+  $httpBackend.matchLatestDefinitionEnabled = function(value) {
+    if (isDefined(value)) {
+      matchLatestDefinition = value;
+      return this;
+    } else {
+      return matchLatestDefinition;
+    }
   };
 
   /**

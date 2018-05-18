@@ -1090,7 +1090,7 @@ describe('ngMock', function() {
     });
 
 
-    it('should respond with first matched definition', function() {
+    it('should respond with first matched definition by default', function() {
       hb.when('GET', '/url1').respond(200, 'content', {});
       hb.when('GET', '/url1').respond(201, 'another', {});
 
@@ -1103,6 +1103,78 @@ describe('ngMock', function() {
       expect(callback).not.toHaveBeenCalled();
       hb.flush();
       expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    describe('matchLatestDefinitionEnabled()', function() {
+
+      it('should be set to false by default', function() {
+        expect(hb.matchLatestDefinitionEnabled()).toBe(false);
+      });
+
+
+      it('should allow to change the value', function() {
+        hb.matchLatestDefinitionEnabled(true);
+        expect(hb.matchLatestDefinitionEnabled()).toBe(true);
+      });
+
+
+      it('should return the httpBackend when used as a setter', function() {
+        expect(hb.matchLatestDefinitionEnabled(true)).toBe(hb);
+      });
+
+
+      it('should respond with the first matched definition when false',
+        function() {
+          hb.matchLatestDefinitionEnabled(false);
+
+          hb.when('GET', '/url1').respond(200, 'content', {});
+          hb.when('GET', '/url1').respond(201, 'another', {});
+
+          callback.and.callFake(function(status, response) {
+            expect(status).toBe(200);
+            expect(response).toBe('content');
+          });
+
+          hb('GET', '/url1', null, callback);
+          expect(callback).not.toHaveBeenCalled();
+          hb.flush();
+          expect(callback).toHaveBeenCalledOnce();
+        }
+      );
+
+
+      it('should respond with latest matched definition when true',
+        function() {
+          hb.matchLatestDefinitionEnabled(true);
+
+          hb.when('GET', '/url1').respond(200, 'match1', {});
+          hb.when('GET', '/url1').respond(200, 'match2', {});
+          hb.when('GET', '/url2').respond(204, 'nomatch', {});
+
+          callback.and.callFake(function(status, response) {
+            expect(status).toBe(200);
+            expect(response).toBe('match2');
+          });
+
+          hb('GET', '/url1', null, callback);
+
+          // Check if a newly added match is used
+          hb.when('GET', '/url1').respond(201, 'match3', {});
+
+          var callback2 = jasmine.createSpy();
+
+          callback2.and.callFake(function(status, response) {
+            expect(status).toBe(201);
+            expect(response).toBe('match3');
+          });
+
+          hb('GET', '/url1', null, callback2);
+          expect(callback).not.toHaveBeenCalled();
+          hb.flush();
+          expect(callback).toHaveBeenCalledOnce();
+        }
+      );
     });
 
 
