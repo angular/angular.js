@@ -670,7 +670,11 @@ var inputType = {
    * error docs for more information and an example of how to convert your model if necessary.
    * </div>
    *
-   * ## Issues with HTML5 constraint validation
+   *
+   *
+   * @knownIssue
+   *
+   * ### HTML5 constraint validation and `allowInvalid`
    *
    * In browsers that follow the
    * [HTML5 specification](https://html.spec.whatwg.org/multipage/forms.html#number-state-%28type=number%29),
@@ -679,6 +683,17 @@ var inputType = {
    * which means the view / model values in `ngModel` and subsequently the scope value
    * will also be an empty string.
    *
+   * @knownIssue
+   *
+   * ### Large numbers and `step` validation
+   *
+   * The `step` validation will not work correctly for very large numbers (e.g. 9999999999) due to
+   * Javascript's arithmetic limitations. If you need to handle large numbers, purpose-built
+   * libraries (e.g. https://github.com/MikeMcl/big.js/), can be included into AngularJS by
+   * {@link guide/forms#modifying-built-in-validators overwriting the validators}
+   * for `number` and / or `step`, or by {@link guide/forms#custom-validation applying custom validators}
+   * to an `input[text]` element. The source for `input[number]` type can be used as a starting
+   * point for both implementations.
    *
    * @param {string} ngModel Assignable AngularJS expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
