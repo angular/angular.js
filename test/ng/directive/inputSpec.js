@@ -2,7 +2,7 @@
 
 /* globals generateInputCompilerHelper: false */
 
-describe('input', function() {
+fdescribe('input', function() {
   var helper = {}, $compile, $rootScope, $browser, $sniffer;
 
   // UA sniffing to exclude Edge from some date input tests
@@ -1581,7 +1581,7 @@ describe('input', function() {
   });
 
 
-  describe('time', function() {
+  fdescribe('time', function() {
     it('should throw if model is not a Date object', function() {
       var inputElm = helper.compileInput('<input type="time" ng-model="lunchtime"/>');
 
@@ -1593,7 +1593,7 @@ describe('input', function() {
     });
 
 
-    it('should set the view if the model if a valid Date object.', function() {
+    it('should set the view if the model is a valid Date object.', function() {
       var inputElm = helper.compileInput('<input type="time" ng-model="threeFortyOnePm"/>');
 
       $rootScope.$apply(function() {
@@ -1623,7 +1623,7 @@ describe('input', function() {
     });
 
 
-    it('should render as blank if null', function() {
+    it('should set blank if null', function() {
       var inputElm = helper.compileInput('<input type="time" ng-model="test" />');
 
       $rootScope.$apply('test = null');
@@ -1633,7 +1633,7 @@ describe('input', function() {
     });
 
 
-    it('should come up blank when no value specified', function() {
+    it('should set blank when no value specified', function() {
       var inputElm = helper.compileInput('<input type="time" ng-model="test" />');
 
       expect(inputElm.val()).toBe('');
@@ -1642,6 +1642,91 @@ describe('input', function() {
 
       expect($rootScope.test).toBeNull();
       expect(inputElm.val()).toBe('');
+    });
+
+    fit('should use the timeFormat specified in ngModelOptions', function() {
+      var inputElm = helper.compileInput('<input type="time" ng-model-options="{timeFormat: \'HH:mm\'}" ng-model="time"/>');
+
+      var ctrl = inputElm.controller('ngModel');
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 0, 500);
+      });
+      expect(inputElm.val()).toBe('15:41');
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 500);
+      });
+      expect(inputElm.val()).toBe('15:41');
+
+      ctrl.$overrideModelOptions({timeFormat: 'HH:mm:s'});
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 5, 500);
+      });
+      expect(inputElm.val()).toBe('15:41:5');
+
+      ctrl.$overrideModelOptions({timeFormat: 'HH:mm:ss'});
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 5, 500);
+      });
+      expect(inputElm.val()).toBe('15:41:05');
+
+      ctrl.$overrideModelOptions({timeFormat: 'HH:mm:ss.sss'});
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 50);
+      });
+      expect(inputElm.val()).toBe('15:41:50.050');
+
+    });
+
+
+    it('should strip empty milliseconds and seconds if specified in ngModelOptions', function() {
+      var inputElm = helper.compileInput('<input type="time" ng-model-options="{timeRemoveZeroes: true}" ng-model="threeFortyOnePm"/>');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 500);
+      });
+
+      expect(inputElm.val()).toBe('15:41:50.500');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 500);
+      });
+
+      expect(inputElm.val()).toBe('15:41:00.500');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 0);
+      });
+
+      expect(inputElm.val()).toBe('15:41:50');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 0);
+      });
+
+      expect(inputElm.val()).toBe('15:41');
+    });
+
+
+    it('should apply timeRemoveZeroes after timeFormat', function() {
+      // var inputElm = helper.compileInput('<input type="time" ng-model="threeFortyOnePm"/>');
+      var inputElm = helper.compileInput('<input type="time" ng-model-options="{timeFormat: \'HH:mm:ss\', timeRemoveZeroes: true}" ng-model="threeFortyOnePm"/>');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 500);
+      });
+
+      expect(inputElm.val()).toBe('15:41:50');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 500);
+      });
+
+      expect(inputElm.val()).toBe('15:41');
     });
 
 

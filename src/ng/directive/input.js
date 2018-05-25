@@ -1514,11 +1514,22 @@ function createDateInputType(type, regexp, parseDate, format) {
       if (isValidDate(value)) {
         previousDate = value;
         var timezone = ctrl.$options.getOption('timezone');
+
         if (timezone) {
           previousTimezone = timezone;
           previousDate = convertTimezoneToLocal(previousDate, timezone, true);
         }
-        return $filter('date')(value, format, timezone);
+
+        var adjustedFormat = (type === 'time' && ctrl.$options.getOption('timeFormat')) || format;
+
+        var formatted =  $filter('date')(value, adjustedFormat, timezone);
+
+        console.log('formatted', formatted);
+        if (ctrl.$options.getOption('timeRemoveZeroes')) {
+          formatted = formatted.replace(/(:00)?(\.000)?$/, '');
+        }
+
+        return formatted;
       } else {
         previousDate = null;
         previousTimezone = null;
