@@ -1679,7 +1679,7 @@ describe('$route', function() {
 
 
   describe('reloadOnUrl', function() {
-    it('should reload a route when `reloadOnUrl` is enabled and `.url()` changes', function() {
+    it('should reload when `reloadOnUrl` is true and `.url()` changes', function() {
       var routeChange = jasmine.createSpy('routeChange');
 
       module(function($routeProvider) {
@@ -1722,7 +1722,7 @@ describe('$route', function() {
     });
 
 
-    it('should reload a route when `reloadOnUrl` is disabled and URL maps to different route',
+    it('should reload when `reloadOnUrl` is false and URL maps to different route',
       function() {
         var routeChange = jasmine.createSpy('routeChange');
         var routeUpdate = jasmine.createSpy('routeUpdate');
@@ -1760,7 +1760,7 @@ describe('$route', function() {
     );
 
 
-    it('should not reload a route when `reloadOnUrl` is disabled and URL maps to the same route',
+    it('should not reload when `reloadOnUrl` is false and URL maps to the same route',
       function() {
         var routeChange = jasmine.createSpy('routeChange');
         var routeUpdate = jasmine.createSpy('routeUpdate');
@@ -1826,7 +1826,7 @@ describe('$route', function() {
     });
 
 
-    describe('reload', function() {
+    describe('with `$route.reload()`', function() {
       var $location;
       var $log;
       var $rootScope;
@@ -1940,7 +1940,7 @@ describe('$route', function() {
   });
 
   describe('reloadOnSearch', function() {
-    it('should not have no effect if `reloadOnUrl` is set to `false`', function() {
+    it('should not have any effect if `reloadOnUrl` is false', function() {
       var reloaded = jasmine.createSpy('route reload');
 
       module(function($routeProvider) {
@@ -1975,7 +1975,7 @@ describe('$route', function() {
     });
 
 
-    it('should reload a route when reloadOnSearch is enabled and .search() or .hash() changes',
+    it('should reload when `reloadOnSearch` is true and `.search()`/`.hash()` changes',
       function() {
         var reloaded = jasmine.createSpy('route reload');
 
@@ -2011,7 +2011,7 @@ describe('$route', function() {
     );
 
 
-    it('should not reload a route when reloadOnSearch is disabled and .search() or .hash() changes',
+    it('should not reload when `reloadOnSearch` is false and `.search()`/`.hash()` changes',
       function() {
         var routeChange = jasmine.createSpy('route change'),
             routeUpdate = jasmine.createSpy('route update');
@@ -2052,39 +2052,39 @@ describe('$route', function() {
     );
 
 
-    it('should reload reloadOnSearch route when url differs only in route path param', function() {
-      var routeChange = jasmine.createSpy('route change');
+    it('should reload when `reloadOnSearch` is true and url differs only in route path param',
+      function() {
+        var routeChange = jasmine.createSpy('route change');
 
-      module(function($routeProvider) {
-        $routeProvider.when('/foo/:fooId', {controller: angular.noop, reloadOnSearch: false});
-      });
+        module(function($routeProvider) {
+          $routeProvider.when('/foo/:fooId', {controller: angular.noop, reloadOnSearch: false});
+        });
 
-      inject(function($route, $location, $rootScope) {
-        $rootScope.$on('$routeChangeStart', routeChange);
-        $rootScope.$on('$routeChangeSuccess', routeChange);
+        inject(function($route, $location, $rootScope) {
+          $rootScope.$on('$routeChangeStart', routeChange);
+          $rootScope.$on('$routeChangeSuccess', routeChange);
 
-        expect(routeChange).not.toHaveBeenCalled();
+          expect(routeChange).not.toHaveBeenCalled();
 
-        $location.path('/foo/aaa');
-        $rootScope.$digest();
-        expect(routeChange).toHaveBeenCalled();
-        expect(routeChange).toHaveBeenCalledTimes(2);
-        routeChange.calls.reset();
+          $location.path('/foo/aaa');
+          $rootScope.$digest();
+          expect(routeChange).toHaveBeenCalledTimes(2);
+          routeChange.calls.reset();
 
-        $location.path('/foo/bbb');
-        $rootScope.$digest();
-        expect(routeChange).toHaveBeenCalled();
-        expect(routeChange).toHaveBeenCalledTimes(2);
-        routeChange.calls.reset();
+          $location.path('/foo/bbb');
+          $rootScope.$digest();
+          expect(routeChange).toHaveBeenCalledTimes(2);
+          routeChange.calls.reset();
 
-        $location.search({foo: 'bar'}).hash('baz');
-        $rootScope.$digest();
-        expect(routeChange).not.toHaveBeenCalled();
-      });
-    });
+          $location.search({foo: 'bar'}).hash('baz');
+          $rootScope.$digest();
+          expect(routeChange).not.toHaveBeenCalled();
+        });
+      }
+    );
 
 
-    it('should update params when reloadOnSearch is disabled and .search() changes', function() {
+    it('should update params when `reloadOnSearch` is false and `.search()` changes', function() {
       var routeParamsWatcher = jasmine.createSpy('routeParamsWatcher');
 
       module(function($routeProvider) {
@@ -2172,7 +2172,7 @@ describe('$route', function() {
     });
 
 
-    describe('reload', function() {
+    describe('with `$route.reload()`', function() {
       var $location;
       var $log;
       var $rootScope;

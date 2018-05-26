@@ -196,7 +196,9 @@ function $RouteProvider() {
    *      If the option is set to `false` and the URL in the browser changes, then a `$routeUpdate`
    *      event is broadcasted on the root scope (without reloading the route).
    *
-   *      **Note:** This option has no effect if `reloadOnUrl` is set to false.
+   *      <div class="alert alert-warning">
+   *        **Note:** This option has no effect if `reloadOnUrl` is set to `false`.
+   *      </div>
    *
    *    - `[caseInsensitiveMatch=false]` - `{boolean=}` - match routes without being case sensitive
    *
@@ -556,9 +558,9 @@ function $RouteProvider() {
      * @name $route#$routeUpdate
      * @eventType broadcast on root scope
      * @description
-     * Any of the `reloadOnSearch` and `reloadOnUrl` properties has been set to false and we are
-     * reusing the same instance of the route (including template, controller instance, resolved
-     * dependencies etc).
+     * Broadcasted if the same instance of a route (including template, controller instance,
+     * resolved dependencies, etc.) is being reused. This can happen if either `reloadOnSearch` or
+     * `reloadOnUrl` has been set to `false`.
      *
      * @param {Object} angularEvent Synthetic event object
      * @param {Route} current Current/previous route information.
@@ -666,21 +668,7 @@ function $RouteProvider() {
       var lastRoute = $route.current;
 
       preparedRoute = parseRoute();
-      preparedRouteIsUpdateOnly =
-          // IF this is not a forced reload
-          !forceReload
-          // AND both `lastRoute`/`preparedRoute` are defined
-          && preparedRoute && lastRoute
-          // AND they map to the same Route Definition Object
-          && (preparedRoute.$$route === lastRoute.$$route)
-          // AND `reloadOnUrl` is disabled
-          && (!preparedRoute.reloadOnUrl
-              // OR `reloadOnSearch` is disabled
-              || (!preparedRoute.reloadOnSearch
-                  // AND both routes have the same path params
-                  && angular.equals(preparedRoute.pathParams, lastRoute.pathParams)
-              )
-          );
+      preparedRouteIsUpdateOnly = isNavigationUpdateOnly(preparedRoute, lastRoute);
 
       if (!preparedRouteIsUpdateOnly && (lastRoute || preparedRoute)) {
         if ($rootScope.$broadcast('$routeChangeStart', preparedRoute, lastRoute).defaultPrevented) {
@@ -858,6 +846,29 @@ function $RouteProvider() {
       });
       // No route matched; fallback to "otherwise" route
       return match || routes[null] && inherit(routes[null], {params: {}, pathParams:{}});
+    }
+
+    /**
+     * @param {Object} newRoute - The new route configuration (as returned by `parseRoute()`).
+     * @param {Object} oldRoute - The previous route configuration (as returned by `parseRoute()`).
+     * @returns {boolean} Whether this is an "update-only" navigation, i.e. the URL maps to the same
+     *                    route and it can be reused (based on the config and the type of change).
+     */
+    function isNavigationUpdateOnly(newRoute, oldRoute) {
+      // IF this is not a forced reload
+      return !forceReload
+          // AND both `newRoute`/`oldRoute` are defined
+          && newRoute && oldRoute
+          // AND they map to the same Route Definition Object
+          && (newRoute.$$route === oldRoute.$$route)
+          // AND `reloadOnUrl` is disabled
+          && (!newRoute.reloadOnUrl
+              // OR `reloadOnSearch` is disabled
+              || (!newRoute.reloadOnSearch
+                  // AND both routes have the same path params
+                  && angular.equals(newRoute.pathParams, oldRoute.pathParams)
+              )
+          );
     }
 
     /**
