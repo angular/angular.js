@@ -2790,10 +2790,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           };
         }
 
-        if (controllerDirectives) {
-          elementControllers = setupControllers($element, attrs, transcludeFn, controllerDirectives, isolateScope, scope, newIsolateScopeDirective);
-        }
-
         if (newIsolateScopeDirective) {
           // Initialize isolate scope bindings for new isolate scope directive.
           compile.$$addScopeInfo($element, isolateScope, true, !(templateDirective && (templateDirective === newIsolateScopeDirective ||
@@ -2809,53 +2805,69 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           }
         }
 
-        // Initialize bindToController bindings
-        for (var name in elementControllers) {
-          var controllerDirective = controllerDirectives[name];
-          var controller = elementControllers[name];
-          var bindings = controllerDirective.$$bindings.bindToController;
+        if (controllerDirectives) {
+          elementControllers = createMap();
+          for (var name in controllerDirectives) {
+            var directive = controllerDirectives[name];
+            var locals = {
+              $scope: directive === newIsolateScopeDirective || directive.$$isolateScope ? isolateScope : scope,
+              $element: $element,
+              $attrs: attrs,
+              $transclude: transcludeFn
+            };
 
-          controller.instance = controller();
-          $element.data('$' + controllerDirective.name + 'Controller', controller.instance);
-          controller.bindingInfo =
-            initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective);
-          }
-
-        // Bind the required controllers to the controller, if `require` is an object and `bindToController` is truthy
-        forEach(controllerDirectives, function(controllerDirective, name) {
-          var require = controllerDirective.require;
-          if (controllerDirective.bindToController && !isArray(require) && isObject(require)) {
-            extend(elementControllers[name].instance, getControllers(name, require, $element, elementControllers));
-          }
-        });
-
-        // Handle the init and destroy lifecycle hooks on all controllers that have them
-        forEach(elementControllers, function(controller) {
-          var controllerInstance = controller.instance;
-          if (isFunction(controllerInstance.$onChanges)) {
-            try {
-              controllerInstance.$onChanges(controller.bindingInfo.initialChanges);
-            } catch (e) {
-              $exceptionHandler(e);
+            var controllerConstructor = directive.controller;
+            if (controllerConstructor === '@') {
+              controllerConstructor = attrs[name];
             }
+
+            var instance = $controller(controllerConstructor, locals, directive.controllerAs);
+
+            $element.data('$' + name + 'Controller', instance);
+
+            // Initialize bindToController bindings
+            var bindings = directive.$$bindings.bindToController;
+            var bindingInfo = initializeDirectiveBindings(controllerScope, attrs, instance, bindings, directive);
+
+            elementControllers[name] = { instance: instance, bindingInfo: bindingInfo };
           }
-          if (isFunction(controllerInstance.$onInit)) {
-            try {
-              controllerInstance.$onInit();
-            } catch (e) {
-              $exceptionHandler(e);
+
+          // Bind the required controllers to the controller, if `require` is an object and `bindToController` is truthy
+          forEach(controllerDirectives, function(controllerDirective, name) {
+            var require = controllerDirective.require;
+            if (controllerDirective.bindToController && !isArray(require) && isObject(require)) {
+              extend(elementControllers[name].instance, getControllers(name, require, $element, elementControllers));
             }
-          }
-          if (isFunction(controllerInstance.$doCheck)) {
-            controllerScope.$watch(function() { controllerInstance.$doCheck(); });
-            controllerInstance.$doCheck();
-          }
-          if (isFunction(controllerInstance.$onDestroy)) {
-            controllerScope.$on('$destroy', function callOnDestroyHook() {
-              controllerInstance.$onDestroy();
-            });
-          }
-        });
+          });
+
+          // Handle the init and destroy lifecycle hooks on all controllers that have them
+          forEach(elementControllers, function(controller) {
+            var controllerInstance = controller.instance;
+            if (isFunction(controllerInstance.$onChanges)) {
+              try {
+                controllerInstance.$onChanges(controller.bindingInfo.initialChanges);
+              } catch (e) {
+                $exceptionHandler(e);
+              }
+            }
+            if (isFunction(controllerInstance.$onInit)) {
+              try {
+                controllerInstance.$onInit();
+              } catch (e) {
+                $exceptionHandler(e);
+              }
+            }
+            if (isFunction(controllerInstance.$doCheck)) {
+              controllerScope.$watch(function() { controllerInstance.$doCheck(); });
+              controllerInstance.$doCheck();
+            }
+            if (isFunction(controllerInstance.$onDestroy)) {
+              controllerScope.$on('$destroy', function callOnDestroyHook() {
+                controllerInstance.$onDestroy();
+              });
+            }
+          });
+        }
 
         // PRELINKING
         for (i = 0, ii = preLinkFns.length; i < ii; i++) {
@@ -2981,34 +2993,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       }
 
       return value || null;
-    }
-
-    function setupControllers($element, attrs, transcludeFn, controllerDirectives, isolateScope, scope, newIsolateScopeDirective) {
-      var elementControllers = createMap();
-      for (var controllerKey in controllerDirectives) {
-        var directive = controllerDirectives[controllerKey];
-        var locals = {
-          $scope: directive === newIsolateScopeDirective || directive.$$isolateScope ? isolateScope : scope,
-          $element: $element,
-          $attrs: attrs,
-          $transclude: transcludeFn
-        };
-
-        var controller = directive.controller;
-        if (controller === '@') {
-          controller = attrs[directive.name];
-        }
-
-        var controllerInstance = $controller(controller, locals, true, directive.controllerAs);
-
-        // For directives with element transclusion the element is a comment.
-        // In this case .data will not attach any data.
-        // Instead, we save the controllers for the element in a local hash and attach to .data
-        // later, once we have the actual element.
-        elementControllers[directive.name] = controllerInstance;
-        $element.data('$' + directive.name + 'Controller', controllerInstance.instance);
-      }
-      return elementControllers;
     }
 
     // Depending upon the context in which a directive finds itself it might need to have a new isolated
