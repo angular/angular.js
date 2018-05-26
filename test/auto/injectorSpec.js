@@ -482,25 +482,6 @@ describe('injector', function() {
           expect(instance).toEqual(new Clazz('a-value'));
           expect(instance.aVal()).toEqual('a-value');
         });
-
-        they('should detect ES6 classes regardless of whitespace/comments ($prop)', [
-          'class Test {}',
-          'class Test{}',
-          'class //<--ES6 stuff\nTest {}',
-          'class//<--ES6 stuff\nTest {}',
-          'class {}',
-          'class{}',
-          'class //<--ES6 stuff\n {}',
-          'class//<--ES6 stuff\n {}',
-          'class/* Test */{}',
-          'class /* Test */ {}'
-        ], function(classDefinition) {
-          // eslint-disable-next-line no-eval
-          var Clazz = eval('(' + classDefinition + ')');
-          var instance = injector.invoke(Clazz);
-
-          expect(instance).toEqual(jasmine.any(Clazz));
-        });
       }
     });
 
