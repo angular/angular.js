@@ -8843,6 +8843,50 @@ describe('$compile', function() {
         });
       });
 
+
+      it('should correctly handle multi-element directives', function() {
+        module(function() {
+          directive('foo', valueFn({
+            template: '[<div ng-transclude></div>]',
+            transclude: true
+          }));
+          directive('bar', valueFn({
+            template: '[<div ng-transclude="header"></div>|<div ng-transclude="footer"></div>]',
+            transclude: {
+              header: 'header',
+              footer: 'footer'
+            }
+          }));
+        });
+
+        inject(function($compile, $rootScope) {
+          var tmplWithFoo =
+              '<foo>' +
+                '<div ng-if-start="true">Hello, </div>' +
+                '<div ng-if-end>world!</div>' +
+              '</foo>';
+          var tmplWithBar =
+              '<bar>' +
+                '<header ng-if-start="true">This is a </header>' +
+                '<header ng-if-end>header!</header>' +
+                '<footer ng-if-start="true">This is a </footer>' +
+                '<footer ng-if-end>footer!</footer>' +
+              '</bar>';
+
+          var elem1 = $compile(tmplWithFoo)($rootScope);
+          var elem2 = $compile(tmplWithBar)($rootScope);
+
+          $rootScope.$digest();
+
+          expect(elem1.text()).toBe('[Hello, world!]');
+          expect(elem2.text()).toBe('[This is a header!|This is a footer!]');
+
+          dealoc(elem1);
+          dealoc(elem2);
+        });
+      });
+
+
       //see issue https://github.com/angular/angular.js/issues/12936
       it('should use the proper scope when it is on the root element of a replaced directive template', function() {
         module(function() {
