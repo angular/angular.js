@@ -406,12 +406,6 @@ defaultModelOptions = new ModelOptions({
  * </example>
  *
  *
- * ## Specifying timezones
- *
- * You can specify the timezone that date/time input directives expect by providing its name in the
- * `timezone` property.
- *
- *
  * ## Programmatically changing options
  *
  * The `ngModelOptions` expression is only evaluated once when the directive is linked; it is not
@@ -423,8 +417,72 @@ defaultModelOptions = new ModelOptions({
  * Default events, extra triggers, and catch-all debounce values}.
  *
  *
+ * ## Specifying timezones
+ *
+ * You can specify the timezone that date/time input directives expect by providing its name in the
+ * `timezone` property.
+ *
+ *
+ * ## Formatting the value of `time` and `datetime-local`
+ *
+ * With the options `timeFormat` and `timeStripEmptySeconds` it is possible to adjust the value
+ * that is displayed in the browser control. Note that browsers may apply their own formatting
+ * in the user interface.
+ *
+   <example name="ngModelOptions-time-format" module="timeExample">
+     <file name="index.html">
+       <time-example></time-example>
+     </file>
+     <file name="script.js">
+        angular.module('timeExample', [])
+          .component('timeExample', {
+            templateUrl: 'timeExample.html',
+            controller: function() {
+              this.time = {
+                value: new Date(1970, 0, 1, 14, 57, 30)
+              };
+
+              this.options = {
+                timeFormat: 'HH:mm:ss',
+                timeStripEmptySeconds: true
+              };
+
+              this.optionChange = function() {
+                this.timeForm.timeFormatted.$overrideModelOptions(this.options);
+                this.time.value = new Date(this.time.value.getTime());
+              };
+            }
+          });
+     </file>
+     <file name="timeExample.html">
+       <form name="$ctrl.timeForm">
+         <strong>Default</strong>:
+         <input type="time" ng-model="$ctrl.time.value" step="any" /><br>
+         <strong>With options</strong>:
+         <input type="time" name="timeFormatted" ng-model="$ctrl.time.value" step="any" ng-model-options="$ctrl.options" />
+         <br>
+
+         Options:<br>
+         <code>timeFormat</code>:
+         <input
+           type="text"
+           ng-model="$ctrl.options.timeFormat"
+           ng-change="$ctrl.optionChange()">
+         <br>
+         <code>timeStripEmptySeconds</code>:
+         <input
+           type="checkbox"
+           ng-model="$ctrl.options.timeStripEmptySeconds"
+           ng-change="$ctrl.optionChange()">
+        </form>
+      </file>
+ *  </example>
+ *
  * @param {Object} ngModelOptions options to apply to {@link ngModel} directives on this element and
- *   and its descendents. Valid keys are:
+ *   and its descendents.
+ *
+ * **General options**:
+ *
  *   - `updateOn`: string specifying which event should the input be bound to. You can set several
  *     events using an space delimited list. There is a special event called `default` that
  *     matches the default events belonging to the control. These are the events that are bound to
@@ -457,6 +515,10 @@ defaultModelOptions = new ModelOptions({
  *     not validate correctly instead of the default behavior of setting the model to undefined.
  *   - `getterSetter`: boolean value which determines whether or not to treat functions bound to
  *     `ngModel` as getters/setters.
+ *
+ *
+ *  **Input-type specific options**:
+ *
  *   - `timezone`: Defines the timezone to be used to read/write the `Date` instance in the model for
  *     `<input type="date" />`, `<input type="time" />`, ... . It understands UTC/GMT and the
  *     continental US time zone abbreviations, but for general use, use a time zone offset, for
@@ -464,6 +526,21 @@ defaultModelOptions = new ModelOptions({
  *     If not specified, the timezone of the browser will be used.
  *     Note that changing the timezone will have no effect on the current date, and is only applied after
  *     the next input / model change.
+ *
+ *   - `timeFormat`: Defines if the `time` and `datetime-local` types should show seconds and
+ *     milliseconds. The option follows the format string of {@link date date filter}.
+ *     By default, the options is `undefined` which is equal to
+ *     `HH:mm:ss.sss` (shows hours, minutes, seconds and milliseconds). The other options are
+ *     `HH:mm:ss` (strips milliseconds), and `HH:mm`, which strips both seconds and milliseconds.
+ *     Note that browsers that support `time` and `datetime-local` may show the value differently
+ *     in the user interface.
+ *     {@link ngModelOptions#formatting-the-value-of-time-and-datetime-local- See the example}.
+ *
+ *   - `timeStripEmptySeconds`: Defines if the `time` and `datetime-local` types should trim the
+ *     seconds and milliseconds if they are zero. This option is useful for browsers that either don't
+ *     have a special interface for `time` and `date` input types, or those that don't hide seconds
+ *     and milliseconds if they are empty. This option is applied after `timeFormat`.
+ *     {@link ngModelOptions#formatting-the-value-of-time-and-datetime-local- See the example}.
  *
  */
 var ngModelOptionsDirective = function() {

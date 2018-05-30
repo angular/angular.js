@@ -255,6 +255,10 @@ var inputType = {
     * The timezone to be used to read/write the `Date` instance in the model can be defined using
     * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
     *
+    * The format of the displayed time can be adjusted with the
+    * {@link ng.directive:ngModelOptions#ngModelOptions-arguments ngModelOptions} `timeFormat` and
+    * `timeStripEmptySeconds`.
+    *
     * @param {string} ngModel Assignable AngularJS expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
     * @param {string=} min Sets the `min` validation error key if the value entered is less than `min`.
@@ -356,7 +360,12 @@ var inputType = {
    * Invalid `Date` objects (dates whose `getTime()` is `NaN`) will be rendered as an empty string.
    *
    * The timezone to be used to read/write the `Date` instance in the model can be defined using
-   * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
+   * {@link ng.directive:ngModelOptions#ngModelOptions-arguments ngModelOptions}. By default,
+   * this is the timezone of the browser.
+   *
+   * The format of the displayed time can be adjusted with the
+   * {@link ng.directive:ngModelOptions#ngModelOptions-arguments ngModelOptions} `timeFormat` and
+   * `timeStripEmptySeconds`.
    *
    * @param {string} ngModel Assignable AngularJS expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
@@ -1491,6 +1500,8 @@ function createDateInputType(type, regexp, parseDate, format) {
   return function dynamicDateInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter) {
     badInputChecker(scope, element, attr, ctrl, type);
     baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
+
+    var isTimeType = type === 'time' || type === 'datetimelocal';
     var previousDate;
     var previousTimezone;
 
@@ -1520,16 +1531,7 @@ function createDateInputType(type, regexp, parseDate, format) {
           previousDate = convertTimezoneToLocal(previousDate, timezone, true);
         }
 
-        var adjustedFormat = (type === 'time' && ctrl.$options.getOption('timeFormat')) || format;
-
-        var formatted =  $filter('date')(value, adjustedFormat, timezone);
-
-        console.log('formatted', formatted);
-        if (ctrl.$options.getOption('timeRemoveZeroes')) {
-          formatted = formatted.replace(/(:00)?(\.000)?$/, '');
-        }
-
-        return formatted;
+        return formatter(value, timezone);
       } else {
         previousDate = null;
         previousTimezone = null;
@@ -1583,6 +1585,22 @@ function createDateInputType(type, regexp, parseDate, format) {
         parsedDate = convertTimezoneToLocal(parsedDate, timezone);
       }
       return parsedDate;
+    }
+
+    function formatter(value, timezone) {
+      var targetFormat = format;
+
+      if (isTimeType && isString(ctrl.$options.getOption('timeFormat'))) {
+        targetFormat = ctrl.$options.getOption('timeFormat');
+      }
+
+      var formatted =  $filter('date')(value, targetFormat, timezone);
+
+      if (isTimeType && ctrl.$options.getOption('timeStripEmptySeconds')) {
+        formatted = formatted.replace(/(:00)?(\.000)?$/, '');
+      }
+
+      return formatted;
     }
   };
 }
