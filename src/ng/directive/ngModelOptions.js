@@ -439,11 +439,11 @@ defaultModelOptions = new ModelOptions({
             templateUrl: 'timeExample.html',
             controller: function() {
               this.time = {
-                value: new Date(1970, 0, 1, 14, 57, 30)
+                value: new Date(1970, 0, 1, 14, 57, 0)
               };
 
               this.options = {
-                timeFormat: 'HH:mm:ss',
+                timeSecondsFormat: 'ss',
                 timeStripEmptySeconds: true
               };
 
@@ -463,10 +463,10 @@ defaultModelOptions = new ModelOptions({
          <br>
 
          Options:<br>
-         <code>timeFormat</code>:
+         <code>timeSecondsFormat</code>:
          <input
            type="text"
-           ng-model="$ctrl.options.timeFormat"
+           ng-model="$ctrl.options.timeSecondsFormat"
            ng-change="$ctrl.optionChange()">
          <br>
          <code>timeStripEmptySeconds</code>:

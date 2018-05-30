@@ -1590,8 +1590,11 @@ function createDateInputType(type, regexp, parseDate, format) {
     function formatter(value, timezone) {
       var targetFormat = format;
 
-      if (isTimeType && isString(ctrl.$options.getOption('timeFormat'))) {
-        targetFormat = ctrl.$options.getOption('timeFormat');
+      if (isTimeType && isString(ctrl.$options.getOption('timeSecondsFormat'))) {
+        targetFormat = format.replace('ss.sss', ctrl.$options.getOption('timeSecondsFormat'));
+        if (targetFormat[targetFormat.length - 1] === ':') {
+          targetFormat = targetFormat.slice(0, -1);
+        }
       }
 
       var formatted =  $filter('date')(value, targetFormat, timezone);

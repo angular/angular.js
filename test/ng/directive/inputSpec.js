@@ -1384,9 +1384,9 @@ describe('input', function() {
       expect($rootScope.form.alias.$error.datetimelocal).toBeTruthy();
     });
 
-    it('should use the timeFormat specified in ngModelOptions', function() {
+    it('should use the timeSecondsFormat specified in ngModelOptions', function() {
       var inputElm = helper.compileInput(
-        '<input type="datetime-local" ng-model-options="{timeFormat: \'HH:mm\'}" ng-model="time"/>'
+        '<input type="datetime-local" ng-model-options="{timeSecondsFormat: \'\'}" ng-model="time"/>'
       );
 
       var ctrl = inputElm.controller('ngModel');
@@ -1401,14 +1401,14 @@ describe('input', function() {
       });
       expect(inputElm.val()).toBe('1970-01-01T15:41');
 
-      ctrl.$overrideModelOptions({timeFormat: 'HH:mm:ss'});
+      ctrl.$overrideModelOptions({timeSecondsFormat: 'ss'});
 
       $rootScope.$apply(function() {
         $rootScope.time = new Date(1970, 0, 1, 15, 41, 5, 500);
       });
       expect(inputElm.val()).toBe('1970-01-01T15:41:05');
 
-      ctrl.$overrideModelOptions({timeFormat: 'HH:mm:ss.sss'});
+      ctrl.$overrideModelOptions({timeSecondsFormat: 'ss.sss'});
 
       $rootScope.$apply(function() {
         $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 50);
@@ -1449,22 +1449,22 @@ describe('input', function() {
     });
 
 
-    it('should apply timeStripEmptySeconds after timeFormat', function() {
+    it('should apply timeStripEmptySeconds after timeSecondsFormat', function() {
       var inputElm = helper.compileInput('<input type="datetime-local"' +
-        ' ng-model-options="{timeFormat: \'HH:mm:ss\', timeStripEmptySeconds: true}"' +
+        ' ng-model-options="{timeSecondsFormat: \'ss\', timeStripEmptySeconds: true}"' +
         ' ng-model="threeFortyOnePm"/>');
 
       $rootScope.$apply(function() {
         $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 500);
       });
 
-      expect(inputElm.val()).toBe('15:41:50');
+      expect(inputElm.val()).toBe('1970-01-01T15:41:50');
 
       $rootScope.$apply(function() {
         $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 500);
       });
 
-      expect(inputElm.val()).toBe('15:41');
+      expect(inputElm.val()).toBe('1970-01-01T15:41');
     });
 
     describe('min', function() {
@@ -1727,9 +1727,9 @@ describe('input', function() {
       expect(inputElm.val()).toBe('');
     });
 
-    it('should use the timeFormat specified in ngModelOptions', function() {
+    it('should use the timeSecondsFormat specified in ngModelOptions', function() {
       var inputElm = helper.compileInput(
-        '<input type="time" ng-model-options="{timeFormat: \'HH:mm\'}" ng-model="time"/>'
+        '<input type="time" ng-model-options="{timeSecondsFormat: \'\'}" ng-model="time"/>'
       );
 
       var ctrl = inputElm.controller('ngModel');
@@ -1744,14 +1744,14 @@ describe('input', function() {
       });
       expect(inputElm.val()).toBe('15:41');
 
-      ctrl.$overrideModelOptions({timeFormat: 'HH:mm:ss'});
+      ctrl.$overrideModelOptions({timeSecondsFormat: 'ss'});
 
       $rootScope.$apply(function() {
         $rootScope.time = new Date(1970, 0, 1, 15, 41, 5, 500);
       });
       expect(inputElm.val()).toBe('15:41:05');
 
-      ctrl.$overrideModelOptions({timeFormat: 'HH:mm:ss.sss'});
+      ctrl.$overrideModelOptions({timeSecondsFormat: 'ss.sss'});
 
       $rootScope.$apply(function() {
         $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 50);
@@ -1792,9 +1792,10 @@ describe('input', function() {
     });
 
 
-    it('should apply timeStripEmptySeconds after timeFormat', function() {
-      // var inputElm = helper.compileInput('<input type="time" ng-model="threeFortyOnePm"/>');
-      var inputElm = helper.compileInput('<input type="time" ng-model-options="{timeFormat: \'HH:mm:ss\', timeStripEmptySeconds: true}" ng-model="threeFortyOnePm"/>');
+    it('should apply timeStripEmptySeconds after timeSecondsFormat', function() {
+      var inputElm = helper.compileInput('<input type="time"' +
+        ' ng-model-options="{timeSecondsFormat: \'ss\', timeStripEmptySeconds: true}"' +
+        ' ng-model="threeFortyOnePm"/>');
 
       $rootScope.$apply(function() {
         $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 500);
