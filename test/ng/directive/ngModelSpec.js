@@ -6,7 +6,7 @@ describe('ngModel', function() {
 
   describe('NgModelController', function() {
     /* global NgModelController: false */
-    var ctrl, scope, ngModelAccessor, element, parentFormCtrl;
+    var ctrl, scope, element, parentFormCtrl;
 
     beforeEach(inject(function($rootScope, $controller) {
       var attrs = {name: 'testAlias', ngModel: 'value'};
@@ -21,7 +21,6 @@ describe('ngModel', function() {
       element = jqLite('<form><input></form>');
 
       scope = $rootScope;
-      ngModelAccessor = jasmine.createSpy('ngModel accessor');
       ctrl = $controller(NgModelController, {
         $scope: scope,
         $element: element.find('input'),
@@ -438,6 +437,13 @@ describe('ngModel', function() {
         expect(ctrl.$modelValue).toBe('c');
         expect(scope.value).toBe('c');
       }));
+
+
+      it('should not throw an error if the scope has been destroyed', function() {
+        scope.$destroy();
+        ctrl.$setViewValue('some-val');
+        expect(ctrl.$viewValue).toBe('some-val');
+      });
     });
 
 
