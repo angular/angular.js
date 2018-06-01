@@ -1414,7 +1414,6 @@ describe('input', function() {
         $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 50);
       });
       expect(inputElm.val()).toBe('1970-01-01T15:41:50.050');
-
     });
 
 
@@ -1757,7 +1756,6 @@ describe('input', function() {
         $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 50);
       });
       expect(inputElm.val()).toBe('15:41:50.050');
-
     });
 
 

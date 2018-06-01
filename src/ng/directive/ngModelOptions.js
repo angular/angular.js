@@ -425,8 +425,8 @@ defaultModelOptions = new ModelOptions({
  *
  * ## Formatting the value of `time` and `datetime-local`
  *
- * With the options `timeFormat` and `timeStripEmptySeconds` it is possible to adjust the value
- * that is displayed in the browser control. Note that browsers may apply their own formatting
+ * With the options `timeSecondsFormat` and `timeStripEmptySeconds` it is possible to adjust the value
+ * that is displayed in the control. Note that browsers may apply their own formatting
  * in the user interface.
  *
    <example name="ngModelOptions-time-format" module="timeExample">
@@ -449,7 +449,7 @@ defaultModelOptions = new ModelOptions({
 
               this.optionChange = function() {
                 this.timeForm.timeFormatted.$overrideModelOptions(this.options);
-                this.time.value = new Date(this.time.value.getTime());
+                this.time.value = new Date(this.time.value);
               };
             }
           });
@@ -527,19 +527,22 @@ defaultModelOptions = new ModelOptions({
  *     Note that changing the timezone will have no effect on the current date, and is only applied after
  *     the next input / model change.
  *
- *   - `timeFormat`: Defines if the `time` and `datetime-local` types should show seconds and
+ *   - `timeSecondsFormat`: Defines if the `time` and `datetime-local` types should show seconds and
  *     milliseconds. The option follows the format string of {@link date date filter}.
- *     By default, the options is `undefined` which is equal to
- *     `HH:mm:ss.sss` (shows hours, minutes, seconds and milliseconds). The other options are
- *     `HH:mm:ss` (strips milliseconds), and `HH:mm`, which strips both seconds and milliseconds.
- *     Note that browsers that support `time` and `datetime-local` may show the value differently
- *     in the user interface.
+ *     By default, the options is `undefined` which is equal to `ss.sss` (seconds and milliseconds).
+ *     The other options are `ss` (strips milliseconds), and `` (empty string), which strips both
+ *     seconds and milliseconds.
+ *     Note that browsers that support `time` and `datetime-local` require the hour and minutes
+ *     part of the time, and may show the value differently in the user interface.
  *     {@link ngModelOptions#formatting-the-value-of-time-and-datetime-local- See the example}.
  *
- *   - `timeStripEmptySeconds`: Defines if the `time` and `datetime-local` types should trim the
- *     seconds and milliseconds if they are zero. This option is useful for browsers that either don't
- *     have a special interface for `time` and `date` input types, or those that don't hide seconds
- *     and milliseconds if they are empty. This option is applied after `timeFormat`.
+ *   - `timeStripEmptySeconds`: Defines if the `time` and `datetime-local` types should strip the
+ *     seconds and milliseconds from the formatted value if they are zero. This option is applied
+ *     after `timeSecondsFormat`.
+ *     This option can be used to make the formatting consistent over different browsers, as some
+ *     browsers with support for `time` will natively hide the milliseconds and
+ *     seconds if they are zero, but others won't, and browsers without `support` will always show
+ *     the full string.
  *     {@link ngModelOptions#formatting-the-value-of-time-and-datetime-local- See the example}.
  *
  */

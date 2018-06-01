@@ -256,8 +256,8 @@ var inputType = {
     * {@link ng.directive:ngModelOptions ngModelOptions}. By default, this is the timezone of the browser.
     *
     * The format of the displayed time can be adjusted with the
-    * {@link ng.directive:ngModelOptions#ngModelOptions-arguments ngModelOptions} `timeFormat` and
-    * `timeStripEmptySeconds`.
+    * {@link ng.directive:ngModelOptions#ngModelOptions-arguments ngModelOptions} `timeSecondsFormat`
+    * and `timeStripEmptySeconds`.
     *
     * @param {string} ngModel Assignable AngularJS expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
@@ -364,8 +364,8 @@ var inputType = {
    * this is the timezone of the browser.
    *
    * The format of the displayed time can be adjusted with the
-   * {@link ng.directive:ngModelOptions#ngModelOptions-arguments ngModelOptions} `timeFormat` and
-   * `timeStripEmptySeconds`.
+   * {@link ng.directive:ngModelOptions#ngModelOptions-arguments ngModelOptions} `timeSecondsFormat`
+   * and `timeStripEmptySeconds`.
    *
    * @param {string} ngModel Assignable AngularJS expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
