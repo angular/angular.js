@@ -20,22 +20,25 @@
  * | Directive                                                                     | Supported Animations                                                      |
  * |-------------------------------------------------------------------------------|---------------------------------------------------------------------------|
  * | {@link ng.directive:form#animations form / ngForm}                            | add and remove ({@link ng.directive:form#css-classes various classes})    |
+ * | {@link ngAnimate.directive:ngAnimateSwap#animations ngAnimateSwap}            | enter and leave                                                           |
  * | {@link ng.directive:ngClass#animations ngClass / {{class&#125;&#8203;&#125;}  | add and remove                                                            |
  * | {@link ng.directive:ngClassEven#animations ngClassEven}                       | add and remove                                                            |
  * | {@link ng.directive:ngClassOdd#animations ngClassOdd}                         | add and remove                                                            |
  * | {@link ng.directive:ngHide#animations ngHide}                                 | add and remove (the `ng-hide` class)                                      |
  * | {@link ng.directive:ngIf#animations ngIf}                                     | enter and leave                                                           |
  * | {@link ng.directive:ngInclude#animations ngInclude}                           | enter and leave                                                           |
+ * | {@link module:ngMessages#animations ngMessage / ngMessageExp}                 | enter and leave                                                           |
+ * | {@link module:ngMessages#animations ngMessages}                               | add and remove (the `ng-active`/`ng-inactive` classes)                    |
  * | {@link ng.directive:ngModel#animations ngModel}                               | add and remove ({@link ng.directive:ngModel#css-classes various classes}) |
  * | {@link ng.directive:ngRepeat#animations ngRepeat}                             | enter, leave, and move                                                    |
  * | {@link ng.directive:ngShow#animations ngShow}                                 | add and remove (the `ng-hide` class)                                      |
  * | {@link ng.directive:ngSwitch#animations ngSwitch}                             | enter and leave                                                           |
- * | {@link ngAnimate.directive:ngAnimateSwap#animations ngAnimateSwap}            | enter and leave                                                           |
- * | {@link module:ngMessages#animations ngMessage / ngMessageExp}                 | enter and leave                                                           |
- * | {@link module:ngMessages#animations ngMessages}                               | add and remove (the `ng-active`/`ng-inactive` classes)                    |
  * | {@link ngRoute.directive:ngView#animations ngView}                            | enter and leave                                                           |
  *
- * (More information can be found by visiting each the documentation associated with each directive.)
+ * (More information can be found by visiting the documentation associated with each directive.)
+ *
+ * For a full breakdown of the steps involved during each animation event, refer to the
+ * {@link ng.$animate `$animate` API docs}.
  *
  * ## CSS-based Animations
  *
