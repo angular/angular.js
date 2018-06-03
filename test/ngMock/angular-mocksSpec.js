@@ -1941,12 +1941,36 @@ describe('ngMock', function() {
             expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '', 'complete');
           }
         );
-        they('should ignore query param when matching in ' + routeShortcut + ' $prop method', methods,
+        they('should ignore query params when matching in ' + routeShortcut + ' $prop method', methods,
           function() {
-            hb[routeShortcut](this, '/route/:id').respond('path');
-            hb(this, '/route/123?q=str&foo=bar', undefined, callback);
-            hb.flush();
-            expect(callback).toHaveBeenCalledOnceWith(200, 'path', '', '', 'complete');
+            angular.forEach([
+              {route: '/route1/:id', url: '/route1/Alpha', expectedParams: {id: 'Alpha'}},
+              {route: '/route2/:id', url: '/route2/Bravo/?', expectedParams: {id: 'Bravo'}},
+              {route: '/route3/:id', url: '/route3/Charlie?q=str&foo=bar', expectedParams: {id: 'Charlie', q: 'str', foo: 'bar'}},
+              {route: '/:x/route4', url: '/Delta/route4?q=str&foo=bar', expectedParams: {x: 'Delta', q: 'str', foo: 'bar'}},
+              {route: '/route5/:id*', url: '/route5/Echo/456?q=str&foo=bar', expectedParams: {id: 'Echo/456', q: 'str', foo: 'bar'}},
+              {route: '/route6/:id*', url: '/route6/Foxtrot/456/?q=str&foo=bar', expectedParams: {id: 'Foxtrot/456', q: 'str', foo: 'bar'}},
+              {route: '/route7/:id*', url: '/route7/Golf/456//?q=str&foo=bar', expectedParams: {id: 'Golf/456', q: 'str', foo: 'bar'}},
+              {route: '/:x*/route8', url: '/Hotel/123/456/route8/?q=str&foo=bar', expectedParams: {x: 'Hotel/123/456', q: 'str', foo: 'bar'}},
+              {route: '/:x*/route9/:id', url: '/India/456/route9/0?q=str&foo=bar', expectedParams: {x: 'India/456', id: '0', q: 'str', foo: 'bar'}},
+              {route: '/route10', url: '/route10?q=Juliet&foo=bar', expectedParams: {q: 'Juliet', foo: 'bar'}},
+              {route: '/route11', url: '/route11///?q=Kilo', expectedParams: {q: 'Kilo'}},
+              {route: '/route12', url: '/route12///', expectedParams: {}}
+            ], function(testDataEntry) {
+              callback.calls.reset();
+              var paramsSpy = jasmine.createSpy('params');
+              hb[routeShortcut](this, testDataEntry.route).respond(
+                function(method, url, data, headers, params) {
+                  paramsSpy(params);
+                  // status, response, headers, statusText, xhrStatus
+                  return [200, 'path', { 'x-header': 'foo' }, 'OK', 'complete'];
+                }
+              );
+              hb(this, testDataEntry.url, undefined, callback);
+              hb.flush();
+              expect(callback).toHaveBeenCalledOnceWith(200, 'path', 'x-header: foo', 'OK', 'complete');
+              expect(paramsSpy).toHaveBeenCalledOnceWith(testDataEntry.expectedParams);
+            });
           }
         );
       });

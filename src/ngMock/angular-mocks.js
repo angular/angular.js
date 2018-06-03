@@ -1,5 +1,7 @@
 'use strict';
 
+/* global routeToRegExp: false */
+
 /**
  * @ngdoc object
  * @name angular.mock
@@ -1282,7 +1284,7 @@ angular.mock.dump = function(object) {
  * ## Matching route requests
  *
  * For extra convenience, `whenRoute` and `expectRoute` shortcuts are available. These methods offer colon
- * delimited matching of the url path, ignoring the query string. This allows declarations
+ * delimited matching of the url path, ignoring the query string and trailing slashes. This allows declarations
  * similar to how application routes are configured with `$routeProvider`. Because these methods convert
  * the definition url to regex, declaration order is important. Combined with query parameter parsing,
  * the following is possible:
@@ -1481,8 +1483,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *      ```
    *    – The respond method takes a set of static data to be returned or a function that can
    *    return an array containing response status (number), response data (Array|Object|string),
-   *    response headers (Object), and the text for the status (string). The respond method returns
-   *    the `requestHandler` object for possible overrides.
+   *    response headers (Object), HTTP status text (string), and XMLHttpRequest status (string:
+   *    `complete`, `error`, `timeout` or `abort`). The respond method returns the `requestHandler`
+   *    object for possible overrides.
    */
   $httpBackend.when = function(method, url, data, headers, keys) {
 
@@ -1663,39 +1666,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#when `when`} for more info.
    */
   $httpBackend.whenRoute = function(method, url) {
-    var pathObj = parseRoute(url);
+    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true});
     return $httpBackend.when(method, pathObj.regexp, undefined, undefined, pathObj.keys);
   };
-
-  function parseRoute(url) {
-    var ret = {
-      regexp: url
-    },
-    keys = ret.keys = [];
-
-    if (!url || !angular.isString(url)) return ret;
-
-    url = url
-      .replace(/([().])/g, '\\$1')
-      .replace(/(\/)?:(\w+)([?*])?/g, function(_, slash, key, option) {
-        var optional = option === '?' ? option : null;
-        var star = option === '*' ? option : null;
-        keys.push({ name: key, optional: !!optional });
-        slash = slash || '';
-        return ''
-          + (optional ? '' : slash)
-          + '(?:'
-          + (optional ? slash : '')
-          + (star && '(.+?)' || '([^/]+)')
-          + (optional || '')
-          + ')'
-          + (optional || '');
-      })
-      .replace(/([/$*])/g, '\\$1');
-
-    ret.regexp = new RegExp('^' + url, 'i');
-    return ret;
-  }
 
   /**
    * @ngdoc method
@@ -1717,14 +1690,15 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *  order to change how a matched request is handled.
    *
    *  - respond –
-   *    ```
-   *    { function([status,] data[, headers, statusText])
-   *    | function(function(method, url, data, headers, params)}
-   *    ```
+   *      ```js
+   *      {function([status,] data[, headers, statusText])
+   *      | function(function(method, url, data, headers, params)}
+   *      ```
    *    – The respond method takes a set of static data to be returned or a function that can
    *    return an array containing response status (number), response data (Array|Object|string),
-   *    response headers (Object), and the text for the status (string). The respond method returns
-   *    the `requestHandler` object for possible overrides.
+   *    response headers (Object), HTTP status text (string), and XMLHttpRequest status (string:
+   *    `complete`, `error`, `timeout` or `abort`). The respond method returns the `requestHandler`
+   *    object for possible overrides.
    */
   $httpBackend.expect = function(method, url, data, headers, keys) {
 
@@ -1876,7 +1850,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#expect `expect`} for more info.
    */
   $httpBackend.expectRoute = function(method, url) {
-    var pathObj = parseRoute(url);
+    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true});
     return $httpBackend.expect(method, pathObj.regexp, undefined, undefined, pathObj.keys);
   };
 
