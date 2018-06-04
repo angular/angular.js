@@ -1,0 +1,17 @@
+@ngdoc error
+@name ngRef:noctrl
+@fullName A controller for the value of `ngRefRead` could not be found on the element.
+@description
+
+This error occurs when the {@link ng.ngRef ngRef directive} specifies
+a value in `ngRefRead` that cannot be resolved to a directive / component controller.
+
+Causes for this error can be:
+
+1. Your `ngRefRead` value has a typo.
+2. You have a typo in the *registered* directive / component name.
+3. The directive / component does not have a controller.
+
+Note that `ngRefRead` takes the name of the component / directive, not the name of controller, and
+also not the combination of directive and 'Controller'. For example, for a directive called 'myDirective',
+the correct declaration is `<div ng-ref="$ctrl.ref" ng-ref-read="myDirective">`.

@@ -1,0 +1,27 @@
+@ngdoc error
+@name ngRef:nonassign
+@fullName Non-Assignable Expression
+@description
+
+This error occurs when ngRef defines an expression that is not-assignable.
+
+In order for ngRef to work, it must be possible to write the reference into the path defined with the expression.
+
+For example, the following expressions are non-assignable:
+
+```
+<my-directive ng-ref="{}"></my-directive>
+
+<my-directive ng-ref="myFn()"></my-directive>
+
+<!-- missing attribute value is also invalid -->
+<my-directive ng-ref></my-directive>
+
+```
+
+To resolve this error, use a path expression that is assignable:
+
+```
+<my-directive ng-ref="$ctrl.reference"></my-directive>
+
+```
