@@ -339,15 +339,18 @@ describe('ngRef', function() {
     });
 
     it('should be compatible with element transclude components', function() {
+
       module(function($compileProvider) {
         $compileProvider
           .component('myComponent', {
             transclude: 'element',
             controller: function($animate, $element, $transclude) {
               this.text = 'SUCCESS';
-              $transclude(function(clone, newScope) {
-                $animate.enter(clone, $element.parent(), $element);
-              });
+              this.$postLink = function() {
+                $transclude(function(clone, newScope) {
+                  $animate.enter(clone, $element.parent(), $element);
+                });
+              };
             }
           });
       });
@@ -448,13 +451,15 @@ describe('ngRef', function() {
     it('should be compatible with element transclude directives', function() {
       module(function($compileProvider) {
         $compileProvider
-          .directive('myDirective', function() {
+          .directive('myDirective', function($animate) {
             return {
               transclude: 'element',
-              controller: function($animate, $element, $transclude) {
+              controller: function() {
                 this.text = 'SUCCESS';
+              },
+              link: function(scope, element, attrs, ctrl, $transclude) {
                 $transclude(function(clone, newScope) {
-                  $animate.enter(clone, $element.parent(), $element);
+                  $animate.enter(clone, element.parent(), element);
                 });
               }
             };
