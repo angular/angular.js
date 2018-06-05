@@ -313,6 +313,7 @@ beforeEach(function() {
 
       function generateCompare(isNot) {
         return function(actual, namespace, code, content) {
+
           var matcher = new MinErrMatcher(isNot, namespace, code, content, {
             inputType: 'error',
             expectedAction: 'equal',
