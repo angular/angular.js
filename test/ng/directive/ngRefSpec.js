@@ -2,6 +2,29 @@
 
 describe('ngRef', function() {
 
+  beforeEach(function() {
+    jasmine.addMatchers({
+      toEqualJq: function(util) {
+        return {
+          compare: function(actual, expected) {
+            // Jquery <= 2.2 objects add a context property that is irrelevant for equality
+            if (actual && actual.hasOwnProperty('context')) {
+              delete actual.context;
+            }
+
+            if (expected && expected.hasOwnProperty('context')) {
+              delete expected.context;
+            }
+
+            return {
+              pass: util.equals(actual, expected)
+            };
+          }
+        };
+      }
+    });
+  });
+
   describe('on a component', function() {
 
     var myComponentController, attributeDirectiveController, $rootScope, $compile;
@@ -125,9 +148,10 @@ describe('ngRef', function() {
   });
 
   it('should bind the jqlite wrapped DOM element if there is no component', inject(function($compile, $rootScope) {
+
     var el = $compile('<span ng-ref="mySpan">my text</span>')($rootScope);
 
-    expect($rootScope.mySpan).toEqual(el);
+    expect($rootScope.mySpan).toEqualJq(el);
     expect($rootScope.mySpan[0].textContent).toBe('my text');
   }));
 
@@ -172,7 +196,7 @@ describe('ngRef', function() {
       inject(function($compile, $rootScope) {
 
         var el = $compile('<my-component ng-ref="myEl" ng-ref-read="$element"></my-component>')($rootScope);
-        expect($rootScope.myEl).toEqual(el);
+        expect($rootScope.myEl).toEqualJq(el);
         expect($rootScope.myEl[0].textContent).toBe('my text');
       });
     });
@@ -193,7 +217,7 @@ describe('ngRef', function() {
       inject(function($compile, $rootScope) {
         var el = $compile('<my-directive ng-ref="myEl" ng-ref-read="$element"></my-directive>')($rootScope);
 
-        expect($rootScope.myEl).toEqual(el);
+        expect($rootScope.myEl).toEqualJq(el);
         expect($rootScope.myEl[0].textContent).toBe('my text');
       });
     });
@@ -285,7 +309,7 @@ describe('ngRef', function() {
       var el = $compile('<div my-directive ng-ref="myEl"></div>')($rootScope);
 
       expect(myDirectiveController).toBeDefined();
-      expect($rootScope.myEl).toEqual(el);
+      expect($rootScope.myEl).toEqualJq(el);
       expect($rootScope.myEl[0].textContent).toBe('my text');
     });
   });
@@ -310,7 +334,7 @@ describe('ngRef', function() {
       var el = $compile('<div class="my-directive" ng-ref="myEl"></div>')($rootScope);
 
       expect(myDirectiveController).toBeDefined();
-      expect($rootScope.myEl).toEqual(el);
+      expect($rootScope.myEl).toEqualJq(el);
       expect($rootScope.myEl[0].textContent).toBe('my text');
     });
   });
