@@ -1,6 +1,6 @@
 'use strict';
 
-fdescribe('ngMessages', function() {
+describe('ngMessages', function() {
   beforeEach(inject.strictDi());
   beforeEach(module('ngMessages'));
 
