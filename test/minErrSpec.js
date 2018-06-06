@@ -1,6 +1,6 @@
 'use strict';
 
-fdescribe('errors', function() {
+describe('errors', function() {
   var originalObjectMaxDepthInErrorMessage = minErrConfig.objectMaxDepth;
   var originalUrlErrorParamsEnabled =  minErrConfig.urlErrorParamsEnabled;
 
