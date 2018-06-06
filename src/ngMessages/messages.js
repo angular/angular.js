@@ -261,9 +261,12 @@ var jqLite;
  * more about ngAnimate.
  *
  * ## Displaying a default message
- * If the ngMessages renders no inner ngMessage directive (that is to say when the key values does not
- * match the attribute value present on each ngMessage directive), then it will render a default message
+ * If the ngMessages renders no inner ngMessage directive (i.e. when none of the truthy
+ * keys are matched by a defined message), then it will render a default message
  * using the {@link ngMessageDefault} directive.
+ * Note that matched messages will always take precedence over unmatched messages. That means
+ * the default message will not be displayed when another message is matched. This is also
+ * true for `ng-messages-multiple`.
  *
  * ```html
  * <div ng-messages="myForm.myField.$error" role="alert">
@@ -390,6 +393,7 @@ angular.module('ngMessages', [], function initAngularHelpers() {
 
           var unmatchedMessages = [];
           var matchedKeys = {};
+          var truthyKeys = 0;
           var messageItem = ctrl.head;
           var messageFound = false;
           var totalMessages = 0;
@@ -402,13 +406,17 @@ angular.module('ngMessages', [], function initAngularHelpers() {
             var messageUsed = false;
             if (!messageFound) {
               forEach(collection, function(value, key) {
-                if (!messageUsed && truthy(value) && messageCtrl.test(key)) {
-                  // this is to prevent the same error name from showing up twice
-                  if (matchedKeys[key]) return;
-                  matchedKeys[key] = true;
+                if (truthy(value) && !messageUsed) {
+                  truthyKeys++;
 
-                  messageUsed = true;
-                  messageCtrl.attach();
+                  if (messageCtrl.test(key)) {
+                    // this is to prevent the same error name from showing up twice
+                    if (matchedKeys[key]) return;
+                    matchedKeys[key] = true;
+
+                    messageUsed = true;
+                    messageCtrl.attach();
+                  }
                 }
               });
             }
@@ -435,8 +443,8 @@ angular.module('ngMessages', [], function initAngularHelpers() {
             $animate.setClass($element, ACTIVE_CLASS, INACTIVE_CLASS);
           } else {
 
-            // Set default message if no other matched
-            if (ctrl.default) ctrl.default.attach();
+            // Set default message if keys in collection do not match any message
+            if (ctrl.default && truthyKeys > 0) ctrl.default.attach();
 
             $animate.setClass($element, INACTIVE_CLASS, ACTIVE_CLASS);
           }

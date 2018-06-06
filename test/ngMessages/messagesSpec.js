@@ -667,16 +667,56 @@ describe('ngMessages', function() {
                          '  <div ng-message="val">Message is set</div>' +
                          '  <div ng-message-default>Default message is set</div>' +
                          '</div>')($rootScope);
+      $rootScope.$apply(function() {
+        $rootScope.col = { unexpected: false };
+      });
+
       $rootScope.$digest();
+
+      expect(element.text().trim()).toBe('');
+
+      $rootScope.$apply(function() {
+        $rootScope.col = { unexpected: true };
+      });
 
       expect(element.text().trim()).toBe('Default message is set');
 
       $rootScope.$apply(function() {
-        $rootScope.col = { val: true };
+        $rootScope.col = { val: true, unexpected: true };
       });
 
       expect(element.text().trim()).toBe('Message is set');
     }));
+
+    it('should not render a default message with ng-messages-multiple if another error matches',
+      inject(function($rootScope, $compile) {
+        element = $compile('<div ng-messages="col" ng-messages-multiple>' +
+                           '  <div ng-message="val">Message is set</div>' +
+                           '  <div ng-message="other">Other message is set</div>' +
+                           '  <div ng-message-default>Default message is set</div>' +
+                           '</div>')($rootScope);
+
+        expect(element.text().trim()).toBe('');
+
+        $rootScope.$apply(function() {
+          $rootScope.col = { val: true, other: false, unexpected: false };
+        });
+
+        expect(element.text().trim()).toBe('Message is set');
+
+        $rootScope.$apply(function() {
+          $rootScope.col = { val: true, other: true, unexpected: true };
+        });
+
+        expect(element.text().trim()).toBe('Message is set  Other message is set');
+
+        $rootScope.$apply(function() {
+          $rootScope.col = { val: false, other: false, unexpected: true };
+        });
+
+        expect(element.text().trim()).toBe('Default message is set');
+      })
+    );
 
     it('should handle a default message with ngIf', inject(function($rootScope, $compile) {
       element = $compile('<div ng-messages="col">' +
@@ -684,6 +724,7 @@ describe('ngMessages', function() {
                          '  <div ng-if="default" ng-message-default>Default message is set</div>' +
                          '</div>')($rootScope);
       $rootScope.default = true;
+      $rootScope.col = {unexpected: true};
       $rootScope.$digest();
 
       expect(element.text().trim()).toBe('Default message is set');
