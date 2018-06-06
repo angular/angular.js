@@ -438,9 +438,7 @@ defaultModelOptions = new ModelOptions({
           .component('timeExample', {
             templateUrl: 'timeExample.html',
             controller: function() {
-              this.time = {
-                value: new Date(1970, 0, 1, 14, 57, 0)
-              };
+              this.time = new Date(1970, 0, 1, 14, 57, 0);
 
               this.options = {
                 timeSecondsFormat: 'ss',
@@ -449,7 +447,7 @@ defaultModelOptions = new ModelOptions({
 
               this.optionChange = function() {
                 this.timeForm.timeFormatted.$overrideModelOptions(this.options);
-                this.time.value = new Date(this.time.value);
+                this.time = new Date(this.time);
               };
             }
           });
@@ -457,9 +455,9 @@ defaultModelOptions = new ModelOptions({
      <file name="timeExample.html">
        <form name="$ctrl.timeForm">
          <strong>Default</strong>:
-         <input type="time" ng-model="$ctrl.time.value" step="any" /><br>
+         <input type="time" ng-model="$ctrl.time" step="any" /><br>
          <strong>With options</strong>:
-         <input type="time" name="timeFormatted" ng-model="$ctrl.time.value" step="any" ng-model-options="$ctrl.options" />
+         <input type="time" name="timeFormatted" ng-model="$ctrl.time" step="any" ng-model-options="$ctrl.options" />
          <br>
 
          Options:<br>

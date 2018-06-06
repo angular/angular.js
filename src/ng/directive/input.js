@@ -1591,16 +1591,15 @@ function createDateInputType(type, regexp, parseDate, format) {
       var targetFormat = format;
 
       if (isTimeType && isString(ctrl.$options.getOption('timeSecondsFormat'))) {
-        targetFormat = format.replace('ss.sss', ctrl.$options.getOption('timeSecondsFormat'));
-        if (targetFormat[targetFormat.length - 1] === ':') {
-          targetFormat = targetFormat.slice(0, -1);
-        }
+        targetFormat = format
+          .replace('ss.sss', ctrl.$options.getOption('timeSecondsFormat'))
+          .replace(/:$/, '');
       }
 
       var formatted =  $filter('date')(value, targetFormat, timezone);
 
       if (isTimeType && ctrl.$options.getOption('timeStripEmptySeconds')) {
-        formatted = formatted.replace(/(:00)?(\.000)?$/, '');
+        formatted = formatted.replace(/(?::00)?(?:\.000)?$/, '');
       }
 
       return formatted;
