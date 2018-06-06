@@ -2,32 +2,57 @@
 
 describe('errors', function() {
   var originalObjectMaxDepthInErrorMessage = minErrConfig.objectMaxDepth;
+  var originalUrlErrorParamsEnabled =  minErrConfig.urlErrorParamsEnabled;
 
   afterEach(function() {
     minErrConfig.objectMaxDepth = originalObjectMaxDepthInErrorMessage;
+    minErrConfig.urlErrorParamsEnabled = originalUrlErrorParamsEnabled;
   });
 
   describe('errorHandlingConfig', function() {
-    it('should get default objectMaxDepth', function() {
-      expect(errorHandlingConfig().objectMaxDepth).toBe(5);
+    describe('objectMaxDepth',function() {
+      it('should get default objectMaxDepth', function() {
+        expect(errorHandlingConfig().objectMaxDepth).toBe(5);
+      });
+
+      it('should set objectMaxDepth', function() {
+        errorHandlingConfig({objectMaxDepth: 3});
+        expect(errorHandlingConfig().objectMaxDepth).toBe(3);
+      });
+
+      it('should not change objectMaxDepth when undefined is supplied', function() {
+        errorHandlingConfig({objectMaxDepth: undefined});
+        expect(errorHandlingConfig().objectMaxDepth).toBe(originalObjectMaxDepthInErrorMessage);
+      });
+
+      they('should set objectMaxDepth to NaN when $prop is supplied',
+          [NaN, null, true, false, -1, 0], function(maxDepth) {
+            errorHandlingConfig({objectMaxDepth: maxDepth});
+            expect(errorHandlingConfig().objectMaxDepth).toBeNaN();
+          }
+      );
     });
 
-    it('should set objectMaxDepth', function() {
-      errorHandlingConfig({objectMaxDepth: 3});
-      expect(errorHandlingConfig().objectMaxDepth).toBe(3);
+
+    describe('urlErrorParamsEnabled',function() {
+
+      it('should get default urlErrorParamsEnabled', function() {
+        expect(errorHandlingConfig().urlErrorParamsEnabled).toBe(true);
+      });
+
+      it('should set urlErrorParamsEnabled', function() {
+        errorHandlingConfig({urlErrorParamsEnabled: false});
+        expect(errorHandlingConfig().urlErrorParamsEnabled).toBe(false);
+        errorHandlingConfig({urlErrorParamsEnabled: true});
+        expect(errorHandlingConfig().urlErrorParamsEnabled).toBe(true);
+      });
+
+      it('should not change its value when non-boolean is supplied', function() {
+        errorHandlingConfig({urlErrorParamsEnabled: 123});
+        expect(errorHandlingConfig().urlErrorParamsEnabled).toBe(originalUrlErrorParamsEnabled);
+      });
     });
 
-    it('should not change objectMaxDepth when undefined is supplied', function() {
-      errorHandlingConfig({objectMaxDepth: undefined});
-      expect(errorHandlingConfig().objectMaxDepth).toBe(originalObjectMaxDepthInErrorMessage);
-    });
-
-    they('should set objectMaxDepth to NaN when $prop is supplied',
-        [NaN, null, true, false, -1, 0], function(maxDepth) {
-          errorHandlingConfig({objectMaxDepth: maxDepth});
-          expect(errorHandlingConfig().objectMaxDepth).toBeNaN();
-        }
-    );
   });
 
   describe('minErr', function() {
@@ -165,7 +190,6 @@ describe('errors', function() {
         .toMatch(/^[\s\S]*\?p0=a&p1=b&p2=value%20with%20space$/);
     });
 
-
     it('should strip error reference urls from the error message parameters', function() {
       var firstError = testError('firstcode', 'longer string and so on');
 
@@ -175,6 +199,14 @@ describe('errors', function() {
         'string and so on\n\nhttps://errors.angularjs.org/"NG_VERSION_FULL"/test/' +
         'secondcode?p0=a&p1=%5Btest%3Afirstcode%5D%20longer%20string%20and%20so%20on%0Ahttps' +
         '%3A%2F%2Ferrors.angularjs.org%2F%22NG_VERSION_FULL%22%2Ftest%2Ffirstcode');
+    });
+
+    it('should not generate URL query parameters when urlErrorParamsEnabled is  false', function() {
+
+      errorHandlingConfig({urlErrorParamsEnabled: false});
+
+      expect(testError('acode', 'aproblem', 'a', 'b', 'c').message).toBe('[test:acode] aproblem\n' +
+        'https://errors.angularjs.org/"NG_VERSION_FULL"/test/acode');
     });
 
   });
