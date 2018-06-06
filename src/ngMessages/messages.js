@@ -275,6 +275,8 @@ var jqLite;
  *   <div ng-message-default>This field has an input error</div>
  * </div>
  * ```
+ *
+
  */
 angular.module('ngMessages', [], function initAngularHelpers() {
   // Access helpers from AngularJS core.
@@ -436,16 +438,18 @@ angular.module('ngMessages', [], function initAngularHelpers() {
             messageCtrl.detach();
           });
 
-          if (unmatchedMessages.length !== totalMessages) {
-            // Unset default message if set
-            if (ctrl.default) ctrl.default.detach();
+          var messageMatched = unmatchedMessages.length !== totalMessages;
+          var attachDefault = ctrl.default && !messageMatched && truthyKeys > 0;
 
+          if (attachDefault) {
+            ctrl.default.attach();
+          } else if (ctrl.default) {
+            ctrl.default.detach();
+          }
+
+          if (messageMatched || attachDefault) {
             $animate.setClass($element, ACTIVE_CLASS, INACTIVE_CLASS);
           } else {
-
-            // Set default message if keys in collection do not match any message
-            if (ctrl.default && truthyKeys > 0) ctrl.default.attach();
-
             $animate.setClass($element, INACTIVE_CLASS, ACTIVE_CLASS);
           }
         };

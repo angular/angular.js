@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ngMessages', function() {
+fdescribe('ngMessages', function() {
   beforeEach(inject.strictDi());
   beforeEach(module('ngMessages'));
 
@@ -674,18 +674,28 @@ describe('ngMessages', function() {
       $rootScope.$digest();
 
       expect(element.text().trim()).toBe('');
+      expect(element).not.toHaveClass('ng-active');
 
       $rootScope.$apply(function() {
         $rootScope.col = { unexpected: true };
       });
 
       expect(element.text().trim()).toBe('Default message is set');
+      expect(element).toHaveClass('ng-active');
+
+      $rootScope.$apply(function() {
+        $rootScope.col = { unexpected: false };
+      });
+
+      expect(element.text().trim()).toBe('');
+      expect(element).not.toHaveClass('ng-active');
 
       $rootScope.$apply(function() {
         $rootScope.col = { val: true, unexpected: true };
       });
 
       expect(element.text().trim()).toBe('Message is set');
+      expect(element).toHaveClass('ng-active');
     }));
 
     it('should not render a default message with ng-messages-multiple if another error matches',
