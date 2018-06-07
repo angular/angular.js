@@ -2052,7 +2052,7 @@ describe('$route', function() {
     );
 
 
-    it('should reload when `reloadOnSearch` is true and url differs only in route path param',
+    it('should reload when `reloadOnSearch` is false and url differs only in route path param',
       function() {
         var routeChange = jasmine.createSpy('route change');
 
