@@ -5,53 +5,53 @@
 ## Bug Fixes
 - **$compile:** support transcluding multi-element directives
   ([789db8](https://github.com/angular/angular.js/commit/789db83a8ae0e2db5db13289b2c29e56093d967a),
-  [#15554](https://github.com/angular/angular.js.git/issues/15554),
-  [#15555](https://github.com/angular/angular.js.git/issues/15555))
+  [#15554](https://github.com/angular/angular.js/issues/15554),
+  [#15555](https://github.com/angular/angular.js/issues/15555))
 - **ngModel:** do not throw if view value changes on destroyed scope
   ([2b6c98](https://github.com/angular/angular.js/commit/2b6c9867369fd3ef1ddb687af1153478ab62ee1b),
-  [#16583](https://github.com/angular/angular.js.git/issues/16583),
-  [#16585](https://github.com/angular/angular.js.git/issues/16585))
+  [#16583](https://github.com/angular/angular.js/issues/16583),
+  [#16585](https://github.com/angular/angular.js/issues/16585))
 
 
 ## New Features
 - **$compile:** add one-way collection bindings
   ([f9d1ca](https://github.com/angular/angular.js/commit/f9d1ca20c38f065f15769fbe23aee5314cb58bd4),
-  [#14039](https://github.com/angular/angular.js.git/issues/14039),
-  [#16553](https://github.com/angular/angular.js.git/issues/16553),
-  [#15874](https://github.com/angular/angular.js.git/issues/15874))
+  [#14039](https://github.com/angular/angular.js/issues/14039),
+  [#16553](https://github.com/angular/angular.js/issues/16553),
+  [#15874](https://github.com/angular/angular.js/issues/15874))
 - **ngRef:** add directive to publish controller, or element into scope
   ([bf841d](https://github.com/angular/angular.js/commit/bf841d35120bf3c4655fde46af4105c85a0f1cdc),
-  [#16511](https://github.com/angular/angular.js.git/issues/16511))
+  [#16511](https://github.com/angular/angular.js/issues/16511))
 - **errorHandlingConfig:** add option to exclude error params from url
   ([3d6c45](https://github.com/angular/angular.js/commit/3d6c45d76e30b1b3c4eb9672cf4a93e5251c06b3),
-  [#14744](https://github.com/angular/angular.js.git/issues/14744),
-  [#15707](https://github.com/angular/angular.js.git/issues/15707),
-  [#16283](https://github.com/angular/angular.js.git/issues/16283),
-  [#16299](https://github.com/angular/angular.js.git/issues/16299),
-  [#16591](https://github.com/angular/angular.js.git/issues/16591))
+  [#14744](https://github.com/angular/angular.js/issues/14744),
+  [#15707](https://github.com/angular/angular.js/issues/15707),
+  [#16283](https://github.com/angular/angular.js/issues/16283),
+  [#16299](https://github.com/angular/angular.js/issues/16299),
+  [#16591](https://github.com/angular/angular.js/issues/16591))
 - **ngAria:** add support for ignoring a specific element
   ([7d9d38](https://github.com/angular/angular.js/commit/7d9d387195292cb5e04984602b752d31853cfea6),
-  [#14602](https://github.com/angular/angular.js.git/issues/14602),
-  [#14672](https://github.com/angular/angular.js.git/issues/14672),
-  [#14833](https://github.com/angular/angular.js.git/issues/14833))
+  [#14602](https://github.com/angular/angular.js/issues/14602),
+  [#14672](https://github.com/angular/angular.js/issues/14672),
+  [#14833](https://github.com/angular/angular.js/issues/14833))
 - **ngCookies:** support samesite option
   ([10a229](https://github.com/angular/angular.js/commit/10a229ce1befdeaf6295d1635dc11391c252a91a),
-  [#16543](https://github.com/angular/angular.js.git/issues/16543),
-  [#16544](https://github.com/angular/angular.js.git/issues/16544))
+  [#16543](https://github.com/angular/angular.js/issues/16543),
+  [#16544](https://github.com/angular/angular.js/issues/16544))
 - **ngMessages:** add support for default message
   ([a8c263](https://github.com/angular/angular.js/commit/a8c263c1947cc85ee60b4732f7e4bcdc7ba463e8),
-  [#12008](https://github.com/angular/angular.js.git/issues/12008),
-  [#12213](https://github.com/angular/angular.js.git/issues/12213),
-  [#16587](https://github.com/angular/angular.js.git/issues/16587))
+  [#12008](https://github.com/angular/angular.js/issues/12008),
+  [#12213](https://github.com/angular/angular.js/issues/12213),
+  [#16587](https://github.com/angular/angular.js/issues/16587))
 - **ngMock, ngMockE2E:** add option to match latest definition for `$httpBackend` request
   ([773f39](https://github.com/angular/angular.js/commit/773f39c9345479f5f8b6321236ce6ad96f77aa92),
-  [#16251](https://github.com/angular/angular.js.git/issues/16251),
-  [#11637](https://github.com/angular/angular.js.git/issues/11637),
-  [#16560](https://github.com/angular/angular.js.git/issues/16560))
+  [#16251](https://github.com/angular/angular.js/issues/16251),
+  [#11637](https://github.com/angular/angular.js/issues/11637),
+  [#16560](https://github.com/angular/angular.js/issues/16560))
 - **$route:** add support for the `reloadOnUrl` configuration option
   ([f4f571](https://github.com/angular/angular.js/commit/f4f571efdf86d6acbcd5c6b1de66b4b33a259125),
-  [#7925](https://github.com/angular/angular.js.git/issues/7925),
-  [#15002](https://github.com/angular/angular.js.git/issues/15002))
+  [#7925](https://github.com/angular/angular.js/issues/7925),
+  [#15002](https://github.com/angular/angular.js/issues/15002))
 
 
 <a name="1.7.0"></a>
