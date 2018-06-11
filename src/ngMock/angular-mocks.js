@@ -2345,11 +2345,14 @@ angular.mock.$RootElementProvider = function() {
  */
 function createControllerDecorator() {
   angular.mock.$ControllerDecorator = ['$delegate', function($delegate) {
-    return function(expression, locals, bindings, ident) {
-      if (angular.isString(bindings)) ident = bindings;
-      var instance = $delegate(expression, locals, ident);
-      angular.extend(instance, bindings);
-      return instance;
+    return function(expression, locals, later, ident) {
+      if (later && typeof later === 'object') {
+        var instantiate = $delegate(expression, locals, true, ident);
+        var instance = instantiate();
+        angular.extend(instance, later);
+        return instance;
+      }
+      return $delegate(expression, locals, later, ident);
     };
   }];
 
