@@ -70,8 +70,12 @@ var FN_ARG = /^\s*(_?)(\S+?)\1\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 var $injectorMinErr = minErr('$injector');
 
+function stringifyFn(fn) {
+  return Function.prototype.toString.call(fn);
+}
+
 function extractArgs(fn) {
-  var fnText = Function.prototype.toString.call(fn).replace(STRIP_COMMENTS, ''),
+  var fnText = stringifyFn(fn).replace(STRIP_COMMENTS, ''),
       args = fnText.match(ARROW_ARG) || fnText.match(FN_ARGS);
   return args;
 }
@@ -910,6 +914,19 @@ function createInjector(modulesToLoad, strictDi) {
       return args;
     }
 
+    function isClass(func) {
+      // Support: IE 9-11 only
+      // IE 9-11 do not support classes and IE9 leaks with the code below.
+      if (msie || typeof func !== 'function') {
+        return false;
+      }
+      var result = func.$$ngIsClass;
+      if (!isBoolean(result)) {
+        result = func.$$ngIsClass = /^class\b/.test(stringifyFn(func));
+      }
+      return result;
+    }
+
     function invoke(fn, self, locals, serviceName) {
       if (typeof locals === 'string') {
         serviceName = locals;
@@ -921,9 +938,14 @@ function createInjector(modulesToLoad, strictDi) {
         fn = fn[fn.length - 1];
       }
 
-      // http://jsperf.com/angularjs-invoke-apply-vs-switch
-      // #5388
-      return fn.apply(self, args);
+      if (!isClass(fn)) {
+        // http://jsperf.com/angularjs-invoke-apply-vs-switch
+        // #5388
+        return fn.apply(self, args);
+      } else {
+        args.unshift(null);
+        return new (Function.prototype.bind.apply(fn, args))();
+      }
     }
 
 
