@@ -81,11 +81,16 @@ function $ControllerProvider() {
      * It's just a simple call to {@link auto.$injector $injector}, but extracted into
      * a service, so that one can override this service with [BC version](https://gist.github.com/1649788).
      */
-    return function $controller(expression, locals, ident) {
+    return function $controller(expression, locals, later, ident) {
       // PRIVATE API:
+      //   param `later` --- indicates that the controller's constructor is invoked at a later time.
+      //                     If true, $controller will allocate the object with the correct
+      //                     prototype chain, but will not invoke the controller until a returned
+      //                     callback is invoked.
       //   param `ident` --- An optional label which overrides the label parsed from the controller
       //                     expression, if any.
       var instance, match, constructor, identifier;
+      later = later === true;
       if (ident && isString(ident)) {
         identifier = ident;
       }
@@ -109,6 +114,41 @@ function $ControllerProvider() {
         }
 
         assertArgFn(expression, constructor, true);
+      }
+
+      if (later) {
+        // Instantiate controller later:
+        // This machinery is used to create an instance of the object before calling the
+        // controller's constructor itself.
+        //
+        // This allows properties to be added to the controller before the constructor is
+        // invoked. Primarily, this is used for isolate scope bindings in $compile.
+        //
+        // This feature is not intended for use by applications, and is thus not documented
+        // publicly.
+        // Object creation: http://jsperf.com/create-constructor/2
+        var controllerPrototype = (isArray(expression) ?
+          expression[expression.length - 1] : expression).prototype;
+        instance = Object.create(controllerPrototype || null);
+
+        if (identifier) {
+          addIdentifier(locals, identifier, instance, constructor || expression.name);
+        }
+
+        return extend(function $controllerInit() {
+          var result = $injector.invoke(expression, instance, locals, constructor);
+          if (result !== instance && (isObject(result) || isFunction(result))) {
+            instance = result;
+            if (identifier) {
+              // If result changed, re-assign controllerAs value to scope.
+              addIdentifier(locals, identifier, instance, constructor || expression.name);
+            }
+          }
+          return instance;
+        }, {
+          instance: instance,
+          identifier: identifier
+        });
       }
 
       instance = $injector.instantiate(expression, locals, constructor);
