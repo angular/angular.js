@@ -704,7 +704,7 @@ angular.module('ngMessages', [], function initAngularHelpers() {
    *
    * @description
    * `ngMessageDefault` is a directive with the purpose to show and hide a default message for
-   * {@link ngMessages}, when none of provided messages matches.
+   * {@link directive:ngMessages}, when none of provided messages matches.
    *
    * More information about using `ngMessageDefault` can be found in the
    * {@link module:ngMessages `ngMessages` module documentation}.
