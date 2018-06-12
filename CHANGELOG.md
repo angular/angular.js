@@ -1,3 +1,23 @@
+<a name="1.7.2"></a>
+# 1.7.2 extreme-compatiplication (2018-06-12)
+
+In the previous release, we removed a private, undocumented API that was no longer used by
+AngularJS. It turned out that several popular UI libraries (such as
+[AngularJS Material](https://material.angularjs.org/),
+[UI Bootstrap](https://angular-ui.github.io/bootstrap/),
+[ngDialog](http://likeastore.github.io/ngDialog/) and probably others) relied on that API.
+
+In order to avoid unnecessary pain for developers, this release reverts the removal of the private
+API and restores compatibility of the aforementioned libraries with the latest AngularJS.
+
+## Reverts
+- **$compile:** remove `preAssignBindingsEnabled` leftovers
+  ([2da495](https://github.com/angular/angular.js/commit/2da49504065e9e2b71a7a5622e45118d8abbe87e),
+  [#16580](https://github.com/angular/angular.js/pull/16580),
+  [a81232](https://github.com/angular/angular.js/commit/a812327acda8bc890a4c4e809f0debb761c29625),
+  [#16595](https://github.com/angular/angular.js/pull/16595))
+
+
 <a name="1.7.1"></a>
 # 1.7.1 momentum-defiance (2018-06-08)
 
