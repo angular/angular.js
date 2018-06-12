@@ -281,9 +281,9 @@
  *
  * Sometimes you need to animate between different expression states, whose values
  * don't necessary need to be known or referenced in CSS styles.
- * Unless possible with another ["animation aware" directive](#directive-support), that specific
- * use case can always be covered with {@link ngAnimate.directive:ngAnimateSwap} as can be seen in
- * {@link ngAnimate.directive:ngAnimateSwap#examples this example}.
+ * Unless possible with another {@link ngAnimate#directive-support "animation aware" directive},
+ * that specific use case can always be covered with {@link ngAnimate.directive:ngAnimateSwap} as
+ * can be seen in {@link ngAnimate.directive:ngAnimateSwap#examples this example}.
  *
  * Note that {@link ngAnimate.directive:ngAnimateSwap} is a *structural directive*, which means it
  * creates a new instance of the element (including any other/child directives it may have) and

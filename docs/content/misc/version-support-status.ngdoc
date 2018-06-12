@@ -30,13 +30,21 @@ Any version branch not shown in the following table (e.g. 1.5.x) is no longer be
 Any version branch not shown in the following table (e.g. 1.6.x) is no longer being developed.
 
 <table class="dev-status table table-bordered">
-<thead>
-  <tr><th>Version</th><th>Status</th><th>Comments</th></tr>
-</thead>
-<tbody>
-  <tr class="security"><td><span>1.2.x</span></td><td>Long Term Support</td><td>Last version to provide IE 8 support</td></tr>
-  <tr class="stable"><td><span>1.7.x</span></td><td>Long Term Support</td><td>See [Long Term Support](#long-term-support) section below.</td></tr>
-</tbody>
+  <thead>
+    <tr><th>Version</th><th>Status</th><th>Comments</th></tr>
+  </thead>
+  <tbody>
+    <tr class="security">
+      <td><span>1.2.x</span></td>
+      <td>Long Term Support</td>
+      <td>Last version to provide IE 8 support</td>
+    </tr>
+    <tr class="stable">
+      <td><span>1.7.x</span></td>
+      <td>Long Term Support</td>
+      <td>See {@link version-support-status#long-term-support Long Term Support} section below.</td>
+    </tr>
+  </tbody>
 </table>
 
 ### Long Term Support
