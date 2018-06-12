@@ -1384,6 +1384,88 @@ describe('input', function() {
       expect($rootScope.form.alias.$error.datetimelocal).toBeTruthy();
     });
 
+    it('should use the timeSecondsFormat specified in ngModelOptions', function() {
+      var inputElm = helper.compileInput(
+        '<input type="datetime-local" ng-model-options="{timeSecondsFormat: \'\'}" ng-model="time"/>'
+      );
+
+      var ctrl = inputElm.controller('ngModel');
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 0, 500);
+      });
+      expect(inputElm.val()).toBe('1970-01-01T15:41');
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 500);
+      });
+      expect(inputElm.val()).toBe('1970-01-01T15:41');
+
+      ctrl.$overrideModelOptions({timeSecondsFormat: 'ss'});
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 5, 500);
+      });
+      expect(inputElm.val()).toBe('1970-01-01T15:41:05');
+
+      ctrl.$overrideModelOptions({timeSecondsFormat: 'ss.sss'});
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 50);
+      });
+      expect(inputElm.val()).toBe('1970-01-01T15:41:50.050');
+    });
+
+
+    it('should strip empty milliseconds and seconds if specified in ngModelOptions', function() {
+      var inputElm = helper.compileInput(
+        '<input type="datetime-local" ng-model-options="{timeStripZeroSeconds: true}" ng-model="threeFortyOnePm"/>'
+      );
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 500);
+      });
+
+      expect(inputElm.val()).toBe('1970-01-01T15:41:50.500');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 500);
+      });
+
+      expect(inputElm.val()).toBe('1970-01-01T15:41:00.500');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 0);
+      });
+
+      expect(inputElm.val()).toBe('1970-01-01T15:41:50');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 0);
+      });
+
+      expect(inputElm.val()).toBe('1970-01-01T15:41');
+    });
+
+
+    it('should apply timeStripZeroSeconds after timeSecondsFormat', function() {
+      var inputElm = helper.compileInput('<input type="datetime-local"' +
+        ' ng-model-options="{timeSecondsFormat: \'ss\', timeStripZeroSeconds: true}"' +
+        ' ng-model="threeFortyOnePm"/>');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 500);
+      });
+
+      expect(inputElm.val()).toBe('1970-01-01T15:41:50');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 500);
+      });
+
+      expect(inputElm.val()).toBe('1970-01-01T15:41');
+    });
+
     describe('min', function() {
       var inputElm;
       beforeEach(function() {
@@ -1593,7 +1675,7 @@ describe('input', function() {
     });
 
 
-    it('should set the view if the model if a valid Date object.', function() {
+    it('should set the view if the model is a valid Date object.', function() {
       var inputElm = helper.compileInput('<input type="time" ng-model="threeFortyOnePm"/>');
 
       $rootScope.$apply(function() {
@@ -1604,7 +1686,7 @@ describe('input', function() {
     });
 
 
-    it('should set the model undefined if the view is invalid', function() {
+    it('should set the model to undefined if the view is invalid', function() {
       var inputElm = helper.compileInput('<input type="time" ng-model="breakMe"/>');
 
       $rootScope.$apply(function() {
@@ -1623,7 +1705,7 @@ describe('input', function() {
     });
 
 
-    it('should render as blank if null', function() {
+    it('should set blank if null', function() {
       var inputElm = helper.compileInput('<input type="time" ng-model="test" />');
 
       $rootScope.$apply('test = null');
@@ -1633,7 +1715,7 @@ describe('input', function() {
     });
 
 
-    it('should come up blank when no value specified', function() {
+    it('should set blank when no value specified', function() {
       var inputElm = helper.compileInput('<input type="time" ng-model="test" />');
 
       expect(inputElm.val()).toBe('');
@@ -1642,6 +1724,88 @@ describe('input', function() {
 
       expect($rootScope.test).toBeNull();
       expect(inputElm.val()).toBe('');
+    });
+
+    it('should use the timeSecondsFormat specified in ngModelOptions', function() {
+      var inputElm = helper.compileInput(
+        '<input type="time" ng-model-options="{timeSecondsFormat: \'\'}" ng-model="time"/>'
+      );
+
+      var ctrl = inputElm.controller('ngModel');
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 0, 500);
+      });
+      expect(inputElm.val()).toBe('15:41');
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 500);
+      });
+      expect(inputElm.val()).toBe('15:41');
+
+      ctrl.$overrideModelOptions({timeSecondsFormat: 'ss'});
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 5, 500);
+      });
+      expect(inputElm.val()).toBe('15:41:05');
+
+      ctrl.$overrideModelOptions({timeSecondsFormat: 'ss.sss'});
+
+      $rootScope.$apply(function() {
+        $rootScope.time = new Date(1970, 0, 1, 15, 41, 50, 50);
+      });
+      expect(inputElm.val()).toBe('15:41:50.050');
+    });
+
+
+    it('should strip empty milliseconds and seconds if specified in ngModelOptions', function() {
+      var inputElm = helper.compileInput(
+        '<input type="time" ng-model-options="{timeStripZeroSeconds: true}" ng-model="threeFortyOnePm"/>'
+      );
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 500);
+      });
+
+      expect(inputElm.val()).toBe('15:41:50.500');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 500);
+      });
+
+      expect(inputElm.val()).toBe('15:41:00.500');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 0);
+      });
+
+      expect(inputElm.val()).toBe('15:41:50');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 0);
+      });
+
+      expect(inputElm.val()).toBe('15:41');
+    });
+
+
+    it('should apply timeStripZeroSeconds after timeSecondsFormat', function() {
+      var inputElm = helper.compileInput('<input type="time"' +
+        ' ng-model-options="{timeSecondsFormat: \'ss\', timeStripZeroSeconds: true}"' +
+        ' ng-model="threeFortyOnePm"/>');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 50, 500);
+      });
+
+      expect(inputElm.val()).toBe('15:41:50');
+
+      $rootScope.$apply(function() {
+        $rootScope.threeFortyOnePm = new Date(1970, 0, 1, 15, 41, 0, 500);
+      });
+
+      expect(inputElm.val()).toBe('15:41');
     });
 
 
