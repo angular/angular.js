@@ -148,6 +148,7 @@ module.exports = new Package('angularjs', [
 
 .config(function(checkAnchorLinksProcessor) {
   checkAnchorLinksProcessor.base = '/';
+  checkAnchorLinksProcessor.errorOnUnmatchedLinks = true;
   // We are only interested in docs that have an area (i.e. they are pages)
   checkAnchorLinksProcessor.checkDoc = function(doc) { return doc.area; };
 })
