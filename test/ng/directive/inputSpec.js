@@ -1419,7 +1419,7 @@ describe('input', function() {
 
     it('should strip empty milliseconds and seconds if specified in ngModelOptions', function() {
       var inputElm = helper.compileInput(
-        '<input type="datetime-local" ng-model-options="{timeStripEmptySeconds: true}" ng-model="threeFortyOnePm"/>'
+        '<input type="datetime-local" ng-model-options="{timeStripZeroSeconds: true}" ng-model="threeFortyOnePm"/>'
       );
 
       $rootScope.$apply(function() {
@@ -1448,9 +1448,9 @@ describe('input', function() {
     });
 
 
-    it('should apply timeStripEmptySeconds after timeSecondsFormat', function() {
+    it('should apply timeStripZeroSeconds after timeSecondsFormat', function() {
       var inputElm = helper.compileInput('<input type="datetime-local"' +
-        ' ng-model-options="{timeSecondsFormat: \'ss\', timeStripEmptySeconds: true}"' +
+        ' ng-model-options="{timeSecondsFormat: \'ss\', timeStripZeroSeconds: true}"' +
         ' ng-model="threeFortyOnePm"/>');
 
       $rootScope.$apply(function() {
@@ -1761,7 +1761,7 @@ describe('input', function() {
 
     it('should strip empty milliseconds and seconds if specified in ngModelOptions', function() {
       var inputElm = helper.compileInput(
-        '<input type="time" ng-model-options="{timeStripEmptySeconds: true}" ng-model="threeFortyOnePm"/>'
+        '<input type="time" ng-model-options="{timeStripZeroSeconds: true}" ng-model="threeFortyOnePm"/>'
       );
 
       $rootScope.$apply(function() {
@@ -1790,9 +1790,9 @@ describe('input', function() {
     });
 
 
-    it('should apply timeStripEmptySeconds after timeSecondsFormat', function() {
+    it('should apply timeStripZeroSeconds after timeSecondsFormat', function() {
       var inputElm = helper.compileInput('<input type="time"' +
-        ' ng-model-options="{timeSecondsFormat: \'ss\', timeStripEmptySeconds: true}"' +
+        ' ng-model-options="{timeSecondsFormat: \'ss\', timeStripZeroSeconds: true}"' +
         ' ng-model="threeFortyOnePm"/>');
 
       $rootScope.$apply(function() {

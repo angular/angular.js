@@ -257,7 +257,7 @@ var inputType = {
     *
     * The format of the displayed time can be adjusted with the
     * {@link ng.directive:ngModelOptions#ngModelOptions-arguments ngModelOptions} `timeSecondsFormat`
-    * and `timeStripEmptySeconds`.
+    * and `timeStripZeroSeconds`.
     *
     * @param {string} ngModel Assignable AngularJS expression to data-bind to.
     * @param {string=} name Property name of the form under which the control is published.
@@ -365,7 +365,7 @@ var inputType = {
    *
    * The format of the displayed time can be adjusted with the
    * {@link ng.directive:ngModelOptions#ngModelOptions-arguments ngModelOptions} `timeSecondsFormat`
-   * and `timeStripEmptySeconds`.
+   * and `timeStripZeroSeconds`.
    *
    * @param {string} ngModel Assignable AngularJS expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
@@ -1598,7 +1598,7 @@ function createDateInputType(type, regexp, parseDate, format) {
 
       var formatted =  $filter('date')(value, targetFormat, timezone);
 
-      if (isTimeType && ctrl.$options.getOption('timeStripEmptySeconds')) {
+      if (isTimeType && ctrl.$options.getOption('timeStripZeroSeconds')) {
         formatted = formatted.replace(/(?::00)?(?:\.000)?$/, '');
       }
 
