@@ -3,8 +3,7 @@
 @description
 
 # Including AngularJS scripts from the Google CDN
-The quickest way to get started is to point your html `<script>` tag to a
-[Google CDN](https://developers.google.com/speed/libraries/#angularjs) URL.
+The quickest way to get started is to point your html `<script>` tag to a Google CDN URL.
 This way, you don't have to download anything or maintain a local copy.
 
 There are two types of AngularJS script URLs you can point to, one for development and one for
