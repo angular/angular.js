@@ -10,18 +10,16 @@ const BROWSER_CACHE_DURATION = 60 * 10;
 const CDN_CACHE_DURATION = 60 * 60 * 12;
 
 function sendStoredFile(request, response) {
-  let filePathSegments = request.path.split('/').filter((segment) => {
+  const requestPath = request.path || '/';
+  let filePathSegments = requestPath.split('/').filter((segment) => {
     // Remove empty leading or trailing path parts
     return segment !== '';
   });
-
 
   const version = filePathSegments[0];
   const isDocsPath = filePathSegments[1] === 'docs';
   const lastSegment = filePathSegments[filePathSegments.length - 1];
   const bucket = gcs.bucket(gcsBucketId);
-
-  console.log(request.path, lastSegment);
 
   let downloadSource;
   let fileName;
@@ -162,7 +160,11 @@ function sendStoredFile(request, response) {
         const nextQuery = data[1];
         const apiResponse = data[2];
 
-        if (!files.length && (!apiResponse || !apiResponse.prefixes)) {
+        if (
+          // we got no files or directories from previous query pages
+          !fileList.length && !directoryList.length &&
+          // this query page has no file or directories
+          !files.length && (!apiResponse || !apiResponse.prefixes)) {
           return Promise.reject({
             code: 404
           });
@@ -197,11 +199,14 @@ function deleteOldSnapshotZip(object, context) {
   const bucketId = object.bucket;
   const filePath = object.name;
   const contentType = object.contentType;
-  const resourceState = object.resourceState;
 
   const bucket = gcs.bucket(bucketId);
 
   const snapshotFolderMatch = filePath.match(snapshotRegex);
+
+  if (!snapshotFolderMatch ||	contentType !== 'application/zip') {
+    return;
+  }
 
   bucket.getFiles({
     prefix: snapshotFolderMatch[0],
