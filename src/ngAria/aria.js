@@ -388,6 +388,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
             elem.on('keydown', function(event) {
               var keyCode = event.which || event.keyCode;
               if (keyCode === 32 || keyCode === 13) {
+                event.preventDefault();
                 scope.$apply(callback);
               }
 
