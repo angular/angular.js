@@ -15,10 +15,13 @@ function sendStoredFile(request, response) {
     return segment !== '';
   });
 
+
   const version = filePathSegments[0];
   const isDocsPath = filePathSegments[1] === 'docs';
   const lastSegment = filePathSegments[filePathSegments.length - 1];
   const bucket = gcs.bucket(gcsBucketId);
+
+  console.log(request.path, lastSegment);
 
   let downloadSource;
   let fileName;
@@ -190,9 +193,7 @@ const snapshotRegex = /^snapshot(-stable)?\//;
  * When a new zip file is uploaded into snapshot or snapshot-stable,
  * delete the previous zip file.
  */
-function deleteOldSnapshotZip(event) {
-  const object = event.data;
-
+function deleteOldSnapshotZip(object, context) {
   const bucketId = object.bucket;
   const filePath = object.name;
   const contentType = object.contentType;
@@ -201,13 +202,6 @@ function deleteOldSnapshotZip(event) {
   const bucket = gcs.bucket(bucketId);
 
   const snapshotFolderMatch = filePath.match(snapshotRegex);
-
-  if (!snapshotFolderMatch ||
-      contentType !== 'application/zip' ||
-      resourceState === 'not_exists' // Deletion event
-    ) {
-    return;
-  }
 
   bucket.getFiles({
     prefix: snapshotFolderMatch[0],
@@ -230,4 +224,4 @@ function deleteOldSnapshotZip(event) {
 }
 
 exports.sendStoredFile = functions.https.onRequest(sendStoredFile);
-exports.deleteOldSnapshotZip = functions.storage.object().onChange(deleteOldSnapshotZip);
+exports.deleteOldSnapshotZip = functions.storage.object().onFinalize(deleteOldSnapshotZip);
