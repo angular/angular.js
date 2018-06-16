@@ -387,7 +387,10 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
           if ($aria.config('bindKeydown') && !attr.ngKeydown && !attr.ngKeypress && !attr.ngKeyup) {
             elem.on('keydown', function(event) {
               var keyCode = event.which || event.keyCode;
-              if (keyCode === 32 || keyCode === 13) {
+
+              if (keyCode === 13 || keyCode === 32) {
+                // Prevent the default browser behavior (e.g. scrolling when pressing spacebar).
+                event.preventDefault();
                 scope.$apply(callback);
               }
 

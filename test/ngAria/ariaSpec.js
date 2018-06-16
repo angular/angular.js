@@ -929,11 +929,12 @@ describe('$aria', function() {
       clickEvents = [];
       scope.onClick = jasmine.createSpy('onClick').and.callFake(function(evt) {
         var nodeName = evt ? evt.target.nodeName.toLowerCase() : '';
-        clickEvents.push(nodeName);
+        var prevented = !!(evt && evt.isDefaultPrevented());
+        clickEvents.push(nodeName + '(' + prevented + ')');
       });
     });
 
-    it('should trigger a click from the keyboard', function() {
+    it('should trigger a click from the keyboard (and prevent default action)', function() {
       compileElement(
         '<section>' +
           '<div ng-click="onClick($event)"></div>' +
@@ -948,7 +949,7 @@ describe('$aria', function() {
       divElement.triggerHandler({type: 'keydown', keyCode: 32});
       liElement.triggerHandler({type: 'keydown', keyCode: 32});
 
-      expect(clickEvents).toEqual(['div', 'li', 'div', 'li']);
+      expect(clickEvents).toEqual(['div(true)', 'li(true)', 'div(true)', 'li(true)']);
     });
 
     it('should trigger a click in browsers that provide `event.which` instead of `event.keyCode`',
@@ -967,7 +968,7 @@ describe('$aria', function() {
         divElement.triggerHandler({type: 'keydown', which: 32});
         liElement.triggerHandler({type: 'keydown', which: 32});
 
-        expect(clickEvents).toEqual(['div', 'li', 'div', 'li']);
+        expect(clickEvents).toEqual(['div(true)', 'li(true)', 'div(true)', 'li(true)']);
       }
     );
 
