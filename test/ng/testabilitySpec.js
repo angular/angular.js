@@ -194,5 +194,14 @@ describe('$$testability', function() {
         $$testability.whenStable(callback);
         expect(callback).toHaveBeenCalled();
       }));
+
+    it('should delegate to `$browser.notifyWhenNoOutstandingRequests()`',
+      inject(function($$testability, $browser) {
+        var spy = spyOn($browser, 'notifyWhenNoOutstandingRequests');
+        var callback = noop;
+
+        $$testability.whenStable(callback);
+        expect(spy).toHaveBeenCalledWith(callback);
+      }));
   });
 });

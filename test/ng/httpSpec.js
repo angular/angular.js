@@ -2002,7 +2002,7 @@ describe('$http', function() {
       it('should immediately call `$browser.$$incOutstandingRequestCount()`', function() {
         expect(incOutstandingRequestCountSpy).not.toHaveBeenCalled();
         $http.get('');
-        expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+        expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
       });
 
 
@@ -2012,7 +2012,7 @@ describe('$http', function() {
         $http.get('');
         expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
         $httpBackend.flush();
-        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnceWith(noop, '$http');
       });
 
 
@@ -2022,7 +2022,7 @@ describe('$http', function() {
         $http.get('').catch(noop);
         expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
         $httpBackend.flush();
-        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+        expect(completeOutstandingRequestSpy).toHaveBeenCalledOnceWith(noop, '$http');
       });
 
 
@@ -2033,13 +2033,13 @@ describe('$http', function() {
 
           $http.get('', {transformRequest: function() { throw new Error(); }}).catch(noop);
 
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
           expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
 
           $rootScope.$digest();
 
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
-          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnceWith(noop, '$http');
         }
       );
 
@@ -2052,13 +2052,13 @@ describe('$http', function() {
           $httpBackend.when('GET').respond(200);
           $http.get('', {transformResponse: function() { throw new Error(); }}).catch(noop);
 
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
           expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
 
           $httpBackend.flush();
 
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
-          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnceWith(noop, '$http');
         }
       );
     });
@@ -2112,7 +2112,7 @@ describe('$http', function() {
 
           expect(reqInterceptorFulfilled).toBe(false);
           expect(resInterceptorFulfilled).toBe(false);
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
           expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
 
           reqInterceptorDeferred.resolve();
@@ -2120,7 +2120,7 @@ describe('$http', function() {
 
           expect(reqInterceptorFulfilled).toBe(true);
           expect(resInterceptorFulfilled).toBe(false);
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
           expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
 
           resInterceptorDeferred.resolve();
@@ -2128,8 +2128,8 @@ describe('$http', function() {
 
           expect(reqInterceptorFulfilled).toBe(true);
           expect(resInterceptorFulfilled).toBe(true);
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
-          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnceWith(noop, '$http');
         }
       );
 
@@ -2144,15 +2144,15 @@ describe('$http', function() {
           $rootScope.$digest();
 
           expect(reqInterceptorFulfilled).toBe(false);
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
           expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
 
           reqInterceptorDeferred.reject();
           $rootScope.$digest();
 
           expect(reqInterceptorFulfilled).toBe(true);
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
-          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnceWith(noop, '$http');
         }
       );
 
@@ -2169,7 +2169,7 @@ describe('$http', function() {
 
           expect(reqInterceptorFulfilled).toBe(false);
           expect(resInterceptorFulfilled).toBe(false);
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
           expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
 
           reqInterceptorDeferred.resolve();
@@ -2177,7 +2177,7 @@ describe('$http', function() {
 
           expect(reqInterceptorFulfilled).toBe(true);
           expect(resInterceptorFulfilled).toBe(false);
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
           expect(completeOutstandingRequestSpy).not.toHaveBeenCalled();
 
           resInterceptorDeferred.reject();
@@ -2185,8 +2185,8 @@ describe('$http', function() {
 
           expect(reqInterceptorFulfilled).toBe(true);
           expect(resInterceptorFulfilled).toBe(true);
-          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnce();
-          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnce();
+          expect(incOutstandingRequestCountSpy).toHaveBeenCalledOnceWith('$http');
+          expect(completeOutstandingRequestSpy).toHaveBeenCalledOnceWith(noop, '$http');
         }
       );
     });

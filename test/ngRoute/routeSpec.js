@@ -2419,9 +2419,8 @@ describe('$route', function() {
     it('should wait for $resolve promises before calling callbacks', function() {
       var deferred;
 
-      module(function($provide, $routeProvider) {
+      module(function($routeProvider) {
         $routeProvider.when('/path', {
-          template: '',
           resolve: {
             a: function($q) {
               deferred = $q.defer();
@@ -2431,7 +2430,7 @@ describe('$route', function() {
         });
       });
 
-      inject(function($location, $route, $rootScope, $httpBackend, $$testability) {
+      inject(function($browser, $location, $rootScope, $$testability) {
         $location.path('/path');
         $rootScope.$digest();
 
@@ -2440,7 +2439,7 @@ describe('$route', function() {
         expect(callback).not.toHaveBeenCalled();
 
         deferred.resolve();
-        $rootScope.$digest();
+        $browser.defer.flush();
         expect(callback).toHaveBeenCalled();
       });
     });
@@ -2448,9 +2447,8 @@ describe('$route', function() {
     it('should call callback after $resolve promises are rejected', function() {
       var deferred;
 
-      module(function($provide, $routeProvider) {
+      module(function($routeProvider) {
         $routeProvider.when('/path', {
-          template: '',
           resolve: {
             a: function($q) {
               deferred = $q.defer();
@@ -2460,7 +2458,7 @@ describe('$route', function() {
         });
       });
 
-      inject(function($location, $route, $rootScope, $httpBackend, $$testability) {
+      inject(function($browser, $location, $rootScope, $$testability) {
         $location.path('/path');
         $rootScope.$digest();
 
@@ -2469,7 +2467,7 @@ describe('$route', function() {
         expect(callback).not.toHaveBeenCalled();
 
         deferred.reject();
-        $rootScope.$digest();
+        $browser.defer.flush();
         expect(callback).toHaveBeenCalled();
       });
     });
@@ -2477,7 +2475,7 @@ describe('$route', function() {
     it('should wait for resolveRedirectTo promises before calling callbacks', function() {
       var deferred;
 
-      module(function($provide, $routeProvider) {
+      module(function($routeProvider) {
         $routeProvider.when('/path', {
           resolveRedirectTo: function($q) {
             deferred = $q.defer();
@@ -2486,7 +2484,7 @@ describe('$route', function() {
         });
       });
 
-      inject(function($location, $route, $rootScope, $httpBackend, $$testability) {
+      inject(function($browser, $location, $rootScope, $$testability) {
         $location.path('/path');
         $rootScope.$digest();
 
@@ -2495,7 +2493,7 @@ describe('$route', function() {
         expect(callback).not.toHaveBeenCalled();
 
         deferred.resolve();
-        $rootScope.$digest();
+        $browser.defer.flush();
         expect(callback).toHaveBeenCalled();
       });
     });
@@ -2503,7 +2501,7 @@ describe('$route', function() {
     it('should call callback after resolveRedirectTo promises are rejected', function() {
       var deferred;
 
-      module(function($provide, $routeProvider) {
+      module(function($routeProvider) {
         $routeProvider.when('/path', {
           resolveRedirectTo: function($q) {
             deferred = $q.defer();
@@ -2512,7 +2510,7 @@ describe('$route', function() {
         });
       });
 
-      inject(function($location, $route, $rootScope, $httpBackend, $$testability) {
+      inject(function($browser, $location, $rootScope, $$testability) {
         $location.path('/path');
         $rootScope.$digest();
 
@@ -2521,7 +2519,7 @@ describe('$route', function() {
         expect(callback).not.toHaveBeenCalled();
 
         deferred.reject();
-        $rootScope.$digest();
+        $browser.defer.flush();
         expect(callback).toHaveBeenCalled();
       });
     });
@@ -2529,30 +2527,11 @@ describe('$route', function() {
     it('should wait for all route promises before calling callbacks', function() {
       var deferreds = {};
 
-      module(function($provide, $routeProvider) {
-        // While normally `$browser.defer()` modifies the `outstandingRequestCount`, the mocked
-        // version (provided by `ngMock`) does not. This doesn't matter in most tests, but in this
-        // case we need the `outstandingRequestCount` logic to ensure that we don't call the
-        // `$$testability.whenStable()` callbacks part way through a `$rootScope.$evalAsync` block.
-        // See ngRoute's commitRoute()'s finally() block for details.
-        $provide.decorator('$browser', function($delegate) {
-          var oldDefer = $delegate.defer;
-          var newDefer = function(fn, delay) {
-            var requestCountAwareFn = function() { $delegate.$$completeOutstandingRequest(fn); };
-            $delegate.$$incOutstandingRequestCount();
-            return oldDefer.call($delegate, requestCountAwareFn, delay);
-          };
-
-          $delegate.defer = angular.extend(newDefer, oldDefer);
-
-          return $delegate;
-        });
-
+      module(function($routeProvider) {
         addRouteWithAsyncRedirect('/foo', '/bar');
         addRouteWithAsyncRedirect('/bar', '/baz');
         addRouteWithAsyncRedirect('/baz', '/qux');
         $routeProvider.when('/qux', {
-          template: '',
           resolve: {
             a: function($q) {
               var deferred = deferreds['/qux'] = $q.defer();
@@ -2572,7 +2551,7 @@ describe('$route', function() {
         }
       });
 
-      inject(function($browser, $location, $rootScope, $route, $$testability) {
+      inject(function($browser, $location, $rootScope, $$testability) {
         $location.path('/foo');
         $rootScope.$digest();
 
