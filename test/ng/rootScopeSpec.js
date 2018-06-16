@@ -2387,7 +2387,6 @@ describe('Scope', function() {
 
 
     it('should be cancelled if a $rootScope digest occurs before the next tick', inject(function($rootScope, $browser) {
-      var apply = spyOn($rootScope, '$apply').and.callThrough();
       var cancel = spyOn($browser.defer, 'cancel').and.callThrough();
       var expression = jasmine.createSpy('expr');
 

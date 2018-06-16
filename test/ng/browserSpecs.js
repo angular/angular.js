@@ -34,9 +34,9 @@ function MockWindow(options) {
     timeouts[id] = noop;
   };
 
-  this.setTimeout.flush = function() {
-    var length = timeouts.length;
-    while (length-- > 0) timeouts.shift()();
+  this.setTimeout.flush = function(count) {
+    count = count || timeouts.length;
+    while (count-- > 0) timeouts.shift()();
   };
 
   this.addEventListener = function(name, listener) {
@@ -144,21 +144,21 @@ function MockDocument() {
 
 describe('browser', function() {
   /* global Browser: false */
-  var browser, fakeWindow, fakeDocument, fakeLog, logs, scripts, removedScripts;
+  var browser, fakeWindow, fakeDocument, fakeLog, logs;
 
   beforeEach(function() {
-    scripts = [];
-    removedScripts = [];
     sniffer = {history: true};
     fakeWindow = new MockWindow();
     fakeDocument = new MockDocument();
 
     logs = {log:[], warn:[], info:[], error:[]};
 
-    fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
-                   warn: function() { logs.warn.push(slice.call(arguments)); },
-                   info: function() { logs.info.push(slice.call(arguments)); },
-                   error: function() { logs.error.push(slice.call(arguments)); }};
+    fakeLog = {
+      log: function() { logs.log.push(slice.call(arguments)); },
+      warn: function() { logs.warn.push(slice.call(arguments)); },
+      info: function() { logs.info.push(slice.call(arguments)); },
+      error: function() { logs.error.push(slice.call(arguments)); }
+    };
 
     browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
   });
@@ -214,12 +214,66 @@ describe('browser', function() {
     }
   });
 
-  describe('outstanding requests', function() {
-    it('should process callbacks immediately with no outstanding requests', function() {
+
+  describe('notifyWhenNoOutstandingRequests', function() {
+    it('should invoke callbacks immediately if there are no pending tasks', function() {
       var callback = jasmine.createSpy('callback');
       browser.notifyWhenNoOutstandingRequests(callback);
       expect(callback).toHaveBeenCalled();
     });
+
+
+    it('should invoke callbacks immediately if there are no pending tasks (for specific task-type)',
+      function() {
+        var callbackAll = jasmine.createSpy('callbackAll');
+        var callbackFoo = jasmine.createSpy('callbackFoo');
+
+        browser.$$incOutstandingRequestCount();
+        browser.notifyWhenNoOutstandingRequests(callbackAll);
+        browser.notifyWhenNoOutstandingRequests(callbackFoo, 'foo');
+
+        expect(callbackAll).not.toHaveBeenCalled();
+        expect(callbackFoo).toHaveBeenCalled();
+      }
+    );
+
+
+    it('should invoke callbacks as soon as there are no pending tasks', function() {
+      var callback = jasmine.createSpy('callback');
+
+      browser.$$incOutstandingRequestCount();
+      browser.notifyWhenNoOutstandingRequests(callback);
+      expect(callback).not.toHaveBeenCalled();
+
+      browser.$$completeOutstandingRequest(noop);
+      expect(callback).toHaveBeenCalled();
+    });
+
+
+    it('should invoke callbacks as soon as there are no pending tasks (for specific task-type)',
+      function() {
+        var callbackAll = jasmine.createSpy('callbackAll');
+        var callbackFoo = jasmine.createSpy('callbackFoo');
+
+        browser.$$incOutstandingRequestCount();
+        browser.$$incOutstandingRequestCount('foo');
+        browser.notifyWhenNoOutstandingRequests(callbackAll);
+        browser.notifyWhenNoOutstandingRequests(callbackFoo, 'foo');
+
+        expect(callbackAll).not.toHaveBeenCalled();
+        expect(callbackFoo).not.toHaveBeenCalled();
+
+        browser.$$completeOutstandingRequest(noop, 'foo');
+
+        expect(callbackAll).not.toHaveBeenCalled();
+        expect(callbackFoo).toHaveBeenCalledOnce();
+
+        browser.$$completeOutstandingRequest(noop);
+
+        expect(callbackAll).toHaveBeenCalledOnce();
+        expect(callbackFoo).toHaveBeenCalledOnce();
+      }
+    );
   });
 
 
@@ -236,13 +290,36 @@ describe('browser', function() {
 
 
     it('should update outstandingRequests counter', function() {
-      var callback = jasmine.createSpy('deferred');
+      var noPendingTasksSpy = jasmine.createSpy('noPendingTasks');
 
-      browser.defer(callback);
-      expect(callback).not.toHaveBeenCalled();
+      browser.defer(noop);
+      browser.notifyWhenNoOutstandingRequests(noPendingTasksSpy);
+      expect(noPendingTasksSpy).not.toHaveBeenCalled();
 
       fakeWindow.setTimeout.flush();
-      expect(callback).toHaveBeenCalledOnce();
+      expect(noPendingTasksSpy).toHaveBeenCalledOnce();
+    });
+
+
+    it('should update outstandingRequests counter (for specific task-type)', function() {
+      var noPendingFooTasksSpy = jasmine.createSpy('noPendingFooTasks');
+      var noPendingTasksSpy = jasmine.createSpy('noPendingTasks');
+
+      browser.defer(noop, 0, 'foo');
+      browser.defer(noop, 0, 'bar');
+
+      browser.notifyWhenNoOutstandingRequests(noPendingFooTasksSpy, 'foo');
+      browser.notifyWhenNoOutstandingRequests(noPendingTasksSpy);
+      expect(noPendingFooTasksSpy).not.toHaveBeenCalled();
+      expect(noPendingTasksSpy).not.toHaveBeenCalled();
+
+      fakeWindow.setTimeout.flush(1);
+      expect(noPendingFooTasksSpy).toHaveBeenCalledOnce();
+      expect(noPendingTasksSpy).not.toHaveBeenCalled();
+
+      fakeWindow.setTimeout.flush(1);
+      expect(noPendingFooTasksSpy).toHaveBeenCalledOnce();
+      expect(noPendingTasksSpy).toHaveBeenCalledOnce();
     });
 
 
@@ -269,6 +346,40 @@ describe('browser', function() {
         fakeWindow.setTimeout.flush();
         expect(log).toEqual(['ok']);
         expect(browser.defer.cancel(deferId2)).toBe(false);
+      });
+
+
+      it('should update outstandingRequests counter', function() {
+        var noPendingTasksSpy = jasmine.createSpy('noPendingTasks');
+        var deferId = browser.defer(noop);
+
+        browser.notifyWhenNoOutstandingRequests(noPendingTasksSpy);
+        expect(noPendingTasksSpy).not.toHaveBeenCalled();
+
+        browser.defer.cancel(deferId);
+        expect(noPendingTasksSpy).toHaveBeenCalledOnce();
+      });
+
+
+      it('should update outstandingRequests counter (for specific task-type)', function() {
+        var noPendingFooTasksSpy = jasmine.createSpy('noPendingFooTasks');
+        var noPendingTasksSpy = jasmine.createSpy('noPendingTasks');
+
+        var deferId1 = browser.defer(noop, 0, 'foo');
+        var deferId2 = browser.defer(noop, 0, 'bar');
+
+        browser.notifyWhenNoOutstandingRequests(noPendingFooTasksSpy, 'foo');
+        browser.notifyWhenNoOutstandingRequests(noPendingTasksSpy);
+        expect(noPendingFooTasksSpy).not.toHaveBeenCalled();
+        expect(noPendingTasksSpy).not.toHaveBeenCalled();
+
+        browser.defer.cancel(deferId1);
+        expect(noPendingFooTasksSpy).toHaveBeenCalledOnce();
+        expect(noPendingTasksSpy).not.toHaveBeenCalled();
+
+        browser.defer.cancel(deferId2);
+        expect(noPendingFooTasksSpy).toHaveBeenCalledOnce();
+        expect(noPendingTasksSpy).toHaveBeenCalledOnce();
       });
     });
   });
