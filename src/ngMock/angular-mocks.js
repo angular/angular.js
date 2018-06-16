@@ -32,6 +32,8 @@ angular.mock.$BrowserProvider = function() {
 };
 
 angular.mock.$Browser = function() {
+  var ALL_TASKS_TYPE = '$$all$$';
+  var DEFAULT_TASK_TYPE = '$$default$$';
   var self = this;
 
   this.isMock = true;
@@ -41,28 +43,67 @@ angular.mock.$Browser = function() {
 
   // Testability API
 
-  var outstandingRequestCount = 0;
+  var outstandingRequestCounts = {};
   var outstandingRequestCallbacks = [];
-  self.$$incOutstandingRequestCount = function() { outstandingRequestCount++; };
-  self.$$completeOutstandingRequest = function(fn) {
+
+  self.$$completeOutstandingRequest = completeOutstandingRequest;
+  self.$$incOutstandingRequestCount = incOutstandingRequestCount;
+  self.notifyWhenNoOutstandingRequests = notifyWhenNoOutstandingRequests;
+
+  function decOutstandingRequestCount(taskType) {
+    taskType = taskType || DEFAULT_TASK_TYPE;
+    if (outstandingRequestCounts[taskType]) {
+      outstandingRequestCounts[taskType]--;
+      outstandingRequestCounts[ALL_TASKS_TYPE]--;
+    }
+  }
+  function incOutstandingRequestCount(taskType) {
+    taskType = taskType || DEFAULT_TASK_TYPE;
+    outstandingRequestCounts[taskType] = (outstandingRequestCounts[taskType] || 0) + 1;
+    outstandingRequestCounts[ALL_TASKS_TYPE] = (outstandingRequestCounts[ALL_TASKS_TYPE] || 0) + 1;
+  }
+  function completeOutstandingRequest(fn, taskType) {
+    taskType = taskType || DEFAULT_TASK_TYPE;
     try {
       fn();
     } finally {
-      outstandingRequestCount--;
-      if (!outstandingRequestCount) {
-        while (outstandingRequestCallbacks.length) {
-          outstandingRequestCallbacks.pop()();
+      decOutstandingRequestCount(taskType);
+
+      var countForType = outstandingRequestCounts[taskType];
+      var countForAll = outstandingRequestCounts[ALL_TASKS_TYPE];
+
+      // If at least one of the queues (`ALL_TASKS_TYPE` or `taskType`) is empty, run callbacks.
+      if (!countForAll || !countForType) {
+        var getNextCallback = !countForAll ? getLastCallback : getLastCallbackForType;
+        var nextCb;
+
+        while ((nextCb = getNextCallback(taskType))) {
+          nextCb();
         }
       }
     }
-  };
-  self.notifyWhenNoOutstandingRequests = function(callback) {
-    if (outstandingRequestCount) {
-      outstandingRequestCallbacks.push(callback);
-    } else {
-      callback();
+  }
+  function getLastCallback() {
+    var cbInfo = outstandingRequestCallbacks.pop();
+    return cbInfo && cbInfo.cb;
+  }
+  function getLastCallbackForType(taskType) {
+    for (var i = outstandingRequestCallbacks.length - 1; i >= 0; --i) {
+      var cbInfo = outstandingRequestCallbacks[i];
+      if (cbInfo.type === taskType) {
+        outstandingRequestCallbacks.splice(i, 1);
+        return cbInfo.cb;
+      }
     }
-  };
+  }
+  function notifyWhenNoOutstandingRequests(callback, taskType) {
+    taskType = taskType || ALL_TASKS_TYPE;
+    if (!outstandingRequestCounts[taskType]) {
+      callback();
+    } else {
+      outstandingRequestCallbacks.push({type: taskType, cb: callback});
+    }
+  }
 
   // register url polling fn
 
@@ -86,13 +127,22 @@ angular.mock.$Browser = function() {
   self.deferredFns = [];
   self.deferredNextId = 0;
 
-  self.defer = function(fn, delay) {
-    // Note that we do not use `$$incOutstandingRequestCount` or `$$completeOutstandingRequest`
-    // in this mock implementation.
+  self.defer = function(fn, delay, taskType) {
+    var timeoutId = self.deferredNextId++;
+
     delay = delay || 0;
-    self.deferredFns.push({time:(self.defer.now + delay), fn:fn, id: self.deferredNextId});
-    self.deferredFns.sort(function(a, b) { return a.time - b.time;});
-    return self.deferredNextId++;
+    taskType = taskType || DEFAULT_TASK_TYPE;
+
+    incOutstandingRequestCount(taskType);
+    self.deferredFns.push({
+      id: timeoutId,
+      type: taskType,
+      time: (self.defer.now + delay),
+      fn: fn
+    });
+    self.deferredFns.sort(function(a, b) { return a.time - b.time; });
+
+    return timeoutId;
   };
 
 
@@ -106,14 +156,15 @@ angular.mock.$Browser = function() {
 
 
   self.defer.cancel = function(deferId) {
-    var fnIndex;
+    var taskIndex;
 
-    angular.forEach(self.deferredFns, function(fn, index) {
-      if (fn.id === deferId) fnIndex = index;
+    angular.forEach(self.deferredFns, function(task, index) {
+      if (task.id === deferId) taskIndex = index;
     });
 
-    if (angular.isDefined(fnIndex)) {
-      self.deferredFns.splice(fnIndex, 1);
+    if (angular.isDefined(taskIndex)) {
+      var task = self.deferredFns.splice(taskIndex, 1)[0];
+      completeOutstandingRequest(angular.noop, task.type);
       return true;
     }
 
@@ -135,24 +186,49 @@ angular.mock.$Browser = function() {
     if (angular.isDefined(delay)) {
       // A delay was passed so compute the next time
       nextTime = self.defer.now + delay;
+    } else if (self.deferredFns.length) {
+      // No delay was passed so set the next time so that it clears the deferred queue
+      nextTime = self.deferredFns[self.deferredFns.length - 1].time;
     } else {
-      if (self.deferredFns.length) {
-        // No delay was passed so set the next time so that it clears the deferred queue
-        nextTime = self.deferredFns[self.deferredFns.length - 1].time;
-      } else {
-        // No delay passed, but there are no deferred tasks so flush - indicates an error!
-        throw new Error('No deferred tasks to be flushed');
-      }
+      // No delay passed, but there are no deferred tasks so flush - indicates an error!
+      throw new Error('No deferred tasks to be flushed');
     }
 
     while (self.deferredFns.length && self.deferredFns[0].time <= nextTime) {
       // Increment the time and call the next deferred function
       self.defer.now = self.deferredFns[0].time;
-      self.deferredFns.shift().fn();
+      var task = self.deferredFns.shift();
+      completeOutstandingRequest(task.fn, task.type);
     }
 
     // Ensure that the current time is correct
     self.defer.now = nextTime;
+  };
+
+  /**
+   * @name $browser#defer.verifyNoPendingTasks
+   *
+   * @description
+   * Verifies that there are no pending tasks that need to be flushed.
+   * You can check for a specific type of tasks only, by specifying a `taskType`.
+   *
+   * @param {string=} taskType - The type task to check for.
+   */
+  self.defer.verifyNoPendingTasks = function(taskType) {
+    var pendingTasks = !taskType
+        ? self.deferredFns
+        : self.deferredFns.filter(function(task) { return task.type === taskType; });
+
+    if (pendingTasks.length) {
+      var formattedTasks = pendingTasks
+          .map(function(task) {
+            return '{id: ' + task.id + ', type: ' + task.type + ', time: ' + task.time + '}';
+          })
+          .join('\n  ');
+
+      throw new Error('Deferred tasks to flush (' + pendingTasks.length + '):\n  ' +
+          formattedTasks);
+    }
   };
 
   self.$$baseHref = '/';
@@ -2187,6 +2263,9 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
    * @param {number=} delay maximum timeout amount to flush up until
    */
   $delegate.flush = function(delay) {
+    // For historical reasons, `$timeout.flush()` flushes all types of pending tasks.
+    // Keep the same behavior for backwards compatibility (and because it doesn't make sense to
+    // selectively flush scheduled events out of order).
     $browser.defer.flush(delay);
   };
 
@@ -2198,20 +2277,10 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
    * Verifies that there are no pending tasks that need to be flushed.
    */
   $delegate.verifyNoPendingTasks = function() {
-    if ($browser.deferredFns.length) {
-      throw new Error('Deferred tasks to flush (' + $browser.deferredFns.length + '): ' +
-          formatPendingTasksAsString($browser.deferredFns));
-    }
+    // For historical reasons, `$timeout.verifyNoPendingTasks()` takes all types of pending tasks
+    // into account. Keep the same behavior for backwards compatibility.
+    $browser.defer.verifyNoPendingTasks();
   };
-
-  function formatPendingTasksAsString(tasks) {
-    var result = [];
-    angular.forEach(tasks, function(task) {
-      result.push('{id: ' + task.id + ', time: ' + task.time + '}');
-    });
-
-    return result.join(', ');
-  }
 
   return $delegate;
 }];

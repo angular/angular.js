@@ -653,7 +653,7 @@ function $RouteProvider() {
 
         var nextRoutePromise = $q.resolve(nextRoute);
 
-        $browser.$$incOutstandingRequestCount();
+        $browser.$$incOutstandingRequestCount('$route');
 
         nextRoutePromise.
           then(getRedirectionData).
@@ -681,7 +681,7 @@ function $RouteProvider() {
             // `outstandingRequestCount` to hit zero.  This is important in case we are redirecting
             // to a new route which also requires some asynchronous work.
 
-            $browser.$$completeOutstandingRequest(noop);
+            $browser.$$completeOutstandingRequest(noop, '$route');
           });
       }
     }

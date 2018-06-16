@@ -601,7 +601,7 @@ describe('ngMock', function() {
   });
 
 
-  describe('defer', function() {
+  describe('$browser', function() {
     var browser, log;
     beforeEach(inject(function($browser) {
       browser = $browser;
@@ -614,47 +614,199 @@ describe('ngMock', function() {
       };
     }
 
-    it('should flush', function() {
-      browser.defer(logFn('A'));
-      expect(log).toEqual('');
-      browser.defer.flush();
-      expect(log).toEqual('A;');
+    describe('defer.flush', function() {
+      it('should flush', function() {
+        browser.defer(logFn('A'));
+        browser.defer(logFn('B'), null, 'taskType');
+        expect(log).toEqual('');
+
+        browser.defer.flush();
+        expect(log).toEqual('A;B;');
+      });
+
+      it('should flush delayed', function() {
+        browser.defer(logFn('A'));
+        browser.defer(logFn('B'), 10, 'taskType');
+        browser.defer(logFn('C'), 20);
+        expect(log).toEqual('');
+        expect(browser.defer.now).toEqual(0);
+
+        browser.defer.flush(0);
+        expect(log).toEqual('A;');
+
+        browser.defer.flush();
+        expect(log).toEqual('A;B;C;');
+      });
+
+      it('should defer and flush over time', function() {
+        browser.defer(logFn('A'), 1);
+        browser.defer(logFn('B'), 2, 'taskType');
+        browser.defer(logFn('C'), 3);
+
+        browser.defer.flush(0);
+        expect(browser.defer.now).toEqual(0);
+        expect(log).toEqual('');
+
+        browser.defer.flush(1);
+        expect(browser.defer.now).toEqual(1);
+        expect(log).toEqual('A;');
+
+        browser.defer.flush(2);
+        expect(browser.defer.now).toEqual(3);
+        expect(log).toEqual('A;B;C;');
+      });
+
+      it('should throw an exception if there is nothing to be flushed', function() {
+        expect(function() {browser.defer.flush();}).toThrowError('No deferred tasks to be flushed');
+      });
+
+      it('should not throw an exception when passing a specific delay', function() {
+        expect(function() {browser.defer.flush(100);}).not.toThrow();
+      });
     });
 
-    it('should flush delayed', function() {
-      browser.defer(logFn('A'));
-      browser.defer(logFn('B'), 10);
-      browser.defer(logFn('C'), 20);
-      expect(log).toEqual('');
+    describe('defer.cancel', function() {
+      it('should cancel a pending task', function() {
+        var taskId1 = browser.defer(logFn('A'), 100, 'fooType');
+        var taskId2 = browser.defer(logFn('B'), 200);
 
-      expect(browser.defer.now).toEqual(0);
-      browser.defer.flush(0);
-      expect(log).toEqual('A;');
+        expect(log).toBe('');
+        expect(function() {browser.defer.verifyNoPendingTasks('fooType');}).toThrow();
+        expect(function() {browser.defer.verifyNoPendingTasks();}).toThrow();
 
-      browser.defer.flush();
-      expect(log).toEqual('A;B;C;');
+        browser.defer.cancel(taskId1);
+        expect(function() {browser.defer.verifyNoPendingTasks('fooType');}).not.toThrow();
+        expect(function() {browser.defer.verifyNoPendingTasks();}).toThrow();
+
+        browser.defer.cancel(taskId2);
+        expect(function() {browser.defer.verifyNoPendingTasks('fooType');}).not.toThrow();
+        expect(function() {browser.defer.verifyNoPendingTasks();}).not.toThrow();
+
+        browser.defer.flush(1000);
+        expect(log).toBe('');
+      });
     });
 
-    it('should defer and flush over time', function() {
-      browser.defer(logFn('A'), 1);
-      browser.defer(logFn('B'), 2);
-      browser.defer(logFn('C'), 3);
+    describe('defer.verifyNoPendingTasks', function() {
+      it('should throw if there are pending tasks', function() {
+        expect(browser.defer.verifyNoPendingTasks).not.toThrow();
 
-      browser.defer.flush(0);
-      expect(browser.defer.now).toEqual(0);
-      expect(log).toEqual('');
+        browser.defer(noop);
+        expect(browser.defer.verifyNoPendingTasks).toThrow();
+      });
 
-      browser.defer.flush(1);
-      expect(browser.defer.now).toEqual(1);
-      expect(log).toEqual('A;');
+      it('should list the pending tasks (in order) in the error message', function() {
+        browser.defer(noop, 100);
+        browser.defer(noop, 300, 'fooType');
+        browser.defer(noop, 200, 'barType');
 
-      browser.defer.flush(2);
-      expect(browser.defer.now).toEqual(3);
-      expect(log).toEqual('A;B;C;');
+        var expectedError =
+          'Deferred tasks to flush (3):\n' +
+          '  {id: 0, type: $$default$$, time: 100}\n' +
+          '  {id: 2, type: barType, time: 200}\n' +
+          '  {id: 1, type: fooType, time: 300}';
+        expect(browser.defer.verifyNoPendingTasks).toThrowError(expectedError);
+      });
+
+      describe('with specific task type', function() {
+        it('should throw if there are pending tasks', function() {
+          browser.defer(noop, 0, 'fooType');
+
+          expect(function() {browser.defer.verifyNoPendingTasks('barType');}).not.toThrow();
+          expect(function() {browser.defer.verifyNoPendingTasks('fooType');}).toThrow();
+          expect(function() {browser.defer.verifyNoPendingTasks();}).toThrow();
+        });
+
+        it('should list the pending tasks (in order) in the error message', function() {
+          browser.defer(noop, 100);
+          browser.defer(noop, 300, 'fooType');
+          browser.defer(noop, 200, 'barType');
+          browser.defer(noop, 400, 'fooType');
+
+          var expectedError =
+            'Deferred tasks to flush (2):\n' +
+            '  {id: 1, type: fooType, time: 300}\n' +
+            '  {id: 3, type: fooType, time: 400}';
+          expect(function() {browser.defer.verifyNoPendingTasks('fooType');}).
+            toThrowError(expectedError);
+        });
+      });
     });
 
-    it('should throw an exception if there is nothing to be flushed', function() {
-      expect(function() {browser.defer.flush();}).toThrowError('No deferred tasks to be flushed');
+    describe('notifyWhenNoOutstandingRequests', function() {
+      var callback;
+      beforeEach(function() {
+        callback = jasmine.createSpy('callback');
+      });
+
+      it('should immediately run the callback if no pending tasks', function() {
+        browser.notifyWhenNoOutstandingRequests(callback);
+        expect(callback).toHaveBeenCalled();
+      });
+
+      it('should run the callback as soon as there are no pending tasks', function() {
+        browser.defer(noop, 100);
+        browser.defer(noop, 200);
+
+        browser.notifyWhenNoOutstandingRequests(callback);
+        expect(callback).not.toHaveBeenCalled();
+
+        browser.defer.flush(100);
+        expect(callback).not.toHaveBeenCalled();
+
+        browser.defer.flush(100);
+        expect(callback).toHaveBeenCalled();
+      });
+
+      it('should not run the callback more than once', function() {
+        browser.defer(noop, 100);
+        browser.notifyWhenNoOutstandingRequests(callback);
+        expect(callback).not.toHaveBeenCalled();
+
+        browser.defer.flush(100);
+        expect(callback).toHaveBeenCalledOnce();
+
+        browser.defer(noop, 200);
+        browser.defer.flush(100);
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+      describe('with specific task type', function() {
+        it('should immediately run the callback if no pending tasks', function() {
+          browser.notifyWhenNoOutstandingRequests(callback, 'fooType');
+          expect(callback).toHaveBeenCalled();
+        });
+
+        it('should run the callback as soon as there are no pending tasks', function() {
+          browser.defer(noop, 100, 'fooType');
+          browser.defer(noop, 200, 'barType');
+
+          browser.notifyWhenNoOutstandingRequests(callback, 'fooType');
+          expect(callback).not.toHaveBeenCalled();
+
+          browser.defer.flush(100);
+          expect(callback).toHaveBeenCalled();
+        });
+
+        it('should not run the callback more than once', function() {
+          browser.defer(noop, 100, 'fooType');
+          browser.defer(noop, 200);
+
+          browser.notifyWhenNoOutstandingRequests(callback, 'fooType');
+          expect(callback).not.toHaveBeenCalled();
+
+          browser.defer.flush(100);
+          expect(callback).toHaveBeenCalledOnce();
+
+          browser.defer.flush(100);
+          expect(callback).toHaveBeenCalledOnce();
+
+          browser.defer(noop, 100, 'fooType');
+          browser.defer(noop, 200);
+          browser.defer.flush();
+          expect(callback).toHaveBeenCalledOnce();
+        });
+      });
     });
   });
 
@@ -705,47 +857,53 @@ describe('ngMock', function() {
 
   describe('$timeout', function() {
     it('should expose flush method that will flush the pending queue of tasks', inject(
-        function($timeout) {
+        function($rootScope, $timeout) {
       var logger = [],
           logFn = function(msg) { return function() { logger.push(msg); }; };
 
       $timeout(logFn('t1'));
       $timeout(logFn('t2'), 200);
+      $rootScope.$evalAsync(logFn('rs'));  // Non-timeout tasks are flushed as well.
       $timeout(logFn('t3'));
       expect(logger).toEqual([]);
 
       $timeout.flush();
-      expect(logger).toEqual(['t1', 't3', 't2']);
+      expect(logger).toEqual(['t1', 'rs', 't3', 't2']);
     }));
 
 
-    it('should throw an exception when not flushed', inject(function($timeout) {
-      $timeout(noop);
+    it('should throw an exception when not flushed', inject(function($rootScope, $timeout) {
+      $timeout(noop, 100);
+      $rootScope.$evalAsync(noop);
 
-      var expectedError = 'Deferred tasks to flush (1): {id: 0, time: 0}';
-      expect(function() {$timeout.verifyNoPendingTasks();}).toThrowError(expectedError);
+      var expectedError =
+        'Deferred tasks to flush (2):\n' +
+        '  {id: 1, type: $evalAsync, time: 0}\n' +
+        '  {id: 0, type: $timeout, time: 100}';
+      expect($timeout.verifyNoPendingTasks).toThrowError(expectedError);
     }));
 
 
-    it('should do nothing when all tasks have been flushed', inject(function($timeout) {
-      $timeout(noop);
+    it('should do nothing when all tasks have been flushed', inject(function($rootScope, $timeout) {
+      $timeout(noop, 100);
+      $rootScope.$evalAsync(noop);
 
       $timeout.flush();
-      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+      expect($timeout.verifyNoPendingTasks).not.toThrow();
     }));
 
 
     it('should check against the delay if provided within timeout', inject(function($timeout) {
       $timeout(noop, 100);
       $timeout.flush(100);
-      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+      expect($timeout.verifyNoPendingTasks).not.toThrow();
 
       $timeout(noop, 1000);
       $timeout.flush(100);
-      expect(function() {$timeout.verifyNoPendingTasks();}).toThrow();
+      expect($timeout.verifyNoPendingTasks).toThrow();
 
       $timeout.flush(900);
-      expect(function() {$timeout.verifyNoPendingTasks();}).not.toThrow();
+      expect($timeout.verifyNoPendingTasks).not.toThrow();
     }));
 
 
@@ -762,6 +920,7 @@ describe('ngMock', function() {
       $timeout.flush(123);
       expect(count).toBe(2);
     }));
+
 
     it('should resolve timeout functions following the timeline', inject(function($timeout) {
       var count1 = 0, count2 = 0;
@@ -1056,7 +1215,7 @@ describe('ngMock', function() {
 
 
   describe('$httpBackend', function() {
-    var hb, callback, realBackendSpy;
+    var hb, callback;
 
     beforeEach(inject(function($httpBackend) {
       callback = jasmine.createSpy('callback');
