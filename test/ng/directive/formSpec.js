@@ -1200,7 +1200,18 @@ describe('form', function() {
     });
   });
 
-  fdescribe('$getControls', function() {
+  describe('$getControls', function() {
+    it('should return an empty array if the controller has no controls', function() {
+      doc = $compile('<form name="testForm"></form>')(scope);
+
+      scope.$digest();
+
+      var form = doc,
+          formCtrl = scope.testForm;
+
+      expect(formCtrl.$getControls()).toEqual([]);
+    });
+
     it('should return a shallow copy of the form controls', function() {
       doc = $compile(
           '<form name="testForm">' +
