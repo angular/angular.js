@@ -1206,8 +1206,7 @@ describe('form', function() {
 
       scope.$digest();
 
-      var form = doc,
-          formCtrl = scope.testForm;
+      var formCtrl = scope.testForm;
 
       expect(formCtrl.$getControls()).toEqual([]);
     });
