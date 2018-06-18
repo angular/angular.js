@@ -1200,6 +1200,52 @@ describe('form', function() {
     });
   });
 
+  describe('$getControls', function() {
+    it('should return an empty array if the controller has no controls', function() {
+      doc = $compile('<form name="testForm"></form>')(scope);
+
+      scope.$digest();
+
+      var formCtrl = scope.testForm;
+
+      expect(formCtrl.$getControls()).toEqual([]);
+    });
+
+    it('should return a shallow copy of the form controls', function() {
+      doc = $compile(
+          '<form name="testForm">' +
+            '<input ng-model="named" name="foo">' +
+            '<div ng-form>' +
+              '<input ng-model="named" name="foo">' +
+            '</div>' +
+          '</form>')(scope);
+
+      scope.$digest();
+
+      var form = doc,
+          formCtrl = scope.testForm,
+          formInput = form.children('input').eq(0),
+          formInputCtrl = formInput.controller('ngModel'),
+          nestedForm = form.find('div'),
+          nestedFormCtrl = nestedForm.controller('form'),
+          nestedInput = nestedForm.children('input').eq(0),
+          nestedInputCtrl = nestedInput.controller('ngModel');
+
+      var controls = formCtrl.$getControls();
+
+      expect(controls).not.toBe(formCtrl.$$controls);
+
+      controls.push('something');
+      expect(formCtrl.$$controls).not.toContain('something');
+
+      expect(controls[0]).toBe(formInputCtrl);
+      expect(controls[1]).toBe(nestedFormCtrl);
+
+      var nestedControls = controls[1].$getControls();
+
+      expect(nestedControls[0]).toBe(nestedInputCtrl);
+    });
+  });
 
   it('should rename nested form controls when interpolated name changes', function() {
     scope.idA = 'A';
