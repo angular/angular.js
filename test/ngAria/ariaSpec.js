@@ -929,7 +929,7 @@ describe('$aria', function() {
       clickEvents = [];
       scope.onClick = jasmine.createSpy('onClick').and.callFake(function(evt) {
         var nodeName = evt ? evt.target.nodeName.toLowerCase() : '';
-        var prevented = !!(evt && evt.defaultPrevented);
+        var prevented = !!(evt && evt.isDefaultPrevented());
         clickEvents.push(nodeName + '(' + prevented + ')');
       });
     });
