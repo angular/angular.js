@@ -91,13 +91,16 @@ directivesModule
 .component('tocTree', {
   template: '<ul>' +
       '<li ng-repeat="item in $ctrl.items">' +
-        '<a ng-href="#{{item.fragment}}">{{item.title}}</a>' +
+        '<a ng-href="{{ $ctrl.path }}#{{item.fragment}}">{{item.title}}</a>' +
         '<toc-tree ng-if="::item.children.length > 0" items="item.children"></toc-tree>' +
       '</li>' +
     '</ul>',
   bindings: {
     items: '<'
-  }
+  },
+  controller: ['$location', function($location) {
+    this.path = $location.path().replace(/^\/?(.+?)(\/index)?\/?$/, '$1');
+  }]
 })
 .directive('tocContainer', function() {
   return {
