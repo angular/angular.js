@@ -2784,6 +2784,244 @@ describe('animations', function() {
 
     });
 
+    describe('event data', function() {
+
+      it('should be included for enter',
+        inject(function($animate, $rootScope, $rootElement, $document) {
+          var eventData;
+
+          $animate.on('enter', jqLite($document[0].body), function(element, phase, data) {
+            eventData = data;
+          });
+
+          element = jqLite('<div></div>');
+          $animate.enter(element, $rootElement, null, {
+            addClass: 'red blue',
+            removeClass: 'yellow green',
+            from: {opacity: 0},
+            to: {opacity: 1}
+          });
+          $rootScope.$digest();
+
+          $animate.flush();
+
+          expect(eventData).toEqual({
+            addClass: 'red blue',
+            removeClass: null,
+            from: {opacity: 0},
+            to: {opacity: 1}
+          });
+      }));
+
+
+      it('should be included for leave',
+        inject(function($animate, $rootScope, $rootElement, $document) {
+          var eventData;
+
+          $animate.on('leave', jqLite($document[0].body), function(element, phase, data) {
+            eventData = data;
+          });
+
+          var outerContainer = jqLite('<div></div>');
+          element = jqLite('<div></div>');
+          outerContainer.append(element);
+          $rootElement.append(outerContainer);
+
+          $animate.leave(element, {
+            addClass: 'red blue',
+            removeClass: 'yellow green',
+            from: {opacity: 0},
+            to: {opacity: 1}
+          });
+
+          $animate.flush();
+
+          expect(eventData).toEqual({
+            addClass: 'red blue',
+            removeClass: null,
+            from: {opacity: 0},
+            to: {opacity: 1}
+          });
+        })
+      );
+
+
+      it('should be included for move',
+        inject(function($animate, $rootScope, $rootElement, $document) {
+          var eventData;
+
+          $animate.on('move', jqLite($document[0].body), function(element, phase, data) {
+            eventData = data;
+          });
+
+          var parent = jqLite('<div></div>');
+          var parent2 = jqLite('<div></div>');
+          element = jqLite('<div></div>');
+          parent.append(element);
+          $rootElement.append(parent);
+          $rootElement.append(parent2);
+
+          $animate.move(element, parent2, null, {
+            addClass: 'red blue',
+            removeClass: 'yellow green',
+            from: {opacity: 0},
+            to: {opacity: 1}
+          });
+
+          $animate.flush();
+
+          expect(eventData).toEqual({
+            addClass: 'red blue',
+            removeClass: null,
+            from: {opacity: 0},
+            to: {opacity: 1}
+          });
+        })
+      );
+
+
+      it('should be included for addClass', inject(function($animate, $rootElement) {
+        var eventData;
+
+        element = jqLite('<div class="purple"></div>');
+        $animate.on('addClass', element, function(element, phase, data) {
+          eventData = data;
+        });
+
+        $rootElement.append(element);
+        $animate.addClass(element, 'red blue', {
+          from: {opacity: 0},
+          to: {opacity: 1}
+        });
+        $animate.flush();
+
+        expect(eventData).toEqual({
+          addClass: 'red blue',
+          removeClass: null,
+          from: {opacity: 0},
+          to: {opacity: 1}
+        });
+      }));
+
+
+      it('should be included for removeClass', inject(function($animate, $rootElement) {
+        var eventData;
+
+        element = jqLite('<div class="red blue purple"></div>');
+        $animate.on('removeClass', element, function(element, phase, data) {
+          eventData = data;
+        });
+
+        $rootElement.append(element);
+        $animate.removeClass(element, 'red blue', {
+          from: {opacity: 0},
+          to: {opacity: 1}
+        });
+        $animate.flush();
+
+        expect(eventData).toEqual({
+          removeClass: 'red blue',
+          addClass: null,
+          from: {opacity: 0},
+          to: {opacity: 1}
+        });
+      }));
+
+
+      it('should be included for setClass', inject(function($animate, $rootElement) {
+        var eventData;
+
+        element = jqLite('<div class="yellow green purple"></div>');
+
+        $animate.on('setClass', element, function(element, phase, data) {
+
+          eventData = data;
+        });
+
+        $rootElement.append(element);
+        $animate.setClass(element, 'red blue', 'yellow green', {
+          from: {opacity: 0},
+          to: {opacity: 1}
+        });
+        $animate.flush();
+
+        expect(eventData).toEqual({
+          addClass: 'red blue',
+          removeClass: 'yellow green',
+          from: {opacity: 0},
+          to: {opacity: 1}
+        });
+      }));
+
+      it('should be included for animate', inject(function($animate, $rootElement) {
+        // The event for animate changes to 'setClass' if both addClass and removeClass
+        // are definded, because the operations are merged. However, it is still 'animate'
+        // and not 'addClass' if only 'addClass' is defined.
+        // Ideally, we would make this consistent, but it's a BC
+        var eventData, eventName;
+
+        element = jqLite('<div class="yellow green purple"></div>');
+
+        $animate.on('setClass', element, function(element, phase, data) {
+          eventData = data;
+          eventName = 'setClass';
+        });
+
+        $animate.on('animate', element, function(element, phase, data) {
+          eventData = data;
+          eventName = 'animate';
+        });
+
+        $rootElement.append(element);
+        var runner = $animate.animate(element, {opacity: 0}, {opacity: 1}, null, {
+          addClass: 'red blue',
+          removeClass: 'yellow green'
+        });
+        $animate.flush();
+        runner.end();
+
+        expect(eventName).toBe('setClass');
+        expect(eventData).toEqual({
+          addClass: 'red blue',
+          removeClass: 'yellow green',
+          from: {opacity: 0},
+          to: {opacity: 1}
+        });
+
+        eventData = eventName = null;
+        runner = $animate.animate(element, {opacity: 0}, {opacity: 1}, null, {
+          addClass: 'yellow green'
+        });
+
+        $animate.flush();
+        runner.end();
+
+        expect(eventName).toBe('animate');
+        expect(eventData).toEqual({
+          addClass: 'yellow green',
+          removeClass: null,
+          from: {opacity: 0},
+          to: {opacity: 1}
+        });
+
+        eventData = eventName = null;
+        runner = $animate.animate(element, {opacity: 0}, {opacity: 1}, null, {
+          removeClass: 'yellow green'
+        });
+
+        $animate.flush();
+        runner.end();
+
+        expect(eventName).toBe('animate');
+        expect(eventData).toEqual({
+          addClass: null,
+          removeClass: 'yellow green',
+          from: {opacity: 0},
+          to: {opacity: 1}
+        });
+      }));
+    });
+
     they('should trigger a callback for a $prop animation if the listener is on the document',
       ['enter', 'leave'], function($event) {
         module(function($provide) {
