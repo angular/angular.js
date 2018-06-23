@@ -98,7 +98,7 @@ directivesModule
   bindings: {
     items: '<'
   },
-  controller: ['$location', function($location) {
+  controller: ['$location', /** @this */ function($location) {
     this.path = $location.path().replace(/^\/?(.+?)(\/index)?\/?$/, '$1');
   }]
 })
