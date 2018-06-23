@@ -13,6 +13,15 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
     join: []
   };
 
+  function getEventData(options) {
+    return {
+      addClass: options.addClass,
+      removeClass: options.removeClass,
+      from: options.from,
+      to: options.to
+    };
+  }
+
   function makeTruthyCssClassMap(classString) {
     if (!classString) {
       return null;
@@ -379,9 +388,9 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
 
       if (skipAnimations) {
         // Callbacks should fire even if the document is hidden (regression fix for issue #14120)
-        if (documentHidden) notifyProgress(runner, event, 'start');
+        if (documentHidden) notifyProgress(runner, event, 'start', getEventData(options));
         close();
-        if (documentHidden) notifyProgress(runner, event, 'close');
+        if (documentHidden) notifyProgress(runner, event, 'close', getEventData(options));
         return runner;
       }
 
@@ -543,7 +552,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
         // this will update the runner's flow-control events based on
         // the `realRunner` object.
         runner.setHost(realRunner);
-        notifyProgress(runner, event, 'start', {});
+        notifyProgress(runner, event, 'start', getEventData(options));
 
         realRunner.done(function(status) {
           close(!status);
@@ -551,7 +560,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
           if (animationDetails && animationDetails.counter === counter) {
             clearElementAnimationState(node);
           }
-          notifyProgress(runner, event, 'close', {});
+          notifyProgress(runner, event, 'close', getEventData(options));
         });
       });
 
