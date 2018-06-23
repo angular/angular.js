@@ -11,8 +11,9 @@ function MockWindow(options) {
   }
   var events = {};
   var timeouts = this.timeouts = [];
-  var locationHref = 'http://server/';
-  var committedHref = 'http://server/';
+  var locationHref = window.document.createElement('a');
+  var committedHref = window.document.createElement('a');
+  locationHref.href = committedHref.href = 'http://server/';
   var mockWindow = this;
   var msie = options.msie;
   var ieState;
@@ -60,28 +61,28 @@ function MockWindow(options) {
 
   this.location = {
     get href() {
-      return committedHref;
+      return committedHref.href;
     },
     set href(value) {
-      locationHref = value;
+      locationHref.href = value;
       mockWindow.history.state = null;
       historyEntriesLength++;
       if (!options.updateAsync) this.flushHref();
     },
     get hash() {
-      return getHash(committedHref);
+      return getHash(committedHref.href);
     },
     set hash(value) {
-      locationHref = replaceHash(locationHref, value);
+      locationHref.href = replaceHash(locationHref.href, value);
       if (!options.updateAsync) this.flushHref();
     },
     replace: function(url) {
-      locationHref = url;
+      locationHref.href = url;
       mockWindow.history.state = null;
       if (!options.updateAsync) this.flushHref();
     },
     flushHref: function() {
-      committedHref = locationHref;
+      committedHref.href = locationHref.href;
     }
   };
 
@@ -91,13 +92,13 @@ function MockWindow(options) {
       historyEntriesLength++;
     },
     replaceState: function(state, title, url) {
-      locationHref = url;
-      if (!options.updateAsync) committedHref = locationHref;
+      locationHref.href = url;
+      if (!options.updateAsync) committedHref.href = locationHref.href;
       mockWindow.history.state = copy(state);
       if (!options.updateAsync) this.flushHref();
     },
     flushHref: function() {
-      committedHref = locationHref;
+      committedHref.href = locationHref.href;
     }
   };
   // IE 10-11 deserialize history.state on each read making subsequent reads
@@ -398,18 +399,18 @@ describe('browser', function() {
 
     it('should return current location.href', function() {
       fakeWindow.location.href = 'http://test.com';
-      expect(browser.url()).toEqual('http://test.com');
+      expect(browser.url()).toEqual('http://test.com/');
 
       fakeWindow.location.href = 'https://another.com';
-      expect(browser.url()).toEqual('https://another.com');
+      expect(browser.url()).toEqual('https://another.com/');
     });
 
     it('should strip an empty hash fragment', function() {
-      fakeWindow.location.href = 'http://test.com#';
-      expect(browser.url()).toEqual('http://test.com');
+      fakeWindow.location.href = 'http://test.com/#';
+      expect(browser.url()).toEqual('http://test.com/');
 
-      fakeWindow.location.href = 'https://another.com#foo';
-      expect(browser.url()).toEqual('https://another.com#foo');
+      fakeWindow.location.href = 'https://another.com/#foo';
+      expect(browser.url()).toEqual('https://another.com/#foo');
     });
 
     it('should use history.pushState when available', function() {
@@ -440,7 +441,7 @@ describe('browser', function() {
       sniffer.history = false;
       browser.url('http://new.org');
 
-      expect(fakeWindow.location.href).toEqual('http://new.org');
+      expect(fakeWindow.location.href).toEqual('http://new.org/');
 
       expect(pushState).not.toHaveBeenCalled();
       expect(replaceState).not.toHaveBeenCalled();
@@ -507,9 +508,9 @@ describe('browser', function() {
     it('should not set URL when the URL is already set', function() {
       var current = fakeWindow.location.href;
       sniffer.history = false;
-      fakeWindow.location.href = 'dontchange';
+      fakeWindow.location.href = 'http://dontchange/';
       browser.url(current);
-      expect(fakeWindow.location.href).toBe('dontchange');
+      expect(fakeWindow.location.href).toBe('http://dontchange/');
     });
 
     it('should not read out location.href if a reload was triggered but still allow to change the url', function() {
@@ -812,7 +813,7 @@ describe('browser', function() {
     it('should not fire urlChange if changed by browser.url method', function() {
       sniffer.history = false;
       browser.onUrlChange(callback);
-      browser.url('http://new.com');
+      browser.url('http://new.com/');
 
       fakeWindow.fire('hashchange');
       expect(callback).not.toHaveBeenCalled();
