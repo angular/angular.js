@@ -418,7 +418,7 @@ describe('browser', function() {
       browser.url('http://new.org');
 
       expect(pushState).toHaveBeenCalledOnce();
-      expect(pushState.calls.argsFor(0)[2]).toEqual('http://new.org');
+      expect(pushState.calls.argsFor(0)[2]).toEqual('http://new.org/');
 
       expect(replaceState).not.toHaveBeenCalled();
       expect(locationReplace).not.toHaveBeenCalled();
@@ -430,7 +430,7 @@ describe('browser', function() {
       browser.url('http://new.org', true);
 
       expect(replaceState).toHaveBeenCalledOnce();
-      expect(replaceState.calls.argsFor(0)[2]).toEqual('http://new.org');
+      expect(replaceState.calls.argsFor(0)[2]).toEqual('http://new.org/');
 
       expect(pushState).not.toHaveBeenCalled();
       expect(locationReplace).not.toHaveBeenCalled();
@@ -474,7 +474,7 @@ describe('browser', function() {
       sniffer.history = false;
       browser.url('http://new.org', true);
 
-      expect(locationReplace).toHaveBeenCalledWith('http://new.org');
+      expect(locationReplace).toHaveBeenCalledWith('http://new.org/');
 
       expect(pushState).not.toHaveBeenCalled();
       expect(replaceState).not.toHaveBeenCalled();
@@ -688,6 +688,73 @@ describe('browser', function() {
           expect(pushState).not.toHaveBeenCalled();
           expect(replaceState).not.toHaveBeenCalled();
           expect(locationReplace).not.toHaveBeenCalled();
+        });
+
+        it('should not do pushState with a URL using relative protocol', function() {
+          browser.url('http://server/');
+
+          pushState.calls.reset();
+          replaceState.calls.reset();
+          locationReplace.calls.reset();
+
+          browser.url('//server');
+          expect(pushState).not.toHaveBeenCalled();
+          expect(replaceState).not.toHaveBeenCalled();
+          expect(locationReplace).not.toHaveBeenCalled();
+        });
+
+        it('should not do pushState with a URL only adding a trailing slash after domain', function() {
+          // A domain without a trailing /
+          browser.url('http://server');
+
+          pushState.calls.reset();
+          replaceState.calls.reset();
+          locationReplace.calls.reset();
+
+          // A domain from something such as window.location.href with a trailing slash
+          browser.url('http://server/');
+          expect(pushState).not.toHaveBeenCalled();
+          expect(replaceState).not.toHaveBeenCalled();
+          expect(locationReplace).not.toHaveBeenCalled();
+        });
+
+        it('should not do pushState with a URL only removing a trailing slash after domain', function() {
+          // A domain from something such as window.location.href with a trailing slash
+          browser.url('http://server/');
+
+          pushState.calls.reset();
+          replaceState.calls.reset();
+          locationReplace.calls.reset();
+
+          // A domain without a trailing /
+          browser.url('http://server');
+          expect(pushState).not.toHaveBeenCalled();
+          expect(replaceState).not.toHaveBeenCalled();
+          expect(locationReplace).not.toHaveBeenCalled();
+        });
+
+        it('should do pushState with a URL only adding a trailing slash after the path', function() {
+          browser.url('http://server/foo');
+
+          pushState.calls.reset();
+          replaceState.calls.reset();
+          locationReplace.calls.reset();
+
+          browser.url('http://server/foo/');
+          expect(pushState).toHaveBeenCalledOnce();
+          expect(fakeWindow.location.href).toEqual('http://server/foo/');
+        });
+
+        it('should do pushState with a URL only removing a trailing slash after the path', function() {
+          browser.url('http://server/foo/');
+
+          pushState.calls.reset();
+          replaceState.calls.reset();
+          locationReplace.calls.reset();
+
+          browser.url('http://server/foo');
+          expect(pushState).toHaveBeenCalledOnce();
+          expect(fakeWindow.location.href).toEqual('http://server/foo');
         });
       };
     }
@@ -1093,7 +1160,7 @@ describe('browser', function() {
     it('should not interfere with legacy browser url replace behavior', function() {
       inject(function($rootScope) {
         var current = fakeWindow.location.href;
-        var newUrl = 'notyet';
+        var newUrl = 'http://notyet/';
         sniffer.history = false;
         expect(historyEntriesLength).toBe(1);
         browser.url(newUrl, true);
