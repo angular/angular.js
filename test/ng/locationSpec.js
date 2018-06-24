@@ -747,6 +747,58 @@ describe('$location', function() {
     });
 
 
+    //https://github.com/angular/angular.js/issues/16592
+    it('should not infinitely digest when initial params contain a quote', function() {
+      initService({html5Mode:true,supportHistory:true});
+      mockUpBrowser({initialUrl:'http://localhost:9876/?q=\'', baseHref:'/'});
+      inject(function($location, $browser, $rootScope) {
+        expect(function() {
+          $rootScope.$digest();
+        }).not.toThrow();
+      });
+    });
+
+
+    //https://github.com/angular/angular.js/issues/16592
+    it('should not infinitely digest when initial params contain an escaped quote', function() {
+      initService({html5Mode:true,supportHistory:true});
+      mockUpBrowser({initialUrl:'http://localhost:9876/?q=%27', baseHref:'/'});
+      inject(function($location, $browser, $rootScope) {
+        expect(function() {
+          $rootScope.$digest();
+        }).not.toThrow();
+      });
+    });
+
+
+    //https://github.com/angular/angular.js/issues/16592
+    it('should not infinitely digest when updating params containing a quote (via $browser.url)', function() {
+      initService({html5Mode:true,supportHistory:true});
+      mockUpBrowser({initialUrl:'http://localhost:9876/', baseHref:'/'});
+      inject(function($location, $browser, $rootScope) {
+        $rootScope.$digest();
+        $browser.url('http://localhost:9876/?q=\'');
+        expect(function() {
+          $rootScope.$digest();
+        }).not.toThrow();
+      });
+    });
+
+
+    //https://github.com/angular/angular.js/issues/16592
+    it('should not infinitely digest when updating params containing a quote (via window.location + popstate)', function() {
+      initService({html5Mode:true,supportHistory:true});
+      mockUpBrowser({initialUrl:'http://localhost:9876/', baseHref:'/'});
+      inject(function($window, $location, $browser, $rootScope) {
+        $rootScope.$digest();
+        $window.location.href = 'http://localhost:9876/?q=\'';
+        expect(function() {
+          jqLite($window).triggerHandler('popstate');
+        }).not.toThrow();
+      });
+    });
+
+
     describe('when changing the browser URL/history directly during a `$digest`', function() {
 
       beforeEach(function() {
@@ -804,10 +856,13 @@ describe('$location', function() {
     });
 
 
-    function updatePathOnLocationChangeSuccessTo(newPath) {
+    function updatePathOnLocationChangeSuccessTo(newPath, newParams) {
       inject(function($rootScope, $location) {
         $rootScope.$on('$locationChangeSuccess', function(event, newUrl, oldUrl) {
           $location.path(newPath);
+          if (newParams) {
+            $location.search(newParams);
+          }
         });
       });
     }
@@ -948,6 +1003,24 @@ describe('$location', function() {
           expect($browser.url()).toEqual('http://server/app/');
           expect($location.path()).toEqual('/');
           expect($browserUrl).not.toHaveBeenCalled();
+        });
+      });
+
+      //https://github.com/angular/angular.js/issues/16592
+      it('should not infinite $digest when going to base URL with trailing slash when $locationChangeSuccess watcher changes query params to contain quote', function() {
+        initService({html5Mode: true, supportHistory: true});
+        mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
+        inject(function($rootScope, $injector, $browser) {
+          var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
+
+          var $location = $injector.get('$location');
+          updatePathOnLocationChangeSuccessTo('/', {q: '\''});
+
+          $rootScope.$digest();
+
+          expect($location.path()).toEqual('/');
+          expect($location.search()).toEqual({q: '\''});
+          expect($browserUrl).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -1137,6 +1210,40 @@ describe('$location', function() {
         expect($location.search()).toEqual({d: 'e'});
         expect($location.hash()).toBe('f');
         expect($location.state()).toEqual({b: 4});
+      });
+    });
+
+    //https://github.com/angular/angular.js/issues/16592
+    it('should not infinite $digest on pushState() with quote in param', function() {
+      initService({html5Mode: true, supportHistory: true});
+      mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
+      inject(function($rootScope, $injector, $window) {
+        var $location = $injector.get('$location');
+        $rootScope.$digest(); //allow $location initialization to finish
+
+        $window.history.pushState({}, null, 'http://server/app/Home?q=\'');
+        $rootScope.$digest();
+
+        expect($location.absUrl()).toEqual('http://server/app/Home?q=\'');
+        expect($location.path()).toEqual('/Home');
+        expect($location.search()).toEqual({q: '\''});
+      });
+    });
+
+    //https://github.com/angular/angular.js/issues/16592
+    it('should not infinite $digest on popstate event with quote in param', function() {
+      initService({html5Mode: true, supportHistory: true});
+      mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
+      inject(function($rootScope, $injector, $window) {
+        var $location = $injector.get('$location');
+        $rootScope.$digest(); //allow $location initialization to finish
+
+        $window.location.href = 'http://server/app/Home?q=\'';
+        jqLite($window).triggerHandler('popstate');
+
+        expect($location.absUrl()).toEqual('http://server/app/Home?q=\'');
+        expect($location.path()).toEqual('/Home');
+        expect($location.search()).toEqual({q: '\''});
       });
     });
 
