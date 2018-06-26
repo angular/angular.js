@@ -171,8 +171,14 @@
     /* ng/q.js */
     "markQExceptionHandled": false,
 
+    /* sce.js */
+    "SCE_CONTEXTS": false,
+
     /* ng/directive/directives.js */
     "ngDirective": false,
+
+    /* ng/directive/ngEventDirs.js */
+    "createEventDirective": false,
 
     /* ng/directive/input.js */
     "VALID_CLASS": false,

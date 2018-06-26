@@ -1,12 +1,12 @@
 @ngdoc error
 @name $compile:nodomevents
-@fullName Interpolated Event Attributes
+@fullName Event Attribute/Property Binding
 @description
 
-This error occurs when one tries to create a binding for event handler attributes like `onclick`, `onload`, `onsubmit`, etc.
+This error occurs when one tries to create a binding for event handler attributes or properties like `onclick`, `onload`, `onsubmit`, etc.
 
-There is no practical value in binding to these attributes and doing so only exposes your application to security vulnerabilities like XSS.
-For these reasons binding to event handler attributes (all attributes that start with `on` and `formaction` attribute) is not supported.
+There is no practical value in binding to these attributes/properties and doing so only exposes your application to security vulnerabilities like XSS.
+For these reasons binding to event handler attributes and properties (`formaction` and all starting with `on`) is not supported.
 
 
 An example code that would allow XSS vulnerability by evaluating user input in the window context could look like this:
@@ -17,4 +17,4 @@ An example code that would allow XSS vulnerability by evaluating user input in t
 
 Since the `onclick` evaluates the value as JavaScript code in the window context, setting the `username` model to a value like `javascript:alert('PWND')` would result in script injection when the `div` is clicked.
 
-
+Please use the `ng-*` or `ng-on-*` versions instead (such as `ng-click` or `ng-on-click` rather than `onclick`).

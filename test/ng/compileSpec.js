@@ -11480,7 +11480,7 @@ describe('$compile', function() {
       expect(element.attr('srcset')).toEqual('http://example.com');
     }));
 
-    it('does not work with trusted values', inject(function($rootScope, $compile, $sce) {
+    it('should NOT work with trusted values', inject(function($rootScope, $compile, $sce) {
       // A limitation of the approach used for srcset is that you cannot use `trustAsUrl`.
       // Use trustAsHtml and ng-bind-html to work around this.
       element = $compile('<img srcset="{{testUrl}}"></img>')($rootScope);
@@ -11705,18 +11705,19 @@ describe('$compile', function() {
       expect(function() {
           $compile('<button onclick="{{onClickJs}}"></script>');
         }).toThrowMinErr(
-          '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed.  ' +
-          'Please use the ng- versions (such as ng-click instead of onclick) instead.');
+          '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
       expect(function() {
           $compile('<button ONCLICK="{{onClickJs}}"></script>');
         }).toThrowMinErr(
-          '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed.  ' +
-          'Please use the ng- versions (such as ng-click instead of onclick) instead.');
+          '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
       expect(function() {
           $compile('<button ng-attr-onclick="{{onClickJs}}"></script>');
         }).toThrowMinErr(
-          '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed.  ' +
-          'Please use the ng- versions (such as ng-click instead of onclick) instead.');
+          '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
+      expect(function() {
+          $compile('<button ng-attr-ONCLICK="{{onClickJs}}"></script>');
+        }).toThrowMinErr(
+          '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
     }));
 
     it('should pass through arbitrary values on onXYZ event attributes that contain a hyphen', inject(function($compile, $rootScope) {
@@ -11833,7 +11834,7 @@ describe('$compile', function() {
     }));
 
 
-    it('should pass through $sce.trustAs() values in action attribute', inject(function($compile, $rootScope, $sce) {
+    it('should pass through $sce.trustAsResourceUrl() values in action attribute', inject(function($compile, $rootScope, $sce) {
       element = $compile('<form action="{{testUrl}}"></form>')($rootScope);
       $rootScope.testUrl = $sce.trustAsResourceUrl('javascript:doTrustedStuff()');
       $rootScope.$apply();
@@ -12026,6 +12027,39 @@ describe('$compile', function() {
       expect(element.attr('test3')).toBe('Misko');
     }));
 
+    it('should use the non-prefixed name in $attr mappings', function() {
+      var attrs;
+      module(function() {
+        directive('attrExposer', valueFn({
+          link: function($scope, $element, $attrs) {
+            attrs = $attrs;
+          }
+        }));
+      });
+      inject(function($compile, $rootScope) {
+        $compile('<div attr-exposer ng-attr-title="12" ng-attr-super-title="34" ng-attr-my-camel_title="56">')($rootScope);
+        $rootScope.$apply();
+
+        expect(attrs.title).toBe('12');
+        expect(attrs.$attr.title).toBe('title');
+        expect(attrs.ngAttrTitle).toBeUndefined();
+        expect(attrs.$attr.ngAttrTitle).toBeUndefined();
+
+        expect(attrs.superTitle).toBe('34');
+        expect(attrs.$attr.superTitle).toBe('super-title');
+        expect(attrs.ngAttrSuperTitle).toBeUndefined();
+        expect(attrs.$attr.ngAttrSuperTitle).toBeUndefined();
+
+        // Note the casing is incorrect: https://github.com/angular/angular.js/issues/16624
+        expect(attrs.myCameltitle).toBe('56');
+        expect(attrs.$attr.myCameltitle).toBe('my-camelTitle');
+        expect(attrs.ngAttrMyCameltitle).toBeUndefined();
+        expect(attrs.ngAttrMyCamelTitle).toBeUndefined();
+        expect(attrs.$attr.ngAttrMyCameltitle).toBeUndefined();
+        expect(attrs.$attr.ngAttrMyCamelTitle).toBeUndefined();
+      });
+    });
+
     it('should work with the "href" attribute', inject(function() {
       $rootScope.value = 'test';
       element = $compile('<a ng-attr-href="test/{{value}}"></a>')($rootScope);
@@ -12107,6 +12141,112 @@ describe('$compile', function() {
           $rootScope.$digest();
           expect(log).toEqual('ender');
         });
+      });
+    });
+  });
+
+
+  describe('addPropertySecurityContext', function() {
+    function testProvider(provider) {
+      module(provider);
+      inject(function($compile) { /* done! */ });
+    }
+
+    it('should allow adding new properties', function() {
+      testProvider(function($compileProvider) {
+        $compileProvider.addPropertySecurityContext('div', 'title', 'mediaUrl');
+        $compileProvider.addPropertySecurityContext('*', 'my-prop', 'resourceUrl');
+      });
+    });
+
+    it('should allow different sce types of a property on different element types', function() {
+      testProvider(function($compileProvider) {
+        $compileProvider.addPropertySecurityContext('div', 'title', 'mediaUrl');
+        $compileProvider.addPropertySecurityContext('span', 'title', 'css');
+        $compileProvider.addPropertySecurityContext('*', 'title', 'resourceUrl');
+        $compileProvider.addPropertySecurityContext('article', 'title', 'html');
+      });
+    });
+
+    it('should throw \'ctxoverride\' when changing an existing context', function() {
+      testProvider(function($compileProvider) {
+        $compileProvider.addPropertySecurityContext('div', 'title', 'mediaUrl');
+
+        expect(function() {
+          $compileProvider.addPropertySecurityContext('div', 'title', 'resourceUrl');
+        })
+        .toThrowMinErr('$compile', 'ctxoverride', 'Property context \'div.title\' already set to \'mediaUrl\', cannot override to \'resourceUrl\'.');
+      });
+    });
+
+    it('should allow setting the same property/element to the same value', function() {
+      testProvider(function($compileProvider) {
+        $compileProvider.addPropertySecurityContext('div', 'title', 'mediaUrl');
+        $compileProvider.addPropertySecurityContext('div', 'title', 'mediaUrl');
+      });
+    });
+
+    it('should enforce the specified sce type for properties added for specific elements', function() {
+      module(function($compileProvider) {
+        $compileProvider.addPropertySecurityContext('div', 'foo', 'mediaUrl');
+      });
+      inject(function($compile, $rootScope, $sce) {
+        var element = $compile('<div ng-prop-foo="bar"></div>')($rootScope);
+
+        $rootScope.bar = 'untrusted:test1';
+        $rootScope.$apply();
+        expect(element.prop('foo')).toBe('unsafe:untrusted:test1');
+
+        $rootScope.bar = $sce.trustAsCss('untrusted:test2');
+        $rootScope.$apply();
+        expect(element.prop('foo')).toBe('unsafe:untrusted:test2');
+
+        $rootScope.bar = $sce.trustAsMediaUrl('untrusted:test3');
+        $rootScope.$apply();
+        expect(element.prop('foo')).toBe('untrusted:test3');
+      });
+    });
+
+    it('should enforce the specified sce type for properties added for all elements (*)', function() {
+      module(function($compileProvider) {
+        $compileProvider.addPropertySecurityContext('*', 'foo', 'mediaUrl');
+      });
+      inject(function($compile, $rootScope, $sce) {
+        var element = $compile('<div ng-prop-foo="bar"></div>')($rootScope);
+
+        $rootScope.bar = 'untrusted:test1';
+        $rootScope.$apply();
+        expect(element.prop('foo')).toBe('unsafe:untrusted:test1');
+
+        $rootScope.bar = $sce.trustAsCss('untrusted:test2');
+        $rootScope.$apply();
+        expect(element.prop('foo')).toBe('unsafe:untrusted:test2');
+
+        $rootScope.bar = $sce.trustAsMediaUrl('untrusted:test3');
+        $rootScope.$apply();
+        expect(element.prop('foo')).toBe('untrusted:test3');
+      });
+    });
+
+    it('should enforce the specific sce type when both an element specific and generic exist', function() {
+      module(function($compileProvider) {
+        $compileProvider.addPropertySecurityContext('*', 'foo', 'css');
+        $compileProvider.addPropertySecurityContext('div', 'foo', 'mediaUrl');
+      });
+      inject(function($compile, $rootScope, $sce) {
+        var element = $compile('<div ng-prop-foo="bar"></div>')($rootScope);
+
+        $rootScope.bar = 'untrusted:test1';
+        $rootScope.$apply();
+        expect(element.prop('foo')).toBe('unsafe:untrusted:test1');
+
+        $rootScope.bar = $sce.trustAsCss('untrusted:test2');
+        $rootScope.$apply();
+        expect(element.prop('foo')).toBe('unsafe:untrusted:test2');
+
+        $rootScope.bar = $sce.trustAsMediaUrl('untrusted:test3');
+        $rootScope.$apply();
+        expect(element.prop('foo')).toBe('untrusted:test3');
       });
     });
   });
