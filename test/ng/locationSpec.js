@@ -2873,9 +2873,9 @@ describe('$location', function() {
         };
         return win;
       };
-      $browserProvider.$get = function($document, $window, $log, $sniffer) {
+      $browserProvider.$get = function($document, $window, $log, $sniffer, $$taskTrackerFactory) {
         /* global Browser: false */
-        browser = new Browser($window, $document, $log, $sniffer);
+        browser = new Browser($window, $document, $log, $sniffer, $$taskTrackerFactory);
         browser.baseHref = function() {
           return options.baseHref;
         };

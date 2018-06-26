@@ -143,13 +143,14 @@ function MockDocument() {
 }
 
 describe('browser', function() {
-  /* global Browser: false */
-  var browser, fakeWindow, fakeDocument, fakeLog, logs;
+  /* global Browser: false, TaskTracker: false */
+  var browser, fakeWindow, fakeDocument, fakeLog, logs, taskTrackerFactory;
 
   beforeEach(function() {
     sniffer = {history: true};
     fakeWindow = new MockWindow();
     fakeDocument = new MockDocument();
+    taskTrackerFactory = function(log) { return new TaskTracker(log); };
 
     logs = {log:[], warn:[], info:[], error:[]};
 
@@ -160,7 +161,8 @@ describe('browser', function() {
       error: function() { logs.error.push(slice.call(arguments)); }
     };
 
-    browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+
+    browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer, taskTrackerFactory);
   });
 
   describe('MockBrowser', function() {
@@ -200,7 +202,7 @@ describe('browser', function() {
 
           fakeWindow = new MockWindow({msie: msie});
           fakeWindow.location.state = {prop: 'val'};
-          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer, taskTrackerFactory);
 
           browser.url(fakeWindow.location.href, false, {prop: 'val'});
           if (msie) {
@@ -573,7 +575,7 @@ describe('browser', function() {
       // the initial URL contains a lengthy oauth token in the hash
       var initialUrl = 'http://test.com/oauthcallback#state=xxx%3D&not-before-policy=0';
       fakeWindow.location.href = initialUrl;
-      browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+      browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer, taskTrackerFactory);
 
       // somehow, $location gets a version of this url where the = is no longer escaped, and tells the browser:
       var initialUrlFixedByLocation = initialUrl.replace('%3D', '=');
@@ -608,7 +610,7 @@ describe('browser', function() {
           replaceState = spyOn(fakeWindow.history, 'replaceState').and.callThrough();
           locationReplace = spyOn(fakeWindow.location, 'replace').and.callThrough();
 
-          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer, taskTrackerFactory);
           browser.onUrlChange(function() {});
         });
 
@@ -707,7 +709,7 @@ describe('browser', function() {
         }
       });
 
-      var browser = new Browser(mockWindow, fakeDocument, fakeLog, mockSniffer);
+      var browser = new Browser(mockWindow, fakeDocument, fakeLog, mockSniffer, taskTrackerFactory);
 
       expect(historyStateAccessed).toBe(false);
     });
@@ -720,7 +722,7 @@ describe('browser', function() {
       return function() {
         beforeEach(function() {
           fakeWindow = new MockWindow({msie: options.msie});
-          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+          browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer, taskTrackerFactory);
         });
 
         it('should return history.state', function() {
@@ -823,7 +825,7 @@ describe('browser', function() {
         return function() {
           beforeEach(function() {
             fakeWindow = new MockWindow({msie: options.msie});
-            browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+            browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer, taskTrackerFactory);
           });
 
           it('should fire onUrlChange listeners only once if both popstate and hashchange triggered', function() {
@@ -892,7 +894,7 @@ describe('browser', function() {
 
     function setup(options) {
       fakeWindow = new MockWindow(options);
-      browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer);
+      browser = new Browser(fakeWindow, fakeDocument, fakeLog, sniffer, taskTrackerFactory);
 
       module(function($provide, $locationProvider) {
 
