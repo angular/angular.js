@@ -552,13 +552,15 @@ angular.mock.$IntervalProvider = function() {
           promise = deferred.promise;
 
       count = (angular.isDefined(count)) ? count : 0;
-      promise.then(null, function() {}, (!hasParams) ? fn : function() {
-        fn.apply(null, args);
-      });
 
       promise.$$intervalId = nextRepeatId;
 
       function tick() {
+        if (skipApply) {
+          $browser.defer(callback);
+        } else {
+          $rootScope.$evalAsync(callback);
+        }
         deferred.notify(iteration++);
 
         if (count > 0 && iteration >= count) {
@@ -578,6 +580,14 @@ angular.mock.$IntervalProvider = function() {
           $browser.defer.flush();
         } else {
           $rootScope.$apply();
+        }
+      }
+
+      function callback() {
+        if (!hasParams) {
+          fn(iteration);
+        } else {
+          fn.apply(null, args);
         }
       }
 
