@@ -323,16 +323,16 @@ describe('ngMock', function() {
 
     it('should NOT call $apply if invokeApply is set to false',
         inject(function($interval, $rootScope) {
-      var applySpy = spyOn($rootScope, '$apply').and.callThrough();
+      var digestSpy = spyOn($rootScope, '$digest').and.callThrough();
 
       var counter = 0;
       $interval(function increment() { counter++; }, 1000, 0, false);
 
-      expect(applySpy).not.toHaveBeenCalled();
+      expect(digestSpy).not.toHaveBeenCalled();
       expect(counter).toBe(0);
 
       $interval.flush(2000);
-      expect(applySpy).not.toHaveBeenCalled();
+      expect(digestSpy).not.toHaveBeenCalled();
       expect(counter).toBe(2);
     }));
 
