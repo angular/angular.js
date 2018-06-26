@@ -26,84 +26,27 @@ angular.mock = {};
  * that there are several helper methods available which can be used in tests.
  */
 angular.mock.$BrowserProvider = function() {
-  this.$get = function() {
-    return new angular.mock.$Browser();
-  };
+  this.$get = [
+    '$log', '$$taskTrackerFactory',
+    function($log, $$taskTrackerFactory) {
+      return new angular.mock.$Browser($log, $$taskTrackerFactory);
+    }
+  ];
 };
 
-angular.mock.$Browser = function() {
-  var ALL_TASKS_TYPE = '$$all$$';
-  var DEFAULT_TASK_TYPE = '$$default$$';
+angular.mock.$Browser = function($log, $$taskTrackerFactory) {
   var self = this;
+  var taskTracker = $$taskTrackerFactory($log);
 
   this.isMock = true;
   self.$$url = 'http://server/';
   self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
 
-  // Testability API
-
-  var outstandingRequestCounts = {};
-  var outstandingRequestCallbacks = [];
-
-  self.$$completeOutstandingRequest = completeOutstandingRequest;
-  self.$$incOutstandingRequestCount = incOutstandingRequestCount;
-  self.notifyWhenNoOutstandingRequests = notifyWhenNoOutstandingRequests;
-
-  function decOutstandingRequestCount(taskType) {
-    taskType = taskType || DEFAULT_TASK_TYPE;
-    if (outstandingRequestCounts[taskType]) {
-      outstandingRequestCounts[taskType]--;
-      outstandingRequestCounts[ALL_TASKS_TYPE]--;
-    }
-  }
-  function incOutstandingRequestCount(taskType) {
-    taskType = taskType || DEFAULT_TASK_TYPE;
-    outstandingRequestCounts[taskType] = (outstandingRequestCounts[taskType] || 0) + 1;
-    outstandingRequestCounts[ALL_TASKS_TYPE] = (outstandingRequestCounts[ALL_TASKS_TYPE] || 0) + 1;
-  }
-  function completeOutstandingRequest(fn, taskType) {
-    taskType = taskType || DEFAULT_TASK_TYPE;
-    try {
-      fn();
-    } finally {
-      decOutstandingRequestCount(taskType);
-
-      var countForType = outstandingRequestCounts[taskType];
-      var countForAll = outstandingRequestCounts[ALL_TASKS_TYPE];
-
-      // If at least one of the queues (`ALL_TASKS_TYPE` or `taskType`) is empty, run callbacks.
-      if (!countForAll || !countForType) {
-        var getNextCallback = !countForAll ? getLastCallback : getLastCallbackForType;
-        var nextCb;
-
-        while ((nextCb = getNextCallback(taskType))) {
-          nextCb();
-        }
-      }
-    }
-  }
-  function getLastCallback() {
-    var cbInfo = outstandingRequestCallbacks.pop();
-    return cbInfo && cbInfo.cb;
-  }
-  function getLastCallbackForType(taskType) {
-    for (var i = outstandingRequestCallbacks.length - 1; i >= 0; --i) {
-      var cbInfo = outstandingRequestCallbacks[i];
-      if (cbInfo.type === taskType) {
-        outstandingRequestCallbacks.splice(i, 1);
-        return cbInfo.cb;
-      }
-    }
-  }
-  function notifyWhenNoOutstandingRequests(callback, taskType) {
-    taskType = taskType || ALL_TASKS_TYPE;
-    if (!outstandingRequestCounts[taskType]) {
-      callback();
-    } else {
-      outstandingRequestCallbacks.push({type: taskType, cb: callback});
-    }
-  }
+  // Task-tracking API
+  self.$$completeOutstandingRequest = taskTracker.completeTask;
+  self.$$incOutstandingRequestCount = taskTracker.incTaskCount;
+  self.notifyWhenNoOutstandingRequests = taskTracker.notifyWhenNoPendingTasks;
 
   // register url polling fn
 
@@ -131,9 +74,9 @@ angular.mock.$Browser = function() {
     var timeoutId = self.deferredNextId++;
 
     delay = delay || 0;
-    taskType = taskType || DEFAULT_TASK_TYPE;
+    taskType = taskType || taskTracker.DEFAULT_TASK_TYPE;
 
-    incOutstandingRequestCount(taskType);
+    taskTracker.incTaskCount(taskType);
     self.deferredFns.push({
       id: timeoutId,
       type: taskType,
@@ -164,7 +107,7 @@ angular.mock.$Browser = function() {
 
     if (angular.isDefined(taskIndex)) {
       var task = self.deferredFns.splice(taskIndex, 1)[0];
-      completeOutstandingRequest(angular.noop, task.type);
+      taskTracker.completeTask(angular.noop, task.type);
       return true;
     }
 
@@ -198,7 +141,7 @@ angular.mock.$Browser = function() {
       // Increment the time and call the next deferred function
       self.defer.now = self.deferredFns[0].time;
       var task = self.deferredFns.shift();
-      completeOutstandingRequest(task.fn, task.type);
+      taskTracker.completeTask(task.fn, task.type);
     }
 
     // Ensure that the current time is correct
