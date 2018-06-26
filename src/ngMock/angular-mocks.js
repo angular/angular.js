@@ -537,72 +537,40 @@ angular.mock.$LogProvider = function() {
  * @returns {promise} A promise which will be notified on each iteration.
  */
 angular.mock.$IntervalProvider = function() {
-  this.$get = ['$browser', '$rootScope', '$q', '$$q',
-       function($browser,   $rootScope,   $q,   $$q) {
+  this.$get = ['$browser', '$$intervalFactory',
+       function($browser,   $$intervalFactory) {
     var repeatFns = [],
         nextRepeatId = 0,
-        now = 0;
+        now = 0,
+        setIntervalFn = function(tick, delay, deferred, skipApply) {
+          var id = nextRepeatId++;
+          var fn = !skipApply ? tick : function() {
+            tick();
+            $browser.defer.flush();
+          };
 
-    var $interval = function(fn, delay, count, invokeApply) {
-      var hasParams = arguments.length > 4,
-          args = hasParams ? Array.prototype.slice.call(arguments, 4) : [],
-          iteration = 0,
-          skipApply = (angular.isDefined(invokeApply) && !invokeApply),
-          deferred = (skipApply ? $$q : $q).defer(),
-          promise = deferred.promise;
-
-      count = (angular.isDefined(count)) ? count : 0;
-
-      promise.$$intervalId = nextRepeatId;
-
-      function tick() {
-        if (skipApply) {
-          $browser.defer(callback);
-        } else {
-          $rootScope.$evalAsync(callback);
-        }
-        deferred.notify(iteration++);
-
-        if (count > 0 && iteration >= count) {
-          var fnIndex;
-          deferred.resolve(iteration);
-
-          angular.forEach(repeatFns, function(fn, index) {
-            if (fn.id === promise.$$intervalId) fnIndex = index;
+          repeatFns.push({
+            nextTime: (now + (delay || 0)),
+            delay: delay || 1,
+            fn: fn,
+            id: id,
+            deferred: deferred
           });
+          repeatFns.sort(function(a, b) { return a.nextTime - b.nextTime; });
 
-          if (angular.isDefined(fnIndex)) {
-            repeatFns.splice(fnIndex, 1);
+          return id;
+        },
+        clearIntervalFn = function(id) {
+          for (var fnIndex = repeatFns.length - 1; fnIndex >= 0; fnIndex--) {
+            if (repeatFns[fnIndex].id === id) {
+              repeatFns.splice(fnIndex, 1);
+              break;
+            }
           }
-        }
+        };
 
-        if (skipApply) {
-          $browser.defer.flush();
-        } else {
-          $rootScope.$apply();
-        }
-      }
+    var $interval = $$intervalFactory(setIntervalFn, clearIntervalFn);
 
-      function callback() {
-        if (!hasParams) {
-          fn(iteration);
-        } else {
-          fn.apply(null, args);
-        }
-      }
-
-      repeatFns.push({
-        nextTime: (now + (delay || 0)),
-        delay: delay || 1,
-        fn: tick,
-        id: nextRepeatId,
-        deferred: deferred
-      });
-      repeatFns.sort(function(a, b) { return a.nextTime - b.nextTime;});
-
-      nextRepeatId++;
-      return promise;
-    };
     /**
      * @ngdoc method
      * @name $interval#cancel
@@ -615,17 +583,15 @@ angular.mock.$IntervalProvider = function() {
      */
     $interval.cancel = function(promise) {
       if (!promise) return false;
-      var fnIndex;
 
-      angular.forEach(repeatFns, function(fn, index) {
-        if (fn.id === promise.$$intervalId) fnIndex = index;
-      });
-
-      if (angular.isDefined(fnIndex)) {
-        repeatFns[fnIndex].deferred.promise.then(undefined, function() {});
-        repeatFns[fnIndex].deferred.reject('canceled');
-        repeatFns.splice(fnIndex, 1);
-        return true;
+      for (var fnIndex = repeatFns.length - 1; fnIndex >= 0; fnIndex--) {
+        if (repeatFns[fnIndex].id === promise.$$intervalId) {
+          var deferred = repeatFns[fnIndex].deferred;
+          deferred.promise.then(undefined, function() {});
+          deferred.reject('canceled');
+          repeatFns.splice(fnIndex, 1);
+          return true;
+        }
       }
 
       return false;
