@@ -28,6 +28,7 @@ var angularFiles = {
     'src/ng/httpBackend.js',
     'src/ng/interpolate.js',
     'src/ng/interval.js',
+    'src/ng/intervalFactory.js',
     'src/ng/jsonpCallbacks.js',
     'src/ng/locale.js',
     'src/ng/location.js',
