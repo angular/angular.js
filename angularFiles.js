@@ -41,6 +41,7 @@ var angularFiles = {
     'src/ng/sanitizeUri.js',
     'src/ng/sce.js',
     'src/ng/sniffer.js',
+    'src/ng/taskTrackerFactory.js',
     'src/ng/templateRequest.js',
     'src/ng/testability.js',
     'src/ng/timeout.js',

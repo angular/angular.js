@@ -22,105 +22,27 @@
  * @param {object} $log window.console or an object with the same interface.
  * @param {object} $sniffer $sniffer service
  */
-function Browser(window, document, $log, $sniffer) {
-  var ALL_TASKS_TYPE = '$$all$$',
-      DEFAULT_TASK_TYPE = '$$default$$';
-
+function Browser(window, document, $log, $sniffer, $$taskTrackerFactory) {
   var self = this,
       location = window.location,
       history = window.history,
       setTimeout = window.setTimeout,
       clearTimeout = window.clearTimeout,
       pendingDeferIds = {},
-      outstandingRequestCounts = {},
-      outstandingRequestCallbacks = [];
+      taskTracker = $$taskTrackerFactory($log);
 
   self.isMock = false;
 
+  //////////////////////////////////////////////////////////////
+  // Task-tracking API
+  //////////////////////////////////////////////////////////////
+
   // TODO(vojta): remove this temporary api
-  self.$$completeOutstandingRequest = completeOutstandingRequest;
-  self.$$incOutstandingRequestCount = incOutstandingRequestCount;
+  self.$$completeOutstandingRequest = taskTracker.completeTask;
+  self.$$incOutstandingRequestCount = taskTracker.incTaskCount;
 
-  /**
-   * Executes the `fn` function and decrements the appropriate `outstandingRequestCounts` counter.
-   * If the counter reaches 0, all the corresponding `outstandingRequestCallbacks` are executed.
-   * @param {Function} fn - The function to execute.
-   * @param {string=} [taskType=DEFAULT_TASK_TYPE] The type of task that is being completed.
-   */
-  function completeOutstandingRequest(fn, taskType) {
-    taskType = taskType || DEFAULT_TASK_TYPE;
-    try {
-      fn();
-    } finally {
-      decOutstandingRequestCount(taskType);
-
-      var countForType = outstandingRequestCounts[taskType];
-      var countForAll = outstandingRequestCounts[ALL_TASKS_TYPE];
-
-      // If at least one of the queues (`ALL_TASKS_TYPE` or `taskType`) is empty, run callbacks.
-      if (!countForAll || !countForType) {
-        var getNextCallback = !countForAll ? getLastCallback : getLastCallbackForType;
-        var nextCb;
-
-        while ((nextCb = getNextCallback(taskType))) {
-          try {
-            nextCb();
-          } catch (e) {
-            $log.error(e);
-          }
-        }
-      }
-    }
-  }
-
-  function decOutstandingRequestCount(taskType) {
-    taskType = taskType || DEFAULT_TASK_TYPE;
-    if (outstandingRequestCounts[taskType]) {
-      outstandingRequestCounts[taskType]--;
-      outstandingRequestCounts[ALL_TASKS_TYPE]--;
-    }
-  }
-
-  function incOutstandingRequestCount(taskType) {
-    taskType = taskType || DEFAULT_TASK_TYPE;
-    outstandingRequestCounts[taskType] = (outstandingRequestCounts[taskType] || 0) + 1;
-    outstandingRequestCounts[ALL_TASKS_TYPE] = (outstandingRequestCounts[ALL_TASKS_TYPE] || 0) + 1;
-  }
-
-  function getLastCallback() {
-    var cbInfo = outstandingRequestCallbacks.pop();
-    return cbInfo && cbInfo.cb;
-  }
-
-  function getLastCallbackForType(taskType) {
-    for (var i = outstandingRequestCallbacks.length - 1; i >= 0; --i) {
-      var cbInfo = outstandingRequestCallbacks[i];
-      if (cbInfo.type === taskType) {
-        outstandingRequestCallbacks.splice(i, 1);
-        return cbInfo.cb;
-      }
-    }
-  }
-
-  function getHash(url) {
-    var index = url.indexOf('#');
-    return index === -1 ? '' : url.substr(index);
-  }
-
-  /**
-   * @private
-   * TODO(vojta): prefix this method with $$ ?
-   * @param {function()} callback Function that will be called when no outstanding request.
-   * @param {string=} [taskType=ALL_TASKS_TYPE] The type of tasks that will be waited for.
-   */
-  self.notifyWhenNoOutstandingRequests = function(callback, taskType) {
-    taskType = taskType || ALL_TASKS_TYPE;
-    if (!outstandingRequestCounts[taskType]) {
-      callback();
-    } else {
-      outstandingRequestCallbacks.push({type: taskType, cb: callback});
-    }
-  };
+  // TODO(vojta): prefix this method with $$ ?
+  self.notifyWhenNoOutstandingRequests = taskTracker.notifyWhenNoPendingTasks;
 
   //////////////////////////////////////////////////////////////
   // URL API
@@ -139,6 +61,11 @@ function Browser(window, document, $log, $sniffer) {
       };
 
   cacheState();
+
+  function getHash(url) {
+    var index = url.indexOf('#');
+    return index === -1 ? '' : url.substr(index);
+  }
 
   /**
    * @name $browser#url
@@ -367,12 +294,12 @@ function Browser(window, document, $log, $sniffer) {
     var timeoutId;
 
     delay = delay || 0;
-    taskType = taskType || DEFAULT_TASK_TYPE;
+    taskType = taskType || taskTracker.DEFAULT_TASK_TYPE;
 
-    incOutstandingRequestCount(taskType);
+    taskTracker.incTaskCount(taskType);
     timeoutId = setTimeout(function() {
       delete pendingDeferIds[timeoutId];
-      completeOutstandingRequest(fn, taskType);
+      taskTracker.completeTask(fn, taskType);
     }, delay);
     pendingDeferIds[timeoutId] = taskType;
 
@@ -395,7 +322,7 @@ function Browser(window, document, $log, $sniffer) {
       var taskType = pendingDeferIds[deferId];
       delete pendingDeferIds[deferId];
       clearTimeout(deferId);
-      completeOutstandingRequest(noop, taskType);
+      taskTracker.completeTask(noop, taskType);
       return true;
     }
     return false;
@@ -405,8 +332,8 @@ function Browser(window, document, $log, $sniffer) {
 
 /** @this */
 function $BrowserProvider() {
-  this.$get = ['$window', '$log', '$sniffer', '$document',
-      function($window, $log, $sniffer, $document) {
-        return new Browser($window, $document, $log, $sniffer);
-      }];
+  this.$get = ['$window', '$log', '$sniffer', '$document', '$$taskTrackerFactory',
+       function($window,   $log,   $sniffer,   $document,   $$taskTrackerFactory) {
+    return new Browser($window, $document, $log, $sniffer, $$taskTrackerFactory);
+  }];
 }
