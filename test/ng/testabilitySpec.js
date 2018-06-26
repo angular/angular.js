@@ -201,11 +201,7 @@ describe('$$testability', function() {
         var callback = noop;
 
         $$testability.whenStable(callback);
-        expect(spy).toHaveBeenCalledWith(callback, undefined);
-
-        spy.calls.reset();
-        $$testability.whenStable(callback, 'taskType');
-        expect(spy).toHaveBeenCalledWith(callback, 'taskType');
+        expect(spy).toHaveBeenCalledWith(callback);
       }));
   });
 });

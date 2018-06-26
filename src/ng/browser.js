@@ -75,8 +75,10 @@ function Browser(window, document, $log, $sniffer) {
 
   function decOutstandingRequestCount(taskType) {
     taskType = taskType || DEFAULT_TASK_TYPE;
-    if (outstandingRequestCounts[taskType]) outstandingRequestCounts[taskType]--;
-    if (outstandingRequestCounts[ALL_TASKS_TYPE]) outstandingRequestCounts[ALL_TASKS_TYPE]--;
+    if (outstandingRequestCounts[taskType]) {
+      outstandingRequestCounts[taskType]--;
+      outstandingRequestCounts[ALL_TASKS_TYPE]--;
+    }
   }
 
   function incOutstandingRequestCount(taskType) {

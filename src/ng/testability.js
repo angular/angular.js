@@ -104,24 +104,20 @@ function $$TestabilityProvider() {
      * @name $$testability#whenStable
      *
      * @description
-     * Calls the callback when all pending requests (such as `$timeout` and `$http`) are completed.
-     * You can optionally pass a `taskType`, in which case the callback will be called when all
-     * pending requests of that type are completed (even if there are tasks of different types still
-     * pending).
+     * Calls the callback when all pending tasks are completed.
      *
-     * Available task types:
-     * - `$timeout`: Pending timeouts (via {@link $timeout}).
-     * - `$http`: Pending HTTP requests (via {@link $http}).
-     * - `$route`: A route transition is in progress (via {@link $route}).
-     * - `$applyAsync`: Pending tasks scheduled via {@link $rootScope#$applyAsync}.
-     * - `$evalAsync`: Pending tasks scheduled via {@link $rootScope#$evalAsync}.
+     * Types of tasks waited for include:
+     * - Pending timeouts (via {@link $timeout}).
+     * - Pending HTTP requests (via {@link $http}).
+     * - In-progress route transitions (via {@link $route}).
+     * - Pending tasks scheduled via {@link $rootScope#$applyAsync}.
+     * - Pending tasks scheduled via {@link $rootScope#$evalAsync}.
      *   These include tasks scheduled via `$evalAsync()` indirectly (such as {@link $q} promises).
      *
      * @param {function} callback
-     * @param {string=} taskType
      */
-    testability.whenStable = function(callback, taskType) {
-      $browser.notifyWhenNoOutstandingRequests(callback, taskType);
+    testability.whenStable = function(callback) {
+      $browser.notifyWhenNoOutstandingRequests(callback);
     };
 
     return testability;

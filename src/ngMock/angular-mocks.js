@@ -52,8 +52,10 @@ angular.mock.$Browser = function() {
 
   function decOutstandingRequestCount(taskType) {
     taskType = taskType || DEFAULT_TASK_TYPE;
-    if (outstandingRequestCounts[taskType]) outstandingRequestCounts[taskType]--;
-    if (outstandingRequestCounts[ALL_TASKS_TYPE]) outstandingRequestCounts[ALL_TASKS_TYPE]--;
+    if (outstandingRequestCounts[taskType]) {
+      outstandingRequestCounts[taskType]--;
+      outstandingRequestCounts[ALL_TASKS_TYPE]--;
+    }
   }
   function incOutstandingRequestCount(taskType) {
     taskType = taskType || DEFAULT_TASK_TYPE;
@@ -184,14 +186,12 @@ angular.mock.$Browser = function() {
     if (angular.isDefined(delay)) {
       // A delay was passed so compute the next time
       nextTime = self.defer.now + delay;
+    } else if (self.deferredFns.length) {
+      // No delay was passed so set the next time so that it clears the deferred queue
+      nextTime = self.deferredFns[self.deferredFns.length - 1].time;
     } else {
-      if (self.deferredFns.length) {
-        // No delay was passed so set the next time so that it clears the deferred queue
-        nextTime = self.deferredFns[self.deferredFns.length - 1].time;
-      } else {
-        // No delay passed, but there are no deferred tasks so flush - indicates an error!
-        throw new Error('No deferred tasks to be flushed');
-      }
+      // No delay passed, but there are no deferred tasks so flush - indicates an error!
+      throw new Error('No deferred tasks to be flushed');
     }
 
     while (self.deferredFns.length && self.deferredFns[0].time <= nextTime) {
@@ -2263,6 +2263,9 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
    * @param {number=} delay maximum timeout amount to flush up until
    */
   $delegate.flush = function(delay) {
+    // For historical reasons, `$timeout.flush()` flushes all types of pending tasks.
+    // Keep the same behavior for backwards compatibility (and because it doesn't make sense to
+    // selectively flush scheduled events out of order).
     $browser.defer.flush(delay);
   };
 
@@ -2274,6 +2277,8 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
    * Verifies that there are no pending tasks that need to be flushed.
    */
   $delegate.verifyNoPendingTasks = function() {
+    // For historical reasons, `$timeout.verifyNoPendingTasks()` takes all types of pending tasks
+    // into account. Keep the same behavior for backwards compatibility.
     $browser.defer.verifyNoPendingTasks();
   };
 
