@@ -811,6 +811,42 @@ describe('ngMock', function() {
   });
 
 
+  describe('$flushPendingTasks', function() {
+    var $flushPendingTasks;
+    var browserDeferFlushSpy;
+
+    beforeEach(inject(function($browser, _$flushPendingTasks_) {
+      $flushPendingTasks = _$flushPendingTasks_;
+      browserDeferFlushSpy = spyOn($browser.defer, 'flush').and.returnValue('flushed');
+    }));
+
+    it('should delegate to `$browser.defer.flush()`', function() {
+      var result = $flushPendingTasks(42);
+
+      expect(browserDeferFlushSpy).toHaveBeenCalledOnceWith(42);
+      expect(result).toBe('flushed');
+    });
+  });
+
+
+  describe('$verifyNoPendingTasks', function() {
+    var $verifyNoPendingTasks;
+    var browserDeferVerifySpy;
+
+    beforeEach(inject(function($browser, _$verifyNoPendingTasks_) {
+      $verifyNoPendingTasks = _$verifyNoPendingTasks_;
+      browserDeferVerifySpy = spyOn($browser.defer, 'verifyNoPendingTasks').and.returnValue('verified');
+    }));
+
+    it('should delegate to `$browser.defer.verifyNoPendingTasks()`', function() {
+      var result = $verifyNoPendingTasks('fortyTwo');
+
+      expect(browserDeferVerifySpy).toHaveBeenCalledOnceWith('fortyTwo');
+      expect(result).toBe('verified');
+    });
+  });
+
+
   describe('$exceptionHandler', function() {
     it('should rethrow exceptions', inject(function($exceptionHandler) {
       expect(function() { $exceptionHandler('myException'); }).toThrow('myException');
