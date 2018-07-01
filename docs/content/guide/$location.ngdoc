@@ -748,18 +748,13 @@ Note that the `!` prefix in the hashbang mode is not part of `$location.path()`;
 
 ### Crawling your app
 
-To allow indexing of your AJAX application, you have to add special meta tag in the head section of
-your document:
+Most modern search engines are able to crawl AJAX applications with dynamic content, provided all
+included resources are available to the crawler bots.
 
-```html
-<meta name="fragment" content="!" />
-```
-
-This will cause crawler bot to request links with `_escaped_fragment_` param so that your server
-can recognize the crawler and serve a HTML snapshots. For more information about this technique,
-see [Making AJAX Applications
-Crawlable](http://code.google.com/web/ajaxcrawling/docs/specification.html).
-
+There also exists a special
+[AJAX crawling scheme](http://code.google.com/web/ajaxcrawling/docs/specification.html) developed by
+Google that allows bots to crawl the static equivalent of a dynamically generated page,
+but this schema has been deprecated, and support for it may vary by search engine.
 
 ## Testing with the $location service
 
@@ -783,85 +778,6 @@ describe('serviceUnderTest', function() {
   }));
 });
 ```
-
-
-## Migrating from earlier AngularJS releases
-
-In earlier releases of AngularJS, `$location` used `hashPath` or `hashSearch` to process path and
-search methods. With this release, the `$location` service processes path and search methods and
-then uses the information it obtains to compose hashbang URLs (such as
-`http://server.com/#!/path?search=a`), when necessary.
-
-### Changes to your code
-
-<table class="table">
-  <thead>
-    <tr class="head">
-      <th>Navigation inside the app</th>
-      <th>Change to</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td>$location.href = value<br />$location.hash = value<br />$location.update(value)<br
-/>$location.updateHash(value)</td>
-      <td>$location.path(path).search(search)</td>
-    </tr>
-
-    <tr>
-      <td>$location.hashPath = path</td>
-      <td>$location.path(path)</td>
-    </tr>
-
-    <tr>
-      <td>$location.hashSearch = search</td>
-      <td>$location.search(search)</td>
-    </tr>
-
-    <tr class="head">
-      <th>Navigation outside the app</td>
-      <th>Use lower level API</td>
-    </tr>
-
-    <tr>
-      <td>$location.href = value<br />$location.update(value)</td>
-      <td>$window.location.href = value</td>
-    </tr>
-
-    <tr>
-      <td>$location[protocol | host | port | path | search]</td>
-      <td>$window.location[protocol | host | port | path | search]</td>
-    </tr>
-
-    <tr class="head">
-      <th>Read access</td>
-      <th>Change to</td>
-    </tr>
-
-    <tr>
-      <td>$location.hashPath</td>
-      <td>$location.path()</td>
-    </tr>
-
-    <tr>
-      <td>$location.hashSearch</td>
-      <td>$location.search()</td>
-    </tr>
-
-    <tr>
-      <td>$location.href<br />$location.protocol<br />$location.host<br />$location.port<br
-/>$location.hash</td>
-      <td>$location.absUrl()<br />$location.protocol()<br />$location.host()<br />$location.port()<br
-/>$location.path() + $location.search()</td>
-    </tr>
-
-    <tr>
-      <td>$location.path<br />$location.search</td>
-      <td>$window.location.path<br />$window.location.search</td>
-    </tr>
-  </tbody>
-</table>
 
 ## Two-way binding to $location
 
