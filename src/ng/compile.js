@@ -1030,8 +1030,7 @@
  *
  * See issue [#2573](https://github.com/angular/angular.js/issues/2573).
  *
- * #### `transclude: element` in the replace template root can have
- * unexpected effects
+ * #### `transclude: element` in the replace template root can have unexpected effects
  *
  * When the replace template has a directive at the root node that uses
  * {@link $compile#-transclude- `transclude: element`}, e.g.
