@@ -2278,6 +2278,13 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
   /**
    * @ngdoc method
    * @name $timeout#flush
+   *
+   * @deprecated
+   * sinceVersion="1.7.3"
+   *
+   * This method flushes all types of tasks (not only timeouts), which is unintuitive.
+   * It is recommended to use {@link ngMock.$flushPendingTasks} instead.
+   *
    * @description
    *
    * Flushes the queue of pending tasks.
@@ -2303,6 +2310,14 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
   /**
    * @ngdoc method
    * @name $timeout#verifyNoPendingTasks
+   *
+   * @deprecated
+   * sinceVersion="1.7.3"
+   *
+   * This method takes all types of tasks (not only timeouts) into account, which is unintuitive.
+   * It is recommended to use {@link ngMock.$verifyNoPendingTasks} instead, which additionally
+   * allows checking for timeouts only (with `$verifyNoPendingTasks('$timeout')`).
+   *
    * @description
    *
    * Verifies that there are no pending tasks that need to be flushed. It throws an error if there
