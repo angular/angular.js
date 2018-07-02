@@ -710,7 +710,7 @@ describe('ngMock', function() {
 
       describe('with specific task type', function() {
         it('should throw if there are pending tasks', function() {
-          browser.defer(noop, 0, 'fooType')
+          browser.defer(noop, 0, 'fooType');
 
           expect(function() {browser.defer.verifyNoPendingTasks('barType');}).not.toThrow();
           expect(function() {browser.defer.verifyNoPendingTasks('fooType');}).toThrow();
