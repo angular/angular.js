@@ -151,6 +151,36 @@ angular.mock.$Browser = function($log, $$taskTrackerFactory) {
   };
 
   /**
+   * @name $browser#defer.getPendingTasks
+   *
+   * @description
+   * Returns the currently pending tasks that need to be flushed.
+   * You can request a specific type of tasks only, by specifying a `taskType`.
+   *
+   * @param {string=} taskType - The type tasks to return.
+   */
+  self.defer.getPendingTasks = function(taskType) {
+    return !taskType
+        ? self.deferredFns
+        : self.deferredFns.filter(function(task) { return task.type === taskType; });
+  };
+
+  /**
+   * @name $browser#defer.formatPendingTasks
+   *
+   * @description
+   * Formats each task in a list of pending tasks as a string, suitable for use in error messages.
+   *
+   * @param {Array<Object>} pendingTasks - A list of task objects.
+   * @return {Array<string>} A list of stringified tasks.
+   */
+  self.defer.formatPendingTasks = function(pendingTasks) {
+    return pendingTasks.map(function(task) {
+      return '{id: ' + task.id + ', type: ' + task.type + ', time: ' + task.time + '}';
+    });
+  };
+
+  /**
    * @name $browser#defer.verifyNoPendingTasks
    *
    * @description
@@ -162,17 +192,10 @@ angular.mock.$Browser = function($log, $$taskTrackerFactory) {
    * @param {string=} taskType - The type tasks to check for.
    */
   self.defer.verifyNoPendingTasks = function(taskType) {
-    var pendingTasks = !taskType
-        ? self.deferredFns
-        : self.deferredFns.filter(function(task) { return task.type === taskType; });
+    var pendingTasks = self.defer.getPendingTasks(taskType);
 
     if (pendingTasks.length) {
-      var formattedTasks = pendingTasks
-          .map(function(task) {
-            return '{id: ' + task.id + ', type: ' + task.type + ', time: ' + task.time + '}';
-          })
-          .join('\n  ');
-
+      var formattedTasks = self.defer.formatPendingTasks(pendingTasks).join('\n  ');
       throw new Error('Deferred tasks to flush (' + pendingTasks.length + '):\n  ' +
           formattedTasks);
     }
@@ -2306,7 +2329,18 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
   $delegate.verifyNoPendingTasks = function() {
     // For historical reasons, `$timeout.verifyNoPendingTasks()` takes all types of pending tasks
     // into account. Keep the same behavior for backwards compatibility.
-    $browser.defer.verifyNoPendingTasks();
+    var pendingTasks = $browser.defer.getPendingTasks();
+
+    if (pendingTasks.length) {
+      var formattedTasks = $browser.defer.formatPendingTasks(pendingTasks).join('\n  ');
+      var hasPendingTimeout = pendingTasks.some(function(task) { return task.type === '$timeout'; });
+      var extraMessage = hasPendingTimeout ? '' : '\n\nNone of the pending tasks are timeouts. ' +
+          'If you only want to verify pending timeouts, use ' +
+          '`$verifyNoPendingTasks(\'$timeout\')` instead.';
+
+      throw new Error('Deferred tasks to flush (' + pendingTasks.length + '):\n  ' +
+          formattedTasks + extraMessage);
+    }
   };
 
   return $delegate;
