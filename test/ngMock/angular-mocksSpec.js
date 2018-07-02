@@ -977,6 +977,27 @@ describe('ngMock', function() {
     }));
 
 
+    it('should recommend `$verifyNoPendingTasks()` when all pending tasks are not timeouts',
+      inject(function($rootScope, $timeout) {
+        var extraMessage = 'None of the pending tasks are timeouts. If you only want to verify ' +
+            'pending timeouts, use `$verifyNoPendingTasks(\'$timeout\')` instead.';
+        var errorMessage;
+
+        $timeout(noop, 100);
+        $rootScope.$evalAsync(noop);
+        try { $timeout.verifyNoPendingTasks(); } catch (err) { errorMessage = err.message; }
+
+        expect(errorMessage).not.toContain(extraMessage);
+
+        $timeout.flush(100);
+        $rootScope.$evalAsync(noop);
+        try { $timeout.verifyNoPendingTasks(); } catch (err) { errorMessage = err.message; }
+
+        expect(errorMessage).toContain(extraMessage);
+      })
+    );
+
+
     it('should do nothing when all tasks have been flushed', inject(function($rootScope, $timeout) {
       $timeout(noop, 100);
       $rootScope.$evalAsync(noop);
