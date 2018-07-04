@@ -448,8 +448,8 @@ This in turn affects how dirty checking treats objects that prototypally
 inherit from `Array` (e.g. MobX observable arrays). AngularJS will now
 be able to handle these objects better when copying or watching.
 
-### **$sce** due to:
-  - **[1e9ead](https://github.com/angular/angular.js/commit/1e9eadcd72dbbd5c67dae8328a63e535cfa91ff9)**: handle URL sanitization through the `$sce` service
+### **$sce** :
+  - due to **[1e9ead](https://github.com/angular/angular.js/commit/1e9eadcd72dbbd5c67dae8328a63e535cfa91ff9)**: handle URL sanitization through the `$sce` service
 
 If you use `attrs.$set` for URL attributes (a[href] and img[src]) there will no
 longer be any automated sanitization of the value. This is in line with other
@@ -462,6 +462,35 @@ the private `$$sanitizeUri` service.
 Note that values that have been passed through the `$interpolate` service within the
 `URL` or `MEDIA_URL` will have already been sanitized, so you would not need to sanitize
 these values again.
+
+  - due to **[1e9ead](https://github.com/angular/angular.js/commit/1e9eadcd72dbbd5c67dae8328a63e535cfa91ff9)**: handle URL sanitization through the `$sce` service
+
+binding `trustAs()` and the short versions (`trustAsResourceUrl()` et al.) to
+`ngSrc`, `ngSrcset`, and `ngHref` will now raise an infinite digest error:
+
+```js
+  $scope.imgThumbFn = function(id) {
+    return $sce.trustAsResourceUrl(someService.someUrl(id));
+  };
+```
+
+```html
+  <img ng-src="{{imgThumbFn(imgId)}}">
+```
+This is because the `$interpolate` service is now responsible for sanitizing
+the attribute value, and its watcher receives a new object from `trustAs()`
+on every digest.
+To migrate, compute the trusted value only when the input value changes:
+
+```js
+  $scope.$watch('imgId', function(id) {
+    $scope.imgThumb = $sce.trustAsResourceUrl(someService.someUrl(id));
+  });
+```
+
+```html
+  <img ng-src="{{imgThumb}}">
+```
 
 ### **orderBy** due to:
   - **[1d8046](https://github.com/angular/angular.js/commit/1d804645f7656d592c90216a0355b4948807f6b8)**: consider `null` and `undefined` greater than other values
