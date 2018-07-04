@@ -157,7 +157,7 @@ angular.mock.$Browser = function($log, $$taskTrackerFactory) {
    * Verifies that there are no pending tasks that need to be flushed.
    * You can check for a specific type of tasks only, by specifying a `taskType`.
    *
-   * See {@link $verifyNoPendingsTasks} for more info.
+   * See {@link $verifyNoPendingTasks} for more info.
    *
    * @param {string=} taskType - The type tasks to check for.
    */
@@ -226,12 +226,12 @@ angular.mock.$Browser.prototype = {
  * The types of tasks that are flushed include:
  *
  * - Pending timeouts (via {@link $timeout}).
- * - Pending tasks scheduled via {@link ng.$rootScope.Scope#$applyAsync}.
- * - Pending tasks scheduled via {@link ng.$rootScope.Scope#$evalAsync}.
+ * - Pending tasks scheduled via {@link ng.$rootScope.Scope#$applyAsync $applyAsync}.
+ * - Pending tasks scheduled via {@link ng.$rootScope.Scope#$evalAsync $evalAsync}.
  *   These include tasks scheduled via `$evalAsync()` indirectly (such as {@link $q} promises).
  *
  * <div class="alert alert-info">
- *   Periodic tasks scheduled via {@link $interval} use a different queue and are flushed by
+ *   Periodic tasks scheduled via {@link $interval} use a different queue and are not flushed by
  *   `$flushPendingTasks()`. Use {@link ngMock.$interval#flush $interval.flush([millis])} instead.
  * </div>
  *
@@ -253,7 +253,9 @@ angular.mock.$FlushPendingTasksProvider = function() {
  * @name $verifyNoPendingTasks
  *
  * @description
- * Verifies that there are no pending tasks that need to be flushed.
+ * Verifies that there are no pending tasks that need to be flushed. It throws an error if there are
+ * still pending tasks.
+ *
  * You can check for a specific type of tasks only, by specifying a `taskType`.
  *
  * Available task types:
@@ -261,13 +263,14 @@ angular.mock.$FlushPendingTasksProvider = function() {
  * - `$timeout`: Pending timeouts (via {@link $timeout}).
  * - `$http`: Pending HTTP requests (via {@link $http}).
  * - `$route`: In-progress route transitions (via {@link $route}).
- * - `$applyAsync`: Pending tasks scheduled via {@link ng.$rootScope.Scope#$applyAsync}.
- * - `$evalAsync`: Pending tasks scheduled via {@link ng.$rootScope.Scope#$evalAsync}.
+ * - `$applyAsync`: Pending tasks scheduled via {@link ng.$rootScope.Scope#$applyAsync $applyAsync}.
+ * - `$evalAsync`: Pending tasks scheduled via {@link ng.$rootScope.Scope#$evalAsync $evalAsync}.
  *   These include tasks scheduled via `$evalAsync()` indirectly (such as {@link $q} promises).
  *
  * <div class="alert alert-info">
  *   Periodic tasks scheduled via {@link $interval} use a different queue and are not taken into
- *   account by `$verifyNoPendingTasks()`.
+ *   account by `$verifyNoPendingTasks()`. There is currently no way to verify that there are no
+ *   pending {@link $interval} tasks.
  * </div>
  *
  * @param {string=} taskType - The type of tasks to check for.
@@ -2248,12 +2251,14 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
    * @description
    *
    * Flushes the queue of pending tasks.
+   *
    * _This method is essentially an alias of {@link ngMock.$flushPendingTasks}._
    *
    * <div class="alert alert-warning">
    *   For historical reasons, this method will also flush non-`$timeout` pending tasks, such as
-   *   {@link $q} promises and tasks scheduled via {@link ng.$rootScope.Scope#$applyAsync} and
-   *   {@link ng.$rootScope.Scope#$evalAsync}.
+   *   {@link $q} promises and tasks scheduled via
+   *   {@link ng.$rootScope.Scope#$applyAsync $applyAsync} and
+   *   {@link ng.$rootScope.Scope#$evalAsync $evalAsync}.
    * </div>
    *
    * @param {number=} delay maximum timeout amount to flush up until
@@ -2270,7 +2275,9 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
    * @name $timeout#verifyNoPendingTasks
    * @description
    *
-   * Verifies that there are no pending tasks that need to be flushed.
+   * Verifies that there are no pending tasks that need to be flushed. It throws an error if there
+   * are still pending tasks.
+   *
    * _This method is essentially an alias of {@link ngMock.$verifyNoPendingTasks} (called with no
    * arguments)._
    *
@@ -2278,8 +2285,9 @@ angular.mock.$TimeoutDecorator = ['$delegate', '$browser', function($delegate, $
    *   <p>
    *     For historical reasons, this method will also verify non-`$timeout` pending tasks, such as
    *     pending {@link $http} requests, in-progress {@link $route} transitions, unresolved
-   *     {@link $q} promises and tasks scheduled via {@link ng.$rootScope.Scope#$applyAsync} and
-   *     {@link ng.$rootScope.Scope#$evalAsync}.
+   *     {@link $q} promises and tasks scheduled via
+   *     {@link ng.$rootScope.Scope#$applyAsync $applyAsync} and
+   *     {@link ng.$rootScope.Scope#$evalAsync $evalAsync}.
    *   </p>
    *   <p>
    *     It is recommended to use {@link ngMock.$verifyNoPendingTasks} instead, which additionally
