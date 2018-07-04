@@ -195,6 +195,7 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate',
     compile: function(element, attr) {
       var srcExp = attr.ngInclude || attr.src,
           onloadExp = attr.onload || '',
+          clientAfterAnimation = attr.afterAnimation,
           autoScrollExp = attr.autoscroll;
 
       return function(scope, $element, $attr, ctrl, $transclude) {
@@ -226,6 +227,9 @@ var ngIncludeDirective = ['$templateRequest', '$anchorScroll', '$animate',
             if (response !== false && isDefined(autoScrollExp) &&
               (!autoScrollExp || scope.$eval(autoScrollExp))) {
                 $anchorScroll();
+            }
+            if(isDefined(clientAfterAnimation)){
+              scope.$eval(clientAfterAnimation);
             }
           };
           var thisChangeId = ++changeCounter;
