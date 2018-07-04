@@ -465,7 +465,7 @@ these values again.
 
   - due to **[1e9ead](https://github.com/angular/angular.js/commit/1e9eadcd72dbbd5c67dae8328a63e535cfa91ff9)**: handle URL sanitization through the `$sce` service
 
-binding `trustAs()` and the short versions `trustAsResourceUrl()` et. al. to
+binding `trustAs()` and the short versions (`trustAsResourceUrl()` et al.) to
 `ngSrc`, `ngSrcset`, and `ngHref` will now raise an infinite digest error:
 
 ```js
