@@ -509,7 +509,7 @@ these values again.
 
 Due to **[1e9ead](https://github.com/angular/angular.js/commit/1e9eadcd72dbbd5c67dae8328a63e535cfa91ff9)**,
 binding {@link ng.$sce#trustAs trustAs()} and the short versions
-{@link ng.$sce#trustAsResourceUrl trustAsResourceUrl()}  et. al. to
+({@link ng.$sce#trustAsResourceUrl trustAsResourceUrl()}  et al.) to
 {@link ng.ngSrc}, {@link ng.ngSrcset}, and {@link ng.ngHref} will now raise an infinite digest error:
 
 ```js
