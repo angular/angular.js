@@ -73,6 +73,7 @@
     /* ngAnimate directives/services */
     "ngAnimateSwapDirective": true,
     "$$rAFSchedulerFactory": true,
+    "$$AnimateCacheProvider": true,
     "$$AnimateChildrenDirective": true,
     "$$AnimateQueueProvider": true,
     "$$AnimationProvider": true,

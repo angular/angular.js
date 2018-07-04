@@ -36,6 +36,9 @@ describe('$$animation', function() {
     });
     inject(function($$animation, $animate, $rootScope) {
       element = jqLite('<div></div>');
+      var parent = jqLite('<div></div>');
+      parent.append(element);
+
       var done = false;
       $$animation(element, 'someEvent').then(function() {
         done = true;
@@ -197,7 +200,11 @@ describe('$$animation', function() {
       });
 
       inject(function($$animation, $rootScope, $animate) {
-        var status, element = jqLite('<div></div>');
+        var status;
+        var element = jqLite('<div></div>');
+        var parent = jqLite('<div></div>');
+        parent.append(element);
+
         var runner = $$animation(element, 'enter');
         runner.then(function() {
             status = 'resolve';
@@ -519,11 +526,24 @@ describe('$$animation', function() {
       }));
 
 
-      they('should add the preparation class before the $prop-animation is pushed to the queue',
+      they('should only apply the ng-$prop-prepare class if there are a child animations',
         ['enter', 'leave', 'move'], function(animationType) {
         inject(function($$animation, $rootScope, $animate) {
-          var runner = $$animation(element, animationType);
-          expect(element).toHaveClass('ng-' + animationType + '-prepare');
+          var expectedClassName = 'ng-' + animationType + '-prepare';
+
+          $$animation(element, animationType);
+          $rootScope.$digest();
+          expect(element).not.toHaveClass(expectedClassName);
+
+          var child = jqLite('<div></div>');
+          element.append(child);
+
+          $$animation(element, animationType);
+          $$animation(child, animationType);
+          $rootScope.$digest();
+
+          expect(element).not.toHaveClass(expectedClassName);
+          expect(child).toHaveClass(expectedClassName);
         });
       });
 
@@ -531,9 +551,22 @@ describe('$$animation', function() {
       they('should remove the preparation class before the $prop-animation starts',
         ['enter', 'leave', 'move'], function(animationType) {
         inject(function($$animation, $rootScope, $$rAF) {
-          var runner = $$animation(element, animationType);
+          var expectedClassName = 'ng-' + animationType + '-prepare';
+
+          var child = jqLite('<div></div>');
+          element.append(child);
+
+          $$animation(element, animationType);
+          $$animation(child, animationType);
           $rootScope.$digest();
-          expect(element).not.toHaveClass('ng-' + animationType + '-prepare');
+
+          expect(element).not.toHaveClass(expectedClassName);
+          expect(child).toHaveClass(expectedClassName);
+
+          $$rAF.flush();
+
+          expect(element).not.toHaveClass(expectedClassName);
+          expect(child).not.toHaveClass(expectedClassName);
         });
       });
     });
@@ -982,11 +1015,12 @@ describe('$$animation', function() {
       });
       inject(function($$animation, $rootScope, $animate) {
         element.addClass('four');
+        parent.append(element);
 
         var completed = false;
         $$animation(element, 'event', {
-          from: { background: 'red' },
-          to: { background: 'blue', 'font-size': '50px' }
+          from: { height: '100px' },
+          to: { height: '200px', 'font-size': '50px' }
         }).then(function() {
           completed = true;
         });
@@ -997,7 +1031,7 @@ describe('$$animation', function() {
         $rootScope.$digest(); //the runner promise
 
         expect(completed).toBe(true);
-        expect(element.css('background')).toContain('blue');
+        expect(element.css('height')).toContain('200px');
         expect(element.css('font-size')).toBe('50px');
       });
     });
@@ -1033,6 +1067,7 @@ describe('$$animation', function() {
         });
       });
       inject(function($$animation, $rootScope, $animate) {
+        parent.append(element);
         element.addClass('four');
 
         var completed = false;
