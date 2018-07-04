@@ -505,6 +505,36 @@ Note that values that have been passed through the `$interpolate` service within
 `URL` or `MEDIA_URL` will have already been sanitized, so you would not need to sanitize
 these values again.
 
+<hr/>
+
+Due to **[1e9ead](https://github.com/angular/angular.js/commit/1e9eadcd72dbbd5c67dae8328a63e535cfa91ff9)**,
+binding {@link ng.$sce#trustAs trustAs()} and the short versions
+({@link ng.$sce#trustAsResourceUrl trustAsResourceUrl()}  et al.) to
+{@link ng.ngSrc}, {@link ng.ngSrcset}, and {@link ng.ngHref} will now raise an infinite digest error:
+
+```js
+  $scope.imgThumbFn = function(id) {
+    return $sce.trustAsResourceUrl(someService.someUrl(id));
+  };
+```
+
+```html
+  <img ng-src="{{imgThumbFn(imgId)}}">
+```
+This is because {@link ng.$interpolate} is now responsible for sanitizing
+the attribute value, and its watcher receives a new object from `trustAs()`
+on every digest.
+To migrate, compute the trusted value only when the input value changes:
+
+```js
+  $scope.$watch('imgId', function(id) {
+    $scope.imgThumb = $sce.trustAsResourceUrl(someService.someUrl(id));
+  });
+```
+
+```html
+  <img ng-src="{{imgThumb}}">
+```
 
 
 <a name="migrate1.6to1.7-ng-filters"></a>
