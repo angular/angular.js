@@ -1018,7 +1018,6 @@ describe('$location', function() {
 
           $rootScope.$digest();
 
-          expect($browser.url()).toEqual('http://server/app/?q=%27');
           expect($location.path()).toEqual('/');
           expect($location.search()).toEqual({q: '\''});
           expect($browserUrl).toHaveBeenCalledTimes(1);
@@ -1218,14 +1217,13 @@ describe('$location', function() {
     it('should not infinite $digest on pushState() with quote in param', function() {
       initService({html5Mode: true, supportHistory: true});
       mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
-      inject(function($rootScope, $injector, $browser, $window) {
+      inject(function($rootScope, $injector, $window) {
         var $location = $injector.get('$location');
         $rootScope.$digest(); //allow $location initialization to finish
 
         $window.history.pushState({}, null, 'http://server/app/Home?q=\'');
         $rootScope.$digest();
 
-        expect($browser.url()).toEqual('http://server/app/Home?q=%27');
         expect($location.absUrl()).toEqual('http://server/app/Home?q=\'');
         expect($location.path()).toEqual('/Home');
         expect($location.search()).toEqual({q: '\''});
@@ -1236,14 +1234,13 @@ describe('$location', function() {
     it('should not infinite $digest on popstate event with quote in param', function() {
       initService({html5Mode: true, supportHistory: true});
       mockUpBrowser({initialUrl:'http://server/app/', baseHref:'/app/'});
-      inject(function($rootScope, $injector, $browser, $window) {
+      inject(function($rootScope, $injector, $window) {
         var $location = $injector.get('$location');
         $rootScope.$digest(); //allow $location initialization to finish
 
         $window.location.href = 'http://server/app/Home?q=\'';
         jqLite($window).triggerHandler('popstate');
 
-        expect($browser.url()).toEqual('http://server/app/Home?q=%27');
         expect($location.absUrl()).toEqual('http://server/app/Home?q=\'');
         expect($location.path()).toEqual('/Home');
         expect($location.search()).toEqual({q: '\''});
