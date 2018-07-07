@@ -626,16 +626,17 @@ describe('ngMock', function() {
 
       it('should flush delayed', function() {
         browser.defer(logFn('A'));
-        browser.defer(logFn('B'), 10, 'taskType');
-        browser.defer(logFn('C'), 20);
+        browser.defer(logFn('B'), 0, 'taskTypeB');
+        browser.defer(logFn('C'), 10, 'taskTypeC');
+        browser.defer(logFn('D'), 20);
         expect(log).toEqual('');
         expect(browser.defer.now).toEqual(0);
 
         browser.defer.flush(0);
-        expect(log).toEqual('A;');
+        expect(log).toEqual('A;B;');
 
         browser.defer.flush();
-        expect(log).toEqual('A;B;C;');
+        expect(log).toEqual('A;B;C;D;');
       });
 
       it('should defer and flush over time', function() {
@@ -662,6 +663,62 @@ describe('ngMock', function() {
 
       it('should not throw an exception when passing a specific delay', function() {
         expect(function() {browser.defer.flush(100);}).not.toThrow();
+      });
+
+      describe('tasks scheduled during flushing', function() {
+        it('should be flushed if they do not exceed the target delay (when no delay specified)',
+          function() {
+            browser.defer(function() {
+              logFn('1')();
+              browser.defer(function() {
+                logFn('3')();
+                browser.defer(logFn('4'), 1);
+              }, 2);
+            }, 1);
+            browser.defer(function() {
+              logFn('2')();
+              browser.defer(logFn('6'), 4);
+            }, 2);
+            browser.defer(logFn('5'), 5);
+
+            browser.defer.flush(0);
+            expect(browser.defer.now).toEqual(0);
+            expect(log).toEqual('');
+
+            browser.defer.flush();
+            expect(browser.defer.now).toEqual(5);
+            expect(log).toEqual('1;2;3;4;5;');
+          }
+        );
+
+        it('should be flushed if they do not exceed the specified delay',
+          function() {
+            browser.defer(function() {
+              logFn('1')();
+              browser.defer(function() {
+                logFn('3')();
+                browser.defer(logFn('4'), 1);
+              }, 2);
+            }, 1);
+            browser.defer(function() {
+              logFn('2')();
+              browser.defer(logFn('6'), 4);
+            }, 2);
+            browser.defer(logFn('5'), 5);
+
+            browser.defer.flush(0);
+            expect(browser.defer.now).toEqual(0);
+            expect(log).toEqual('');
+
+            browser.defer.flush(4);
+            expect(browser.defer.now).toEqual(4);
+            expect(log).toEqual('1;2;3;4;');
+
+            browser.defer.flush(6);
+            expect(browser.defer.now).toEqual(10);
+            expect(log).toEqual('1;2;3;4;5;6;');
+          }
+        );
       });
     });
 

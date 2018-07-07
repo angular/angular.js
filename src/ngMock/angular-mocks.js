@@ -244,7 +244,14 @@ angular.mock.$Browser.prototype = {
  * @name $flushPendingTasks
  *
  * @description
- * Flushes all pending tasks and executes the corresponding callbacks.
+ * Flushes all currently pending tasks and executes the corresponding callbacks.
+ *
+ * Optionally, you can also pass a `delay` argument to only flush tasks that are scheduled to be
+ * executed within `delay` milliseconds. Currently, `delay` only applies to timeouts, since all
+ * other tasks have a delay of 0 (i.e. they are scheduled to be executed as soon as possible, but
+ * still asynchronously).
+ *
+ * If no delay is specified, it uses a delay such that all currently pending tasks are flushed.
  *
  * The types of tasks that are flushed include:
  *
