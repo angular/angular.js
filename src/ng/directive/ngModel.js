@@ -1087,8 +1087,7 @@ function setupModelWatcher(ctrl) {
     // case where the model is changed in the ngChange function or the model setter
     if (modelValue !== ctrl.$modelValue &&
       // checks for NaN is needed to allow setting the model to NaN when there's an asyncValidator
-      // eslint-disable-next-line no-self-compare
-      (ctrl.$modelValue === ctrl.$modelValue || modelValue === modelValue)
+      !(isNumberNaN(ctrl.$modelValue) && isNumberNaN(modelValue))
     ) {
       ctrl.$$setModelValue(modelValue);
     }
