@@ -635,8 +635,7 @@ function $RootScopeProvider() {
               oldItem = oldValue[i];
               newItem = newValue[i];
 
-              // eslint-disable-next-line no-self-compare
-              bothNaN = (oldItem !== oldItem) && (newItem !== newItem);
+              bothNaN = isNumberNaN(oldItem) && isNumberNaN(newItem);
               if (!bothNaN && (oldItem !== newItem)) {
                 changeDetected++;
                 oldValue[i] = newItem;
@@ -658,8 +657,7 @@ function $RootScopeProvider() {
                 oldItem = oldValue[key];
 
                 if (key in oldValue) {
-                  // eslint-disable-next-line no-self-compare
-                  bothNaN = (oldItem !== oldItem) && (newItem !== newItem);
+                  bothNaN = isNumberNaN(oldItem) && isNumberNaN(newItem);
                   if (!bothNaN && (oldItem !== newItem)) {
                     changeDetected++;
                     oldValue[key] = newItem;

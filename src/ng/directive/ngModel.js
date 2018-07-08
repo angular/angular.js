@@ -368,8 +368,7 @@ NgModelController.prototype = {
    * @returns {boolean} True if `value` is "empty".
    */
   $isEmpty: function(value) {
-    // eslint-disable-next-line no-self-compare
-    return isUndefined(value) || value === '' || value === null || value !== value;
+    return isUndefined(value) || value === '' || value === null || isNumberNaN(value);
   },
 
   $$updateEmptyClasses: function(value) {
@@ -1088,8 +1087,7 @@ function setupModelWatcher(ctrl) {
     // case where the model is changed in the ngChange function or the model setter
     if (modelValue !== ctrl.$modelValue &&
       // checks for NaN is needed to allow setting the model to NaN when there's an asyncValidator
-      // eslint-disable-next-line no-self-compare
-      (ctrl.$modelValue === ctrl.$modelValue || modelValue === modelValue)
+      !(isNumberNaN(ctrl.$modelValue) && isNumberNaN(modelValue))
     ) {
       ctrl.$$setModelValue(modelValue);
     }
