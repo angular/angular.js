@@ -1843,9 +1843,8 @@ function $ParseProvider() {
         // fall-through to the primitive equality check
       }
 
-      //Primitive or NaN
-      // eslint-disable-next-line no-self-compare
-      return newValue === oldValueOfValue || (newValue !== newValue && oldValueOfValue !== oldValueOfValue);
+      // Primitive or NaN
+      return newValue === oldValueOfValue || (isNumberNaN(newValue) && isNumberNaN(oldValueOfValue));
     }
 
     function inputsWatchDelegate(scope, listener, objectEquality, parsedExpression, prettyPrintExpression) {
