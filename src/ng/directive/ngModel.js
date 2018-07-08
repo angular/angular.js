@@ -368,8 +368,7 @@ NgModelController.prototype = {
    * @returns {boolean} True if `value` is "empty".
    */
   $isEmpty: function(value) {
-    // eslint-disable-next-line no-self-compare
-    return isUndefined(value) || value === '' || value === null || value !== value;
+    return isUndefined(value) || value === '' || value === null || isNumberNaN(value);
   },
 
   $$updateEmptyClasses: function(value) {
