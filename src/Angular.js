@@ -987,8 +987,7 @@ function copy(source, destination, maxDepth) {
 }
 
 
-// eslint-disable-next-line no-self-compare
-function simpleCompare(a, b) { return a === b || (a !== a && b !== b); }
+function simpleCompare(a, b) { return a === b || (isNumberNaN(a) && isNumberNaN(b)); }
 
 
 /**
