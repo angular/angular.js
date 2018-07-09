@@ -369,14 +369,39 @@ var $AnimateProvider = ['$provide', /** @this */ function($provide) {
        * );
        * ```
        *
+       * <div class="alert alert-warning">
+       * **Note**: Generally, the events that are fired correspond 1:1 to `$animate` method names,
+       * e.g. {@link ng.$animate#addClass addClass()} will fire `addClass`, and {@link ng.ngClass}
+       * will fire `addClass` if classes are added, and `removeClass` if classes are removed.
+       * However, there are two exceptions:
+       *
+       * <ul>
+       *   <li>if both an {@link ng.$animate#addClass addClass()} and a
+       *   {@link ng.$animate#removeClass removeClass()} action are performed during the same
+       *   animation, the event fired will be `setClass`. This is true even for `ngClass`.</li>
+       *   <li>an {@link ng.$animate#animate animate()} call that adds and removes classes will fire
+       *   the `setClass` event, but if it either removes or adds classes,
+       *   it will fire `animate` instead.</li>
+       * </ul>
+       *
+       * </div>
+       *
        * @param {string} event the animation event that will be captured (e.g. enter, leave, move, addClass, removeClass, etc...)
        * @param {DOMElement} container the container element that will capture each of the animation events that are fired on itself
        *     as well as among its children
-       * @param {Function} callback the callback function that will be fired when the listener is triggered
+       * @param {Function} callback the callback function that will be fired when the listener is triggered.
        *
        * The arguments present in the callback function are:
        * * `element` - The captured DOM element that the animation was fired on.
        * * `phase` - The phase of the animation. The two possible phases are **start** (when the animation starts) and **close** (when it ends).
+       * * `data` - an object with these properties:
+       *     * addClass - `{string|null}` - space-separated CSS classes to add to the element
+       *     * removeClass - `{string|null}` - space-separated CSS classes to remove from the element
+       *     * from - `{Object|null}` - CSS properties & values at the beginning of the animation
+       *     * to - `{Object|null}` - CSS properties & values at the end of the animation
+       *
+       * Note that the callback does not trigger a scope digest. Wrap your call into a
+       * {@link $rootScope.Scope#$apply scope.$apply} to propagate changes to the scope.
        */
       on: $$animateQueue.on,
 
@@ -644,9 +669,8 @@ var $AnimateProvider = ['$provide', /** @this */ function($provide) {
        * @param {object=} options an optional collection of options/styles that will be applied to the element.
        *   The object can have the following properties:
        *
-       *   - **addClass** - `{string}` - space-separated CSS classes to add to element
-       *   - **from** - `{Object}` - CSS properties & values at the beginning of animation. Must have matching `to`
        *   - **removeClass** - `{string}` - space-separated CSS classes to remove from element
+       *   - **from** - `{Object}` - CSS properties & values at the beginning of animation. Must have matching `to`
        *   - **to** - `{Object}` - CSS properties & values at end of animation. Must have matching `from`
        *
        * @return {Runner} animationRunner the animation runner
@@ -676,7 +700,6 @@ var $AnimateProvider = ['$provide', /** @this */ function($provide) {
        *
        *   - **addClass** - `{string}` - space-separated CSS classes to add to element
        *   - **from** - `{Object}` - CSS properties & values at the beginning of animation. Must have matching `to`
-       *   - **removeClass** - `{string}` - space-separated CSS classes to remove from element
        *   - **to** - `{Object}` - CSS properties & values at end of animation. Must have matching `from`
        *
        * @return {Runner} the animation runner
@@ -706,8 +729,8 @@ var $AnimateProvider = ['$provide', /** @this */ function($provide) {
        *   The object can have the following properties:
        *
        *   - **addClass** - `{string}` - space-separated CSS classes to add to element
-       *   - **from** - `{Object}` - CSS properties & values at the beginning of animation. Must have matching `to`
        *   - **removeClass** - `{string}` - space-separated CSS classes to remove from element
+       *   - **from** - `{Object}` - CSS properties & values at the beginning of animation. Must have matching `to`
        *   - **to** - `{Object}` - CSS properties & values at end of animation. Must have matching `from`
        *
        * @return {Runner} the animation runner
