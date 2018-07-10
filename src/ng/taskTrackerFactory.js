@@ -47,7 +47,7 @@ function TaskTracker(log) {
   /**
    * Execute the specified callback when all pending tasks have been completed.
    *
-   * If there are no pending tasks, the callback is executed immediatelly. You can optionally limit
+   * If there are no pending tasks, the callback is executed immediately. You can optionally limit
    * the tasks that will be waited for to a specific type, by passing a `taskType`.
    *
    * @param {function} callback - The function to call when there are no pending tasks.
