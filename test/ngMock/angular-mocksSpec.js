@@ -796,7 +796,7 @@ describe('ngMock', function() {
         callback = jasmine.createSpy('callback');
       });
 
-      it('should immediatelly run the callback if no pending tasks', function() {
+      it('should immediately run the callback if no pending tasks', function() {
         browser.notifyWhenNoOutstandingRequests(callback);
         expect(callback).toHaveBeenCalled();
       });
@@ -829,7 +829,7 @@ describe('ngMock', function() {
       });
 
       describe('with specific task type', function() {
-        it('should immediatelly run the callback if no pending tasks', function() {
+        it('should immediately run the callback if no pending tasks', function() {
           browser.notifyWhenNoOutstandingRequests(callback, 'fooType');
           expect(callback).toHaveBeenCalled();
         });
