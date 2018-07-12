@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html ng-app="test">
+  <body>
+    <div class="scroll-area" ng-controller="TestController">
+      <a id="top" ng-click="scrollTo('bottom')">Go to bottom</a>
+      <a id="bottom" ng-click="scrollTo('top')">Back to top</a>
+    </div>
+
+    <style type="text/css">
+      .scroll-area {
+        height: 200px;
+        overflow: auto;
+      }
+      #bottom {
+        display: block;
+        margin-top: 2000px;
+      }
+    </style>
+
+    <script src="angular.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

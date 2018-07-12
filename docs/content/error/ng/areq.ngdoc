@@ -3,6 +3,9 @@
 @fullName Bad Argument
 @description
 
-AngularJS often asserts that certain values will be present and truthy using a
-helper function. If the assertion fails, this error is thrown. To fix this problem,
-make sure that the value the assertion expects is defined and truthy.
+AngularJS often asserts that certain values will be present and truthy using a helper function. If
+the assertion fails, this error is thrown. To fix this problem, make sure that the value the
+assertion expects is defined and matches the type mentioned in the error.
+
+If the type is `undefined`, make sure any newly added controllers/directives/services are properly
+defined and included in the script(s) loaded by your page.

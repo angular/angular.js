@@ -1,0 +1,5 @@
+{
+  "globals": {
+    "goog": false // see src/module_closure.prefix
+  }
+}

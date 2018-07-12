@@ -1,0 +1,47 @@
+@ngdoc error
+@name $compile:reqslot
+@fullName Required transclusion slot
+@description
+
+This error occurs when a directive or component try to transclude a slot that is not provided.
+
+Transcluded elements must contain something. This error could happen when you try to transclude a self closing tag element.
+Also you can make a transclusion slot optional with a `?` prefix.
+
+```js
+// In this example the <my-component> must have an <important-component> inside to transclude it.
+// If not, a reqslot error will be generated.
+
+var componentConfig = {
+  template: 'path/to/template.html',
+  transclude: {
+    importantSlot: 'importantComponent', // mandatory transclusion
+    optionalSlot: '?optionalComponent',  // optional transclusion
+  }
+};
+
+angular
+  .module('doc')
+  .component('myComponent', componentConfig)
+
+```
+
+```html
+<!-- Will not work because <important-component> is missing -->
+<my-component>
+</my-component>
+
+<my-component>
+  <optional-component></optional-component>
+</my-component>
+
+<!-- Will work -->
+<my-component>
+  <important-component></important-component>
+</my-component>
+
+<my-component>
+  <optional-component></optional-component>
+  <important-component></important-component>
+</my-component>
+```

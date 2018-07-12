@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u91d1\u66dc\u65e5",
       "\u571f\u66dc\u65e5"
     ],
+    "ERANAMES": [
+      "\u7d00\u5143\u524d",
+      "\u897f\u66a6"
+    ],
+    "ERAS": [
+      "\u7d00\u5143\u524d",
+      "\u897f\u66a6"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
       "1\u6708",
       "2\u6708",
@@ -53,13 +62,31 @@ $provide.value("$locale", {
       "11\u6708",
       "12\u6708"
     ],
+    "STANDALONEMONTH": [
+      "1\u6708",
+      "2\u6708",
+      "3\u6708",
+      "4\u6708",
+      "5\u6708",
+      "6\u6708",
+      "7\u6708",
+      "8\u6708",
+      "9\u6708",
+      "10\u6708",
+      "11\u6708",
+      "12\u6708"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
     "fullDate": "y\u5e74M\u6708d\u65e5EEEE",
     "longDate": "y\u5e74M\u6708d\u65e5",
-    "medium": "yyyy/MM/dd H:mm:ss",
-    "mediumDate": "yyyy/MM/dd",
+    "medium": "y/MM/dd H:mm:ss",
+    "mediumDate": "y/MM/dd",
     "mediumTime": "H:mm:ss",
-    "short": "yyyy/MM/dd H:mm",
-    "shortDate": "yyyy/MM/dd",
+    "short": "y/MM/dd H:mm",
+    "shortDate": "y/MM/dd",
     "shortTime": "H:mm"
   },
   "NUMBER_FORMATS": {
@@ -70,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,11 +108,10 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4-",
+        "negPre": "-\u00a4",
         "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "ja",
-  "pluralCat": function (n) {  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "ja",
+  "pluralCat": function(n, opt_precision) {  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

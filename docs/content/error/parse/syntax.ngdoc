@@ -1,9 +1,0 @@
-@ngdoc error
-@name $parse:syntax
-@fullName Syntax Error
-@description
-
-Occurs when there is a syntax error in an expression.  These errors are thrown while compiling the expression.
-The error message contains a more precise description of the error, including the location (column) in the expression where the error occurred.
-
-To resolve, learn more about {@link guide/expression Angular expressions}, identify the error and fix the expression's syntax.

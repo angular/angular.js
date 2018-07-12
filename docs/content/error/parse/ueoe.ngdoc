@@ -1,9 +1,0 @@
-@ngdoc error
-@name $parse:ueoe
-@fullName Unexpected End of Expression
-@description
-
-Occurs when an expression is missing tokens at the end of the expression.
-For example, forgetting a closing bracket in an expression will trigger this error.
-
-To resolve, learn more about {@link guide/expression Angular expressions}, identify the error and fix the expression's syntax.

@@ -7,9 +7,8 @@ describe('ngController', function() {
     $controllerProvider.register('PublicModule', function() {
       this.mark = 'works';
     });
-  }));
-  beforeEach(inject(function($window) {
-    $window.Greeter = function($scope) {
+
+    var Greeter = function($scope) {
       // private stuff (not exported to scope)
       this.prefix = 'Hello ';
 
@@ -22,20 +21,26 @@ describe('ngController', function() {
 
       $scope.protoGreet = bind(this, this.protoGreet);
     };
-    $window.Greeter.prototype = {
+    Greeter.prototype = {
       suffix: '!',
       protoGreet: function(name) {
         return this.prefix + name + this.suffix;
       }
     };
+    $controllerProvider.register('Greeter', Greeter);
 
-    $window.Child = function($scope) {
+    $controllerProvider.register('Child', function($scope) {
       $scope.name = 'Adam';
-    };
+    });
 
-    $window.Public = function() {
+    $controllerProvider.register('Public', function($scope) {
       this.mark = 'works';
-    }
+    });
+
+    var Foo = function($scope) {
+      $scope.mark = 'foo';
+    };
+    $controllerProvider.register('BoundFoo', ['$scope', Foo.bind(null)]);
   }));
 
   afterEach(function() {
@@ -49,6 +54,11 @@ describe('ngController', function() {
     expect(element.text()).toBe('Hello Misko!');
   }));
 
+  it('should instantiate bound constructor functions', inject(function($compile, $rootScope) {
+    element = $compile('<div ng-controller="BoundFoo">{{mark}}</div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.text()).toBe('foo');
+  }));
 
   it('should publish controller into scope', inject(function($compile, $rootScope) {
     element = $compile('<div ng-controller="Public as p">{{p.mark}}</div>')($rootScope);
@@ -77,11 +87,11 @@ describe('ngController', function() {
 
 
   it('should instantiate controller defined on scope', inject(function($compile, $rootScope) {
-    $rootScope.Greeter = function($scope) {
+    $rootScope.VojtaGreeter = function($scope) {
       $scope.name = 'Vojta';
     };
 
-    element = $compile('<div ng-controller="Greeter">{{name}}</div>')($rootScope);
+    element = $compile('<div ng-controller="VojtaGreeter">{{name}}</div>')($rootScope);
     $rootScope.$digest();
     expect(element.text()).toBe('Vojta');
   }));
@@ -140,4 +150,5 @@ describe('ngController', function() {
     $httpBackend.flush();
     expect(controllerScope.name).toBeUndefined();
   }));
+
 });

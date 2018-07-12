@@ -4,9 +4,7 @@ echo "#################################"
 echo "#### Update master ##############"
 echo "#################################"
 
-ARG_DEFS=(
-  "[--no-test=(true|false)]"
-)
+ARG_DEFS=()
 
 function init {
   if [[ ! $VERBOSE ]]; then
@@ -17,14 +15,7 @@ function init {
 
 function build {
   cd ../..
-
-  if [[ $NO_TEST == "true" ]]; then
-    npm install --color false
-    grunt ci-checks package --no-color
-  else
-    ./jenkins_build.sh
-  fi
-
+  scripts/jenkins/build.sh
   cd $SCRIPT_DIR
 }
 

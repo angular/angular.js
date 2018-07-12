@@ -1,0 +1,8 @@
+{
+  "root": true,
+  "extends": "../../../.eslintrc-browser.json",
+
+  "globals": {
+    "lunr": false
+  }
+}

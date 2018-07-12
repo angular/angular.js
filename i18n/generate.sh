@@ -1,7 +1,15 @@
 #!/bin/bash
 
+set -e
+
 BASE_DIR=`dirname $0`
-cd $BASE_DIR
 
+yarn run test-i18n
 
-../node_modules/.bin/jasmine-node spec/ --noColor && node src/closureSlurper.js
+node $BASE_DIR/src/closureSlurper.js
+
+yarn run test-i18n-ucd
+
+echo "Generating ngParseExt"
+node $BASE_DIR/ucd/src/extract.js
+

@@ -1,0 +1,29 @@
+@ngdoc error
+@name $compile:iscp
+@fullName Invalid Isolate Scope Definition
+@description
+
+When declaring isolate scope the scope definition object must be in specific format which starts with mode character (`@&=<`), after which comes an optional `?`, and it ends with an optional local name.
+
+```
+myModule.directive('directiveName', function factory() {
+  return {
+    ...
+    scope: {
+      'localName': '@', // OK
+      'localName2': '&attr', // OK
+      'localName3': '<?attr', // OK
+      'localName4': ' = attr', // OK
+      'localName5': ' =*attr', // OK      
+      'localName6': 'attr',    // ERROR: missing mode @&=<
+      'localName7': 'attr=',   // ERROR: must be prefixed with @&=<
+      'localName8': '=attr?',  // ERROR: ? must come directly after the mode
+      'localName9': '<*'  // ERROR: * is only valid with =
+    }
+    ...
+  }
+});
+```
+
+Please refer to the {@link ng.$compile#directive-definition-object
+`scope` option} of the directive definition documentation to learn more about the API.

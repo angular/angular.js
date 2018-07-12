@@ -1,0 +1,9 @@
+@ngdoc error
+@name $sce:imatcher
+@fullName Invalid matcher (only string patterns and RegExp instances are supported)
+@description
+
+Please see {@link $sceDelegateProvider#resourceUrlWhitelist
+$sceDelegateProvider.resourceUrlWhitelist} and {@link
+$sceDelegateProvider#resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist} for the
+list of acceptable items.

@@ -1,0 +1,10 @@
+@ngdoc overview
+@name Miscellaneous
+@description
+
+# Miscellaneous Links
+
+- {@link misc/started Getting Started}
+- {@link misc/downloading Downloading AngularJS}
+- {@link misc/faq Frequently Asked Questions}
+- {@link misc/contribute Building AngularJS}

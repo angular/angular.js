@@ -1,0 +1,36 @@
+@ngdoc error
+@name $compile:missingattr
+@fullName Missing required attribute
+@description
+
+This error may occur only when {@link $compileProvider#strictComponentBindingsEnabled `$compileProvider.strictComponentBindingsEnabled`} is set to `true`.
+
+If that is the case, then all {@link $compileProvider#component component} controller bindings and
+{@link $compileProvider#directive directive} scope / controller bindings that are non-optional,
+must be provided when the directive is instantiated.
+
+To make a binding optional, add '?' to the definition.
+
+## Example:
+
+```js
+
+app.component('myTest', {
+  bindings: {
+    first: '=?', // optional
+    second: '='
+  },
+  controller: function() {
+    ...
+  },
+  template: '...'
+});
+
+```
+
+This component will throw `missingattr` for the `second` binding when used as follows:
+
+```html
+<my-test></my-test>
+```
+

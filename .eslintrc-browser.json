@@ -1,0 +1,17 @@
+{
+  "extends": "./.eslintrc-base.json",
+
+  "env": {
+    // Note: don't set `"browser": true`; code in "src/" should be compatible with
+    // non-browser environments like Node.js with a custom window implementation
+    // like jsdom. All browser globals should be taken from window.
+    "browser": false,
+    "node": false
+  },
+
+  "globals": {
+    "window": false,
+
+    "angular": false
+  }
+}

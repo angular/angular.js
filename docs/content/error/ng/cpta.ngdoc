@@ -1,0 +1,7 @@
+@ngdoc error
+@name ng:cpta
+@fullName Copying TypedArray
+@description
+
+Copying TypedArray's with a destination is not supported because TypedArray
+objects can not be mutated, they are fixed length.

@@ -1,0 +1,79 @@
+@ngdoc overview
+@name  E2E Testing
+@sortOrder 420
+@description
+
+# E2E Testing
+
+As applications grow in size and complexity, it becomes unrealistic to rely on manual testing to
+verify the correctness of new features, catch bugs and notice regressions. Unit tests
+are the first line of defense for catching bugs, but sometimes issues come up with integration
+between components which can't be captured in a unit test. End-to-end tests are made to find
+these problems.
+
+We have built [Protractor](https://github.com/angular/protractor), an end
+to end test runner which simulates user interactions that will help you verify the health of your
+AngularJS application.
+
+## Using Protractor
+
+Protractor is a [Node.js](http://nodejs.org) program, and runs end-to-end tests that are also
+written in JavaScript and run with node. Protractor uses [WebDriver](https://code.google.com/p/selenium/wiki/GettingStarted)
+to control browsers and simulate user actions.
+
+For more information on Protractor, view [getting started](http://angular.github.io/protractor/#/getting-started)
+or the [api docs](http://angular.github.io/protractor/#/api).
+
+Protractor uses [Jasmine](http://jasmine.github.io/1.3/introduction.html) for its test syntax.
+As in unit testing, a test file is comprised of one or
+more `it` blocks that describe the requirements of your application. `it` blocks are made of
+**commands** and **expectations**. Commands tell Protractor to do something with the application
+such as navigate to a page or click on a button. Expectations tell Protractor to assert something
+about the application's state, such as the value of a field or the current URL.
+
+If any expectation within an `it` block fails, the runner marks the `it` as "failed" and continues
+on to the next block.
+
+Test files may also have `beforeEach` and `afterEach` blocks, which will be run before or after
+each `it` block regardless of whether the block passes or fails.
+
+<img src="img/guide/scenario_runner.png">
+
+In addition to the above elements, tests may also contain helper functions to avoid duplicating
+code in the `it` blocks.
+
+Here is an example of a simple test:
+```js
+describe('TODO list', function() {
+  it('should filter results', function() {
+
+    // Find the element with ng-model="user" and type "jacksparrow" into it
+    element(by.model('user')).sendKeys('jacksparrow');
+
+    // Find the first (and only) button on the page and click it
+    element(by.css(':button')).click();
+
+    // Verify that there are 10 tasks
+    expect(element.all(by.repeater('task in tasks')).count()).toEqual(10);
+
+    // Enter 'groceries' into the element with ng-model="filterText"
+    element(by.model('filterText')).sendKeys('groceries');
+
+    // Verify that now there is only one item in the task list
+    expect(element.all(by.repeater('task in tasks')).count()).toEqual(1);
+  });
+});
+```
+
+This test describes the requirements of a ToDo list, specifically, that it should be able to
+filter the list of items.
+
+## Example
+See the [angular-seed](https://github.com/angular/angular-seed) project for more examples, or look
+at the embedded examples in the AngularJS documentation (For example, {@link $http $http}
+has an end-to-end test in the example under the `protractor.js` tag).
+
+## Caveats
+
+Protractor does not work out-of-the-box with apps that bootstrap manually using
+`angular.bootstrap`. You must use the `ng-app` directive.

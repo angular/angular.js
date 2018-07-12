@@ -1,0 +1,86 @@
+@ngdoc error
+@name $injector:unpr
+@fullName Unknown Provider
+@description
+
+This error results from the `$injector` being unable to resolve a required
+dependency. To fix this, make sure the dependency is defined and spelled
+correctly. For example:
+
+```
+angular.module('myApp', [])
+  .controller('MyController', ['myService', function (myService) {
+    // Do something with myService
+  }]);
+```
+
+The above code will fail with `$injector:unpr` if `myService` is not defined.
+
+Making sure each dependency is defined will fix the problem, as noted below.
+
+```
+angular.module('myApp', [])
+  .service('myService', function () { /* ... */ })
+  .controller('MyController', ['myService', function (myService) {
+    // Do something with myService
+  }]);
+```
+
+An unknown provider error can also be caused by accidentally redefining a
+module using the `angular.module` API, as shown in the following example.
+
+```
+angular.module('myModule', [])
+  .service('myCoolService', function () { /* ... */ });
+
+angular.module('myModule', [])
+  // myModule has already been created! This is not what you want!
+  .directive('myDirective', ['myCoolService', function (myCoolService) {
+    // This directive definition throws unknown provider, because myCoolService
+    // has been destroyed.
+  }]);
+```
+
+To fix this problem, make sure you only define each module with the
+`angular.module(name, [requires])` syntax once across your entire project.
+Retrieve it for subsequent use with `angular.module(name)`. The fixed example
+is shown below.
+
+```
+angular.module('myModule', [])
+  .service('myCoolService', function () { /* ... */ });
+
+angular.module('myModule')
+  .directive('myDirective', ['myCoolService', function (myCoolService) {
+    // This directive definition does not throw unknown provider.
+  }]);
+```
+
+
+Attempting to inject one controller into another will also throw an `Unknown provider` error:
+
+```
+angular.module('myModule', [])
+  .controller('MyFirstController', function() { /* ... */ })
+  .controller('MySecondController', ['MyFirstController', function(MyFirstController) {
+    // This controller throws an unknown provider error because
+    // MyFirstController cannot be injected.
+  }]);
+```
+
+Use the `$controller` service if you want to instantiate controllers yourself.
+
+Attempting to inject a scope object into anything that's not a controller or a directive,
+for example a service, will also throw an `Unknown provider: $scopeProvider <- $scope` error.
+This might happen if one mistakenly registers a controller as a service, ex.:
+
+```
+angular.module('myModule', [])
+  .service('MyController', ['$scope', function($scope) {
+    // This controller throws an unknown provider error because
+    // a scope object cannot be injected into a service.
+  }]);
+```
+
+If you encounter this error only with minified code, consider using `ngStrictDi` (see
+{@link ng.directive:ngApp ngApp}) to provoke the error with the non-minified source.

@@ -3,7 +3,7 @@
 @fullName Non-Assignable Expression
 @description
 
-This error occurs when expression the {@link api/ng.directive:ngModel ngModel} directive is bound to is a non-assignable expression.
+This error occurs when expression the {@link ng.directive:ngModel ngModel} directive is bound to is a non-assignable expression.
 
 Examples using assignable expressions include:
 
@@ -24,4 +24,4 @@ Examples of non-assignable expressions include:
 
 Always make sure that the expression bound via `ngModel` directive can be assigned to.
 
-For more information, see the {@link api/ng.directive:ngModel ngModel API doc}.
+For more information, see the {@link ng.directive:ngModel ngModel API doc}.

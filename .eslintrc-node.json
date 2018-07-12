@@ -1,0 +1,13 @@
+{
+  "extends": "./.eslintrc-base.json",
+  "env": {
+    "browser": false,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
+  "plugins": [
+    "promise"
+  ]
+}

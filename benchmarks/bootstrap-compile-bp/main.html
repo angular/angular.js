@@ -1,0 +1,40 @@
+<div ng-app="boostrapCompileBenchmark" ng-cloak>
+  <div ng-controller="DataController as config">
+    <p>Please, select which configuration you want to use:</p>
+    <ul>
+      <li>
+        <a href="?comment=disabled&css=disabled">Only EA</a>
+        <span ng-show="config.isEA">(active)</span>
+      </li>
+      <li>
+        <a href="?comment=disabled">Active EA and classes directives</a>
+        <span ng-show="config.isEAC">(active)</span>
+      </li>
+      <li>
+        <a href="?css=disabled">Active EA and comment directives</a>
+        <span ng-show="config.isEAM">(active)</span>
+      </li>
+      <li>
+        <a href="?">Active all directives</a>
+        <span ng-show="config.isEACM">(active)</span>
+      </li>
+    </ul>
+
+    <hr>
+    <p>How many repetitions do you want to do?</p>
+    <input type="number" ng-model="config.repeats">
+
+    <hr>
+    <p>Template to $compile:</p>
+    <select
+      ng-options="template for template in config.templates"
+      ng-model="config.selectedTemplate"
+      ng-change="config.loadTemplate()"></select>
+
+    <p>The benchmark is
+      <span ng-show="config.html">Ready!</span>
+      <span ng-hide="config.html">LOADING!</span>
+    </p>
+
+  </div>
+</div>

@@ -9,9 +9,9 @@ describe('Binder', function() {
   }
 
   beforeEach(function() {
-    this.compileToHtml = function (content) {
+    this.compileToHtml = function(content) {
       var html;
-      inject(function($rootScope, $compile){
+      inject(function($rootScope, $compile) {
         content = jqLite(content);
         $compile(content)($rootScope);
         html = sortedHtml(content);
@@ -62,7 +62,7 @@ describe('Binder', function() {
   }));
 
   it('InputTypeButtonActionExecutesInScope2', inject(function($rootScope, $compile) {
-    var log = "";
+    var log = '';
     element = $compile('<input type="image" ng-click="action()">')($rootScope);
     $rootScope.action = function() {
       log += 'click;';
@@ -167,32 +167,8 @@ describe('Binder', function() {
     expect(element[0].childNodes.length).toEqual(1);
   }));
 
-  it('IfTextBindingThrowsErrorDecorateTheSpan', function() {
-    module(function($exceptionHandlerProvider){
-      $exceptionHandlerProvider.mode('log');
-    });
-    inject(function($rootScope, $exceptionHandler, $compile) {
-      element = $compile('<div>{{error.throw()}}</div>', null, true)($rootScope);
-      var errorLogs = $exceptionHandler.errors;
-
-      $rootScope.error = {
-          'throw': function() {throw 'ErrorMsg1';}
-      };
-      $rootScope.$apply();
-
-      $rootScope.error['throw'] = function() {throw 'MyError';};
-      errorLogs.length = 0;
-      $rootScope.$apply();
-      expect(errorLogs.shift().message).toMatch(/^\[\$interpolate:interr\] Can't interpolate: \{\{error.throw\(\)\}\}\nMyError/);
-
-      $rootScope.error['throw'] = function() {return 'ok';};
-      $rootScope.$apply();
-      expect(errorLogs.length).toBe(0);
-    });
-  });
-
   it('IfAttrBindingThrowsErrorDecorateTheAttribute', function() {
-    module(function($exceptionHandlerProvider){
+    module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
     });
     inject(function($rootScope, $exceptionHandler, $compile) {
@@ -210,7 +186,7 @@ describe('Binder', function() {
 
       $rootScope.error['throw'] =  function() { return 'X';};
       $rootScope.$apply();
-      expect(errorLogs.length).toMatch(0);
+      expect(errorLogs.length).toMatch('0');
     });
   });
 
@@ -226,21 +202,21 @@ describe('Binder', function() {
     $rootScope.$apply();
 
     expect(sortedHtml(element)).toBe(
-        '<div>'+
+        '<div>' +
           '<!-- ngRepeat: m in model -->' +
-          '<div name="a" ng-repeat="m in model">'+
+          '<div name="a" ng-repeat="m in model">' +
             '<!-- ngRepeat: i in m.item -->' +
-            '<ul name="a1" ng-repeat="i in m.item"></ul>'+
+            '<ul name="a1" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
-            '<ul name="a2" ng-repeat="i in m.item"></ul>'+
+            '<ul name="a2" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
-          '</div>'+
+          '</div>' +
           '<!-- end ngRepeat: m in model -->' +
-          '<div name="b" ng-repeat="m in model">'+
+          '<div name="b" ng-repeat="m in model">' +
             '<!-- ngRepeat: i in m.item -->' +
-            '<ul name="b1" ng-repeat="i in m.item"></ul>'+
+            '<ul name="b1" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
-            '<ul name="b2" ng-repeat="i in m.item"></ul>'+
+            '<ul name="b2" ng-repeat="i in m.item"></ul>' +
             '<!-- end ngRepeat: i in m.item -->' +
           '</div>' +
           '<!-- end ngRepeat: m in model -->' +
@@ -248,7 +224,7 @@ describe('Binder', function() {
   }));
 
   it('HideBindingExpression', inject(function($rootScope, $compile) {
-    element = $compile('<div ng-hide="hidden == 3"/>')($rootScope);
+    element = $compile('<div ng-hide="hidden === 3"/>')($rootScope);
 
     $rootScope.hidden = 3;
     $rootScope.$apply();
@@ -272,6 +248,16 @@ describe('Binder', function() {
     $rootScope.hidden = 'false';
     $rootScope.$apply();
 
+    assertHidden(element);
+
+    $rootScope.hidden = 0;
+    $rootScope.$apply();
+
+    assertVisible(element);
+
+    $rootScope.hidden = false;
+    $rootScope.$apply();
+
     assertVisible(element);
 
     $rootScope.hidden = '';
@@ -289,6 +275,16 @@ describe('Binder', function() {
     assertVisible(element);
 
     $rootScope.show = 'false';
+    $rootScope.$apply();
+
+    assertVisible(element);
+
+    $rootScope.show = false;
+    $rootScope.$apply();
+
+    assertHidden(element);
+
+    $rootScope.show = false;
     $rootScope.$apply();
 
     assertHidden(element);
@@ -348,7 +344,7 @@ describe('Binder', function() {
   }));
 
   it('ActionOnAHrefThrowsError', function() {
-    module(function($exceptionHandlerProvider){
+    module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
     });
     inject(function($rootScope, $exceptionHandler, $compile) {
@@ -361,21 +357,21 @@ describe('Binder', function() {
     });
   });
 
-  it('ShoulIgnoreVbNonBindable', inject(function($rootScope, $compile) {
+  it('ShouldIgnoreVbNonBindable', inject(function($rootScope, $compile) {
     element = $compile(
-      "<div>{{a}}" +
-        "<div ng-non-bindable>{{a}}</div>" +
-        "<div ng-non-bindable=''>{{b}}</div>" +
-        "<div ng-non-bindable='true'>{{c}}</div>" +
-      "</div>")($rootScope);
+      '<div>{{a}}' +
+        '<div ng-non-bindable>{{a}}</div>' +
+        '<div ng-non-bindable=\'\'>{{b}}</div>' +
+        '<div ng-non-bindable=\'true\'>{{c}}</div>' +
+      '</div>')($rootScope);
     $rootScope.a = 123;
     $rootScope.$apply();
     expect(element.text()).toBe('123{{a}}{{b}}{{c}}');
   }));
 
-  it('ShouldTemplateBindPreElements', inject(function ($rootScope, $compile) {
+  it('ShouldTemplateBindPreElements', inject(function($rootScope, $compile) {
     element = $compile('<pre>Hello {{name}}!</pre>')($rootScope);
-    $rootScope.name = "World";
+    $rootScope.name = 'World';
     $rootScope.$apply();
 
     expect(sortedHtml(element)).toBe('<pre>Hello World!</pre>');
@@ -405,12 +401,17 @@ describe('Binder', function() {
     expect(optionC.text()).toEqual('C');
   }));
 
-  it('ItShouldSelectTheCorrectRadioBox', inject(function($rootScope, $compile) {
+  it('ItShouldSelectTheCorrectRadioBox', inject(function($rootScope, $compile, $rootElement, $document) {
     element = $compile(
       '<div>' +
         '<input type="radio" ng-model="sex" value="female">' +
         '<input type="radio" ng-model="sex" value="male">' +
       '</div>')($rootScope);
+
+    // Append the app to the document so that "click" on a radio/checkbox triggers "change"
+    // Support: Chrome, Safari 8, 9
+    jqLite($document[0].body).append($rootElement.append(element));
+
     var female = jqLite(element[0].childNodes[0]);
     var male = jqLite(element[0].childNodes[1]);
 
@@ -430,15 +431,15 @@ describe('Binder', function() {
   it('ItShouldRepeatOnHashes', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng-repeat="(k,v) in {a:0,b:1}" ng-bind=\"k + v\"></li>' +
+        '<li ng-repeat="(k,v) in {a:0,b:1}" ng-bind="k + v"></li>' +
       '</ul>')($rootScope);
     $rootScope.$apply();
     expect(sortedHtml(element)).toBe(
         '<ul>' +
           '<!-- ngRepeat: (k,v) in {a:0,b:1} -->' +
-          '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">a0</li>' +
+          '<li ng-bind="k + v" ng-repeat="(k,v) in {a:0,b:1}">a0</li>' +
           '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
-          '<li ng-bind=\"k + v\" ng-repeat="(k,v) in {a:0,b:1}">b1</li>' +
+          '<li ng-bind="k + v" ng-repeat="(k,v) in {a:0,b:1}">b1</li>' +
           '<!-- end ngRepeat: (k,v) in {a:0,b:1} -->' +
         '</ul>');
   }));
@@ -446,7 +447,9 @@ describe('Binder', function() {
   it('ItShouldFireChangeListenersBeforeUpdate', inject(function($rootScope, $compile) {
     element = $compile('<div ng-bind="name"></div>')($rootScope);
     $rootScope.name = '';
-    $rootScope.$watch('watched', 'name=123');
+    $rootScope.$watch('watched', function() {
+      $rootScope.name = 123;
+    });
     $rootScope.watched = 'change';
     $rootScope.$apply();
     expect($rootScope.name).toBe(123);

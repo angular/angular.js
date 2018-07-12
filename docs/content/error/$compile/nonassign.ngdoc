@@ -1,0 +1,60 @@
+@ngdoc error
+@name $compile:nonassign
+@fullName Non-Assignable Expression
+@description
+
+This error occurs when a directive defines an isolate scope property
+(using the `=` mode in the {@link ng.$compile#directive-definition-object
+`scope` option} of a directive definition) but the directive is used with an expression that is not-assignable.
+
+In order for the two-way data-binding to work, it must be possible to write new values back into the path defined with the expression.
+
+For example, given a directive:
+
+```
+myModule.directive('myDirective', function factory() {
+  return {
+    ...
+    scope: {
+      localValue: '=bind'
+    }
+    ...
+  }
+});
+```
+
+Following are invalid uses of this directive:
+```
+<!-- ERROR because `1+2=localValue` is an invalid statement -->
+<my-directive bind="1+2">
+
+<!-- ERROR because `myFn()=localValue` is an invalid statement -->
+<my-directive bind="myFn()">
+
+<!-- ERROR because attribute bind wasn't provided -->
+<my-directive>
+```
+
+
+To resolve this error, do one of the following options:
+
+- use path expressions with scope properties that are two-way data-bound like so:
+
+```
+<my-directive bind="some.property">
+<my-directive bind="some[3]['property']">
+```
+
+- Make the binding optional
+
+```
+myModule.directive('myDirective', function factory() {
+  return {
+    ...
+    scope: {
+      localValue: '=?bind' // <-- the '?' makes it optional
+    }
+    ...
+  }
+});
+```

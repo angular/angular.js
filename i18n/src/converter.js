@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * after obtaining data from closure files, use converter to massage the data into the formats
  * we want
@@ -10,24 +12,22 @@ var parsePattern = require('./parser').parsePattern;
 
 
 function convertNumberData(dataObj, currencySymbols) {
-  var numberFormats = {},
-
-  numberFormats = {
+  var numberFormats = {
     DECIMAL_SEP: dataObj.DECIMAL_SEP,
     GROUP_SEP: dataObj.GROUP_SEP,
     PATTERNS: [parsePattern(dataObj.DECIMAL_PATTERN),
                parsePattern(dataObj.CURRENCY_PATTERN)]
-  }
+  };
 
   if (currencySymbols[dataObj.DEF_CURRENCY_CODE]) {
     numberFormats.CURRENCY_SYM = currencySymbols[dataObj.DEF_CURRENCY_CODE][1];
   } else {
-    if (dataObj.DEF_CURRENCY_CODE == 'MTL') {
+    if (dataObj.DEF_CURRENCY_CODE === 'MTL') {
       numberFormats.CURRENCY_SYM = '₤'; //for some reason this is missing in closure
     } else {
       // if there is no corresponding currency symbol, just use currency code.
       var code = numberFormats.CURRENCY_SYM = dataObj.DEF_CURRENCY_CODE;
-      console.log(code +' has no currency symbol in closure, used ' + code + ' instead!');
+      console.log(code + ' has no currency symbol in closure, used ' + code + ' instead!');
     }
   }
   return numberFormats;
@@ -39,9 +39,14 @@ function convertDatetimeData(dataObj) {
 
   datetimeFormats.MONTH = dataObj.MONTHS;
   datetimeFormats.SHORTMONTH = dataObj.SHORTMONTHS;
+  datetimeFormats.STANDALONEMONTH = dataObj.STANDALONEMONTHS;
   datetimeFormats.DAY = dataObj.WEEKDAYS;
   datetimeFormats.SHORTDAY = dataObj.SHORTWEEKDAYS;
   datetimeFormats.AMPMS = dataObj.AMPMS;
+  datetimeFormats.FIRSTDAYOFWEEK = dataObj.FIRSTDAYOFWEEK;
+  datetimeFormats.WEEKENDRANGE = dataObj.WEEKENDRANGE;
+  datetimeFormats.ERAS = dataObj.ERAS;
+  datetimeFormats.ERANAMES = dataObj.ERANAMES;
 
 
   datetimeFormats.medium      = dataObj.DATEFORMATS[2] + ' ' + dataObj.TIMEFORMATS[2];

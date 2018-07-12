@@ -1,0 +1,11 @@
+@ngdoc error
+@name $resource:badcfg
+@fullName Response does not match configured parameter
+@description
+
+This error occurs when the {@link ngResource.$resource `$resource`} service expects a response that can be deserialized as an array but receives an object, or vice versa.
+By default, all resource actions expect objects, except `query` which expects arrays.
+
+To resolve this error, make sure your `$resource` configuration matches the actual format of the data returned from the server.
+
+For more information, see the {@link ngResource.$resource `$resource`} API reference documentation.

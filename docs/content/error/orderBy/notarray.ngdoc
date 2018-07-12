@@ -1,0 +1,52 @@
+@ngdoc error
+@name orderBy:notarray
+@fullName Value is not array-like
+@description
+
+This error occurs when {@link ng.orderBy orderBy} is not passed an array-like value:
+```html
+<div ng-repeat="(key, value) in myObj | orderBy:someProp">
+  {{ key }} : {{ value }}
+</div>
+```
+
+`orderBy` must be used with an array-like value so a subset of items can be returned.
+The array can be initialized asynchronously and therefore `null` or `undefined` won't throw this error.
+
+To use `orderBy` to order the properties of an object, you can create your own array based on that object:
+```js
+angular.module('aModule', [])
+  .controller('aController', function($scope) {
+    var myObj = {
+      one: {id: 1, name: 'Some thing'},
+      two: {id: 2, name: 'Another thing'},
+      three: {id: 3, name: 'A third thing'}
+    };
+
+    $scope.arrFromMyObj = Object.keys(myObj).map(function(key) {
+      return myObj[key];
+    });
+  });
+```
+That can be used as:
+```html
+<label>
+  Order by:
+  <select ng-model="orderProp" ng-options="prop for prop in ['id', 'name']"></select>
+</label>
+<div ng-repeat="item in arrFromMyObj | orderBy:orderProp">
+  [{{ item.id }}] {{ item.name }}
+</div>
+```
+
+You could as well convert the object to an array using a filter such as
+[toArrayFilter](https://github.com/petebacondarwin/angular-toArrayFilter):
+```html
+<label>
+  Order by:
+  <select ng-model="orderProp" ng-options="prop for prop in ['id', 'name']"></select>
+</label>
+<div ng-repeat="item in myObj | toArray:false | orderBy:orderProp">
+  [{{ item.id }}] {{ item.name }}
+</div>
+```

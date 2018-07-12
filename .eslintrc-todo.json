@@ -1,0 +1,25 @@
+{
+  // This config contains proposed rules that we'd like to have enabled but haven't
+  // converted the code to adhere yet. If a decision comes to not enable one of these
+  // rules, it should be removed from the file. Every rule that got enabled in the
+  // end should be moved from here to a respective section in .eslintrc.json
+
+  "rules": {
+    // Rules are divided into sections from http://eslint.org/docs/rules/
+
+    // Best practices
+    "complexity": ["error", 10],
+    "dot-notation": "error",
+    "dot-location": ["error", "property"],
+
+    // Stylistic issues
+    "block-spacing": ["error", "always"],
+    "comma-spacing": "error",
+    "id-blacklist": ["error", "event"],
+    "indent": ["error", 2],
+    "key-spacing": ["error", { "beforeColon": false, "afterColon": true, "mode": "minimum" }],
+    "object-curly-spacing": ["error", "never"],
+    "object-property-newline": ["error", { "allowMultiplePropertiesPerLine": true }],
+    "operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" }}]
+  }
+}

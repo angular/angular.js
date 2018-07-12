@@ -1,0 +1,38 @@
+@ngdoc error
+@name $compile:noslot
+@fullName No matching slot in parent directive
+@description
+
+This error occurs when declaring a specific slot in a {@link ng.ngTransclude `ngTransclude`} 
+which does not map to a specific slot defined in the transclude property of the directive.
+
+In this example the template has declared a slot missing from the transclude definition.
+This example will generate a noslot error.
+```js
+var componentConfig = {
+  template: '<div>' +
+                '<div ng-transclude="slotProvided"></div>' +
+                '<div ng-transclude="noSlotProvided"></div>' +
+            '</div>',
+  transclude: {
+  	// The key value pairs here are considered "slots" that are provided for components to slot into.
+    slotProvided: 'slottedComponent', // mandatory transclusion
+    // There is no slot provided here for the transclude 'noSlotProvided' declared in the above template.
+  }
+};
+```
+
+If we make the following change we will no longer get the noslot error.
+```js
+var componentConfig = {
+  template: '<div>' +
+                '<div ng-transclude="slotProvided"></div>' +
+                '<div ng-transclude="noSlotProvided"></div>' +
+            '</div>',
+  transclude: {
+    slotProvided: 'slottedComponent',
+    noSlotProvided: 'otherComponent' // now it is declared and the error should cease
+  }
+};
+
+```

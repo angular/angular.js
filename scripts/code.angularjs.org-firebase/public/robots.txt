@@ -1,0 +1,6 @@
+User-agent: *
+
+Disallow: /*docs*/
+Disallow: /*i18n/
+Disallow: /*.zip$
+Allow: /snapshot/docs/js/all-versions-data.js

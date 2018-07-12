@@ -16,6 +16,15 @@ $provide.value("$locale", {
       "\u03a0\u03b1\u03c1\u03b1\u03c3\u03ba\u03b5\u03c5\u03ae",
       "\u03a3\u03ac\u03b2\u03b2\u03b1\u03c4\u03bf"
     ],
+    "ERANAMES": [
+      "\u03c0\u03c1\u03bf \u03a7\u03c1\u03b9\u03c3\u03c4\u03bf\u03cd",
+      "\u03bc\u03b5\u03c4\u03ac \u03a7\u03c1\u03b9\u03c3\u03c4\u03cc\u03bd"
+    ],
+    "ERAS": [
+      "\u03c0.\u03a7.",
+      "\u03bc.\u03a7."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "\u0399\u03b1\u03bd\u03bf\u03c5\u03b1\u03c1\u03af\u03bf\u03c5",
       "\u03a6\u03b5\u03b2\u03c1\u03bf\u03c5\u03b1\u03c1\u03af\u03bf\u03c5",
@@ -33,18 +42,18 @@ $provide.value("$locale", {
     "SHORTDAY": [
       "\u039a\u03c5\u03c1",
       "\u0394\u03b5\u03c5",
-      "\u03a4\u03c1\u03b9",
+      "\u03a4\u03c1\u03af",
       "\u03a4\u03b5\u03c4",
-      "\u03a0\u03b5\u03bc",
+      "\u03a0\u03ad\u03bc",
       "\u03a0\u03b1\u03c1",
-      "\u03a3\u03b1\u03b2"
+      "\u03a3\u03ac\u03b2"
     ],
     "SHORTMONTH": [
       "\u0399\u03b1\u03bd",
       "\u03a6\u03b5\u03b2",
       "\u039c\u03b1\u03c1",
       "\u0391\u03c0\u03c1",
-      "\u039c\u03b1\u03ca",
+      "\u039c\u03b1\u0390",
       "\u0399\u03bf\u03c5\u03bd",
       "\u0399\u03bf\u03c5\u03bb",
       "\u0391\u03c5\u03b3",
@@ -52,6 +61,24 @@ $provide.value("$locale", {
       "\u039f\u03ba\u03c4",
       "\u039d\u03bf\u03b5",
       "\u0394\u03b5\u03ba"
+    ],
+    "STANDALONEMONTH": [
+      "\u0399\u03b1\u03bd\u03bf\u03c5\u03ac\u03c1\u03b9\u03bf\u03c2",
+      "\u03a6\u03b5\u03b2\u03c1\u03bf\u03c5\u03ac\u03c1\u03b9\u03bf\u03c2",
+      "\u039c\u03ac\u03c1\u03c4\u03b9\u03bf\u03c2",
+      "\u0391\u03c0\u03c1\u03af\u03bb\u03b9\u03bf\u03c2",
+      "\u039c\u03ac\u03b9\u03bf\u03c2",
+      "\u0399\u03bf\u03cd\u03bd\u03b9\u03bf\u03c2",
+      "\u0399\u03bf\u03cd\u03bb\u03b9\u03bf\u03c2",
+      "\u0391\u03cd\u03b3\u03bf\u03c5\u03c3\u03c4\u03bf\u03c2",
+      "\u03a3\u03b5\u03c0\u03c4\u03ad\u03bc\u03b2\u03c1\u03b9\u03bf\u03c2",
+      "\u039f\u03ba\u03c4\u03ce\u03b2\u03c1\u03b9\u03bf\u03c2",
+      "\u039d\u03bf\u03ad\u03bc\u03b2\u03c1\u03b9\u03bf\u03c2",
+      "\u0394\u03b5\u03ba\u03ad\u03bc\u03b2\u03c1\u03b9\u03bf\u03c2"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
     ],
     "fullDate": "EEEE, d MMMM y",
     "longDate": "d MMMM y",
@@ -70,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,7 +108,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
@@ -94,6 +119,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "el",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "el",
+  "pluralCat": function(n, opt_precision) {  if (n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

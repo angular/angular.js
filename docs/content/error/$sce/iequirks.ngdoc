@@ -1,0 +1,17 @@
+@ngdoc error
+@name $sce:iequirks
+@fullName IE<11 in quirks mode is unsupported
+@description
+
+This error occurs when you are using AngularJS with {@link ng.$sce Strict Contextual Escaping (SCE)} mode enabled (the default) on IE10 or lower in quirks mode.
+
+In this mode, IE<11 allow one to execute arbitrary javascript by the use of the `expression()` syntax and is not supported.
+Refer
+[CSS expressions no longer supported for the Internet zone](http://msdn.microsoft.com/en-us/library/ie/dn384050(v=vs.85).aspx)
+to learn more about them.
+
+To resolve this error please specify the proper doctype at the top of your main html document:
+
+```
+<!doctype html>
+```

@@ -1,0 +1,8 @@
+@ngdoc error
+@name $location:ipthprfx
+@fullName Invalid or Missing Path Prefix
+@description
+
+This error occurs when you configure the {@link ng.$location `$location`} service in the html5 mode, specify a base url for your application via `<base>` element and try to update the location with a path that doesn't match the base prefix.
+
+To resolve this issue, please check the base url specified via the `<base>` tag in the head of your main html document, as well as the url that you tried to set the location to.

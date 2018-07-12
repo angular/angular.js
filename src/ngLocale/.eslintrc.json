@@ -1,0 +1,11 @@
+{
+  "rules": {
+    /* locale files are generated from a 3rd party library so they don't adhere to all the rules */
+    "block-spacing": "off",
+    "eqeqeq": "off",
+    "max-len": "off",
+    "no-bitwise": "off",
+    "no-multi-spaces": "off",
+    "quotes": "off"
+  }
+}

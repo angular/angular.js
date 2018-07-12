@@ -1,4 +1,6 @@
 /build/
+/deploy/
+/benchpress-build/
 .DS_Store
 gen_docs.disable
 test.disable
@@ -8,13 +10,15 @@ performance/temp*.html
 *~
 *.swp
 angular.js.tmproj
-/node_modules/
-/components/
-/bower_components/
+node_modules/
 angular.xcodeproj
 .idea
+*.iml
 .agignore
+.lvimrc
 libpeerconnection.log
 npm-debug.log
 /tmp/
-/scripts/bower/bower-*
+.vscode
+*.log
+*.stackdump

@@ -34,23 +34,5 @@ describe('ngKeyup and ngKeydown directives', function() {
     expect($rootScope.touched).toEqual(true);
   }));
 
-  it('should get called on focus', inject(function($rootScope, $compile) {
-    element = $compile('<input ng-focus="touched = true">')($rootScope);
-    $rootScope.$digest();
-    expect($rootScope.touched).toBeFalsy();
-
-    browserTrigger(element, 'focus');
-    expect($rootScope.touched).toEqual(true);
-  }));
-
-  it('should get called on blur', inject(function($rootScope, $compile) {
-    element = $compile('<input ng-blur="touched = true">')($rootScope);
-    $rootScope.$digest();
-    expect($rootScope.touched).toBeFalsy();
-
-    browserTrigger(element, 'blur');
-    expect($rootScope.touched).toEqual(true);
-  }));
-
 });
 

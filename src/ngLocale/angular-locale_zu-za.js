@@ -8,19 +8,28 @@ $provide.value("$locale", {
       "PM"
     ],
     "DAY": [
-      "Sonto",
-      "Msombuluko",
-      "Lwesibili",
-      "Lwesithathu",
-      "uLwesine",
-      "Lwesihlanu",
-      "Mgqibelo"
+      "ISonto",
+      "UMsombuluko",
+      "ULwesibili",
+      "ULwesithathu",
+      "ULwesine",
+      "ULwesihlanu",
+      "UMgqibelo"
     ],
+    "ERANAMES": [
+      "BC",
+      "AD"
+    ],
+    "ERAS": [
+      "BC",
+      "AD"
+    ],
+    "FIRSTDAYOFWEEK": 6,
     "MONTH": [
-      "Januwari",
+      "UMasingana",
       "Februwari",
       "Mashi",
-      "Apreli",
+      "Ephreli",
       "Meyi",
       "Juni",
       "Julayi",
@@ -43,7 +52,7 @@ $provide.value("$locale", {
       "Jan",
       "Feb",
       "Mas",
-      "Apr",
+      "Eph",
       "Mey",
       "Jun",
       "Jul",
@@ -53,14 +62,32 @@ $provide.value("$locale", {
       "Nov",
       "Dis"
     ],
-    "fullDate": "EEEE dd MMMM y",
-    "longDate": "d MMMM y",
-    "medium": "d MMM y h:mm:ss a",
-    "mediumDate": "d MMM y",
-    "mediumTime": "h:mm:ss a",
-    "short": "yyyy-MM-dd h:mm a",
-    "shortDate": "yyyy-MM-dd",
-    "shortTime": "h:mm a"
+    "STANDALONEMONTH": [
+      "Januwari",
+      "Februwari",
+      "Mashi",
+      "Ephreli",
+      "Meyi",
+      "Juni",
+      "Julayi",
+      "Agasti",
+      "Septhemba",
+      "Okthoba",
+      "Novemba",
+      "Disemba"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
+    "fullDate": "EEEE, MMMM d, y",
+    "longDate": "MMMM d, y",
+    "medium": "MMM d, y HH:mm:ss",
+    "mediumDate": "MMM d, y",
+    "mediumTime": "HH:mm:ss",
+    "short": "M/d/yy HH:mm",
+    "shortDate": "M/d/yy",
+    "shortTime": "HH:mm"
   },
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "R",
@@ -70,7 +97,6 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,18 +108,18 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "(\u00a4",
-        "negSuf": ")",
+        "negPre": "-\u00a4",
+        "negSuf": "",
         "posPre": "\u00a4",
         "posSuf": ""
       }
     ]
   },
   "id": "zu-za",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "zu_ZA",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  if (i == 0 || n == 1) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

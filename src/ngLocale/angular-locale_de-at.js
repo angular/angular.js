@@ -1,6 +1,24 @@
 'use strict';
 angular.module("ngLocale", [], ["$provide", function($provide) {
 var PLURAL_CATEGORY = {ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"};
+function getDecimals(n) {
+  n = n + '';
+  var i = n.indexOf('.');
+  return (i == -1) ? 0 : n.length - i - 1;
+}
+
+function getVF(n, opt_precision) {
+  var v = opt_precision;
+
+  if (undefined === v) {
+    v = Math.min(getDecimals(n), 3);
+  }
+
+  var base = Math.pow(10, v);
+  var f = ((n * base) | 0) % base;
+  return {v: v, f: f};
+}
+
 $provide.value("$locale", {
   "DATETIME_FORMATS": {
     "AMPMS": [
@@ -16,6 +34,15 @@ $provide.value("$locale", {
       "Freitag",
       "Samstag"
     ],
+    "ERANAMES": [
+      "v. Chr.",
+      "n. Chr."
+    ],
+    "ERAS": [
+      "v. Chr.",
+      "n. Chr."
+    ],
+    "FIRSTDAYOFWEEK": 0,
     "MONTH": [
       "J\u00e4nner",
       "Februar",
@@ -40,23 +67,41 @@ $provide.value("$locale", {
       "Sa."
     ],
     "SHORTMONTH": [
-      "J\u00e4n",
-      "Feb",
-      "M\u00e4r",
-      "Apr",
+      "J\u00e4n.",
+      "Feb.",
+      "M\u00e4rz",
+      "Apr.",
       "Mai",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Okt",
-      "Nov",
-      "Dez"
+      "Juni",
+      "Juli",
+      "Aug.",
+      "Sep.",
+      "Okt.",
+      "Nov.",
+      "Dez."
     ],
-    "fullDate": "EEEE, dd. MMMM y",
-    "longDate": "dd. MMMM y",
-    "medium": "dd.MM.yyyy HH:mm:ss",
-    "mediumDate": "dd.MM.yyyy",
+    "STANDALONEMONTH": [
+      "J\u00e4nner",
+      "Februar",
+      "M\u00e4rz",
+      "April",
+      "Mai",
+      "Juni",
+      "Juli",
+      "August",
+      "September",
+      "Oktober",
+      "November",
+      "Dezember"
+    ],
+    "WEEKENDRANGE": [
+      5,
+      6
+    ],
+    "fullDate": "EEEE, d. MMMM y",
+    "longDate": "d. MMMM y",
+    "medium": "dd.MM.y HH:mm:ss",
+    "mediumDate": "dd.MM.y",
     "mediumTime": "HH:mm:ss",
     "short": "dd.MM.yy HH:mm",
     "shortDate": "dd.MM.yy",
@@ -65,12 +110,11 @@ $provide.value("$locale", {
   "NUMBER_FORMATS": {
     "CURRENCY_SYM": "\u20ac",
     "DECIMAL_SEP": ",",
-    "GROUP_SEP": ".",
+    "GROUP_SEP": "\u00a0",
     "PATTERNS": [
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 3,
         "minFrac": 0,
         "minInt": 1,
@@ -82,11 +126,10 @@ $provide.value("$locale", {
       {
         "gSize": 3,
         "lgSize": 3,
-        "macFrac": 0,
         "maxFrac": 2,
         "minFrac": 2,
         "minInt": 1,
-        "negPre": "\u00a4\u00a0-",
+        "negPre": "-\u00a4\u00a0",
         "negSuf": "",
         "posPre": "\u00a4\u00a0",
         "posSuf": ""
@@ -94,6 +137,7 @@ $provide.value("$locale", {
     ]
   },
   "id": "de-at",
-  "pluralCat": function (n) {  if (n == 1) {   return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
+  "localeID": "de_AT",
+  "pluralCat": function(n, opt_precision) {  var i = n | 0;  var vf = getVF(n, opt_precision);  if (i == 1 && vf.v == 0) {    return PLURAL_CATEGORY.ONE;  }  return PLURAL_CATEGORY.OTHER;}
 });
 }]);

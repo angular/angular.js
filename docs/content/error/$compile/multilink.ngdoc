@@ -1,0 +1,27 @@
+@ngdoc error
+@name $compile:multilink
+@fullName Linking Element Multiple Times
+@description
+
+This error occurs when a single element is linked more then once.
+
+For example, if an element is compiled and linked twice without cloning:
+```
+  var linker = $compile(template);
+  linker($scope); //=> ok
+  linker($scope); //=> multilink error
+```
+
+Linking an element as a clone multiple times is ok:
+```
+  var linker = $compile(template);
+  linker($scope, function() { ... });     //=> ok
+  linker($scope, function() { ... });     //=> ok
+```
+
+However once an element has been linked it can not be re-linked as a clone:
+```
+  var linker = $compile(template);
+  linker($scope);                       //=> ok
+  linker($scope, function() { ... });   //=> multilink error
+```

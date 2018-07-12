@@ -1,0 +1,20 @@
+@ngdoc error
+@name $compile:nodomevents
+@fullName Interpolated Event Attributes
+@description
+
+This error occurs when one tries to create a binding for event handler attributes like `onclick`, `onload`, `onsubmit`, etc.
+
+There is no practical value in binding to these attributes and doing so only exposes your application to security vulnerabilities like XSS.
+For these reasons binding to event handler attributes (all attributes that start with `on` and `formaction` attribute) is not supported.
+
+
+An example code that would allow XSS vulnerability by evaluating user input in the window context could look like this:
+```
+<input ng-model="username">
+<div onclick="{{username}}">click me</div>
+```
+
+Since the `onclick` evaluates the value as JavaScript code in the window context, setting the `username` model to a value like `javascript:alert('PWND')` would result in script injection when the `div` is clicked.
+
+

@@ -1,0 +1,41 @@
+{
+  "hosting": {
+    "public": "../../deploy/docs",
+    "redirects": [
+      {
+        "source": "/error/:namespace\\::error*",
+        "destination": "/error/:namespace/:error*",
+        "type": 302
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "**/*!(.@(jpg|jpeg|gif|png|html|js|map|json|css|svg|ttf|txt|woff|woff2|eot|xml))",
+        "function": "sendFile"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/examples/**.csp/*.html",
+        "headers": [{
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'"
+        }]
+      },
+      {
+        "source": "/Error404.html",
+        "headers" : [{
+          "key" : "X-Robots-Tag",
+          "value" : "noindex"
+        }]
+      },
+      {
+        "source": "/@(partials|examples)/**",
+        "headers" : [{
+          "key" : "X-Robots-Tag",
+          "value" : "noindex"
+        }]
+      }
+    ]
+  }
+}

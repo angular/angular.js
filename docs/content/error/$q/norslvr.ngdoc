@@ -1,0 +1,17 @@
+@ngdoc error
+@name $q:norslvr
+@fullName No resolver function passed to $Q
+@description
+
+Occurs when calling creating a promise using {@link $q} as a constructor, without providing the
+required `resolver` function.
+
+```
+//bad
+var promise = $q().then(doSomething);
+
+//good
+var promise = $q(function(resolve, reject) {
+  waitForSomethingAsync.then(resolve);
+}).then(doSomething);
+```

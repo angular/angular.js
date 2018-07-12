@@ -1,0 +1,8 @@
+@ngdoc error
+@name $animate:nongcls
+@fullName `ng-animate` class not allowed
+@description
+
+This error occurs, when trying to set `$animateProvider.classNameFilter()` to a RegExp containing
+the reserved `ng-animate` class. Since `.ng-animate` will be added/removed by `$animate` itself,
+using it as part of the `classNameFilter` RegExp is not allowed.

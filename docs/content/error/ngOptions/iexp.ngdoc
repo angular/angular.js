@@ -10,4 +10,4 @@ Here's an example of correct syntax:
 <select ng-model="color" ng-options="c.name for c in colors">
 ```
 
-For more information on valid expression syntax, see 'ngOptions' in {@link api/ng.directive:select select} directive docs.
+For more information on valid expression syntax, see 'ngOptions' in {@link ng.directive:select select} directive docs.

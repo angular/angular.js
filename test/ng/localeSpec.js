@@ -1,8 +1,12 @@
 'use strict';
 
 describe('$locale', function() {
+  /* global $LocaleProvider: false */
 
-  var $locale = new $LocaleProvider().$get();
+  var $locale;
+  beforeEach(inject(function(_$locale_) {
+    $locale = _$locale_;
+  }));
 
   it('should have locale id set to en-us', function() {
     expect($locale.id).toBe('en-us');

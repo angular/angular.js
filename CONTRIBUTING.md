@@ -1,122 +1,188 @@
-#Contributing to AngularJS
+# Contributing to AngularJS
 
 We'd love for you to contribute to our source code and to make AngularJS even better than it is
 today! Here are the guidelines we'd like you to follow:
 
-## Got a Question or Problem?
+* [Code of Conduct](#coc)
+* [Questions and Problems](#question)
+* [Issues and Bugs](#issue)
+* [Feature Requests](#feature)
+* [Improving Documentation](#docs)
+* [Issue Submission Guidelines](#submit)
+* [Pull Request Submission Guidelines](#submit-pr)
+* [Signing the CLA](#cla)
 
-If you have questions about how to use AngularJS, please direct these to the [Google Group][groups]
-discussion list or [StackOverflow][stackoverflow]. We are also available on [IRC][irc].
+## <a name="coc"></a> Code of Conduct
 
-## Found an Issue?
-If you find a bug in the source code or a mistake in the documentation, you can help us by
-submitting and issue to our [GitHub Repository][github]. Even better you can submit a Pull Request
-with a fix.
+Help us keep AngularJS open and inclusive. Please read and follow our [Code of Conduct][coc].
 
-***Localization Issue:*** *Angular.js uses the [Google Closure I18N library], to generate its own I18N files. This means that
-any changes to these files would be lost the next time that we import the library. The recommended
-approach is to submit a patch to the I18N project directly, instead of submitting it here.*
+## <a name="requests"></a> Questions, Bugs, Features
 
-**Please see the Submission Guidelines below**.
+### <a name="question"></a> Got a Question or Problem?
 
-## Want a Feature?
-You can request a new feature by submitting an issue to our [GitHub Repository][github].  If you
-would like to implement a new feature then consider what kind of change it is:
+Do not open issues for general support questions as we want to keep GitHub issues for bug reports
+and feature requests. You've got much better chances of getting your question answered on dedicated
+support platforms, the best being [Stack Overflow][stackoverflow].
 
-* **Major Changes** that you wish to contribute to the project should be discussed first on our
-[dev mailing list][angular-dev] or [IRC][irc] so that we can better coordinate our efforts, prevent
-duplication of work, and help you to craft the change so that it is successfully accepted into the
-project.
-* **Small Changes** can be crafted and submitted to [GitHub Repository][github] as a Pull Request.
+Stack Overflow is a much better place to ask questions since:
 
+- there are thousands of people willing to help on Stack Overflow
+- questions and answers stay available for public viewing so your question / answer might help
+  someone else
+- Stack Overflow's voting system assures that the best answers are prominently visible.
 
-## Want a Doc Fix?
-If you want to help improve the docs, it's a good idea to let others know what you're working on to 
-minimize duplication of effort. Before starting, check out the issue queue for [Milestone:Docs Only](https://github.com/angular/angular.js/issues?milestone=24&state=open). 
-Comment on an issue to let others know what you're working on, or create a new issue if your work
-doesn't fit within the scope of any of the existing doc fix projects.
+To save your and our time, we will systematically close all issues that are requests for general
+support and redirect people to the section you are reading right now.
 
-For large fixes, please build and test the documentation before submitting the PR to be sure you haven't
-accidentally introduced any layout or formatting issues.You should also make sure that your commit message 
-is labeled "docs:" and follows the **Git Commit Guidelines** outlined below.
+Other channels for support are:
+- the [Google Group][groups] discussion list
+- the [AngularJS IRC][irc]
+- the [AngularJS Gitter][gitter]
 
-If you're just making a small change, don't worry about filing an issue first. Use the friendly blue "Improve this doc" button at the top right of the doc page to fork the repository in-place and make a quick change on the fly.
+### <a name="issue"></a> Found an Issue or Bug?
 
-## Submission Guidelines
+If you find a bug in the source code, you can help us by submitting an issue to our
+[GitHub Repository][github]. Even better, you can submit a Pull Request with a fix.
 
-### Submitting an Issue
+**Please see the [Submission Guidelines](#submit) below.**
+
+**Special Note for Localization Issues:** AngularJS uses the [Google Closure I18N library] to
+generate its own I18N files (the ngLocale module). This means that any changes to these files
+would be lost the next time that we import the library.
+Since the Closure library i18n data is itself auto-generated from the data of the
+[Common Locale Data Repository (CLDR)] project, errors in the data should
+be reported there. See also the [Closure guide to i18n changes].
+
+### <a name="feature"></a> Missing a Feature?
+
+You can request a new feature by submitting an issue to our [GitHub Repository][github-issues].
+
+If you would like to implement a new feature then consider what kind of change it is:
+
+* **Major Changes** that you wish to contribute to the project should be discussed first in an
+  [GitHub issue][github-issues] that clearly outlines the changes and benefits of the feature.
+* **Small Changes** can directly be crafted and submitted to the [GitHub Repository][github]
+  as a Pull Request. See the section about [Pull Request Submission Guidelines](#submit-pr), and
+  for detailed information the [core development documentation][developers].
+
+### <a name="docs"></a> Want a Doc Fix?
+
+Should you have a suggestion for the documentation, you can open an issue and outline the problem
+or improvement you have - however, creating the doc fix yourself is much better!
+
+If you want to help improve the docs, it's a good idea to let others know what you're working on to
+minimize duplication of effort. Create a new issue (or comment on a related existing one) to let
+others know what you're working on.
+
+If you're making a small change (typo, phrasing) don't worry about filing an issue first. Use the
+friendly blue "Improve this doc" button at the top right of the doc page to fork the repository
+in-place and make a quick change on the fly. The commit message is preformatted to the right type
+and scope, so you only have to add the description.
+
+For large fixes, please build and test the documentation before submitting the PR to be sure you
+haven't accidentally introduced any layout or formatting issues. You should also make sure that your
+commit message follows the **[Commit Message Guidelines][developers.commits]**.
+
+## <a name="submit"></a> Issue Submission Guidelines
 Before you submit your issue search the archive, maybe your question was already answered.
 
-If your issue appears to be a bug, and hasn't been reported, open a new issue.
-Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues.  Providing the following information will increase the
-chances of your issue being dealt with quickly:
+If your issue appears to be a bug, and hasn't been reported, open a new issue. Help us to maximize
+the effort we can spend fixing issues and adding new features, by not reporting duplicate issues.
 
-* **Overview of the issue** - if an error is being thrown a non-minified stack trace helps
+The "[new issue][github-new-issue]" form contains a number of prompts that you should fill out to
+make it easier to understand and categorize the issue.
+
+In general, providing the following information will increase the chances of your issue being dealt
+with quickly:
+
+* **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
 * **Motivation for or Use Case** - explain why this is a bug for you
-* **Angular Version(s)** - is it a regression?
-* **Browsers and Operating System** - is this a problem with all browsers or only IE8?
-* **Reproduce the error** - provide a live example (using [Plunker][plunker] or
-  [JSFiddle][jsfiddle]) or a unambiguous set of steps.
-* **Related issues** - has a similar issue been reported before?
+* **AngularJS Version(s)** - is it a regression?
+* **Browsers and Operating System** - is this a problem with all browsers or only specific ones?
+* **Reproduce the Error** - provide a live example (using [Plunker][plunker] or
+  [JSFiddle][jsfiddle]) or an unambiguous set of steps.
+* **Related Issues** - has a similar issue been reported before?
 * **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
   causing the problem (line of code or commit)
 
-Here is a great example of a well defined issue: https://github.com/angular/angular.js/issues/5069
+Here is a great example of a well defined issue: https://github.com/angular/angular.js/issues/5069.
 
 **If you get help, help others. Good karma rulez!**
 
-### Submitting a Pull Request
+## <a name="submit-pr"></a> Pull Request Submission Guidelines
 Before you submit your pull request consider the following guidelines:
 
 * Search [GitHub](https://github.com/angular/angular.js/pulls) for an open or closed Pull Request
   that relates to your submission. You don't want to duplicate effort.
-* Please sign our [Contributor License Agreement (CLA)](#signing-the-cla) before sending pull
-  requests. We cannot accept code without this.
-* Make your changes in a new git branch
-
-     ```shell
-     git checkout -b my-fix-branch master
-     ```
-
-* Create your patch, including appropriate test cases.
-* Follow our [Coding Rules](#coding-rules)
-* Commit your changes and create a descriptive commit message (the
-  commit message is used to generate release notes, please check out our
-  [commit message conventions](#commit-message-format) and our commit message presubmit hook
-  `validate-commit-msg.js`):
-
-     ```shell
-     git commit -a
-     ```
-
-* Build your changes locally to ensure all the tests pass
+* Create the [development environment][developers.setup]
+* Make your changes in a new git branch:
 
     ```shell
-    grunt test
+    git checkout -b my-fix-branch master
     ```
 
-* Push your branch to Github:
+* Create your patch commit, **including appropriate test cases**.
+* Follow our [Coding Rules][developers.rules].
+* If the changes affect public APIs, change or add relevant [documentation][developers.documentation].
+* Run the AngularJS [unit][developers.tests-unit] and [E2E test][developers.tests-e2e] suites, and ensure that all tests
+  pass. It is generally sufficient to run the tests only on Chrome, as our Travis integration will
+  run the tests on all supported browsers.
+* Run `yarn grunt eslint` to check that you have followed the automatically enforced coding rules
+* Commit your changes using a descriptive commit message that follows our
+  [commit message conventions][developers.commits]. Adherence to the
+  [commit message conventions][developers.commits] is required, because release notes are
+  automatically generated from these messages.
+
+    ```shell
+    git commit -a
+    ```
+  Note: the optional commit `-a` command line option will automatically "add" and "rm" edited files.
+
+* Before creating the Pull Request, package and run all tests a last time:
+
+    ```shell
+    yarn grunt test
+    ```
+
+* Push your branch to GitHub:
 
     ```shell
     git push origin my-fix-branch
     ```
 
-* In Github, send a pull request to `angular:master`.
-* If we suggest changes then you can modify your branch, rebase and force a new push to your GitHub
-  repository to update the Pull Request:
+* In GitHub, send a pull request to `angular.js:master`. This will trigger the check of the
+[Contributor License Agreement](#cla) and the Travis integration.
+
+* If you find that the Travis integration has failed, look into the logs on Travis to find out
+if your changes caused test failures, the commit message was malformed etc. If you find that the
+tests failed or times out for unrelated reasons, you can ping a team member so that the build can be
+restarted.
+
+* If we suggest changes, then:
+
+  * Make the required updates.
+  * Re-run the AngularJS test suite to ensure tests are still passing.
+  * Commit your changes to your branch (e.g. `my-fix-branch`).
+  * Push the changes to your GitHub repository (this will update your Pull Request).
+
+    You can also amend the initial commits and force push them to the branch.
 
     ```shell
     git rebase master -i
-    git push -f
+    git push origin my-fix-branch -f
     ```
+
+    This is generally easier to follow, but seperate commits are useful if the Pull Request contains
+    iterations that might be interesting to see side-by-side.
 
 That's it! Thank you for your contribution!
 
-When the patch is reviewed and merged, you can safely delete your branch and pull the changes
+#### After your pull request is merged
+
+After your pull request is merged, you can safely delete your branch and pull the changes
 from the main (upstream) repository:
 
-* Delete the remote branch on Github:
+* Delete the remote branch on GitHub either through the GitHub web UI or your local shell as follows:
 
     ```shell
     git push origin --delete my-fix-branch
@@ -140,123 +206,41 @@ from the main (upstream) repository:
     git pull --ff upstream master
     ```
 
-### GitHub Pull Request Helper
+## <a name="cla"></a> Signing the Contributor License Agreement (CLA)
 
-We track Pull Requests by attaching labels and assigning to milestones.  For some reason GitHub
-does not provide a good UI for managing labels on Pull Requests (unlike Issues).  We have developed
-a simple Chrome Extension that enables you to view (and manage if you have permission) the labels
-on Pull Requests.  You can get the extension from the Chrome WebStore -
-[GitHub PR Helper][github-pr-helper]
-
-## Coding Rules
-To ensure consistency throughout the source code, keep these rules in mind as you are working:
-
-* All features or bug fixes **must be tested** by one or more [specs][unit-testing].
-* All public API methods **must be documented** with ngdoc, an extended version of jsdoc (we added
-  support for markdown and templating via @ngdoc tag). To see how we document our APIs, please check
-  out the existing ngdocs and see [this wiki page][ngDocs].
-* With the exceptions listed below, we follow the rules contained in
-  [Google's JavaScript Style Guide][js-style-guide]:
-    * **Do not use namespaces**: Instead,  wrap the entire angular code base in an anonymous closure and
-      export our API explicitly rather than implicitly.
-    * Wrap all code at **100 characters**.
-    * Instead of complex inheritance hierarchies, we **prefer simple objects**. We use prototypical
-      inheritance only when absolutely necessary.
-    * We **love functions and closures** and, whenever possible, prefer them over objects.
-    * To write concise code that can be better minified, we **use aliases internally** that map to the
-      external API. See our existing code to see what we mean.
-    * We **don't go crazy with type annotations** for private internal APIs unless it's an internal API
-      that is used throughout AngularJS. The best guidance is to do what makes the most sense.
-
-## Git Commit Guidelines
-
-We have very precise rules over how our git commit messages can be formatted.  This leads to **more
-readable messages** that are easy to follow when looking through the **project history**.  But also,
-we use the git commit messages to **generate the AngularJS change log**.
-
-### Commit Message Format
-Each commit message consists of a **header**, a **body** and a **footer**.  The header has a special
-format that includes a **type**, a **scope** and a **subject**:
-
-```
-<type>(<scope>): <subject>
-<BLANK LINE>
-<body>
-<BLANK LINE>
-<footer>
-```
-
-Any line of the commit message cannot be longer 100 characters! This allows the message to be easier
-to read on github as well as in various git tools.
-
-### Type
-Must be one of the following:
-
-* **feat**: A new feature
-* **fix**: A bug fix
-* **docs**: Documentation only changes
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing
-  semi-colons, etc)
-* **refactor**: A code change that neither fixes a bug or adds a feature
-* **perf**: A code change that improves performance
-* **test**: Adding missing tests
-* **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
-  generation
-
-### Scope
-The scope could be anything specifying place of the commit change. For example `$location`,
-`$browser`, `$compile`, `$rootScope`, `ngHref`, `ngClick`, `ngView`, etc...
-
-### Subject
-The subject contains succinct description of the change:
-
-* use the imperative, present tense: "change" not "changed" nor "changes"
-* don't capitalize first letter
-* no dot (.) at the end
-
-###Body
-Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes"
-The body should include the motivation for the change and contrast this with previous behavior.
-
-###Footer
-The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
-
-
-A detailed explanation can be found in this [document][commit-message-format].
-
-## Signing the CLA
-
-Please sign our Contributor License Agreement (CLA) before sending pull requests. For any code
-changes to be accepted, the CLA must be signed. It's a quick process, we promise!
+Upon submmitting a Pull Request, a friendly bot will ask you to sign our CLA if you haven't done
+so before. Unfortunately, this is necessary for documentation changes, too.
+It's a quick process, we promise!
 
 * For individuals we have a [simple click-through form][individual-cla].
 * For corporations we'll need you to
   [print, sign and one of scan+email, fax or mail the form][corporate-cla].
 
-## Further Information
-You can find out more detailed information about contributing in the
-[AngularJS documentation][contributing].
 
 
-
-[github]: https://github.com/angular/angular.js
-[Google Closure I18N library]: https://code.google.com/p/closure-library/source/browse/closure/goog/i18n/
-[list]: https://groups.google.com/forum/?fromgroups#!forum/angular
-[contribute]: http://docs.angularjs.org/misc/contribute
-[stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
-[groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
-[angular-dev]: https://groups.google.com/forum/?fromgroups#!forum/angular-dev
-[irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
-[plunker]: http://plnkr.co/edit
-[jsfiddle]: http://jsfiddle.net/
-[ngDocs]: https://github.com/angular/angular.js/wiki/Writing-AngularJS-Documentation
-[unit-testing]: http://docs.angularjs.org/guide/dev_guide.unit-testing
-[js-style-guide]: http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
-[contributing]: http://docs.angularjs.org/misc/contribute
-[individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
+[Closure guide to i18n changes]: https://github.com/google/closure-library/wiki/Internationalization-%28i18n%29-changes-in-Closure-Library
+[coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
+[Common Locale Data Repository (CLDR)]: http://cldr.unicode.org
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
-[commit-message-format]: https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#
-[github-pr-helper]: https://chrome.google.com/webstore/detail/github-pr-helper/mokbklfnaddkkbolfldepnkfmanfhpen
+[developers]: DEVELOPERS.md
+[developers.commits]: DEVELOPERS.md#commits
+[developers.documentation]: DEVELOPERS.md#documentation
+[developers.rules]: DEVELOPERS.md#rules
+[developers.setup]: DEVELOPERS.md#setup
+[developers.tests-e2e]: DEVELOPERS.md#e2e-tests
+[developers.tests-unit]: DEVELOPERS.md#unit-tests
+[github-issues]: https://github.com/angular/angular.js/issues
+[github-new-issue]: https://github.com/angular/angular.js/issues/new
+[github]: https://github.com/angular/angular.js
+[gitter]: https://gitter.im/angular/angular.js
+[Google Closure I18N library]: https://github.com/google/closure-library/tree/master/closure/goog/i18n
+[groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
+[individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
+[irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
+[jsfiddle]: http://jsfiddle.net/
+[karma-browserstack]: https://github.com/karma-runner/karma-browserstack-launcher
+[karma-saucelabs]: https://github.com/karma-runner/karma-sauce-launcher
+[plunker]: http://plnkr.co/edit
+[stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CONTRIBUTING.md?pixel)](https://github.com/igrigorik/ga-beacon)

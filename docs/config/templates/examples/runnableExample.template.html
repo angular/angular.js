@@ -1,0 +1,26 @@
+{# Be aware that we need these extra new lines here or marked will not realize that the <div>
+   is HTML and wrap each line in a <p> - thus breaking the HTML #}
+
+<div>
+  <plnkr-opener example-path="{$ doc.path $}"></plnkr-opener>
+
+  <div class="runnable-example"
+      path="{$ doc.example.deployments.default.path $}"
+      {%- for attrName, attrValue in doc.example.attributes %}
+      {$ attrName $}="{$ attrValue $}"{% endfor %}>
+
+  {% for fileName, file in doc.example.files %}
+    <div class="runnable-example-file" {% for attrName, attrValue in file.attributes %}
+      {$ attrName $}="{$ attrValue $}"{% endfor %}>
+      {% code -%}
+      {$ file.fileContents $}
+      {%- endcode %}
+    </div>
+  {% endfor %}
+
+    <iframe class="runnable-example-frame" src="{$ doc.example.deployments.default.outputPath $}" name="{$ doc.example.id $}"></iframe>
+  </div>
+</div>
+
+{# Be aware that we need these extra new lines here or marked will not realize that the <div>
+   above is HTML and wrap each line in a <p> - thus breaking the HTML #}

@@ -1,165 +1,148 @@
-@ngdoc overview
-@name Tutorial: 0 - Bootstrapping
+@ngdoc tutorial
+@name 0 - Bootstrapping
+@step 0
 @description
 
 <ul doc-tutorial-nav="0"></ul>
 
+In this step of the tutorial, you will become familiar with the most important source code files of
+the AngularJS Phonecat App. You will also learn how to start the development servers bundled with
+[angular-seed][angular-seed], and run the application in the browser.
 
-You are now ready to build the AngularJS phonecat app. In this step, you will become familiar
-with the most important source code files, learn how to start the development servers bundled with
-angular-seed, and run the application in the browser.
+Before you continue, make sure you have set up your development environment and installed all
+necessary dependencies, as described in the {@link tutorial/#environment-setup Environment Setup}
+section.
 
+In the `angular-phonecat` directory, run this command:
 
-<div class="tabbable" show="true" ng-model="$cookies.platformPreference">
-  <div class="tab-pane well" id="git-mac" title="Git on Mac/Linux" value="gitUnix">
-    <ol>
-      <li><p>In <code>angular-phonecat</code> directory, run this command:</p>
-      <pre>git checkout -f step-0</pre>
-      <p>This resets your workspace to step 0 of the tutorial app.</p>
-      <p>You must repeat this for every future step in the tutorial and change the number to
-      the number of the step you are on. This will cause any changes you made within
-      your working directory to be lost.</p></li>
+```
+git checkout -f step-0
+```
 
-      <li>To see the app running in a browser, do one of the following:
-        <ul>
-          <li><b>For node.js users:</b>
-            <ol>
-              <li>In a <i>separate</i> terminal tab or window, run <code>node ./scripts/web-server.js</code> to start the web server.</li>
-              <li>Open a browser window for the app and navigate to <a
-              href="http://localhost:8000/app/index.html" target="_blank">`http://localhost:8000/app/index.html`</a></li>
-            </ol>
-          </li>
-          <li><b>For other http servers:</b>
-            <ol>
-              <li>Configure the server to serve the files in the <code>angular-phonecat</code> directory.</li>
-              <li>Navigate in your browser to <code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
-            </ol>
-          </li>
-        </ul>
-      </li>
-    </ol>
-  </div>
+This resets your workspace to step 0 of the tutorial app.
 
+You must repeat this for every future step in the tutorial and change the number to the number of
+the step you are on. This will cause any changes you made within your working directory to be lost.
 
-  <div class="tab-pane well" id="git-win" title="Git on Windows" value="gitWin">
-    <ol>
-      <li><p>Open Git bash and run this command (in <code>angular-phonecat</code> directory):</p>
-      <pre>git checkout -f step-0</pre>
-      <p>This resets your workspace to step 0 of the tutorial app.</p>
-      <p>You must repeat this for every future step in the tutorial and change the number to
-      the number of the step you are on. This will cause any changes you made within
-      your working directory to be lost.</p></li>
-      <li>To see the app running in a browser, do one of the following:
-        <ul>
-          <li><b>For node.js users:</b>
-            <ol>
-              <li>In a <i>separate</i> terminal tab or window, run <code>node scripts\web-server.js</code> to start the web server.</li>
-              <li>Open a browser window for the app and navigate to <a href="http://localhost:8000/app/index.html" target="_blank">`http://localhost:8000/app/index.html`</a></li>
-            </ol>
-          </li>
-          <li><b>For other http servers:</b>
-            <ol>
-              <li>Configure the server to serve the files in the <code>angular-phonecat</code> directory.</li>
-              <li>Navigate in your browser to <code>http://localhost:[port-number]/[context-path]/app/index.html</code>.</li>
-            </ol>
-          </li>
-        </ul>
-      </li>
-    </ol>
-  </div>
-</div>
+If you haven't already done so, you need to install the dependencies by running:
 
+```
+npm install
+```
+
+To see the app running in a browser, open a _separate_ terminal/command line tab or window, then run
+`npm start` to start the web server. Now, open a browser window for the app and navigate to
+http://localhost:8000/index.html.
+
+Note that if you already ran the master branch app prior to checking out step-0, you may see the
+cached master version of the app in your browser window at this point. Just hit refresh to re-load
+the page.
 
 You can now see the page in your browser. It's not very exciting, but that's OK.
 
 The HTML page that displays "Nothing here yet!" was constructed with the HTML code shown below.
-The code contains some key Angular elements that we will need going forward.
+The code contains some key AngularJS elements that we will need as we progress.
 
-__`app/index.html`:__
-<pre>
+**`app/index.html`:**
+
+```html
 <!doctype html>
 <html lang="en" ng-app>
-<head>
-  <meta charset="utf-8">
-  <title>My HTML File</title>
-  <link rel="stylesheet" href="css/app.css">
-  <link rel="stylesheet" href="css/bootstrap.css">
-  <script src="lib/angular/angular.js"></script>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <title>My HTML File</title>
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <script src="bower_components/angular/angular.js"></script>
+  </head>
+  <body>
 
-  <p>Nothing here {{'yet' + '!'}}</p>
+    <p>Nothing here {{'yet' + '!'}}</p>
 
-</body>
+  </body>
 </html>
-</pre>
-
+```
 
 
 ## What is the code doing?
 
-* `ng-app` directive:
+<br />
+**`ng-app` attribute:**
 
-          <html ng-app>
+```html
+<html ng-app>
+```
 
-  The `ng-app` attribute represents an Angular directive named `ngApp` (Angular uses
-  `name-with-dashes` for its custom attributes and `camelCase` for the corresponding directives
-  that implements them).
-  This directive is used to flag the html element that Angular should consider to be the root element
-  of our application.
-  This gives application developers the freedom to tell Angular if the entire html page or only a
-  portion of it should be treated as the Angular application.
+The `ng-app` attribute represents an AngularJS directive, named `ngApp` (AngularJS uses `kebab-case` for
+its custom attributes and `camelCase` for the corresponding directives which implement them). This
+directive is used to flag the HTML element that AngularJS should consider to be the root element of
+our application. This gives application developers the freedom to tell AngularJS if the entire HTML
+page or only a portion of it should be treated as the AngularJS application.
 
-* AngularJS script tag:
+For more info on `ngApp`, check out the {@link ngApp API Reference}.
 
-          <script src="lib/angular/angular.js">
+<br />
+**`angular.js` script tag:**
 
-  This code downloads the `angular.js` script and registers a callback that will be executed by the
-browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
-looks for the {@link api/ng.directive:ngApp ngApp} directive. If
-Angular finds the directive, it will bootstrap the application with the root of the application DOM
-being the element on which the `ngApp` directive was defined.
+```html
+<script src="bower_components/angular/angular.js"></script>
+```
 
-* Double-curly binding with an expression:
+This code downloads the `angular.js` script which registers a callback that will be executed by the
+browser when the containing HTML page is fully downloaded. When the callback is executed, AngularJS
+looks for the {@link ngApp ngApp} directive. If AngularJS finds the directive, it will bootstrap the
+application with the root of the application DOM being the element on which the `ngApp` directive
+was defined.
 
-          Nothing here {{'yet' + '!'}}
+For more info on bootstrapping your app, checkout the [Bootstrap](guide/bootstrap) section of the
+Developer Guide.
 
-  This line demonstrates the core feature of Angular's templating capabilities – a binding, denoted
-  by double-curlies `{{ }}` as well as a simple expression `'yet' + '!'` used in this binding.
+<br />
+**Double-curly binding with an expression:**
 
-  The binding tells Angular that it should evaluate an expression and insert the result into the
-  DOM in place of the binding. Rather than a one-time insert, as we'll see in the next steps, a
-  binding will result in efficient continuous updates whenever the result of the expression
-  evaluation changes.
+```html
+Nothing here {{'yet' + '!'}}
+```
 
-  {@link guide/expression Angular expression} is a JavaScript-like code snippet that is
-  evaluated by Angular in the context of the current model scope, rather than within the scope of
-  the global context (`window`).
+This line demonstrates two core features of AngularJS's templating capabilities:
 
-  As expected, once this template is processed by Angular, the html page contains the text:
-  "Nothing here yet!".
+* A binding, denoted by double-curlies: `{{ }}`
+* A simple expression used in this binding: `'yet' + '!'`
 
-## Bootstrapping AngularJS apps
+The binding tells AngularJS that it should evaluate an expression and insert the result into the DOM
+in place of the binding. As we will see in the next steps, rather than a one-time insert, a binding
+will result in efficient continuous updates whenever the result of the expression evaluation
+changes.
 
-Bootstrapping AngularJS apps automatically using the `ngApp` directive is very easy and suitable
-for most cases. In advanced cases, such as when using script loaders, you can use
-{@link guide/bootstrap imperative / manual way} to bootstrap the app.
+{@link guide/expression AngularJS expressions} are JavaScript-like code snippets that are evaluated by
+AngularJS in the context of the current model scope, rather than within the scope of the global
+context (`window`).
 
-There are 3 important things that happen during the app bootstrap:
+As expected, once this template is processed by AngularJS, the HTML page contains the text:
 
-1. The {@link api/AUTO.$injector injector} that will be used for dependency injection is created.
+```
+Nothing here yet!
+```
 
-2. The injector will then create the {@link api/ng.$rootScope root scope} that will
-   become the context for the model of our application.
+## Bootstrapping AngularJS Applications
 
-3. Angular will then "compile" the DOM starting at the `ngApp` root element, processing any
+Bootstrapping AngularJS applications automatically using the `ngApp` directive is very easy and
+suitable for most cases. In advanced cases, such as when using script loaders, you can use the
+{@link guide/bootstrap#manual-initialization imperative/manual way} to bootstrap the application.
+
+There are 3 important things that happen during the bootstrap phase:
+
+1. The {@link auto.$injector injector} that will be used for dependency injection is created.
+
+2. The injector will then create the {@link ng.$rootScope root scope} that will become the context
+   for the model of our application.
+
+3. AngularJS will then "compile" the DOM starting at the `ngApp` root element, processing any
    directives and bindings found along the way.
 
-
 Once an application is bootstrapped, it will then wait for incoming browser events (such as mouse
-click, key press or incoming HTTP response) that might change the model. Once such an event occurs,
-Angular detects if it caused any model changes and if changes are found, Angular will reflect them
-in the view by updating all of the affected bindings.
+clicks, key presses or incoming HTTP responses) that might change the model. Once such an event
+occurs, AngularJS detects if it caused any model changes and if changes are found, AngularJS will
+reflect them in the view by updating all of the affected bindings.
 
 The structure of our application is currently very simple. The template contains just one directive
 and one static binding, and our model is empty. That will soon change!
@@ -169,38 +152,37 @@ and one static binding, and our model is empty. That will soon change!
 
 ## What are all these files in my working directory?
 
-Most of the files in your working directory come from the {@link
-https://github.com/angular/angular-seed angular-seed project} which is typically used to bootstrap
-new Angular projects. The seed project includes the latest Angular libraries, test libraries,
-scripts and a simple example app, all pre-configured for developing a typical web app.
+Most of the files in your working directory come from the [angular-seed project][angular-seed],
+which is typically used to bootstrap new AngularJS projects. The seed project is pre-configured to
+install the AngularJS framework (via `bower` into the `app/bower_components/` directory) and tools
+for developing and testing a typical web application (via `npm`).
 
 For the purposes of this tutorial, we modified the angular-seed with the following changes:
 
-* Removed the example app
-* Added phone images to `app/img/phones/`
-* Added phone data files (JSON) to `app/phones/`
-* Added [Bootstrap](http://getbootstrap.com) files to `app/css/` and `app/img/`
+* Removed the example app.
+* Removed unused dependencies.
+* Added phone images to `app/img/phones/`.
+* Added phone data files (JSON) to `app/phones/`.
+* Added a dependency on [Bootstrap](http://getbootstrap.com) in the `bower.json` file.
 
 
+## Experiments
 
-# Experiments
+<div></div>
 
-* Try adding a new expression to the `index.html` that will do some math:
+* Try adding a new expression to `index.html` that will do some math:
 
-          <p>1 + 2 = {{ 1 + 2 }}</p>
+  ```html
+  <p>1 + 2 = {{1 + 2}}</p>
+  ```
 
 
-
-# Summary
+## Summary
 
 Now let's go to {@link step_01 step 1} and add some content to the web app.
 
 
 <ul doc-tutorial-nav="0"></ul>
 
-<div style="display: none">
-Note: During the bootstrap the injector and the root scope will then be associated with the
-   element on which the `ngApp` directive was declared, so when debugging the app you can retrieve
-   them from browser console via `angular.element(rootElement).scope()` and
-   `angular.element(rootElement).injector()`.
-</div>
+
+[angular-seed]: https://github.com/angular/angular-seed

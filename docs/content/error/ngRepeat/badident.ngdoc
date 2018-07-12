@@ -1,0 +1,41 @@
+@ngdoc error
+@name ngRepeat:badident
+@fullName Invalid identifier expression
+@description
+
+Occurs when an invalid identifier is specified in an {@link ng.directive:ngRepeat ngRepeat} expression.
+
+The {@link ng.directive:ngRepeat ngRepeat} directive's `alias as` syntax is used to assign an alias for the processed collection in scope.
+
+If the expression is not a simple identifier (such that you could declare it with `var {name}`, or if the expression is a reserved name,
+this error is thrown.
+
+Reserved names include:
+
+  - `null`
+  - `this`
+  - `undefined`
+  - `$parent`
+  - `$id`
+  - `$root`
+  - `$even`
+  - `$odd`
+  - `$first`
+  - `$last`
+  - `$middle`
+
+Invalid expressions might look like this:
+
+```html
+<li ng-repeat="item in items | filter:searchString as this">{{item}}</li>
+<li ng-repeat="item in items | filter:searchString as some.objects["property"]">{{item}}</li>
+<li ng-repeat="item in items | filter:searchString as resultOfSomeMethod()">{{item}}</li>
+<li ng-repeat="item in items | filter:searchString as foo=6">{{item}}</li>
+```
+
+Valid expressions might look like this:
+
+```html
+<li ng-repeat="item in items | filter:searchString as collections">{{item}}</li>
+<li ng-repeat="item in items | filter:searchString as filteredCollection">{{item}}</li>
+```

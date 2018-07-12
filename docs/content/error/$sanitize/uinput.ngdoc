@@ -1,0 +1,13 @@
+@ngdoc error
+@name $sanitize:uinput
+@fullName Failed to sanitize html because the input is unstable
+@description
+
+This error occurs when `$sanitize` sanitizer tries to check the input for possible mXSS payload and the verification
+errors due to the input mutating indefinitely. This could be a sign that the payload contains code exploiting an mXSS
+vulnerability in the browser.
+
+mXSS attack exploit browser bugs that cause some browsers parse a certain html strings into DOM, which once serialized
+doesn't match the original input. These browser bugs can be exploited by attackers to create payload which looks
+harmless to sanitizers, but due to mutations caused by the browser are turned into dangerous code once processed after
+sanitization.

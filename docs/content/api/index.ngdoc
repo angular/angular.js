@@ -3,20 +3,30 @@
 @description
 
 # AngularJS API Docs
-Welcome to the AngularJS API docs page. These pages contain the AngularJS reference materials for version <strong ng-bind="version"></strong>.
+
+<div class="alert alert-warning">
+**AngularJS will be moving to Long Term Support (LTS) mode on July 1st 2018.**: [Find out more](misc/version-support-status).
+</div>
+
+## Welcome to the AngularJS API docs page.
+
+These pages contain the AngularJS reference materials for version <strong ng-bind="version"></strong>.
+
 
 The documentation is organized into **{@link guide/module modules}** which contain various components of an AngularJS application.
-These components are {@link guide/directive directives}, {@link guide/dev_guide.services services}, {@link guide/filter filters}, {@link guide/providers providers}, {@link guide/templates types}, global APIs and testing mocks.
+These components are {@link guide/directive directives}, {@link guide/services services}, {@link guide/filter filters}, {@link guide/providers providers}, {@link guide/templates templates}, global APIs, and testing mocks.
+
+There is also a {@link guide/index guide} with articles on various topics, and a list of external resources.
 
 <div class="alert alert-info">
-**Angular Namespaces `$` and `$$`**
+**AngularJS Prefixes `$` and `$$`**:
 
 To prevent accidental name collisions with your code,
-Angular prefixes names of public objects with `$` and names of private objects with `$$`.
+AngularJS prefixes names of public objects with `$` and names of private objects with `$$`.
 Please do not use the `$` or `$$` prefix in your code.
 </div>
 
-## Angular Namespace
+## AngularJS Modules
 
 
 ## {@link ng ng (core module)}
@@ -33,8 +43,8 @@ This module is provided by default and contains the core components of AngularJS
       <p>
         Some examples include:
           {@link ng.directive:ngClick ngClick},
-          {@link ng.directive:ngInclude ngInclude},
-          {@link ng.directive:ngRepeat ngRepeat},
+          {@link directive:ngInclude ngInclude},
+          {@link directive:ngRepeat ngRepeat},
           etc… <br />
       </p>
     </td>
@@ -51,7 +61,6 @@ This module is provided by default and contains the core components of AngularJS
         Some examples include:
           {@link ng.$compile $compile},
           {@link ng.$http $http},
-          {@link ngRoute.$routeParams $routeParams},
           {@link ng.$location $location},
           etc…
       <p>
@@ -82,7 +91,7 @@ This module is provided by default and contains the core components of AngularJS
     </td>
     <td>
       <p>
-        The core global API functions are attached to the angular object. These core functions are useful for low level JavaScript operations within your application.
+        The core global API functions are attached to the `angular` object. These core functions are useful for low level JavaScript operations within your application.
       </p>
       <p>
         Some examples include:
@@ -129,7 +138,7 @@ Use ngRoute to enable URL routing to your application. The ngRoute module suppor
 
 ## {@link ngAnimate ngAnimate}
 
-Use ngAnimate to enable animation features into your application. Various core ng directives will provide
+Use ngAnimate to enable animation features within your application. Various core AngularJS directives will provide
 animation hooks into your application when ngAnimate is included. Animations are defined by using CSS transitions/animations
 or JavaScript callbacks.
 
@@ -141,7 +150,7 @@ or JavaScript callbacks.
       {@link ngAnimate#service Services / Factories}
     </td>
     <td>
-      Use {@link ngAnimate.$animate $animate} to trigger animation operations within your directive code.
+      Use {@link ng.$animate $animate} to trigger animation operations within your directive code.
     </td>
   </tr>
   <tr>
@@ -149,7 +158,7 @@ or JavaScript callbacks.
       {@link ngAnimate CSS-based animations}
     </td>
     <td>
-      Follow ngAnimate’s CSS naming structure to reference CSS transitions / keyframe animations in AngularJS. Once defined the animation can be triggered by referencing the CSS class within the HTML template code.
+      Follow ngAnimate’s CSS naming structure to reference CSS transitions / keyframe animations in AngularJS. Once defined, the animation can be triggered by referencing the CSS class within the HTML template code.
     </td>
   </tr>
   <tr>
@@ -157,11 +166,32 @@ or JavaScript callbacks.
       {@link ngAnimate JS-based animations}
     </td>
     <td>
-      Use {@link angular.Module#methods_animation module.animation()} to register a JavaScript animation. Once registered the animation can be triggered by referencing the CSS class within the HTML template code.
+      Use {@link angular.Module#animation module.animation()} to register a JavaScript animation. Once registered, the animation can be triggered by referencing the CSS class within the HTML template code.
     </td>
   </tr>
 </table>
 
+## {@link ngAria ngAria}
+
+Use ngAria to inject common accessibility attributes into directives and improve the experience for users with disabilities.
+
+<div class="alert alert-info">Include the **angular-aria.js** file and set ngAria as a dependency for this to work in your application.</div>
+
+<table class="definition-table spaced">
+  <tr>
+    <td>
+      {@link ngAria#service Services}
+    </td>
+    <td>
+      <p>
+          The {@link ngAria.$aria $aria} service contains helper methods for applying ARIA attributes to HTML.
+      <p>
+      <p>
+          {@link ngAria.$ariaProvider $ariaProvider} is used for configuring ARIA attributes.
+      </p>
+    </td>
+  </tr>
+</table>
 
 ## {@link ngResource ngResource}
 
@@ -192,11 +222,7 @@ Use the ngCookies module to handle cookie management within your application.
       {@link ngCookies#service Services / Factories}
     </td>
     <td>
-      The following services are used for cookie management:
-      <ul>
-        <li>The {@link ngCookies.$cookies $cookie} service is a convenient wrapper to store simple data within browser cookies.</li>
-        <li>{@link ngCookies.$cookieStore $cookieStore} is used to store more complex data using serialization.</li>
-      </ul>
+      The {@link ngCookies.$cookies $cookies} service is a convenient wrapper to store simple data within browser cookies.
     </td>
   </tr>
 </table>
@@ -213,7 +239,7 @@ Use ngTouch when developing for mobile browsers/devices.
       {@link ngTouch#service Services / Factories}
     </td>
     <td>
-      The {@link ngTouch.$swipe $swipe} service is used to register and manage mobile DOM events. 
+      The {@link ngTouch.$swipe $swipe} service is used to register and manage mobile DOM events.
     </td>
   </tr>
   <tr>
@@ -243,7 +269,7 @@ Use ngSanitize to securely parse and manipulate HTML data in your application.
   </tr>
   <tr>
     <td>
-      {@link ngTouch#filter Filters}
+      {@link ngSanitize#filter Filters}
     </td>
     <td>
       The {@link ngSanitize.filter:linky linky filter} is used to turn URLs into HTML links within the provided string.
@@ -253,7 +279,7 @@ Use ngSanitize to securely parse and manipulate HTML data in your application.
 
 ## {@link ngMock ngMock}
 
-Use ngMock to inject and mock modules, factories, services and providers within your unit tests 
+Use ngMock to inject and mock modules, factories, services and providers within your unit tests.
 
 <div class="alert alert-info">Include the **angular-mocks.js** file into your test runner for this to work.</div>
 
