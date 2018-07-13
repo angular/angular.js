@@ -148,7 +148,6 @@ describe('event directives', function() {
       expect($rootScope.blur).toHaveBeenCalledOnce();
       expect(element.val()).toBe('newValue');
     }));
-
   });
 
 
@@ -190,4 +189,92 @@ describe('event directives', function() {
     expect($rootScope.click).toHaveBeenCalledOnce();
     expect(watchedVal).toEqual('newValue');
   }));
+
+
+  describe('throwing errors in event handlers', function() {
+
+    it('should not stop execution if the event is triggered outside a digest', function() {
+
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+
+      inject(function($rootScope, $compile, $exceptionHandler, $log) {
+
+        element = $compile('<button ng-click="click()">Click</button>')($rootScope);
+        expect($log.assertEmpty());
+        $rootScope.click = function() {
+          throw new Error('listener error');
+        };
+
+        $rootScope.do = function() {
+          element.triggerHandler('click');
+          $log.log('done');
+        };
+
+        $rootScope.do();
+
+        expect($exceptionHandler.errors).toEqual([Error('listener error')]);
+        expect($log.log.logs).toEqual([['done']]);
+        $log.reset();
+      });
+    });
+
+
+    it('should not stop execution if the event is triggered inside a digest', function() {
+
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+
+      inject(function($rootScope, $compile, $exceptionHandler, $log) {
+
+        element = $compile('<button ng-click="click()">Click</button>')($rootScope);
+        expect($log.assertEmpty());
+        $rootScope.click = function() {
+          throw new Error('listener error');
+        };
+
+        $rootScope.do = function() {
+          element.triggerHandler('click');
+          $log.log('done');
+        };
+
+        $rootScope.$apply(function() {
+          $rootScope.do();
+        });
+
+        expect($exceptionHandler.errors).toEqual([Error('listener error')]);
+        expect($log.log.logs).toEqual([['done']]);
+        $log.reset();
+      });
+    });
+
+
+    it('should not stop execution if the event is triggered in a watch expression function', function() {
+
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+
+      inject(function($rootScope, $compile, $exceptionHandler, $log) {
+
+        element = $compile('<button ng-click="click()">Click</button>')($rootScope);
+        $rootScope.click = function() {
+          throw new Error('listener error');
+        };
+
+        $rootScope.$watch(function() {
+          element.triggerHandler('click');
+          $log.log('done');
+        });
+
+        $rootScope.$digest();
+
+        expect($exceptionHandler.errors).toEqual([Error('listener error'), Error('listener error')]);
+        expect($log.log.logs).toEqual([['done'], ['done']]);
+        $log.reset();
+      });
+    });
+  });
 });
