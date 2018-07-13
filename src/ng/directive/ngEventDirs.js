@@ -50,7 +50,7 @@ forEach(
   'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave keydown keyup keypress submit focus blur copy cut paste'.split(' '),
   function(eventName) {
     var directiveName = directiveNormalize('ng-' + eventName);
-    ngEventDirectives[directiveName] = ['$parse', '$rootScope', function($parse, $rootScope) {
+    ngEventDirectives[directiveName] = ['$parse', '$rootScope', '$exceptionHandler', function($parse, $rootScope, $exceptionHandler) {
       return {
         restrict: 'A',
         compile: function($element, attr) {
@@ -64,12 +64,17 @@ forEach(
               var callback = function() {
                 fn(scope, {$event: event});
               };
+
               if (!$rootScope.$$phase) {
                 scope.$apply(callback);
               } else if (forceAsyncEvents[eventName]) {
                 scope.$evalAsync(callback);
               } else {
-                callback();
+                try {
+                  callback();
+                } catch (error) {
+                  $exceptionHandler(error);
+                }
               }
             });
           };
