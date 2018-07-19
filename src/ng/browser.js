@@ -1,5 +1,10 @@
 'use strict';
-/* global stripHash: true */
+/* global getHash: true, stripHash: false */
+
+function getHash(url) {
+  var index = url.indexOf('#');
+  return index === -1 ? '' : url.substr(index);
+}
 
 /**
  * ! This is a private undocumented service !
@@ -61,11 +66,6 @@ function Browser(window, document, $log, $sniffer, $$taskTrackerFactory) {
       };
 
   cacheState();
-
-  function getHash(url) {
-    var index = url.indexOf('#');
-    return index === -1 ? '' : url.substr(index);
-  }
 
   /**
    * @name $browser#url
