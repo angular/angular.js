@@ -404,6 +404,14 @@ describe('browser', function() {
       expect(browser.url()).toEqual('https://another.com');
     });
 
+    it('should strip an empty hash fragment', function() {
+      fakeWindow.location.href = 'http://test.com#';
+      expect(browser.url()).toEqual('http://test.com');
+
+      fakeWindow.location.href = 'https://another.com#foo';
+      expect(browser.url()).toEqual('https://another.com#foo');
+    });
+
     it('should use history.pushState when available', function() {
       sniffer.history = true;
       browser.url('http://new.org');
@@ -1045,6 +1053,32 @@ describe('browser', function() {
         fakeWindow.fire('hashchange');
 
         expect($location.absUrl()).toEqual('http://server/#otherHash');
+      });
+    });
+
+    // issue #16632
+    it('should not trigger `$locationChangeStart` more than once due to trailing `#`', function() {
+      setup({
+        history: true,
+        html5Mode: true
+      });
+
+      inject(function($flushPendingTasks, $location, $rootScope) {
+        $rootScope.$digest();
+
+        var spy = jasmine.createSpy('$locationChangeStart');
+        $rootScope.$on('$locationChangeStart', spy);
+
+        $rootScope.$evalAsync(function() {
+          fakeWindow.location.href += '#';
+        });
+        $rootScope.$digest();
+
+        expect(fakeWindow.location.href).toBe('http://server/#');
+        expect($location.absUrl()).toBe('http://server/');
+
+        expect(spy.calls.count()).toBe(0);
+        expect(spy).not.toHaveBeenCalled();
       });
     });
   });
