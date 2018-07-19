@@ -1,5 +1,5 @@
 'use strict';
-/* global getHash: true, stripHash: false */
+/* global getHash: true, stripHash: false, trimEmptyHash: false */
 
 function getHash(url) {
   var index = url.indexOf('#');
@@ -143,7 +143,7 @@ function Browser(window, document, $log, $sniffer, $$taskTrackerFactory) {
       // - pendingLocation is needed as browsers don't allow to read out
       //   the new location.href if a reload happened or if there is a bug like in iOS 9 (see
       //   https://openradar.appspot.com/22186109).
-      return pendingLocation || location.href;
+      return pendingLocation || trimEmptyHash(location.href);
     }
   };
 

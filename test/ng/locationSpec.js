@@ -709,7 +709,7 @@ describe('$location', function() {
       initService({html5Mode: true, supportHistory: true});
       mockUpBrowser({initialUrl: 'http://new.com/#', baseHref: '/'});
       inject(function($browser, $location, $window) {
-        expect($browser.url()).toBe('http://new.com/#');
+        expect($browser.url()).toBe('http://new.com/');
         expect($location.absUrl()).toBe('http://new.com/');
         expect($window.location.href).toBe('http://new.com/#');
       });
