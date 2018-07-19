@@ -693,10 +693,10 @@ describe('$location', function() {
 
   describe('location watch', function() {
 
-    it('should not update browser if only the empty hash fragment is cleared by updating the search', function() {
+    it('should not update browser if only the empty hash fragment is cleared', function() {
       initService({supportHistory: true});
-      mockUpBrowser({initialUrl:'http://new.com/a/b#', baseHref:'/base/'});
-      inject(function($rootScope, $browser, $location) {
+      mockUpBrowser({initialUrl: 'http://new.com/a/b#', baseHref: '/base/'});
+      inject(function($browser, $rootScope) {
         $browser.url('http://new.com/a/b');
         var $browserUrl = spyOnlyCallsWithArgs($browser, 'url').and.callThrough();
         $rootScope.$digest();
@@ -707,8 +707,8 @@ describe('$location', function() {
 
     it('should not replace browser url if only the empty hash fragment is cleared', function() {
       initService({html5Mode: true, supportHistory: true});
-      mockUpBrowser({initialUrl:'http://new.com/#', baseHref: '/'});
-      inject(function($browser, $location) {
+      mockUpBrowser({initialUrl: 'http://new.com/#', baseHref: '/'});
+      inject(function($browser, $location, $window) {
         expect($browser.url()).toBe('http://new.com/#');
         expect($location.absUrl()).toBe('http://new.com/');
       });
