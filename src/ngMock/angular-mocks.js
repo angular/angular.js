@@ -225,7 +225,8 @@ angular.mock.$Browser.prototype = {
       state = null;
     }
     if (url) {
-      this.$$url = url;
+      // The `$browser` service trims empty hashes; simulate it.
+      this.$$url = url.replace(/#$/, '');
       // Native pushState serializes & copies the object; simulate it.
       this.$$state = angular.copy(state);
       return this;
