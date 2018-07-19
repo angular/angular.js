@@ -102,7 +102,7 @@ function stripHash(url) {
 }
 
 function trimEmptyHash(url) {
-  return url.replace(/(#.+)|#$/, '$1');
+  return url.replace(/#$/, '');
 }
 
 
