@@ -240,7 +240,7 @@ angular.mock.$Browser.prototype = {
 };
 
 /**
- * @ngdoc function
+ * @ngdoc service
  * @name $flushPendingTasks
  *
  * @description
@@ -279,7 +279,7 @@ angular.mock.$FlushPendingTasksProvider = function() {
 };
 
 /**
- * @ngdoc function
+ * @ngdoc service
  * @name $verifyNoPendingTasks
  *
  * @description
