@@ -262,7 +262,7 @@ angular.mock.$Browser.prototype = {
  *
  * <div class="alert alert-info">
  *   Periodic tasks scheduled via {@link $interval} use a different queue and are not flushed by
- *   `$flushPendingTasks()`. Use {@link ngMock.$interval#flush $interval.flush([millis])} instead.
+ *   `$flushPendingTasks()`. Use {@link ngMock.$interval#flush $interval.flush(millis)} instead.
  * </div>
  *
  * @param {number=} delay - The number of milliseconds to flush.
@@ -650,7 +650,7 @@ angular.mock.$IntervalProvider = function() {
      *
      * Runs interval tasks scheduled to be run in the next `millis` milliseconds.
      *
-     * @param {number=} millis maximum timeout amount to flush up until.
+     * @param {number} millis maximum timeout amount to flush up until.
      *
      * @return {number} The amount of time moved forward.
      */
