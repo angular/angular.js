@@ -185,7 +185,7 @@ function $RouteProvider() {
    *      route definition, will cause the latter to be ignored.
    *
    *    - `[reloadOnUrl=true]` - `{boolean=}` - reload route when any part of the URL changes
-   *      (inluding the path) even if the new URL maps to the same route.
+   *      (including the path) even if the new URL maps to the same route.
    *
    *      If the option is set to `false` and the URL in the browser changes, but the new URL maps
    *      to the same route, then a `$routeUpdate` event is broadcasted on the root scope (without
