@@ -1909,7 +1909,7 @@ function bindJQuery() {
   jqLite.cleanData = function(elems) {
     var events;
     for (var i = 0, elem; (elem = elems[i]) != null; i++) {
-      events = jqLite._data(elem).events;
+      events = (jqLite._data(elem) || {}).events;
       if (events && events.$destroy) {
         jqLite(elem).triggerHandler('$destroy');
       }
