@@ -501,6 +501,12 @@ describe('jqLite', function() {
       expect(jqLite(c).data('prop')).toBeUndefined();
     });
 
+    it('should not break on cleanData(), if element has no data', function() {
+      var selected = jqLite([a, b, c]);
+      spyOn(jqLite, '_data').and.returnValue(undefined);
+      expect(function() { jqLite.cleanData(selected); }).not.toThrow();
+    });
+
 
     it('should add and remove data on SVGs', function() {
       var svg = jqLite('<svg><rect></rect></svg>');
