@@ -28,6 +28,9 @@
    *  - `charcode`: [charCode](https://developer.mozilla.org/docs/Web/API/KeyboardEvent/charcode)
    *    for keyboard events (keydown, keypress, and keyup).
    *
+   *  - `data`: [data](https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent/data) for
+   *    [CompositionEvents](https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent).
+   *
    *  - `elapsedTime`: the elapsedTime for
    *    [TransitionEvent](https://developer.mozilla.org/docs/Web/API/TransitionEvent)
    *    and [AnimationEvent](https://developer.mozilla.org/docs/Web/API/AnimationEvent).
