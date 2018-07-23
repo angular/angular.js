@@ -64,10 +64,12 @@ forEach(
               var callback = function() {
                 fn(scope, {$event: event});
               };
-              if (forceAsyncEvents[eventName] && $rootScope.$$phase) {
+              if (!$rootScope.$$phase) {
+                scope.$apply(callback);
+              } else if (forceAsyncEvents[eventName]) {
                 scope.$evalAsync(callback);
               } else {
-                scope.$apply(callback);
+                callback();
               }
             });
           };
