@@ -1511,16 +1511,25 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
       }
     }
 
+    function createFatalError(message) {
+      var error = new Error(message);
+      // In addition to being converted to a rejection, these errors also need to be passed to
+      // the $exceptionHandler and be rethrown (so that the test fails).
+      error.$$passToExceptionHandler = true;
+      return error;
+    }
+
     if (expectation && expectation.match(method, url)) {
       if (!expectation.matchData(data)) {
-        throw new Error('Expected ' + expectation + ' with different data\n' +
-            'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
+        throw createFatalError('Expected ' + expectation + ' with different data\n' +
+          'EXPECTED: ' + prettyPrint(expectation.data) + '\n' +
+          'GOT:      ' + data);
       }
 
       if (!expectation.matchHeaders(headers)) {
-        throw new Error('Expected ' + expectation + ' with different headers\n' +
-                        'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' +
-                        prettyPrint(headers));
+        throw createFatalError('Expected ' + expectation + ' with different headers\n' +
+          'EXPECTED: ' + prettyPrint(expectation.headers) + '\n' +
+          'GOT:      ' + prettyPrint(headers));
       }
 
       expectations.shift();
@@ -1541,20 +1550,17 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
           ($browser ? $browser.defer : responsesPush)(wrapResponse(definition));
         } else if (definition.passThrough) {
           originalHttpBackend(method, url, data, callback, headers, timeout, withCredentials, responseType, eventHandlers, uploadEventHandlers);
-        } else throw new Error('No response defined !');
+        } else throw createFatalError('No response defined !');
         return;
       }
     }
-    var error = wasExpected ?
-        new Error('No response defined !') :
-        new Error('Unexpected request: ' + method + ' ' + url + '\n' +
-                  (expectation ? 'Expected ' + expectation : 'No more request expected'));
 
-    // In addition to be being converted to a rejection, this error also needs to be passed to
-    // the $exceptionHandler and be rethrown (so that the test fails).
-    error.$$passToExceptionHandler = true;
+    if (wasExpected) {
+      throw createFatalError('No response defined !');
+    }
 
-    throw error;
+    throw createFatalError('Unexpected request: ' + method + ' ' + url + '\n' +
+      (expectation ? 'Expected ' + expectation : 'No more request expected'));
   }
 
   /**
