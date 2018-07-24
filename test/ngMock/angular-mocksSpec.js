@@ -1506,6 +1506,42 @@ describe('ngMock', function() {
     });
 
 
+    it('should throw error when expectation fails', function() {
+      expect(function() {
+        hb.expectPOST('/some', {foo: 1}).respond({});
+        hb('POST', '/some', {foo: 2}, callback);
+        hb.flush();
+      }).toThrowError(/^Expected POST \/some with different data/);
+    });
+
+
+    it('should throw error when expectation about headers fails', function() {
+      expect(function() {
+        hb.expectPOST('/some', {foo: 1}, {X: 'val1'}).respond({});
+        hb('POST', '/some', {foo: 1}, callback, {X: 'val2'});
+        hb.flush();
+      }).toThrowError(/^Expected POST \/some with different headers/);
+    });
+
+
+    it('should throw error about data when expectations about both data and headers fail', function() {
+      expect(function() {
+        hb.expectPOST('/some', {foo: 1}, {X: 'val1'}).respond({});
+        hb('POST', '/some', {foo: 2}, callback, {X: 'val2'});
+        hb.flush();
+      }).toThrowError(/^Expected POST \/some with different data/);
+    });
+
+
+    it('should throw error when response is not defined for a backend definition', function() {
+      expect(function() {
+        hb.whenGET('/some'); // no .respond(...) !
+        hb('GET', '/some', null, callback);
+        hb.flush();
+      }).toThrowError('No response defined !');
+    });
+
+
     it('should match headers if specified', function() {
       hb.when('GET', '/url', null, {'X': 'val1'}).respond(201, 'content1');
       hb.when('GET', '/url', null, {'X': 'val2'}).respond(202, 'content2');
@@ -2831,6 +2867,24 @@ describe('ngMockE2E', function() {
 
         hb.verifyNoOutstandingRequest();
       }).toThrowError('Unexpected request: GET /some\nNo more request expected');
+    });
+
+    it('should throw error when expectation fails - without error callback', function() {
+      expect(function() {
+        hb.expectPOST('/some', { foo: 1 }).respond({});
+        $http.post('/some', { foo: 2 }).then(noop);
+
+        hb.flush();
+      }).toThrowError(/^Expected POST \/some with different data/);
+    });
+
+    it('should throw error when unexpected request - with error callback', function() {
+      expect(function() {
+        hb.expectPOST('/some', { foo: 1 }).respond({});
+        $http.post('/some', { foo: 2 }).then(noop, noop);
+
+        hb.flush();
+      }).toThrowError(/^Expected POST \/some with different data/);
     });
 
 
