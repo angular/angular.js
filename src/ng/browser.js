@@ -1,9 +1,13 @@
 'use strict';
-/* global getHash: true, stripHash: false, trimEmptyHash: false */
+/* global getHash: true, stripHash: false, trimEmptyHash: true */
 
 function getHash(url) {
   var index = url.indexOf('#');
   return index === -1 ? '' : url.substr(index);
+}
+
+function trimEmptyHash(url) {
+  return url.replace(/#$/, '');
 }
 
 /**
@@ -143,7 +147,7 @@ function Browser(window, document, $log, $sniffer, $$taskTrackerFactory) {
       // - pendingLocation is needed as browsers don't allow to read out
       //   the new location.href if a reload happened or if there is a bug like in iOS 9 (see
       //   https://openradar.appspot.com/22186109).
-      return pendingLocation || trimEmptyHash(location.href);
+      return trimEmptyHash(pendingLocation || location.href);
     }
   };
 

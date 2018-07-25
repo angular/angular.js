@@ -1,6 +1,6 @@
 'use strict';
 
-/* global routeToRegExp: false */
+/* global routeToRegExp: false, trimEmptyHash: false */
 
 /**
  * @ngdoc object
@@ -225,7 +225,7 @@ angular.mock.$Browser.prototype = {
       state = null;
     }
     if (url) {
-      this.$$url = url;
+      this.$$url = trimEmptyHash(url);
       // Native pushState serializes & copies the object; simulate it.
       this.$$state = angular.copy(state);
       return this;
