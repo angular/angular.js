@@ -1066,7 +1066,7 @@ describe('browser', function() {
       inject(function($flushPendingTasks, $location, $rootScope) {
         $rootScope.$digest();
 
-        const spy = jasmine.createSpy('$locationChangeStart');
+        var spy = jasmine.createSpy('$locationChangeStart');
         $rootScope.$on('$locationChangeStart', spy);
 
         $rootScope.$evalAsync(function() {
