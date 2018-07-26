@@ -1,5 +1,5 @@
 'use strict';
-/* global getHash: true, stripHash: false, trimEmptyHash: true */
+/* global getHash: true, stripHash: false */
 
 function getHash(url) {
   var index = url.indexOf('#');
