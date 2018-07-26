@@ -1695,8 +1695,13 @@ function angularInit(element, bootstrap) {
   });
   if (appElement) {
     if (!isAutoBootstrapAllowed) {
-      window.console.error('AngularJS: disabling automatic bootstrap. <script> protocol indicates ' +
+      try {
+        window.console.error('AngularJS: disabling automatic bootstrap. <script> protocol indicates ' +
           'an extension, document.location.href does not match.');
+      } catch (e) {
+        // Support: Safari 11 w/ Webdriver
+        // The console.error will throw and make the test fail
+      }
       return;
     }
     config.strictDi = getNgAttribute(appElement, 'strict-di') !== null;
