@@ -310,7 +310,7 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
               if (!disabledElementsLookup.has(node)) {
                 // The element is added to the map for the first time.
                 // Create a listener to remove it on `$destroy` (to avoid memory leak).
-                $$jqLite(element).on('$destroy', removeFromDisabledElementsLookup);
+                jqLite(element).on('$destroy', removeFromDisabledElementsLookup);
               }
               disabledElementsLookup.set(node, !bool);
             }
