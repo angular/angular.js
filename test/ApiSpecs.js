@@ -89,6 +89,34 @@ describe('api', function() {
       expect(map.get(keys[2])).toBe(values[2]);
     });
 
+    it('should return if a key exists or not', function() {
+      var map = new NgMapShim();
+      var keys = ['foo', {}];
+
+      expect(map.has(keys[0])).toBe(false);
+      expect(map.has(keys[1])).toBe(false);
+
+      map.set(keys[0], 'bar');
+      expect(map.has(keys[0])).toBe(true);
+      expect(map.has(keys[1])).toBe(false);
+
+      map.set(keys[1], 'baz');
+      expect(map.has(keys[0])).toBe(true);
+      expect(map.has(keys[1])).toBe(true);
+
+      map.delete(keys[0]);
+      expect(map.has(keys[0])).toBe(false);
+      expect(map.has(keys[1])).toBe(true);
+
+      map.delete(keys[1]);
+      expect(map.has(keys[0])).toBe(false);
+      expect(map.has(keys[1])).toBe(false);
+
+      map.set(keys[1], 'qux');
+      expect(map.has(keys[0])).toBe(false);
+      expect(map.has(keys[1])).toBe(true);
+    });
+
     it('should be able to deal with `NaN` keys', function() {
       var map = new NgMapShim();
 

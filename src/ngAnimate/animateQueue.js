@@ -120,6 +120,10 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
     var disabledElementsLookup = new $$Map();
     var animationsEnabled = null;
 
+    function removeFromDisabledElementsLookup(evt) {
+      disabledElementsLookup.delete(evt.target);
+    }
+
     function postDigestTaskFactory() {
       var postDigestCalled = false;
       return function(fn) {
@@ -303,6 +307,11 @@ var $$AnimateQueueProvider = ['$animateProvider', /** @this */ function($animate
               bool = !disabledElementsLookup.get(node);
             } else {
               // (element, bool) - Element setter
+              if (!disabledElementsLookup.has(node)) {
+                // The element is added to the map for the first time.
+                // Create a listener to remove it on `$destroy` (to avoid memory leak).
+                jqLite(element).on('$destroy', removeFromDisabledElementsLookup);
+              }
               disabledElementsLookup.set(node, !bool);
             }
           }
