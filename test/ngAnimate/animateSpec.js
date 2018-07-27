@@ -577,6 +577,41 @@ describe('animations', function() {
         $rootScope.$digest();
         expect(capturedAnimation).toBeTruthy();
       }));
+
+      it('should remove the element from the `disabledElementsLookup` map on `$destroy`',
+        inject(function($$Map, $animate, $rootScope) {
+
+        var setSpy = spyOn($$Map.prototype, 'set').and.callThrough();
+        var deleteSpy = spyOn($$Map.prototype, 'delete').and.callThrough();
+
+        parent.append(element);
+
+        $animate.enabled(element, false);
+        $animate.enabled(element, true);
+        $animate.enabled(element, false);
+        expect(setSpy).toHaveBeenCalledWith(element[0], jasmine.any(Boolean));
+        expect(deleteSpy).not.toHaveBeenCalledWith(element[0]);
+        expect($animate.enabled(element)).toBe(false);
+
+        // No clean-up on `detach` (no `$destroy` event).
+        element.detach();
+        expect(deleteSpy).not.toHaveBeenCalledWith(element[0]);
+        expect($animate.enabled(element)).toBe(false);
+
+        // Clean-up on `remove` (causes `$destroy` event).
+        element.remove();
+        expect(deleteSpy).toHaveBeenCalledOnceWith(element[0]);
+        expect($animate.enabled(element)).toBe(true);
+
+        deleteSpy.calls.reset();
+
+        element.triggerHandler('$destroy');
+        expect(deleteSpy).not.toHaveBeenCalledWith(element[0]);
+
+        $animate.enabled(element, true);
+        element.triggerHandler('$destroy');
+        expect(deleteSpy).toHaveBeenCalledOnceWith(element[0]);
+      }));
     });
 
     it('should strip all comment nodes from the animation and not issue an animation if not real elements are found',
