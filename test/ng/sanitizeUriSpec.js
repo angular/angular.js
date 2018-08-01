@@ -111,6 +111,9 @@ describe('sanitizeUri', function() {
 
       testUrl = 'file:///foo/bar.html';
       expect(sanitizeImg(testUrl)).toBe('file:///foo/bar.html');
+
+      testUrl = 1234;
+      expect(sanitizeImg(1234)).toBe('1234');
     });
 
     it('should not sanitize blob urls', function() {

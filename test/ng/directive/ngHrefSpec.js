@@ -36,6 +36,14 @@ describe('ngHref', function() {
     expect(element.attr('href')).toEqual('http://server');
   }));
 
+
+  it('should bind href if value is a number', inject(function($rootScope, $compile) {
+    element = $compile('<a ng-href="{{1234}}"></a>')($rootScope);
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('1234');
+  }));
+
+
   it('should not set the href if ng-href is empty', inject(function($rootScope, $compile) {
     $rootScope.url = null;
     element = $compile('<a ng-href="{{url}}">')($rootScope);
