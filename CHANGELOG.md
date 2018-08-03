@@ -1,3 +1,92 @@
+<a name="1.7.3"></a>
+# 1.7.3 eventful-proposal (2018-08-03)
+
+## Bug Fixes
+- **$location:**
+  - fix infinite recursion/digest on URLs with special characters
+  ([e68697](https://github.com/angular/angular.js/commit/e68697e2e30695f509e6c2c1e43c2c02b7af41f0),
+  [#16592](https://github.com/angular/angular.js/issues/16592),
+  [#16611](https://github.com/angular/angular.js/issues/16611))
+  - avoid unnecessary `$locationChange*` events due to empty hash
+  ([1144b1](https://github.com/angular/angular.js/commit/1144b1eccb886ea0e4a80bcb07d38a305c3263b4),
+  [#16632](https://github.com/angular/angular.js/issues/16632),
+  [#16636](https://github.com/angular/angular.js/issues/16636))
+- **ngMock.$httpBackend:**
+  - pass failed HTTP expectations to `$exceptionHandler`
+  ([4adbf8](https://github.com/angular/angular.js/commit/4adbf82a84a564a8d3f0982c17a64c6163200bcd),
+  [#16644](https://github.com/angular/angular.js/issues/16644))
+  - correctly ignore query params in {expect,when}Route
+  ([be417f](https://github.com/angular/angular.js/commit/be417f28549e184fbc3c7f74251ac21fca965ae8),
+  [#14173](https://github.com/angular/angular.js/issues/14173),
+  [#16589](https://github.com/angular/angular.js/issues/16589))
+- **Angular:** add workaround for Safari / Webdriver problem
+  ([0a1db2](https://github.com/angular/angular.js/commit/0a1db2ad5f8da6902b1711a738ae4177ce9685fa),
+  [#16645](https://github.com/angular/angular.js/issues/16645))
+- **$animate:** avoid memory leak with `$animate.enabled(element, enabled)`
+  ([4bd424](https://github.com/angular/angular.js/commit/4bd424690612885ca06028e9b27de585edc3d3c3),
+  [#16649](https://github.com/angular/angular.js/issues/16649))
+- **$compile:**
+  - use correct parent element when requiring on html element
+  ([05ac70](https://github.com/angular/angular.js/commit/05ac702bc7edae5f89c363ea661774910735ea8b),
+  [#16535](https://github.com/angular/angular.js/issues/16535),
+  [#16647](https://github.com/angular/angular.js/issues/16647))
+  - work around Firefox `DocumentFragment` bug
+  ([10973c](https://github.com/angular/angular.js/commit/10973c3366676ac8e5b2728b1e006cdef4ea197e),
+  [#16607](https://github.com/angular/angular.js/issues/16607),
+  [#16615](https://github.com/angular/angular.js/issues/16615))
+- **ngEventDirs:**
+  - pass error in handler to $exceptionHandler when event was triggered in a digest
+  ([688211](https://github.com/angular/angular.js/commit/6882113bc194fb10081db9bab3dd7d69dd59f311))
+  - don't wrap the event handler in $apply if already in $digest
+  ([535ee3](https://github.com/angular/angular.js/commit/535ee32a0b4881c9fd526fb5e0ffc10919ba1800),
+  [#14673](https://github.com/angular/angular.js/issues/14673),
+  [#14674](https://github.com/angular/angular.js/issues/14674))
+- **angular.element:** do not break on `cleanData()` if `_data()` returns undefined
+  ([7cf4a2](https://github.com/angular/angular.js/commit/7cf4a2933cb017e45b0c97b0a836cbbd905ee31a),
+  [#16641](https://github.com/angular/angular.js/issues/16641),
+  [#16642](https://github.com/angular/angular.js/issues/16642))
+- **ngAria:** do not scroll when pressing spacebar on custom buttons
+  ([3a517c](https://github.com/angular/angular.js/commit/3a517c25f677294a7a9eca1660654a3edcc9e103),
+  [#14665](https://github.com/angular/angular.js/issues/14665),
+  [#16604](https://github.com/angular/angular.js/issues/16604))
+
+
+## New Features
+- **$compile:** add support for arbitrary DOM property and event bindings
+  ([a5914c](https://github.com/angular/angular.js/commit/a5914c94a8fa5b1eceeab9e4e6849cbf467bc26d),
+  [#16428](https://github.com/angular/angular.js/issues/16428),
+  [#16235](https://github.com/angular/angular.js/issues/16235),
+  [#16614](https://github.com/angular/angular.js/issues/16614))
+- **ngMock:** add `$flushPendingTasks()` and `$verifyNoPendingTasks()`
+  ([6f7674](https://github.com/angular/angular.js/commit/6f7674a7d063d434205f75f5b861f167e8125999),
+  [#14336](https://github.com/angular/angular.js/issues/14336))
+- **core:** implement more granular pending task tracking
+  ([17b139](https://github.com/angular/angular.js/commit/17b139f107e5471a9351af638093a8e13a69e42a))
+- **$animate:** add option data to event callbacks
+  ([fc64e6](https://github.com/angular/angular.js/commit/fc64e6807642512b567deb52b497bd2bff570a1f),
+  [#12697](https://github.com/angular/angular.js/issues/12697),
+  [#13059](https://github.com/angular/angular.js/issues/13059))
+- **form.FormController:** add $getControls()
+  ([c9d1e6](https://github.com/angular/angular.js/commit/c9d1e690aa597283373b78e646676fa8f1ba1b4d),
+  [#16601](https://github.com/angular/angular.js/issues/16601),
+  [#14749](https://github.com/angular/angular.js/issues/14749),
+  [#14517](https://github.com/angular/angular.js/issues/14517),
+  [#13202](https://github.com/angular/angular.js/issues/13202))
+- **ngModelOptions:** add `timeStripZeroSeconds` and `timeSecondsFormat`
+  ([b68221](https://github.com/angular/angular.js/commit/b682213d72d65c996a6a31ea57b79d4c4f4e3c98),
+  [#10721](https://github.com/angular/angular.js/issues/10721),
+  [#16510](https://github.com/angular/angular.js/issues/16510),
+  [#16584](https://github.com/angular/angular.js/issues/16584))
+
+
+## Performance Improvements
+- **ngAnimate:** avoid repeated calls to addClass/removeClass when animation has no duration
+  ([093635](https://github.com/angular/angular.js/commit/0936353e9a03f072bc3c4056888fd154a96530ef),
+  [#14165](https://github.com/angular/angular.js/issues/14165),
+  [#14166](https://github.com/angular/angular.js/issues/14166),
+  [#16613](https://github.com/angular/angular.js/issues/16613))
+
+
 <a name="1.7.2"></a>
 # 1.7.2 extreme-compatiplication (2018-06-12)
 
