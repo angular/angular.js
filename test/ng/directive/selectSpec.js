@@ -1530,11 +1530,14 @@ describe('select', function() {
           ['a'],
           NaN
         ], function(prop) {
+
           scope.option1 = prop;
+          scope.option2 = 'red';
           scope.selected = 'NOMATCH';
 
           compile('<select ng-model="selected">' +
             '<option ng-value="option1">{{option1}}</option>' +
+            '<option ng-value="option2">{{option2}}</option>' +
           '</select>');
 
           scope.$digest();
@@ -1571,10 +1574,12 @@ describe('select', function() {
           NaN
         ], function(prop) {
           scope.option = prop;
+          scope.option2 = 'red';
           scope.selected = 'NOMATCH';
 
           compile('<select ng-model="selected">' +
             '<option ng-value="option">{{option}}</option>' +
+            '<option ng-value="option2">{{option2}}</option>' +
           '</select>');
 
           var selectController = element.controller('select');
@@ -1604,7 +1609,7 @@ describe('select', function() {
 
           expect(scope.selected).toBe(null);
           expect(element[0].selectedIndex).toBe(0);
-          expect(element.find('option').length).toBe(2);
+          expect(element.find('option').length).toBe(3);
           expect(element.find('option').eq(0).prop('selected')).toBe(true);
           expect(element.find('option').eq(0).val()).toBe(unknownValue(prop));
           expect(element.find('option').eq(1).prop('selected')).toBe(false);
@@ -1616,6 +1621,7 @@ describe('select', function() {
           expect(element[0].selectedIndex).toBe(0);
           expect(element.find('option').eq(0).val()).toBe('string:UPDATEDVALUE');
       });
+
 
       it('should interact with custom attribute $observe and $set calls', function() {
         var log = [], optionAttr;
@@ -1638,26 +1644,43 @@ describe('select', function() {
         optionAttr.$set('value', 'update');
         expect(log[1]).toBe('update');
         expect(element.find('option').eq(1).val()).toBe('string:update');
-
       });
 
-    it('should ignore the option text / value attribute if the ngValue attribute exists', function() {
-      scope.ngvalue = 'abc';
-      scope.value = 'def';
-      scope.textvalue = 'ghi';
 
-      compile('<select ng-model="x"><option ng-value="ngvalue" value="{{value}}">{{textvalue}}</option></select>');
-      expect(element).toEqualSelect([unknownValue(undefined)], 'string:abc');
-    });
+      it('should ignore the option text / value attribute if the ngValue attribute exists', function() {
+        scope.ngvalue = 'abc';
+        scope.value = 'def';
+        scope.textvalue = 'ghi';
 
-    it('should ignore option text with multiple interpolations if the ngValue attribute exists', function() {
-      scope.ngvalue = 'abc';
-      scope.textvalue = 'def';
-      scope.textvalue2 = 'ghi';
+        compile('<select ng-model="x"><option ng-value="ngvalue" value="{{value}}">{{textvalue}}</option></select>');
+        expect(element).toEqualSelect([unknownValue(undefined)], 'string:abc');
+      });
 
-      compile('<select ng-model="x"><option ng-value="ngvalue">{{textvalue}} {{textvalue2}}</option></select>');
-      expect(element).toEqualSelect([unknownValue(undefined)], 'string:abc');
-    });
+
+      it('should ignore option text with multiple interpolations if the ngValue attribute exists', function() {
+        scope.ngvalue = 'abc';
+        scope.textvalue = 'def';
+        scope.textvalue2 = 'ghi';
+
+        compile('<select ng-model="x"><option ng-value="ngvalue">{{textvalue}} {{textvalue2}}</option></select>');
+        expect(element).toEqualSelect([unknownValue(undefined)], 'string:abc');
+      });
+
+
+      it('should select the first option if it is `undefined`', function() {
+        scope.selected = undefined;
+
+        scope.option1 = undefined;
+        scope.option2 = 'red';
+
+        compile('<select ng-model="selected">' +
+          '<option ng-value="option1">{{option1}}</option>' +
+          '<option ng-value="option2">{{option2}}</option>' +
+        '</select>');
+
+        expect(element).toEqualSelect(['undefined:undefined'], 'string:red');
+      });
+
 
       describe('and select[multiple]', function() {
 
