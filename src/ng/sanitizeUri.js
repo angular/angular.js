@@ -72,11 +72,11 @@ function $$SanitizeUriProvider() {
     return function sanitizeUri(uri, isMediaUrl) {
       // if (!uri) return uri;
       var regex = isMediaUrl ? imgSrcSanitizationWhitelist : aHrefSanitizationWhitelist;
-      var normalizedVal = urlResolve(uri && uri.toString().trim()).href;
+      var normalizedVal = urlResolve(uri && uri.trim()).href;
       if (normalizedVal !== '' && !normalizedVal.match(regex)) {
         return 'unsafe:' + normalizedVal;
       }
-      return uri.toString();
+      return uri;
     };
   };
 }
