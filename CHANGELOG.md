@@ -45,10 +45,6 @@
   ([7cf4a2](https://github.com/angular/angular.js/commit/7cf4a2933cb017e45b0c97b0a836cbbd905ee31a),
   [#16641](https://github.com/angular/angular.js/issues/16641),
   [#16642](https://github.com/angular/angular.js/issues/16642))
-- **ngAria:** do not scroll when pressing spacebar on custom buttons
-  ([3a517c](https://github.com/angular/angular.js/commit/3a517c25f677294a7a9eca1660654a3edcc9e103),
-  [#14665](https://github.com/angular/angular.js/issues/14665),
-  [#16604](https://github.com/angular/angular.js/issues/16604))
 
 
 ## New Features
@@ -86,6 +82,11 @@
   [#14166](https://github.com/angular/angular.js/issues/14166),
   [#16613](https://github.com/angular/angular.js/issues/16613))
 
+## Breaking Changes
+- **ngAria:** do not scroll when pressing spacebar on custom buttons. This makes the space key stop working for inputs inside of ngClick elements (see [#16664](#16664))
+  ([3a517c](https://github.com/angular/angular.js/commit/3a517c25f677294a7a9eca1660654a3edcc9e103),
+  [#14665](https://github.com/angular/angular.js/issues/14665),
+  [#16604](https://github.com/angular/angular.js/issues/16604))
 
 <a name="1.7.2"></a>
 # 1.7.2 extreme-compatiplication (2018-06-12)
