@@ -1,6 +1,5 @@
 'use strict';
 
-/* global routeToRegExp: false */
 /* global shallowCopy: false */
 
 // `isArray` and `isObject` are necessary for `shallowCopy()` (included via `src/shallowCopy.js`).
@@ -225,7 +224,7 @@ function $RouteProvider() {
     }
     routes[path] = angular.extend(
       routeCopy,
-      path && routeToRegExp(path, routeCopy)
+      path && pathRegExp(path, routeCopy)
     );
 
     // create redirection for trailing slashes
@@ -236,7 +235,7 @@ function $RouteProvider() {
 
       routes[redirectPath] = angular.extend(
         {redirectTo: path},
-        routeToRegExp(redirectPath, routeCopy)
+        pathRegExp(redirectPath, routeCopy)
       );
     }
 
@@ -253,6 +252,45 @@ function $RouteProvider() {
    * algorithm. Defaults to `false`.
    */
   this.caseInsensitiveMatch = false;
+
+  /**
+   * @param path {string} path
+   * @param opts {Object} options
+   * @return {?Object}
+   *
+   * @description
+   * Normalizes the given path, returning a regular expression
+   * and the original path.
+   *
+   * Inspired by pathRexp in visionmedia/express/lib/utils.js.
+   */
+  function pathRegExp(path, opts) {
+    var keys = [];
+
+    var pattern = path
+      .replace(/([().])/g, '\\$1')
+      .replace(/(\/)?:(\w+)(\*\?|[?*])?/g, function(_, slash, key, option) {
+        var optional = option === '?' || option === '*?';
+        var star = option === '*' || option === '*?';
+        keys.push({ name: key, optional: optional });
+        slash = slash || '';
+        return (
+          (optional ? '(?:' + slash : slash + '(?:') +
+          (star ? '(.+?)' : '([^/]+)') +
+          (optional ? '?)?' : ')')
+        );
+      })
+      .replace(/([/$*])/g, '\\$1');
+
+    return {
+      originalPath: path,
+      keys: keys,
+      regexp: new RegExp(
+        '^' + pattern + '(?:[?#]|$)',
+        opts.caseInsensitiveMatch ? 'i' : ''
+      )
+    };
+  }
 
   /**
    * @ngdoc method
