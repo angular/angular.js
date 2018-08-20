@@ -77,5 +77,24 @@ describe('$routeParams', function() {
     });
   });
 
+  it('should correctly extract path params containing hashes and/or question marks', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/foo/:bar', {});
+    });
+
+    inject(function($rootScope, $route, $location, $routeParams) {
+      $location.path('/foo/bar#baz');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({bar: 'bar#baz'});
+
+      $location.path('/foo/bar?baz');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({bar: 'bar?baz'});
+
+      $location.path('/foo/bar#baz?qux');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({bar: 'bar#baz?qux'});
+    });
+  });
 
 });
