@@ -1771,7 +1771,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#when `when`} for more info.
    */
   $httpBackend.whenRoute = function(method, url) {
-    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true});
+    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true, isUrl: true});
     return $httpBackend.when(method, pathObj.regexp, undefined, undefined, pathObj.keys);
   };
 
@@ -1955,7 +1955,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#expect `expect`} for more info.
    */
   $httpBackend.expectRoute = function(method, url) {
-    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true});
+    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true, isUrl: true});
     return $httpBackend.expect(method, pathObj.regexp, undefined, undefined, pathObj.keys);
   };
 
