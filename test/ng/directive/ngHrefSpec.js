@@ -79,6 +79,42 @@ describe('ngHref', function() {
     }));
   }
 
+
+  it('should bind numbers', inject(function($rootScope, $compile) {
+    element = $compile('<a ng-href="{{1234}}"></a>')($rootScope);
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('1234');
+  }));
+
+
+  it('should bind and sanitize the result of a (custom) toString() function', inject(function($rootScope, $compile) {
+    $rootScope.value = {};
+    element = $compile('<a ng-href="{{value}}"></a>')($rootScope);
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('[object Object]');
+
+    function SafeClass() {}
+
+    SafeClass.prototype.toString = function() {
+      return 'custom value';
+    };
+
+    $rootScope.value = new SafeClass();
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('custom value');
+
+    function UnsafeClass() {}
+
+    UnsafeClass.prototype.toString = function() {
+      return 'javascript:alert(1);';
+    };
+
+    $rootScope.value = new UnsafeClass();
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('unsafe:javascript:alert(1);');
+  }));
+
+
   if (isDefined(window.SVGElement)) {
     describe('SVGAElement', function() {
       it('should interpolate the expression and bind to xlink:href', inject(function($compile, $rootScope) {
