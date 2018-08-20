@@ -3,7 +3,7 @@
 /* global routeToRegExp: true */
 
 /**
- * @param path {string} path
+ * @param pathOrUrl {string} path or url
  * @param opts {Object} options
  * @return {?Object}
  *
@@ -13,10 +13,10 @@
  *
  * Inspired by pathRexp in visionmedia/express/lib/utils.js.
  */
-function routeToRegExp(path, opts) {
+function routeToRegExp(pathOrUrl, opts) {
   var keys = [];
 
-  var pattern = path
+  var pattern = pathOrUrl
     .replace(/([().])/g, '\\$1')
     .replace(/(\/)?:(\w+)(\*\?|[?*])?/g, function(_, slash, key, option) {
       var optional = option === '?' || option === '*?';
@@ -25,7 +25,7 @@ function routeToRegExp(path, opts) {
       slash = slash || '';
       return (
         (optional ? '(?:' + slash : slash + '(?:') +
-        (star ? '([^?#]+?)' : '([^/?#]+)') +
+        (opts.isUrl ? (star ? '([^?#]+?)' : '([^/?#]+)') : (star ? '(.+?)' : '([^/]+)')) +
         (optional ? '?)?' : ')')
       );
     })
@@ -36,7 +36,7 @@ function routeToRegExp(path, opts) {
   }
 
   return {
-    originalPath: path,
+    originalPath: pathOrUrl,
     keys: keys,
     regexp: new RegExp(
       '^' + pattern + '(?:[?#]|$)',
