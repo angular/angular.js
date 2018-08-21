@@ -2145,7 +2145,9 @@ function MockHttpExpectation(method, url, data, headers, keys) {
   };
 
   this.params = function(u) {
-    return angular.extend(parseQuery(), pathParams());
+    var queryStr = u.indexOf('?') === -1 ? '' : u.substring(u.indexOf('?') + 1);
+
+    return angular.extend(parseQuery(queryStr), pathParams());
 
     function pathParams() {
       var keyObj = {};
@@ -2164,30 +2166,29 @@ function MockHttpExpectation(method, url, data, headers, keys) {
       return keyObj;
     }
 
-    function parseQuery() {
-      var obj = {}, key_value, key,
-          queryStr = u.indexOf('?') > -1
-          ? u.substring(u.indexOf('?') + 1)
-          : '';
+    function parseQuery(queryStr) {
+      var obj = {},
+          keyValuePairs = queryStr.split('&').
+              filter(angular.identity).  // Ignore empty segments.
+              map(function(keyValue) { return keyValue.replace(/\+/g, '%20').split('='); });
 
-      angular.forEach(queryStr.split('&'), function(keyValue) {
-        if (keyValue) {
-          key_value = keyValue.replace(/\+/g,'%20').split('=');
-          key = tryDecodeURIComponent(key_value[0]);
-          if (angular.isDefined(key)) {
-            var val = angular.isDefined(key_value[1]) ? tryDecodeURIComponent(key_value[1]) : true;
-            if (!hasOwnProperty.call(obj, key)) {
-              obj[key] = val;
-            } else if (angular.isArray(obj[key])) {
-              obj[key].push(val);
-            } else {
-              obj[key] = [obj[key],val];
-            }
+      angular.forEach(keyValuePairs, function(pair) {
+        var key = tryDecodeURIComponent(pair[0]);
+        if (angular.isDefined(key)) {
+          var val = angular.isDefined(pair[1]) ? tryDecodeURIComponent(pair[1]) : true;
+          if (!hasOwnProperty.call(obj, key)) {
+            obj[key] = val;
+          } else if (angular.isArray(obj[key])) {
+            obj[key].push(val);
+          } else {
+            obj[key] = [obj[key], val];
           }
         }
       });
+
       return obj;
     }
+
     function tryDecodeURIComponent(value) {
       try {
         return decodeURIComponent(value);
