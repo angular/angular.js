@@ -134,6 +134,7 @@ var angularFiles = {
     ],
     'ngRoute': [
       'src/shallowCopy.js',
+      'src/routeToRegExp.js',
       'src/ngRoute/route.js',
       'src/ngRoute/routeParams.js',
       'src/ngRoute/directive/ngView.js'
@@ -143,6 +144,7 @@ var angularFiles = {
       'src/ngSanitize/filter/linky.js'
     ],
     'ngMock': [
+      'src/routeToRegExp.js',
       'src/ngMock/angular-mocks.js',
       'src/ngMock/browserTrigger.js'
     ],

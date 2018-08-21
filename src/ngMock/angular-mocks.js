@@ -1,5 +1,7 @@
 'use strict';
 
+/* global routeToRegExp: false */
+
 /**
  * @ngdoc object
  * @name angular.mock
@@ -1769,46 +1771,9 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#when `when`} for more info.
    */
   $httpBackend.whenRoute = function(method, url) {
-    var pathObj = parseRoute(url);
+    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true, isUrl: true});
     return $httpBackend.when(method, pathObj.regexp, undefined, undefined, pathObj.keys);
   };
-
-  /**
-   * @param url {string} url
-   * @return {?Object}
-   *
-   * @description
-   * Normalizes the given url, returning a regular expression.
-   *
-   * Inspired by pathRexp in visionmedia/express/lib/utils.js.
-   */
-  function parseRoute(url) {
-    var keys = [];
-
-    var pattern = url
-      .replace(/([().])/g, '\\$1')
-      .replace(/(\/)?:(\w+)(\*\?|[?*])?/g, function(_, slash, key, option) {
-        var optional = option === '?' || option === '*?';
-        var star = option === '*' || option === '*?';
-        keys.push({ name: key, optional: optional });
-        slash = slash || '';
-        return (
-          (optional ? '(?:' + slash : slash + '(?:') +
-          (star ? '([^?#]+?)' : '([^/?#]+)') +
-          (optional ? '?)?' : ')')
-        );
-      })
-      .replace(/([/$*])/g, '\\$1')
-      .replace(/\/+$/, '') + '/*';
-
-    return {
-      keys: keys,
-      regexp: new RegExp(
-        '^' + pattern + '(?:[?#]|$)',
-        'i'
-      )
-    };
-  }
 
   /**
    * @ngdoc method
@@ -1990,7 +1955,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#expect `expect`} for more info.
    */
   $httpBackend.expectRoute = function(method, url) {
-    var pathObj = parseRoute(url);
+    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true, isUrl: true});
     return $httpBackend.expect(method, pathObj.regexp, undefined, undefined, pathObj.keys);
   };
 
