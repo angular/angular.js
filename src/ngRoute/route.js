@@ -225,6 +225,7 @@ function $RouteProvider() {
     }
     routes[path] = angular.extend(
       routeCopy,
+      {originalPath: path},
       path && routeToRegExp(path, routeCopy)
     );
 
@@ -235,7 +236,7 @@ function $RouteProvider() {
             : path + '/';
 
       routes[redirectPath] = angular.extend(
-        {redirectTo: path},
+        {originalPath: path, redirectTo: path},
         routeToRegExp(redirectPath, routeCopy)
       );
     }
