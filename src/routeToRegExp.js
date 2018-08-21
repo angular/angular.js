@@ -36,7 +36,6 @@ function routeToRegExp(pathOrUrl, opts) {
   }
 
   return {
-    originalPath: pathOrUrl,
     keys: keys,
     regexp: new RegExp(
       '^' + pattern + '(?:[?#]|$)',
