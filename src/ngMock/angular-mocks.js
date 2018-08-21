@@ -2092,6 +2092,9 @@ function assertArgDefined(args, index, name) {
   }
 }
 
+function stripQueryAndHash(url) {
+  return url.replace(/[?#].*$/, '');
+}
 
 function MockHttpExpectation(method, url, data, headers, keys) {
 
@@ -2146,15 +2149,17 @@ function MockHttpExpectation(method, url, data, headers, keys) {
 
   this.params = function(u) {
     var queryStr = u.indexOf('?') === -1 ? '' : u.substring(u.indexOf('?') + 1);
+    var strippedUrl = stripQueryAndHash(u);
 
-    return angular.extend(parseQuery(queryStr), pathParams());
+    return angular.extend(parseQuery(queryStr), pathParams(strippedUrl));
 
-    function pathParams() {
+    function pathParams(strippedUrl) {
       var keyObj = {};
       if (!url || !angular.isFunction(url.test) || !keys || keys.length === 0) return keyObj;
 
-      var m = url.exec(u);
+      var m = url.exec(strippedUrl);
       if (!m) return keyObj;
+
       for (var i = 1, len = m.length; i < len; ++i) {
         var key = keys[i - 1];
         var val = m[i];
