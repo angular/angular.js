@@ -1771,8 +1771,8 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#when `when`} for more info.
    */
   $httpBackend.whenRoute = function(method, url) {
-    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true, isUrl: true});
-    return $httpBackend.when(method, pathObj.regexp, undefined, undefined, pathObj.keys);
+    var parsed = parseRouteUrl(url);
+    return $httpBackend.when(method, parsed.regexp, undefined, undefined, parsed.keys);
   };
 
   /**
@@ -1955,8 +1955,8 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * See {@link ngMock.$httpBackend#expect `expect`} for more info.
    */
   $httpBackend.expectRoute = function(method, url) {
-    var pathObj = routeToRegExp(url, {caseInsensitiveMatch: true, ignoreTrailingSlashes: true, isUrl: true});
-    return $httpBackend.expect(method, pathObj.regexp, undefined, undefined, pathObj.keys);
+    var parsed = parseRouteUrl(url);
+    return $httpBackend.expect(method, parsed.regexp, undefined, undefined, parsed.keys);
   };
 
 
@@ -2083,6 +2083,12 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
         return $httpBackend[prefix](method, url, data, headers, keys);
       };
     });
+  }
+
+  function parseRouteUrl(url) {
+    var strippedUrl = stripQueryAndHash(url);
+    var parseOptions = {caseInsensitiveMatch: true, ignoreTrailingSlashes: true};
+    return routeToRegExp(strippedUrl, parseOptions);
   }
 }
 
