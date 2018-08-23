@@ -791,7 +791,8 @@ function arrayRemove(array, value) {
  * * If `source` is not an object or array (inc. `null` and `undefined`), `source` is returned.
  * * If `source` is identical to `destination` an exception will be thrown.
  *
- * <p><!-- Using a `br` tag messes up the formatting due a doc-gen bug. --></p>
+ * <br />
+ *
  * <div class="alert alert-warning">
  *   Only enumerable properties are taken into account. Non-enumerable properties (both on `source`
  *   and on `destination`) will be ignored.
