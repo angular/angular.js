@@ -77,5 +77,45 @@ describe('$routeParams', function() {
     });
   });
 
+  it('should correctly extract path params containing hashes and/or question marks', function() {
+    module(function($routeProvider) {
+      $routeProvider.when('/foo/:bar', {});
+      $routeProvider.when('/zoo/:bar/:baz/:qux', {});
+    });
+
+    inject(function($location, $rootScope, $routeParams) {
+      $location.path('/foo/bar?baz');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({bar: 'bar?baz'});
+
+      $location.path('/foo/bar?baz=val');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({bar: 'bar?baz=val'});
+
+      $location.path('/foo/bar#baz');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({bar: 'bar#baz'});
+
+      $location.path('/foo/bar?baz#qux');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({bar: 'bar?baz#qux'});
+
+      $location.path('/foo/bar?baz=val#qux');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({bar: 'bar?baz=val#qux'});
+
+      $location.path('/foo/bar#baz?qux');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({bar: 'bar#baz?qux'});
+
+      $location.path('/zoo/bar?p1=v1#h1/baz?p2=v2#h2/qux?p3=v3#h3');
+      $rootScope.$digest();
+      expect($routeParams).toEqual({
+        bar: 'bar?p1=v1#h1',
+        baz: 'baz?p2=v2#h2',
+        qux: 'qux?p3=v3#h3'
+      });
+    });
+  });
 
 });
