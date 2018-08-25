@@ -2096,112 +2096,120 @@ function stripQueryAndHash(url) {
   return url.replace(/[?#].*$/, '');
 }
 
-function MockHttpExpectation(method, url, data, headers, keys) {
+function MockHttpExpectation(expectedMethod, expectedUrl, expectedData, expectedHeaders,
+                             expectedKeys) {
 
-  function getUrlParams(u) {
-    var params = u.slice(u.indexOf('?') + 1).split('&');
-    return params.sort();
-  }
+  this.data = expectedData;
+  this.headers = expectedHeaders;
 
-  function compareUrl(u) {
-    return (url.slice(0, url.indexOf('?')) === u.slice(0, u.indexOf('?')) &&
-      getUrlParams(url).join() === getUrlParams(u).join());
-  }
-
-  this.data = data;
-  this.headers = headers;
-
-  this.match = function(m, u, d, h) {
-    if (method !== m) return false;
-    if (!this.matchUrl(u)) return false;
-    if (angular.isDefined(d) && !this.matchData(d)) return false;
-    if (angular.isDefined(h) && !this.matchHeaders(h)) return false;
+  this.match = function(method, url, data, headers) {
+    if (expectedMethod !== method) return false;
+    if (!this.matchUrl(url)) return false;
+    if (angular.isDefined(data) && !this.matchData(data)) return false;
+    if (angular.isDefined(headers) && !this.matchHeaders(headers)) return false;
     return true;
   };
 
-  this.matchUrl = function(u) {
-    if (!url) return true;
-    if (angular.isFunction(url.test)) return url.test(u);
-    if (angular.isFunction(url)) return url(u);
-    return (url === u || compareUrl(u));
+  this.matchUrl = function(url) {
+    if (!expectedUrl) return true;
+    if (angular.isFunction(expectedUrl.test)) return expectedUrl.test(url);
+    if (angular.isFunction(expectedUrl)) return expectedUrl(url);
+    return (expectedUrl === url || compareUrlWithQuery(url));
   };
 
-  this.matchHeaders = function(h) {
-    if (angular.isUndefined(headers)) return true;
-    if (angular.isFunction(headers)) return headers(h);
-    return angular.equals(headers, h);
+  this.matchHeaders = function(headers) {
+    if (angular.isUndefined(expectedHeaders)) return true;
+    if (angular.isFunction(expectedHeaders)) return expectedHeaders(headers);
+    return angular.equals(expectedHeaders, headers);
   };
 
-  this.matchData = function(d) {
-    if (angular.isUndefined(data)) return true;
-    if (data && angular.isFunction(data.test)) return data.test(d);
-    if (data && angular.isFunction(data)) return data(d);
-    if (data && !angular.isString(data)) {
-      return angular.equals(angular.fromJson(angular.toJson(data)), angular.fromJson(d));
+  this.matchData = function(data) {
+    if (angular.isUndefined(expectedData)) return true;
+    if (expectedData && angular.isFunction(expectedData.test)) return expectedData.test(data);
+    if (expectedData && angular.isFunction(expectedData)) return expectedData(data);
+    if (expectedData && !angular.isString(expectedData)) {
+      return angular.equals(angular.fromJson(angular.toJson(expectedData)), angular.fromJson(data));
     }
     // eslint-disable-next-line eqeqeq
-    return data == d;
+    return expectedData == data;
   };
 
   this.toString = function() {
-    return method + ' ' + url;
+    return expectedMethod + ' ' + expectedUrl;
   };
 
-  this.params = function(u) {
-    var queryStr = u.indexOf('?') === -1 ? '' : u.substring(u.indexOf('?') + 1);
-    var strippedUrl = stripQueryAndHash(u);
+  this.params = function(url) {
+    var queryStr = url.indexOf('?') === -1 ? '' : url.substring(url.indexOf('?') + 1);
+    var strippedUrl = stripQueryAndHash(url);
 
-    return angular.extend(parseQuery(queryStr), pathParams(strippedUrl));
-
-    function pathParams(strippedUrl) {
-      var keyObj = {};
-      if (!url || !angular.isFunction(url.test) || !keys || keys.length === 0) return keyObj;
-
-      var m = url.exec(strippedUrl);
-      if (!m) return keyObj;
-
-      for (var i = 1, len = m.length; i < len; ++i) {
-        var key = keys[i - 1];
-        var val = m[i];
-        if (key && val) {
-          keyObj[key.name || key] = val;
-        }
-      }
-
-      return keyObj;
-    }
-
-    function parseQuery(queryStr) {
-      var obj = {},
-          keyValuePairs = queryStr.split('&').
-              filter(angular.identity).  // Ignore empty segments.
-              map(function(keyValue) { return keyValue.replace(/\+/g, '%20').split('='); });
-
-      angular.forEach(keyValuePairs, function(pair) {
-        var key = tryDecodeURIComponent(pair[0]);
-        if (angular.isDefined(key)) {
-          var val = angular.isDefined(pair[1]) ? tryDecodeURIComponent(pair[1]) : true;
-          if (!hasOwnProperty.call(obj, key)) {
-            obj[key] = val;
-          } else if (angular.isArray(obj[key])) {
-            obj[key].push(val);
-          } else {
-            obj[key] = [obj[key], val];
-          }
-        }
-      });
-
-      return obj;
-    }
-
-    function tryDecodeURIComponent(value) {
-      try {
-        return decodeURIComponent(value);
-      } catch (e) {
-        // Ignore any invalid uri component
-      }
-    }
+    return angular.extend(extractParamsFromQuery(queryStr), extractParamsFromPath(strippedUrl));
   };
+
+  function compareUrlWithQuery(url) {
+    var urlWithQueryRe = /^([^?]*)\?(.*)$/;
+
+    var expectedMatch = urlWithQueryRe.exec(expectedUrl);
+    var actualMatch = urlWithQueryRe.exec(url);
+
+    return !!(expectedMatch && actualMatch) &&
+      (expectedMatch[1] === actualMatch[1]) &&
+      (normalizeQuery(expectedMatch[2]) === normalizeQuery(actualMatch[2]));
+  }
+
+  function normalizeQuery(queryStr) {
+    return queryStr.split('&').sort().join('&');
+  }
+
+  function extractParamsFromPath(strippedUrl) {
+    var keyObj = {};
+
+    if (!expectedUrl || !angular.isFunction(expectedUrl.test) ||
+        !expectedKeys || !expectedKeys.length) return keyObj;
+
+    var match = expectedUrl.exec(strippedUrl);
+    if (!match) return keyObj;
+
+    for (var i = 1, len = match.length; i < len; ++i) {
+      var key = expectedKeys[i - 1];
+      var val = match[i];
+      if (key && val) {
+        keyObj[key.name || key] = val;
+      }
+    }
+
+    return keyObj;
+  }
+
+  function extractParamsFromQuery(queryStr) {
+    var obj = {},
+        keyValuePairs = queryStr.split('&').
+            filter(angular.identity).  // Ignore empty segments.
+            map(function(keyValue) { return keyValue.replace(/\+/g, '%20').split('='); });
+
+    angular.forEach(keyValuePairs, function(pair) {
+      var key = tryDecodeURIComponent(pair[0]);
+      if (angular.isDefined(key)) {
+        var val = angular.isDefined(pair[1]) ? tryDecodeURIComponent(pair[1]) : true;
+        if (!hasOwnProperty.call(obj, key)) {
+          obj[key] = val;
+        } else if (angular.isArray(obj[key])) {
+          obj[key].push(val);
+        } else {
+          obj[key] = [obj[key], val];
+        }
+      }
+    });
+
+    return obj;
+  }
+
+  function tryDecodeURIComponent(value) {
+    try {
+      return decodeURIComponent(value);
+    } catch (e) {
+      // Ignore any invalid uri component
+    }
+  }
 }
 
 function createMockXhr() {
