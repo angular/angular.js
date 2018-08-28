@@ -187,7 +187,7 @@ var $$AnimationProvider = ['$animateProvider', /** @this */ function($animatePro
           var element = animationEntry.from ? animationEntry.from.element : animationEntry.element;
           var extraClasses = options.addClass;
           extraClasses = (extraClasses ? (extraClasses + ' ') : '') + NG_ANIMATE_CLASSNAME;
-          var cacheKey = $$animateCache.cacheKey(node, event, extraClasses, options.removeClass);
+          var cacheKey = $$animateCache.cacheKey(node, animationEntry.event, extraClasses, options.removeClass);
 
           toBeSortedAnimations.push({
             element: element,
@@ -199,6 +199,7 @@ var $$AnimationProvider = ['$animateProvider', /** @this */ function($animatePro
               // and it's in fact an invalid animation (something that has duration = 0)
               // then we should skip all the heavy work from here on
               if ($$animateCache.containsCachedAnimationWithoutDuration(cacheKey)) {
+                removePrepareClass();
                 closeFn();
                 return;
               }
@@ -399,15 +400,19 @@ var $$AnimationProvider = ['$animateProvider', /** @this */ function($animatePro
         }
       }
 
-      function beforeStart() {
-        tempClasses = (tempClasses ? (tempClasses + ' ') : '') + NG_ANIMATE_CLASSNAME;
-        $$jqLite.addClass(element, tempClasses);
-
+      function removePrepareClass() {
         var prepareClassName = element.data(PREPARE_CLASSES_KEY);
         if (prepareClassName) {
           $$jqLite.removeClass(element, prepareClassName);
           prepareClassName = null;
         }
+      }
+
+      function beforeStart() {
+        tempClasses = (tempClasses ? (tempClasses + ' ') : '') + NG_ANIMATE_CLASSNAME;
+        $$jqLite.addClass(element, tempClasses);
+
+        removePrepareClass();
       }
 
       function updateAnimationRunners(animation, newRunner) {
