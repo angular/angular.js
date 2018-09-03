@@ -959,9 +959,7 @@ describe('$aria', function() {
         function createHTML(type) {
           var html = '<' + type + '>';
 
-          if (type === 'INPUT' || 'TYPE'  === 'A') {
-            return html;
-          }
+          if (type === 'INPUT' || 'TYPE'  === 'A') return html;
 
           return html + '</' + type + '>';
         }
@@ -975,10 +973,15 @@ describe('$aria', function() {
         var interactiveElement = element.find(elementType);
 
         // Use browserTrigger because it supports event bubbling
+        // 13 Enter
         browserTrigger(interactiveElement, 'keydown', {cancelable: true, bubbles: true, keyCode: 13});
-        browserTrigger(interactiveElement, 'keydown', {cancelable: true, bubbles: true, keyCode: 32});
+        expect(clickEvents).toEqual([elementType.toLowerCase() + '(false)']);
 
-        expect(clickEvents).toEqual([elementType.toLowerCase() + '(false)',  elementType.toLowerCase() + '(false)']);
+        clickEvents = [];
+
+        // 32 Space
+        browserTrigger(interactiveElement, 'keydown', {cancelable: true, bubbles: true, keyCode: 32});
+        expect(clickEvents).toEqual([elementType.toLowerCase() + '(false)']);
       }
     );
 
