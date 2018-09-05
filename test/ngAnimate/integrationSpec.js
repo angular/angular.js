@@ -476,7 +476,7 @@ describe('ngAnimate integration tests', function() {
       module('ngAnimateMock');
       inject(function($animate, $compile, $rootScope, $rootElement, $document, $$animateCache) {
         element = jqLite(
-           // Class animation pn parent element is neeeded so the child elements get the prepare class
+           // Class animation on parent element is neeeded so the child elements get the prepare class
           '<div id="outer" ng-class="{blue: cond}" ng-switch="cond">' +
             '<div id="default" ng-switch-default></div>' +
             '<div id="truthy" ng-switch-when="true"></div>' +
@@ -531,9 +531,6 @@ describe('ngAnimate integration tests', function() {
         jqLite($document[0].body).append($rootElement);
 
         $compile(element)($rootScope);
-        // $rootScope.cond = false;
-        // $rootScope.$digest();
-
         $rootScope.cond = true;
         $rootScope.$digest();
 
@@ -544,7 +541,10 @@ describe('ngAnimate integration tests', function() {
         expect(noanimate).not.toHaveClass('ng-enter');
         expect(animate).toHaveClass('ng-enter');
 
-        $animate.flush();
+        $animate.closeAndFlush();
+
+        expect(noanimate).not.toHaveClass('ng-enter');
+        expect(animate).not.toHaveClass('ng-enter');
       });
     });
 
