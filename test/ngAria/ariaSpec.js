@@ -957,11 +957,7 @@ describe('$aria', function() {
     they('should not prevent default keyboard action if an interactive $type element' +
       'is nested inside ng-click', nodeBlackList, function(elementType) {
         function createHTML(type) {
-          var html = '<' + type + '>';
-
-          if (type === 'INPUT' || 'TYPE'  === 'A') return html;
-
-          return html + '</' + type + '>';
+          return '<' + type + '></' + type + '>';
         }
 
         compileElement(
