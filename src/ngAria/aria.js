@@ -389,8 +389,12 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
               var keyCode = event.which || event.keyCode;
 
               if (keyCode === 13 || keyCode === 32) {
-                // Prevent the default browser behavior (e.g. scrolling when pressing spacebar).
-                event.preventDefault();
+                // If the event is triggered on a non-interactive element ...
+                if (nodeBlackList.indexOf(event.target.nodeName) === -1) {
+                  // ... prevent the default browser behavior (e.g. scrolling when pressing spacebar)
+                  // See https://github.com/angular/angular.js/issues/16664
+                  event.preventDefault();
+                }
                 scope.$apply(callback);
               }
 

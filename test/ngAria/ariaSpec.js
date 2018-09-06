@@ -1,5 +1,7 @@
 'use strict';
 
+/* globals nodeBlackList false */
+
 describe('$aria', function() {
   var scope, $compile, element;
 
@@ -951,6 +953,33 @@ describe('$aria', function() {
 
       expect(clickEvents).toEqual(['div(true)', 'li(true)', 'div(true)', 'li(true)']);
     });
+
+    they('should not prevent default keyboard action if an interactive $type element' +
+      'is nested inside ng-click', nodeBlackList, function(elementType) {
+        function createHTML(type) {
+          return '<' + type + '></' + type + '>';
+        }
+
+        compileElement(
+          '<section>' +
+            '<div ng-click="onClick($event)">' + createHTML(elementType) + '</div>' +
+          '</section>');
+
+        var divElement = element.find('div');
+        var interactiveElement = element.find(elementType);
+
+        // Use browserTrigger because it supports event bubbling
+        // 13 Enter
+        browserTrigger(interactiveElement, 'keydown', {cancelable: true, bubbles: true, keyCode: 13});
+        expect(clickEvents).toEqual([elementType.toLowerCase() + '(false)']);
+
+        clickEvents = [];
+
+        // 32 Space
+        browserTrigger(interactiveElement, 'keydown', {cancelable: true, bubbles: true, keyCode: 32});
+        expect(clickEvents).toEqual([elementType.toLowerCase() + '(false)']);
+      }
+    );
 
     it('should trigger a click in browsers that provide `event.which` instead of `event.keyCode`',
       function() {
