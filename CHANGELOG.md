@@ -1,3 +1,27 @@
+<a name="1.7.4"></a>
+# 1.7.4 interstellar-exploration (2018-09-07)
+
+## Bug Fixes
+- **ngAria.ngClick:** prevent default event on space/enter only for non-interactive elements
+  ([61b335](https://github.com/angular/angular.js/commit/61b33543ff8e7f32464dec98a46bf0a35e9b03a4),
+  [#16664](https://github.com/angular/angular.js/issues/16664),
+  [#16680](https://github.com/angular/angular.js/issues/16680))
+- **ngAnimate:** remove the "prepare" classes with multiple structural animations
+  ([3105b2](https://github.com/angular/angular.js/commit/3105b2c26a71594c4e7904efc18f4b2e9da25b1b),
+  [#16681](https://github.com/angular/angular.js/issues/16681),
+  [#16677](https://github.com/angular/angular.js/issues/16677))
+- **$route:** correctly extract path params if the path contains a question mark or a hash
+  ([2ceeb7](https://github.com/angular/angular.js/commit/2ceeb739f35e01fcebcabac4beeeb7684ae9f86d))
+- **ngHref:** allow numbers and other objects in interpolation
+  ([30084c](https://github.com/angular/angular.js/commit/30084c13699c814ff6703d7aa2d3947a9b2f7067),
+  [#16652](https://github.com/angular/angular.js/issues/16652),
+  [#16626](https://github.com/angular/angular.js/issues/16626))
+- **select:** allow to select first option with value `undefined`
+  ([668a33](https://github.com/angular/angular.js/commit/668a33da3439f17e61dfa8f6d9b114ebde8c9d87),
+  [#16653](https://github.com/angular/angular.js/issues/16653),
+  [#16656](https://github.com/angular/angular.js/issues/16656))
+
+
 <a name="1.7.3"></a>
 # 1.7.3 eventful-proposal (2018-08-03)
 
