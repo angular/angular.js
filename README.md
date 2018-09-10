@@ -14,7 +14,7 @@ piece of cake. Best of all? It makes development fun!
 
 --------------------
 
-**On July 1, 2018 AngularJS entered a 3 year Long Term Support period: [Find out more]**(https://docs.angularjs.org/misc/version-support-status)
+**On July 1, 2018 AngularJS entered a 3 year Long Term Support period:** [Find out more](https://docs.angularjs.org/misc/version-support-status)
 
 **Looking for the new Angular? Go here:** https://github.com/angular/angular
 
