@@ -88,6 +88,12 @@ describe('ngClass', function() {
     expect(element.hasClass('AnotB')).toBeFalsy();
   }));
 
+  it('should not break when passed non-string/array/object, truthy values', inject(function($rootScope, $compile) {
+    element = $compile('<div ng-class="42"></div>')($rootScope);
+    $rootScope.$digest();
+    expect(element.hasClass('42')).toBeTruthy();
+  }));
+
   it('should support adding multiple classes via an array mixed with conditionally via a map', inject(function($rootScope, $compile) {
     element = $compile('<div class="existing" ng-class="[\'A\', {\'B\': condition}]"></div>')($rootScope);
     $rootScope.$digest();
