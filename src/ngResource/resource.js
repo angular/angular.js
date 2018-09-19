@@ -1,4 +1,4 @@
-'use strict';
+(function(window, angular, undefined) {'use strict';
 
 var $resourceMinErr = angular.$$minErr('$resource');
 
@@ -495,6 +495,23 @@ angular.module('ngResource', ['ng']).
           return ids;
         }
 
+        function setHeaderParams(config, headers) {
+            forEach(headers, function (value, key) {
+                config.headers[key] = value;
+            });
+        }
+        
+        function extractHeaders(headers, actionHeaders) {
+            var ids = {};
+            actionHeaders = extend({}, actionHeaders);
+            forEach(actionHeaders, function(value, key) {
+                if (isFunction(value)) { value = value(); }
+                ids[key] = value && value.charAt && value.charAt(0) == '@' ?
+                    lookupDottedPath(headers, value.substr(1)) : value;
+            });
+            return ids;
+        }
+
         function defaultResponseInterceptor(response) {
           return response.resource;
         }
@@ -513,43 +530,111 @@ angular.module('ngResource', ['ng']).
         forEach(actions, function(action, name) {
           var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
 
-          Resource[name] = function(a1, a2, a3, a4) {
-            var params = {}, data, success, error;
+          Resource[name] = function(a1, a2, a3, a4, a5) {
+            var params = {}, data, headers = {}, success, error;
 
             /* jshint -W086 */ /* (purposefully fall through case statements) */
-            switch (arguments.length) {
-              case 4:
-                error = a4;
-                success = a3;
-              //fallthrough
-              case 3:
-              case 2:
-                if (isFunction(a2)) {
-                  if (isFunction(a1)) {
-                    success = a1;
-                    error = a2;
+            switch (arguments.length) { // Number of Parameters
+                case 5:
+                    error = a5;
+                    success = a4;
+                //fallthrough
+                case 4:
+                case 3:
+                    if (isFunction(a4)) { //4 Param End in Function
+                        if (isFunction(a3)) {
+                            if (hasBody) {
+                                params = a1;
+                                data = a2;
+                                success = a3;
+                                error = a4;
+                                break;
+                            } else {
+                                params = a1;
+                                headers = a2;
+                                success = a3;
+                                error = a4;
+                                break;
+                            }
+                        } else {
+                            params = a1;
+                            data = a2;
+                            headers = a3;
+                            success = a4;
+                            break;
+                        }
+                    }else if (isFunction(a3)) { //3 Param End in Function
+                        if (isFunction(a2)) {
+                            if(hasBody) {
+                                data = a1;
+                                success = a2;
+                                error = a3;
+                                break;
+                            }else{
+                                params = a1;
+                                success = a2;
+                                error = a3;
+                                break;
+                            }
+                        } else {
+                            if(hasBody){
+                                params = a1;
+                                data = a2;
+                                success = a3;
+                                break;
+                            }else{
+                                params  = a1;
+                                headers = a2;
+                                success = a3;
+                                break;
+                            }
+                        }
+                    }else { //3 Param End in Object
+                        params = a1;
+                        data = a2;
+                        headers = a3;
+                        break;
+                    }
+                case 2:
+                    if(isFunction(a2)){
+                        if(isFunction(a1)){
+                            success = a1;
+                            error = a2;
+                            break;
+                        }else{
+                            if (hasBody){
+                                data = a1;
+                                success = a2;
+                                break;
+                            }else{
+                                params = a1;
+                                success = a2;
+                                break;
+                            }
+                        }
+                    }
+                    else {
+                        if(hasBody) {
+                            params = a1;
+                            data = a2;
+                            break;
+                        } else {
+                            params = a1;
+                            headers = a2;
+                            break;
+                        }
+                    }
+                case 1:
+                    if (isFunction(a1)) success = a1;
+                    else if (hasBody) data = a1;
+                    else params = a1;
                     break;
-                  }
-
-                  success = a2;
-                  error = a3;
-                  //fallthrough
-                } else {
-                  params = a1;
-                  data = a2;
-                  success = a3;
-                  break;
-                }
-              case 1:
-                if (isFunction(a1)) success = a1;
-                else if (hasBody) data = a1;
-                else params = a1;
-                break;
-              case 0: break;
-              default:
-                throw $resourceMinErr('badargs',
-                  "Expected up to 4 arguments [params, data, success, error], got {0} arguments",
-                  arguments.length);
+                case 0:
+                    break;
+                default:
+                    throw $resourceMinErr('badargs',
+                        "Expected up to 4 arguments [params, data, success, error], got {0} arguments",
+                        arguments.length);
             }
             /* jshint +W086 */ /* (purposefully fall through case statements) */
 
@@ -572,6 +657,8 @@ angular.module('ngResource', ['ng']).
               extend({}, extractParams(data, action.params || {}), params),
               action.url);
 
+            setHeaderParams(httpConfig, extractHeaders(headers, action.headers||{}));
+
             var promise = $http(httpConfig).then(function(response) {
               var data = response.data,
                 promise = value.$promise;
@@ -585,9 +672,9 @@ angular.module('ngResource', ['ng']).
                       'contain an {1} but got an {2} (Request: {3} {4})', name, action.isArray ? 'array' : 'object',
                     angular.isArray(data) ? 'array' : 'object', httpConfig.method, httpConfig.url);
                 }
+
                 var transformedValue = null;
                 // jshint +W018
-                //If user provide transformResult function, returns user needed results
                 if(action.transformResult){
                   transformedValue = action.transformResult(data);
                 } else if (action.isArray) {
@@ -663,3 +750,6 @@ angular.module('ngResource', ['ng']).
       return resourceFactory;
     }];
   });
+
+
+})(window, window.angular);
