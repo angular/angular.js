@@ -1464,6 +1464,25 @@ function encodeUriQuery(val, pctEncodeSpaces) {
              replace(/%20/g, (pctEncodeSpaces ? '%20' : '+'));
 }
 
+// function decodeUriSegment(val) {
+//   var preEncoded = val.
+//               replace(/%26/gi, '%2526').
+//               replace(/%3D/gi, '%253D').
+//               replace(/%2B/gi, '%252B');
+//   return decodeUriQuery(preEncoded, true);
+// }
+
+// function decodeUriQuery(val, pctDecodeSpaces) {
+//   var preEncoded = val.
+//              replace(/%40/gi, '%2540').
+//              replace(/%3A/gi, '%253A').
+//              replace(/%24/g, '%2524').
+//              replace(/%2C/gi, '%252C').
+//              replace(/%3B/gi, '%253B').
+//              replace(/%20/g, (pctDecodeSpaces ? '%20' : '%2520'));
+//   return decodeURIComponent(preEncoded);
+// }
+
 var ngAttrPrefixes = ['ng-', 'data-ng-', 'ng:', 'x-ng-'];
 
 function getNgAttribute(element, ngAttr) {

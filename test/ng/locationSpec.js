@@ -503,6 +503,84 @@ describe('$location', function() {
     });
   });
 
+  describe('Matrix Url', function() {
+
+    function createUrl() {
+      var locationUrl = new LocationMatrixUrl('http://www.domain.com:9877/', 'http://www.domain.com:9877/');
+      locationUrl.$$parse('http://www.domain.com:9877/path/b?search=a&b=c&d#hash');
+      return locationUrl;
+    }
+
+    describe('encoding', function() {
+
+      it('should encode special characters', function() {
+        var locationUrl = createUrl();
+        locationUrl.path('/a <>#');
+        locationUrl.search({'i j': '<>#'});
+        locationUrl.hash('<>#');
+
+        expect(locationUrl.path()).toBe('/a <>#');
+        expect(locationUrl.search()).toEqual({'i j': '<>#'});
+        expect(locationUrl.hash()).toBe('<>#');
+        expect(locationUrl.absUrl()).toBe('http://www.domain.com:9877/a%20%3C%3E%23?i%20j=%3C%3E%23#%3C%3E%23');
+      });
+
+
+      it('should not encode !$:@', function() {
+        var locationUrl = createUrl();
+        locationUrl.path('/!$:@');
+        locationUrl.search('');
+        locationUrl.hash('!$:@');
+
+        expect(locationUrl.absUrl()).toBe('http://www.domain.com:9877/!$:@#!$:@');
+      });
+
+
+      it('should decode special characters', function() {
+        var locationUrl = new LocationMatrixUrl('http://host.com/', 'http://host.com/');
+        locationUrl.$$parse('http://host.com/a%20%3C%3E%23?i%20j=%3C%3E%23#x%20%3C%3E%23');
+        expect(locationUrl.path()).toBe('/a <>#');
+        expect(locationUrl.search()).toEqual({'i j': '<>#'});
+        expect(locationUrl.hash()).toBe('x <>#');
+      });
+
+
+      it('should not decode encoded forward slashes in the path', function() {
+        var locationUrl = new LocationMatrixUrl('http://host.com/base/', 'http://host.com/base/');
+        locationUrl.$$parse('http://host.com/base/a/ng2;path=%2Fsome%2Fpath');
+        expect(locationUrl.path()).toBe('/a/ng2');
+        expect(locationUrl.matrixParams()).toEqual([[], ['path=%2Fsome%2Fpath']]);
+        expect(locationUrl.search()).toEqual({});
+        expect(locationUrl.hash()).toBe('');
+        expect(locationUrl.url()).toBe('/a/ng2;path=%2Fsome%2Fpath');
+        expect(locationUrl.absUrl()).toBe('http://host.com/base/a/ng2;path=%2Fsome%2Fpath');
+      });
+
+      it('should not decode encoded equals signs in the path', function() {
+        var locationUrl = new LocationMatrixUrl('http://host.com/base/', 'http://host.com/base/');
+        locationUrl.$$parse('http://host.com/base/catdog;foo=bar%3Dbaz');
+        expect(locationUrl.path()).toBe('/catdog');
+        expect(locationUrl.matrixParams()).toEqual([['foo=bar%3Dbaz']]);
+        expect(locationUrl.search()).toEqual({});
+        expect(locationUrl.hash()).toBe('');
+        expect(locationUrl.url()).toBe('/catdog;foo=bar%3Dbaz');
+        expect(locationUrl.absUrl()).toBe('http://host.com/base/catdog;foo=bar%3Dbaz');
+      });
+
+      it('should decode pluses as spaces in urls', function() {
+        var locationUrl = new LocationMatrixUrl('http://host.com/', 'http://host.com/');
+        locationUrl.$$parse('http://host.com/?a+b=c+d');
+        expect(locationUrl.search()).toEqual({'a b':'c d'});
+      });
+
+      it('should retain pluses when setting search queries', function() {
+        var locationUrl = createUrl();
+        locationUrl.search({'a+b':'c+d'});
+        expect(locationUrl.search()).toEqual({'a+b':'c+d'});
+      });
+
+    });
+  });
 
   describe('HashbangUrl', function() {
 
