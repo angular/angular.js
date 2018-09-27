@@ -2193,6 +2193,48 @@ var inputDirective = ['$browser', '$sniffer', '$filter', '$parse',
 }];
 
 
+var hiddenInputBrowserCacheDirective = function() {
+  var valueProperty = {
+    configurable: true,
+    enumerable: false,
+    get: function() {
+      return this.getAttribute('value') || '';
+    },
+    set: function(val) {
+      this.setAttribute('value', val);
+    }
+  };
+
+  return {
+    restrict: 'E',
+    priority: 200,
+    compile: function(_, attr) {
+      if (lowercase(attr.type) !== 'hidden') {
+        return;
+      }
+
+      return {
+        pre: function(scope, element, attr, ctrls) {
+          var node = element[0];
+
+          // Support: Edge
+          // Moving the DOM around prevents autofillling
+          if (node.parentNode) {
+            node.parentNode.insertBefore(node, node.nextSibling);
+          }
+
+          // Support: FF, IE
+          // Avoiding direct assignment to .value prevents autofillling
+          if (Object.defineProperty) {
+            Object.defineProperty(node, 'value', valueProperty);
+          }
+        }
+      };
+    }
+  };
+};
+
+
 
 var CONSTANT_VALUE_REGEXP = /^(true|false|\d+)$/;
 /**
