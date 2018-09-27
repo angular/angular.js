@@ -7,7 +7,7 @@
 
   htmlAnchorDirective,
   inputDirective,
-  inputDirective,
+  hiddenInputBrowserCacheDirective,
   formDirective,
   scriptDirective,
   selectDirective,
@@ -217,7 +217,8 @@ function publishExternalAPI(angular) {
             ngModelOptions: ngModelOptionsDirective
         }).
         directive({
-          ngInclude: ngIncludeFillContentDirective
+          ngInclude: ngIncludeFillContentDirective,
+          input: hiddenInputBrowserCacheDirective
         }).
         directive(ngAttributeAliasDirectives).
         directive(ngEventDirectives);
