@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a34cd4ac53804672bfd0b80dce241d35)](https://app.codacy.com/app/muller974/angular-js?utm_source=github.com&utm_medium=referral&utm_content=angular/angular.js&utm_campaign=Badge_Grade_Dashboard)
 AngularJS [![Build Status](https://travis-ci.org/angular/angular.js.svg?branch=master)](https://travis-ci.org/angular/angular.js)
 =========
 
