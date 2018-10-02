@@ -55,7 +55,7 @@ var ngStyleDirective = ngDirective(function(scope, element, attr) {
   scope.$watchCollection(attr.ngStyle, function ngStyleWatchAction(newStyles, oldStyles) {
     if (oldStyles && (newStyles !== oldStyles)) {
       forEach(oldStyles, function(val, style) {
-        if (!(newStyles && newStyles.hasOwnProperty(style))) {
+        if (!(newStyles && newStyles[style])) {
           element.css(style, '');
         }
       });
