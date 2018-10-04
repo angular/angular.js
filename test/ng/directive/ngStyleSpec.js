@@ -120,5 +120,38 @@ describe('ngStyle', function() {
       expect(element.css(preCompStyle)).not.toBe('88px');
       expect(element.css(postCompStyle)).not.toBe('99px');
     });
+
+    it('should clear style when the new model is null', function() {
+      scope.styleObj = {'height': '99px', 'width': '88px'};
+      scope.$apply();
+      expect(element.css(preCompStyle)).toBe('88px');
+      expect(element.css(postCompStyle)).toBe('99px');
+      scope.styleObj = null;
+      scope.$apply();
+      expect(element.css(preCompStyle)).not.toBe('88px');
+      expect(element.css(postCompStyle)).not.toBe('99px');
+    });
+
+    it('should clear style when the value is undefined or null', function() {
+      scope.styleObj = {'height': '99px', 'width': '88px'};
+      scope.$apply();
+      expect(element.css(preCompStyle)).toBe('88px');
+      expect(element.css(postCompStyle)).toBe('99px');
+      scope.styleObj = {'height': undefined, 'width': null};
+      scope.$apply();
+      expect(element.css(preCompStyle)).not.toBe('88px');
+      expect(element.css(postCompStyle)).not.toBe('99px');
+    });
+
+    it('should set style when the value is zero', function() {
+      scope.styleObj = {'height': '99px', 'width': '88px'};
+      scope.$apply();
+      expect(element.css(preCompStyle)).toBe('88px');
+      expect(element.css(postCompStyle)).toBe('99px');
+      scope.styleObj = {'height': 0, 'width': 0};
+      scope.$apply();
+      expect(element.css(preCompStyle)).toBe('0px');
+      expect(element.css(postCompStyle)).toBe('0px');
+    });
   });
 });
