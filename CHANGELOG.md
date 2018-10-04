@@ -1,3 +1,13 @@
+<a name="1.7.5"></a>
+# 1.7.5 anti-prettification (2018-10-04)
+
+## Bug Fixes
+- **ngClass:** do not break on invalid values
+  ([f3a565](https://github.com/angular/angular.js/commit/f3a565872d802c94bb213944791b11b483d52f73),
+  [#16697](https://github.com/angular/angular.js/issues/16697),
+  [#16699](https://github.com/angular/angular.js/issues/16699))
+
+
 <a name="1.7.4"></a>
 # 1.7.4 interstellar-exploration (2018-09-07)
 
