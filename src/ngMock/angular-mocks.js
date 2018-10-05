@@ -1650,7 +1650,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *                                as a getter
    */
   $httpBackend.matchLatestDefinitionEnabled = function(value) {
-    if (isDefined(value)) {
+    if (angular.isDefined(value)) {
       matchLatestDefinition = value;
       return this;
     } else {
