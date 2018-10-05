@@ -215,10 +215,10 @@ var noop;
 var toJson;
 var $$stringify;
 
-var module = window['angular']['module']('ngMessageFormat', ['ng']);
-module['info']({ 'angularVersion': '"NG_VERSION_FULL"' });
-module['factory']('$$messageFormat', $$MessageFormatFactory);
-module['config'](['$provide', function($provide) {
+var ngModule = window['angular']['module']('ngMessageFormat', ['ng']);
+ngModule['info']({ 'angularVersion': '"NG_VERSION_FULL"' });
+ngModule['factory']('$$messageFormat', $$MessageFormatFactory);
+ngModule['config'](['$provide', function($provide) {
   $interpolateMinErr = window['angular']['$interpolateMinErr'];
   isFunction = window['angular']['isFunction'];
   noop = window['angular']['noop'];
