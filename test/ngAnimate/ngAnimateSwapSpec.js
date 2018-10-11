@@ -177,6 +177,29 @@ describe('ngAnimateSwap', function() {
     expect(scopeOne.$$destroyed).toBe(true);
   });
 
+  it('should work with `ngIf` on the same element', function() {
+    var tmpl = '<div><div ng-animate-swap="exp" ng-if="true">{{ exp }}</div></div>';
+    element = $compile(tmpl)($rootScope);
+    $rootScope.$digest();
+
+    var first = element.find('div')[0];
+    expect(first).toBeFalsy();
+
+    $rootScope.exp = 'yes';
+    $rootScope.$digest();
+
+    var second = element.find('div')[0];
+    expect(second.textContent).toBe('yes');
+
+    $rootScope.exp = 'super';
+    $rootScope.$digest();
+
+    var third = element.find('div')[0];
+    expect(third.textContent).toBe('super');
+    expect(third).not.toEqual(second);
+    expect(second.parentNode).toBeFalsy();
+  });
+
 
   describe('animations', function() {
     it('should trigger a leave animation followed by an enter animation upon swap',function() {
