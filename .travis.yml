@@ -26,7 +26,7 @@ env:
     - secure: oTBjhnOKhs0qDSKTf7fE4f6DYiNDPycvB7qfSF5QRIbJK/LK/J4UtFwetXuXj79HhUZG9qnoT+5e7lPaiaMlpsIKn9ann7ffqFWN1E8TMtpJF+AGigx3djYElwfgf5nEnFUFhwjFzvbfpZNnxVGgX5YbIZpe/WUbHkP4ffU0Wks=
 
 before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.3.2
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.10.1
   - export PATH="$HOME/.yarn/bin:$PATH"
 
 before_script:
