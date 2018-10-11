@@ -29,7 +29,7 @@ case "$JOB" in
       # convert commit range to 2 dots, as commitplease uses `git log`.
       # See https://github.com/travis-ci/travis-ci/issues/4596 for more info
       echo "Validate commit messages in PR:"
-      yarn run commitplease -- "${TRAVIS_COMMIT_RANGE/.../..}"
+      yarn run commitplease "${TRAVIS_COMMIT_RANGE/.../..}"
     fi
     ;;
   "unit-core")
