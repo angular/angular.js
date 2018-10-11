@@ -2,8 +2,6 @@
 
 set -e
 
-yarn global add grunt-cli@1.2.0
-
 mkdir -p "$LOGS_DIR"
 
 if [ "$JOB" != "ci-checks" ]; then
@@ -13,13 +11,13 @@ fi
 
 # ci-checks and unit tests do not run against the packaged code
 if [[ "$JOB" != "ci-checks" ]] && [[ "$JOB" != unit-* ]]; then
-  grunt package
+  yarn grunt package
 fi
 
 # unit runs the docs tests too which need a built version of the code
 if [[ "$JOB" = unit-* ]]; then
-  grunt validate-angular-files
-  grunt build
+  yarn grunt validate-angular-files
+  yarn grunt build
 fi
 
 # check this after the package, because at this point the browser_provider
