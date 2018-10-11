@@ -31,6 +31,19 @@ describe('urlUtils', function() {
       var parsed = urlResolve('/');
       expect(parsed.pathname).toBe('/');
     });
+
+    it('should return an IPv6 hostname wrapped in brackets', function() {
+      // Support: IE 9-11 only, Edge 16-17 only (fixed in 18 Preview)
+      // IE/Edge don't wrap IPv6 addresses' hostnames in square brackets
+      // when parsed out of an anchor element.
+      var parsed = urlResolve('http://[::1]/');
+      expect(parsed.hostname).toBe('[::1]');
+    });
+
+    it('should not put the domain in brackets for the hostname field', function() {
+      var parsed = urlResolve('https://google.com/');
+      expect(parsed.hostname).toBe('google.com');
+    });
   });
 
 
