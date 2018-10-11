@@ -9,15 +9,14 @@
     "url": "https://github.com/angular/angular.js.git"
   },
   "engines": {
-    "node": "^8.9.1",
-    "yarn": ">=1.3.2",
-    "grunt": "^1.2.0"
+    "node": ">=8.12.0",
+    "yarn": ">=1.10.1",
+    "grunt-cli": "^1.2.0"
   },
   "scripts": {
     "commit": "git-cz",
     "test-i18n": "jasmine-node i18n/spec",
-    "test-i18n-ucd": "jasmine-node i18n/ucd/spec",
-    "grunt": "grunt"
+    "test-i18n-ucd": "jasmine-node i18n/ucd/spec"
   },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
