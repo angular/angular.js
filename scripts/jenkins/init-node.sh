@@ -15,4 +15,4 @@ export PATH="$HOME/.yarn/bin:$PATH"
 yarn install
 
 echo testing grunt version
-yarn run grunt --version
+yarn grunt --version
