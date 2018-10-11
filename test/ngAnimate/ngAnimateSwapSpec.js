@@ -20,7 +20,7 @@ describe('ngAnimateSwap', function() {
   }));
 
 
-  it('should render a new container when the expression changes', inject(function() {
+  it('should render a new container when the expression changes', function() {
     element = $compile('<div><div ng-animate-swap="exp">{{ exp }}</div></div>')($rootScope);
     $rootScope.$digest();
 
@@ -40,9 +40,9 @@ describe('ngAnimateSwap', function() {
     expect(third.textContent).toBe('super');
     expect(third).not.toEqual(second);
     expect(second.parentNode).toBeFalsy();
-  }));
+  });
 
-  it('should render a new container only when the expression property changes', inject(function() {
+  it('should render a new container only when the expression property changes', function() {
     element = $compile('<div><div ng-animate-swap="exp.prop">{{ exp.value }}</div></div>')($rootScope);
     $rootScope.exp = {
       prop: 'hello',
@@ -66,9 +66,9 @@ describe('ngAnimateSwap', function() {
     var three = element.find('div')[0];
     expect(three.textContent).toBe('planet');
     expect(three).not.toBe(two);
-  }));
+  });
 
-  it('should watch the expression as a collection', inject(function() {
+  it('should watch the expression as a collection', function() {
     element = $compile('<div><div ng-animate-swap="exp">{{ exp.a }} {{ exp.b }} {{ exp.c }}</div></div>')($rootScope);
     $rootScope.exp = {
       a: 1,
@@ -99,26 +99,24 @@ describe('ngAnimateSwap', function() {
     var four = element.find('div')[0];
     expect(four.textContent.trim()).toBe('4');
     expect(four).not.toEqual(three);
-  }));
-
-  they('should consider $prop as a falsy value', [false, undefined, null], function(value) {
-    inject(function() {
-      element = $compile('<div><div ng-animate-swap="value">{{ value }}</div></div>')($rootScope);
-      $rootScope.value = true;
-      $rootScope.$digest();
-
-      var one = element.find('div')[0];
-      expect(one).toBeTruthy();
-
-      $rootScope.value = value;
-      $rootScope.$digest();
-
-      var two = element.find('div')[0];
-      expect(two).toBeFalsy();
-    });
   });
 
-  it('should consider "0" as a truthy value', inject(function() {
+  they('should consider $prop as a falsy value', [false, undefined, null], function(value) {
+    element = $compile('<div><div ng-animate-swap="value">{{ value }}</div></div>')($rootScope);
+    $rootScope.value = true;
+    $rootScope.$digest();
+
+    var one = element.find('div')[0];
+    expect(one).toBeTruthy();
+
+    $rootScope.value = value;
+    $rootScope.$digest();
+
+    var two = element.find('div')[0];
+    expect(two).toBeFalsy();
+  });
+
+  it('should consider "0" as a truthy value', function() {
     element = $compile('<div><div ng-animate-swap="value">{{ value }}</div></div>')($rootScope);
     $rootScope.$digest();
 
@@ -130,9 +128,9 @@ describe('ngAnimateSwap', function() {
 
     var two = element.find('div')[0];
     expect(two).toBeTruthy();
-  }));
+  });
 
-  it('should create a new (non-isolate) scope for each inserted clone', inject(function() {
+  it('should create a new (non-isolate) scope for each inserted clone', function() {
     var parentScope = $rootScope.$new();
     parentScope.foo = 'bar';
 
@@ -147,9 +145,9 @@ describe('ngAnimateSwap', function() {
     expect(scopeTwo.foo).toBe('bar');
 
     expect(scopeOne).not.toBe(scopeTwo);
-  }));
+  });
 
-  it('should destroy the previous scope when removing the element', inject(function() {
+  it('should destroy the previous scope when removing the element', function() {
     element = $compile('<div><div ng-animate-swap="value">{{ value }}</div></div>')($rootScope);
 
     $rootScope.$apply('value = 1');
@@ -166,9 +164,9 @@ describe('ngAnimateSwap', function() {
     // Removing the old element (without inserting a new one).
     $rootScope.$apply('value = null');
     expect(scopeTwo.$$destroyed).toBe(true);
-  }));
+  });
 
-  it('should destroy the previous scope when swapping elements', inject(function() {
+  it('should destroy the previous scope when swapping elements', function() {
     element = $compile('<div><div ng-animate-swap="value">{{ value }}</div></div>')($rootScope);
 
     $rootScope.$apply('value = 1');
@@ -177,13 +175,11 @@ describe('ngAnimateSwap', function() {
 
     $rootScope.$apply('value = 2');
     expect(scopeOne.$$destroyed).toBe(true);
-  }));
+  });
 
 
   describe('animations', function() {
-    it('should trigger a leave animation followed by an enter animation upon swap',
-      inject(function() {
-
+    it('should trigger a leave animation followed by an enter animation upon swap',function() {
       element = $compile('<div><div ng-animate-swap="exp">{{ exp }}</div></div>')($rootScope);
       $rootScope.exp = 1;
       $rootScope.$digest();
@@ -208,6 +204,6 @@ describe('ngAnimateSwap', function() {
       var forth = $animate.queue.shift();
       expect(forth.event).toBe('leave');
       expect($animate.queue.length).toBe(0);
-    }));
+    });
   });
 });
