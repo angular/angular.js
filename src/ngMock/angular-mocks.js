@@ -1619,12 +1619,12 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
 
   /**
    * @ngdoc method
-   * @name  $httpBackend#matchLatestDefinition
+   * @name  $httpBackend#matchLatestDefinitionEnabled
    * @description
    * This method can be used to change which mocked responses `$httpBackend` returns, when defining
    * them with {@link ngMock.$httpBackend#when $httpBackend.when()} (and shortcut methods).
    * By default, `$httpBackend` returns the first definition that matches. When setting
-   * `$http.matchLatestDefinition(true)`, it will use the last response that matches, i.e. the
+   * `$http.matchLatestDefinitionEnabled(true)`, it will use the last response that matches, i.e. the
    * one that was added last.
    *
    * ```js
@@ -1632,7 +1632,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    * hb.when('GET', '/url1').respond(201, 'another', {});
    * hb('GET', '/url1'); // receives "content"
    *
-   * $http.matchLatestDefinition(true)
+   * $http.matchLatestDefinitionEnabled(true)
    * hb('GET', '/url1'); // receives "another"
    *
    * hb.when('GET', '/url1').respond(201, 'onemore', {});
@@ -1641,7 +1641,7 @@ function createHttpBackendMock($rootScope, $timeout, $delegate, $browser) {
    *
    * This is useful if a you have a default response that is overriden inside specific tests.
    *
-   * Note that different from config methods on providers, `matchLatestDefinition()` can be changed
+   * Note that different from config methods on providers, `matchLatestDefinitionEnabled()` can be changed
    * even when the application is already running.
    *
    * @param  {Boolean=} value value to set, either `true` or `false`. Default is `false`.
@@ -2919,13 +2919,13 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  */
 /**
  * @ngdoc method
- * @name  $httpBackend#matchLatestDefinition
+ * @name  $httpBackend#matchLatestDefinitionEnabled
  * @module ngMockE2E
  * @description
  * This method can be used to change which mocked responses `$httpBackend` returns, when defining
  * them with {@link ngMock.$httpBackend#when $httpBackend.when()} (and shortcut methods).
  * By default, `$httpBackend` returns the first definition that matches. When setting
- * `$http.matchLatestDefinition(true)`, it will use the last response that matches, i.e. the
+ * `$http.matchLatestDefinitionEnabled(true)`, it will use the last response that matches, i.e. the
  * one that was added last.
  *
  * ```js
@@ -2933,7 +2933,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * hb.when('GET', '/url1').respond(201, 'another', {});
  * hb('GET', '/url1'); // receives "content"
  *
- * $http.matchLatestDefinition(true)
+ * $http.matchLatestDefinitionEnabled(true)
  * hb('GET', '/url1'); // receives "another"
  *
  * hb.when('GET', '/url1').respond(201, 'onemore', {});
@@ -2942,7 +2942,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  *
  * This is useful if a you have a default response that is overriden inside specific tests.
  *
- * Note that different from config methods on providers, `matchLatestDefinition()` can be changed
+ * Note that different from config methods on providers, `matchLatestDefinitionEnabled()` can be changed
  * even when the application is already running.
  *
  * @param  {Boolean=} value value to set, either `true` or `false`. Default is `false`.
