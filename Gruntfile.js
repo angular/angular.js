@@ -141,7 +141,16 @@ module.exports = function(grunt) {
       'jquery-2.2': 'karma-jquery-2.2.conf.js',
       'jquery-2.1': 'karma-jquery-2.1.conf.js',
       docs: 'karma-docs.conf.js',
-      modules: 'karma-modules.conf.js'
+      'modules-ngAnimate': 'ngAnimate',
+      'modules-ngAria': 'ngAria',
+      'modules-ngCookies': 'ngCookies',
+      'modules-ngMessageFormat': 'ngMessageFormat',
+      'modules-ngMessages': 'ngMessages',
+      'modules-ngMock': 'ngMock',
+      'modules-ngResource': 'ngResource',
+      'modules-ngRoute': 'ngRoute',
+      'modules-ngSanitize': 'ngSanitize',
+      'modules-ngTouch': 'ngTouch'
     },
 
 
@@ -430,7 +439,16 @@ module.exports = function(grunt) {
   grunt.registerTask('test:jquery-2.1', 'Run the jQuery 2.1 unit tests with Karma', ['tests:jquery-2.1']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', [
     'build',
-    'tests:modules'
+    'tests:modules-ngAnimate',
+    'tests:modules-ngAria',
+    'tests:modules-ngCookies',
+    'tests:modules-ngMessageFormat',
+    'tests:modules-ngMessages',
+    'tests:modules-ngMock',
+    'tests:modules-ngResource',
+    'tests:modules-ngRoute',
+    'tests:modules-ngSanitize',
+    'tests:modules-ngTouch'
   ]);
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
   grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', [

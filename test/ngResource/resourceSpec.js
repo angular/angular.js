@@ -1,6 +1,8 @@
 'use strict';
 
 describe('resource', function() {
+  var noop = angular.noop;
+  var extend = angular.extend;
 
 describe('basic usage', function() {
   var $resource, CreditCard, callback, $httpBackend, resourceProvider, $q;
