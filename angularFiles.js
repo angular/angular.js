@@ -189,21 +189,84 @@ var angularFiles = {
     'src/angular.bind.js'
   ],
 
-  'karmaModules': [
+  'karmaModulesBase': [
     'build/angular.js',
-    '@angularSrcModules',
+    'build/angular-mocks.js',
     'test/modules/no_bootstrap.js',
-    'test/helpers/*.js',
-    'test/ngAnimate/*.js',
-    'test/ngMessageFormat/*.js',
-    'test/ngMessages/*.js',
-    'test/ngMock/*.js',
-    'test/ngCookies/*.js',
-    'test/ngRoute/**/*.js',
-    'test/ngResource/*.js',
-    'test/ngSanitize/**/*.js',
-    'test/ngTouch/**/*.js',
-    'test/ngAria/*.js'
+    'test/helpers/matchers.js',
+    'test/helpers/privateMocks.js',
+    'test/helpers/support.js',
+    'test/helpers/testabilityPatch.js'
+  ],
+
+  'karmaModules-ngAnimate': [
+    '@karmaModulesBase',
+    '@angularSrcModuleNgAnimate',
+    'test/ngAnimate/**/*.js'
+  ],
+
+  'karmaModules-ngAria': [
+    '@karmaModulesBase',
+    '@angularSrcModuleNgAria',
+    'test/ngAria/**/*.js'
+  ],
+
+  'karmaModules-ngCookies': [
+    '@karmaModulesBase',
+    '@angularSrcModuleNgCookies',
+    'test/ngCookies/**/*.js'
+  ],
+
+  'karmaModules-ngMessageFormat': [
+    '@karmaModulesBase',
+    '@angularSrcModuleNgMessageFormat',
+    'test/ngMessageFormat/**/*.js'
+  ],
+
+  'karmaModules-ngMessages': [
+    '@karmaModulesBase',
+    'build/angular-animate.js',
+    '@angularSrcModuleNgMessages',
+    'test/ngMessages/**/*.js'
+  ],
+
+  // ngMock doesn't include the base because it must use the ngMock src files
+  'karmaModules-ngMock': [
+    'build/angular.js',
+    'src/ngMock/*.js',
+    'test/modules/no_bootstrap.js',
+    'test/helpers/matchers.js',
+    'test/helpers/privateMocks.js',
+    'test/helpers/support.js',
+    'test/helpers/testabilityPatch.js',
+    'src/routeToRegExp.js',
+    'build/angular-animate.js',
+    'test/ngMock/**/*.js'
+  ],
+
+  'karmaModules-ngResource': [
+    '@karmaModulesBase',
+    '@angularSrcModuleNgResource',
+    'test/ngResource/**/*.js'
+  ],
+
+  'karmaModules-ngRoute': [
+    '@karmaModulesBase',
+    'build/angular-animate.js',
+    '@angularSrcModuleNgRoute',
+    'test/ngRoute/**/*.js'
+  ],
+
+  'karmaModules-ngSanitize': [
+    '@karmaModulesBase',
+    '@angularSrcModuleNgSanitize',
+    'test/ngSanitize/**/*.js'
+  ],
+
+  'karmaModules-ngTouch': [
+    '@karmaModulesBase',
+    '@angularSrcModuleNgTouch',
+    'test/ngTouch/**/*.js'
   ],
 
   'karmaJquery': [
@@ -231,6 +294,16 @@ var angularFiles = {
       return path;
     });
 });
+
+angularFiles['angularSrcModuleNgAnimate'] = angularFiles['angularModules']['ngAnimate'];
+angularFiles['angularSrcModuleNgAria'] = angularFiles['angularModules']['ngAria'];
+angularFiles['angularSrcModuleNgCookies'] = angularFiles['angularModules']['ngCookies'];
+angularFiles['angularSrcModuleNgMessageFormat'] = angularFiles['angularModules']['ngMessageFormat'];
+angularFiles['angularSrcModuleNgMessages'] = angularFiles['angularModules']['ngMessages'];
+angularFiles['angularSrcModuleNgResource'] = angularFiles['angularModules']['ngResource'];
+angularFiles['angularSrcModuleNgRoute'] = angularFiles['angularModules']['ngRoute'];
+angularFiles['angularSrcModuleNgSanitize'] = angularFiles['angularModules']['ngSanitize'];
+angularFiles['angularSrcModuleNgTouch'] = angularFiles['angularModules']['ngTouch'];
 
 angularFiles['angularSrcModules'] = [].concat(
   angularFiles['angularModules']['ngAnimate'],

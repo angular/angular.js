@@ -132,6 +132,7 @@ describe('$$cookieWriter', function() {
 
 describe('cookie options', function() {
   var fakeDocument, $$cookieWriter;
+  var isUndefined = angular.isUndefined;
 
   function getLastCookieAssignment(key) {
     return fakeDocument[0].cookie
