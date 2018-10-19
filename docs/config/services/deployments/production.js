@@ -15,7 +15,7 @@ var cdnUrl = googleCdnUrl + versionInfo.cdnVersion;
 // docs.angularjs.org and code.angularjs.org need them.
 var versionPath = versionInfo.currentVersion.isSnapshot ?
   'snapshot' :
-  (versionInfo.currentVersion.version || versionInfo.currentVersion.version);
+  versionInfo.currentVersion.version;
 var examplesDependencyPath = angularCodeUrl + versionPath + '/';
 
 module.exports = function productionDeployment(getVersion) {
