@@ -3577,6 +3577,15 @@ describe('$compile', function() {
       })
     );
 
+    it('should support non-interpolated `src` and `data-src` on the same element',
+      inject(function($rootScope, $compile) {
+        var element = $compile('<img src="abc" data-src="123">')($rootScope);
+        expect(element.attr('src')).toEqual('abc');
+        expect(element.attr('data-src')).toEqual('123');
+        $rootScope.$digest();
+        expect(element.attr('src')).toEqual('abc');
+        expect(element.attr('data-src')).toEqual('123');
+    }));
 
     it('should call observer only when the attribute value changes', function() {
       module(function() {
@@ -12107,6 +12116,47 @@ describe('$compile', function() {
         expect(element.attr('dash-test2')).toBe('JamieMason');
         expect(element.attr('dash-test3')).toBe('JamieMason');
         expect(element.attr('dash-test4')).toBe('JamieMason');
+      }));
+
+      it('should work with img[src]', inject(function() {
+        $rootScope.name = 'some-image.png';
+        element = $compile('<img ng-attr-src="{{name}}">')($rootScope);
+        expect(element.attr('src')).toBeUndefined();
+
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('some-image.png');
+
+        $rootScope.name = 'other-image.png';
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('other-image.png');
+      }));
+
+      it('should work with img[data-src]', inject(function() {
+        $rootScope.name = 'some-image.png';
+        element = $compile('<img ng-attr-data-src="{{name}}">')($rootScope);
+        expect(element.attr('data-src')).toBeUndefined();
+
+        $rootScope.$digest();
+        expect(element.attr('data-src')).toBe('some-image.png');
+
+        $rootScope.name = 'other-image.png';
+        $rootScope.$digest();
+        expect(element.attr('data-src')).toBe('other-image.png');
+      }));
+
+      it('should compile img with constant [src]-attribute and [ng-attr-data-src] attribute', inject(function() {
+        $rootScope.name = 'some-image.png';
+        element = $compile('<img src="constant.png" ng-attr-data-src="{{name}}">')($rootScope);
+        expect(element.attr('data-src')).toBeUndefined();
+
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('constant.png');
+        expect(element.attr('data-src')).toBe('some-image.png');
+
+        $rootScope.name = 'other-image.png';
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('constant.png');
+        expect(element.attr('data-src')).toBe('other-image.png');
       }));
 
       it('should keep attributes ending with -start single-element directives', function() {
