@@ -12093,6 +12093,49 @@ describe('$compile', function() {
       expect(element.attr('test6')).toBe('Misko');
     }));
 
+    describe('with media url attributes', function() {
+      it('should work with interpolated ng-attr-src', inject(function() {
+        $rootScope.name = 'some-image.png';
+        element = $compile('<img ng-attr-src="{{name}}">')($rootScope);
+        expect(element.attr('src')).toBeUndefined();
+
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('some-image.png');
+
+        $rootScope.name = 'other-image.png';
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('other-image.png');
+      }));
+
+      it('should work with interpolated ng-attr-data-src', inject(function() {
+        $rootScope.name = 'some-image.png';
+        element = $compile('<img ng-attr-data-src="{{name}}">')($rootScope);
+        expect(element.attr('data-src')).toBeUndefined();
+
+        $rootScope.$digest();
+        expect(element.attr('data-src')).toBe('some-image.png');
+
+        $rootScope.name = 'other-image.png';
+        $rootScope.$digest();
+        expect(element.attr('data-src')).toBe('other-image.png');
+      }));
+
+      it('should work alongside constant [src]-attribute and [ng-attr-data-src] attributes', inject(function() {
+        $rootScope.name = 'some-image.png';
+        element = $compile('<img src="constant.png" ng-attr-data-src="{{name}}">')($rootScope);
+        expect(element.attr('data-src')).toBeUndefined();
+
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('constant.png');
+        expect(element.attr('data-src')).toBe('some-image.png');
+
+        $rootScope.name = 'other-image.png';
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('constant.png');
+        expect(element.attr('data-src')).toBe('other-image.png');
+      }));
+    });
+
     describe('when an attribute has a dash-separated name', function() {
       it('should work with different prefixes', inject(function() {
         $rootScope.name = 'JamieMason';
@@ -12116,47 +12159,6 @@ describe('$compile', function() {
         expect(element.attr('dash-test2')).toBe('JamieMason');
         expect(element.attr('dash-test3')).toBe('JamieMason');
         expect(element.attr('dash-test4')).toBe('JamieMason');
-      }));
-
-      it('should work with img[src]', inject(function() {
-        $rootScope.name = 'some-image.png';
-        element = $compile('<img ng-attr-src="{{name}}">')($rootScope);
-        expect(element.attr('src')).toBeUndefined();
-
-        $rootScope.$digest();
-        expect(element.attr('src')).toBe('some-image.png');
-
-        $rootScope.name = 'other-image.png';
-        $rootScope.$digest();
-        expect(element.attr('src')).toBe('other-image.png');
-      }));
-
-      it('should work with img[data-src]', inject(function() {
-        $rootScope.name = 'some-image.png';
-        element = $compile('<img ng-attr-data-src="{{name}}">')($rootScope);
-        expect(element.attr('data-src')).toBeUndefined();
-
-        $rootScope.$digest();
-        expect(element.attr('data-src')).toBe('some-image.png');
-
-        $rootScope.name = 'other-image.png';
-        $rootScope.$digest();
-        expect(element.attr('data-src')).toBe('other-image.png');
-      }));
-
-      it('should compile img with constant [src]-attribute and [ng-attr-data-src] attribute', inject(function() {
-        $rootScope.name = 'some-image.png';
-        element = $compile('<img src="constant.png" ng-attr-data-src="{{name}}">')($rootScope);
-        expect(element.attr('data-src')).toBeUndefined();
-
-        $rootScope.$digest();
-        expect(element.attr('src')).toBe('constant.png');
-        expect(element.attr('data-src')).toBe('some-image.png');
-
-        $rootScope.name = 'other-image.png';
-        $rootScope.$digest();
-        expect(element.attr('src')).toBe('constant.png');
-        expect(element.attr('data-src')).toBe('other-image.png');
       }));
 
       it('should keep attributes ending with -start single-element directives', function() {
