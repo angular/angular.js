@@ -15,6 +15,7 @@ env:
     - JOB=ci-checks
     - JOB=unit-core BROWSER_PROVIDER=saucelabs
     - JOB=unit-jquery BROWSER_PROVIDER=saucelabs
+    - JOB=unit-modules BROWSER_PROVIDER=saucelabs
     - JOB=docs-app BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jqlite BROWSER_PROVIDER=saucelabs
     - JOB=e2e TEST_TARGET=jquery BROWSER_PROVIDER=saucelabs
