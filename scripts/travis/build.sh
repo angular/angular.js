@@ -35,12 +35,14 @@ case "$JOB" in
   "unit-core")
     grunt test:promises-aplus
     grunt test:jqlite --browsers="$BROWSERS" --reporters=spec
-    grunt test:modules --browsers="$BROWSERS" --reporters=spec
     ;;
   "unit-jquery")
     grunt test:jquery --browsers="$BROWSERS" --reporters=spec
     grunt test:jquery-2.2 --browsers="$BROWSERS" --reporters=spec
     grunt test:jquery-2.1 --browsers="$BROWSERS" --reporters=spec
+    ;;
+  "unit-modules")
+    grunt test:modules --browsers="$BROWSERS" --reporters=spec
     ;;
   "docs-app")
     grunt tests:docs --browsers="$BROWSERS" --reporters=spec
@@ -102,6 +104,7 @@ case "$JOB" in
       'ci-checks',\
       'unit-core',\
       'unit-jquery',\
+      'unit-modules',\
       'docs-app',\
       'e2e',\
       or\
