@@ -16,7 +16,7 @@ SAUCE_ACCESS_KEY=$(echo "$SAUCE_ACCESS_KEY" | rev)
 BROWSERS="SL_Chrome,SL_Chrome-1,\
 SL_Firefox,SL_Firefox-1,\
 SL_Safari,SL_Safari-1,\
-SL_iOS_10,SL_iOS_11,\
+SL_iOS,SL_iOS-1,\
 SL_IE_9,SL_IE_10,SL_IE_11,\
 SL_EDGE"
 

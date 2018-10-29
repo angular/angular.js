@@ -65,13 +65,11 @@ module.exports = function(config, specificOptions) {
       'SL_Safari-1': {
         base: 'SauceLabs',
         browserName: 'safari',
-        platform: 'OS X 10.12',
         version: 'latest-1'
       },
       'SL_Safari': {
         base: 'SauceLabs',
         browserName: 'safari',
-        platform: 'OS X 10.12',
         version: 'latest'
       },
       'SL_IE_9': {
@@ -104,17 +102,15 @@ module.exports = function(config, specificOptions) {
         platform: 'Windows 10',
         version: 'latest-1'
       },
-      'SL_iOS_10': {
+      'SL_iOS': {
         base: 'SauceLabs',
         browserName: 'iphone',
-        platform: 'OS X 10.12',
-        version: '10.3'
+        version: 'latest'
       },
-      'SL_iOS_11': {
+      'SL_iOS-1': {
         base: 'SauceLabs',
         browserName: 'iphone',
-        platform: 'OS X 10.12',
-        version: '11.2'
+        version: 'latest-1'
       },
 
       'BS_Chrome': {
