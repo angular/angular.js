@@ -839,6 +839,24 @@ describe('input', function() {
 
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="month" ng-model="value" validation-spy="min" min="{{ minVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="month" ng-model="value" validation-spy="min" ng-min="minVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+      });
     });
 
     describe('max', function() {
@@ -897,6 +915,24 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect($rootScope.form.alias.$error.max).toBeFalsy();
         expect($rootScope.form.alias.$valid).toBeTruthy();
+      });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="month" ng-model="value" validation-spy="max" max="{{ maxVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="month" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
       });
     });
   });
@@ -1114,6 +1150,24 @@ describe('input', function() {
 
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="week" ng-model="value" validation-spy="min" min="{{ minVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="week" ng-model="value" validation-spy="min" ng-min="minVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+      });
     });
 
     describe('max', function() {
@@ -1175,6 +1229,24 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect($rootScope.form.alias.$error.max).toBeFalsy();
         expect($rootScope.form.alias.$valid).toBeTruthy();
+      });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="week" ng-model="value" validation-spy="max" max="{{ maxVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="week" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
       });
     });
   });
@@ -1506,6 +1578,25 @@ describe('input', function() {
 
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="datetime-local" ng-model="value" validation-spy="min" min="{{ minVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="datetime-local" ng-model="value" validation-spy="min" ng-min="minVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+      });
+
     });
 
     describe('max', function() {
@@ -1564,6 +1655,24 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect($rootScope.form.alias.$error.max).toBeFalsy();
         expect($rootScope.form.alias.$valid).toBeTruthy();
+      });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="datetime-local" ng-model="value" validation-spy="max" max="{{ maxVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="datetime-local" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
       });
     });
 
@@ -1972,6 +2081,24 @@ describe('input', function() {
 
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="time" ng-model="value" validation-spy="min" min="{{ minVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="time" ng-model="value" validation-spy="min" ng-min="minVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+      });
     });
 
     describe('max', function() {
@@ -2018,6 +2145,24 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect($rootScope.form.alias.$error.max).toBeFalsy();
         expect($rootScope.form.alias.$valid).toBeTruthy();
+      });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="time" ng-model="value" validation-spy="max" max="{{ maxVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="time" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
       });
     });
 
@@ -2361,6 +2506,28 @@ describe('input', function() {
 
         expect($rootScope.form.alias.$error.min).toBeFalsy();
       });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        $rootScope.minVal = '2000-01-01';
+        $rootScope.value = new Date(2010, 1, 1, 0, 0, 0);
+
+        var inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="date" ng-model="value" validation-spy="min" min="{{ minVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="date" ng-model="value" validation-spy="min" ng-min="minVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+      });
+
     });
 
     describe('max', function() {
@@ -2427,6 +2594,27 @@ describe('input', function() {
         expect(inputElm).toBeValid();
         expect($rootScope.form.alias.$error.max).toBeFalsy();
         expect($rootScope.form.alias.$valid).toBeTruthy();
+      });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        $rootScope.maxVal = '2000-01-01';
+        $rootScope.value = new Date(2020, 1, 1, 0, 0, 0);
+
+        var inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="date" ng-model="value" validation-spy="max" max="{{ maxVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
+
+        helper.validationCounter = {};
+
+        inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="date" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
       });
     });
 
@@ -3063,6 +3251,18 @@ describe('input', function() {
         $rootScope.$digest();
         expect(inputElm).toBeValid();
       });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        $rootScope.value = 5;
+        $rootScope.minVal = 3;
+        var inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="number" ng-model="value" validation-spy="min" min="{{ minVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
+      });
+
     });
 
     describe('ngMin', function() {
@@ -3130,6 +3330,17 @@ describe('input', function() {
         $rootScope.min = 'abc';
         $rootScope.$digest();
         expect(inputElm).toBeValid();
+      });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        $rootScope.value = 5;
+        $rootScope.minVal = 3;
+        var inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="number" ng-model="value" validation-spy="min" ng-min="minVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.min).toBe(1);
       });
     });
 
@@ -3200,6 +3411,18 @@ describe('input', function() {
         $rootScope.$digest();
         expect(inputElm).toBeValid();
       });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        $rootScope.value = 5;
+        $rootScope.maxVal = 3;
+        var inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="number" ng-model="value" validation-spy="max" name="alias" max="{{ maxVal }}" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
+      });
+
     });
 
     describe('ngMax', function() {
@@ -3267,6 +3490,17 @@ describe('input', function() {
         $rootScope.max = 'abc';
         $rootScope.$digest();
         expect(inputElm).toBeValid();
+      });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        $rootScope.value = 5;
+        $rootScope.maxVal = 3;
+        var inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+          '<input type="number" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.max).toBe(1);
       });
     });
 
@@ -3364,7 +3598,7 @@ describe('input', function() {
           expect(inputElm.val()).toBe('10');
           expect(inputElm).toBeInvalid();
           expect(ngModel.$error.step).toBe(true);
-          expect($rootScope.value).toBeUndefined();
+          expect($rootScope.value).toBe(10); // an initially invalid value should not be changed
 
           helper.changeInputValueTo('15');
           expect(inputElm).toBeValid();
@@ -3444,6 +3678,17 @@ describe('input', function() {
             expect($rootScope.value).toBe(1.16);
           }
         );
+
+        it('should validate only once after compilation inside ngRepeat', function() {
+          $rootScope.step = 10;
+          $rootScope.value = 20;
+          var inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+              '<input type="number" ng-model="value" name="alias" ' + attrHtml + ' validation-spy="step" />' +
+              '</div>');
+
+          expect(helper.validationCounter.step).toBe(1);
+        });
+
       });
     });
 
@@ -3484,6 +3729,16 @@ describe('input', function() {
         $rootScope.$apply('required = false');
 
         expect(inputElm).toBeValid();
+      });
+
+      it('should only validate once after compilation when inside ngRepeat', function() {
+        $rootScope.value = 'text';
+        var inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+            '<input ng-model="value" validation-spy="required" required />' +
+          '</div>');
+        $rootScope.$digest();
+
+        expect(helper.validationCounter.required).toBe(1);
       });
     });
 
@@ -3533,6 +3788,17 @@ describe('input', function() {
           expect(inputElm).toBeValid();
           expect($rootScope.value).toBeUndefined();
           expect($rootScope.form.numberInput.$error.required).toBeFalsy();
+        });
+
+        it('should only validate once after compilation when inside ngRepeat', function() {
+          $rootScope.value = 'text';
+          $rootScope.isRequired = true;
+          var inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
+              '<input ng-model="value" validation-spy="required" ng-required="isRequired" />' +
+            '</div>');
+          $rootScope.$digest();
+
+          expect(helper.validationCounter.required).toBe(1);
         });
       });
 
@@ -3848,6 +4114,17 @@ describe('input', function() {
           expect(inputElm.val()).toBe('20');
         });
 
+        it('should only validate once after compilation when inside ngRepeat', function() {
+          $rootScope.minVal = 5;
+          $rootScope.value = 10;
+          helper.compileInput('<div ng-repeat="input in [0]">' +
+              '<input type="range" ng-model="value" validation-spy="min" min="minVal" />' +
+            '</div>');
+          $rootScope.$digest();
+
+          expect(helper.validationCounter.min).toBe(1);
+        });
+
       } else {
         // input[type=range] will become type=text in browsers that don't support it
 
@@ -3926,6 +4203,16 @@ describe('input', function() {
           expect(inputElm.val()).toBe('15');
         });
 
+        it('should only validate once after compilation when inside ngRepeat', function() {
+          $rootScope.minVal = 5;
+          $rootScope.value = 10;
+          helper.compileInput('<div ng-repeat="input in [0]">' +
+              '<input type="range" ng-model="value" validation-spy="min" min="minVal" />' +
+            '</div>');
+          $rootScope.$digest();
+
+          expect(helper.validationCounter.min).toBe(1);
+        });
       }
     });
 
@@ -4006,6 +4293,17 @@ describe('input', function() {
           expect(inputElm.val()).toBe('0');
         });
 
+        it('should only validate once after compilation when inside ngRepeat and the value is valid', function() {
+          $rootScope.maxVal = 5;
+          $rootScope.value = 5;
+          helper.compileInput('<div ng-repeat="input in [0]">' +
+              '<input type="range" ng-model="value" validation-spy="max" max="{{ maxVal }}" />' +
+            '</div>');
+          $rootScope.$digest();
+
+          expect(helper.validationCounter.max).toBe(1);
+        });
+
       } else {
         it('should validate if "range" is not implemented', function() {
           var inputElm = helper.compileInput('<input type="range" ng-model="value" name="alias" max="10" />');
@@ -4080,6 +4378,17 @@ describe('input', function() {
           expect(inputElm).toBeValid();
           expect(scope.value).toBe(5);
           expect(inputElm.val()).toBe('5');
+        });
+
+        it('should only validate once after compilation when inside ngRepeat', function() {
+          $rootScope.maxVal = 5;
+          $rootScope.value = 10;
+          helper.compileInput('<div ng-repeat="input in [0]">' +
+              '<input type="range" ng-model="value" validation-spy="max" max="{{ maxVal }}" />' +
+            '</div>');
+          $rootScope.$digest();
+
+          expect(helper.validationCounter.max).toBe(1);
         });
       }
     });
@@ -4183,6 +4492,18 @@ describe('input', function() {
           expect(scope.value).toBe(10);
           expect(scope.form.alias.$error.step).toBeFalsy();
         });
+
+        it('should only validate once after compilation when inside ngRepeat', function() {
+          $rootScope.stepVal = 5;
+          $rootScope.value = 10;
+          helper.compileInput('<div ng-repeat="input in [0]">' +
+              '<input type="range" ng-model="value" validation-spy="step" step="{{ stepVal }}" />' +
+            '</div>');
+          $rootScope.$digest();
+
+          expect(helper.validationCounter.step).toBe(1);
+        });
+
       } else {
 
         it('should validate if "range" is not implemented', function() {
@@ -4269,7 +4590,7 @@ describe('input', function() {
           expect(inputElm.val()).toBe('10');
           expect(inputElm).toBeInvalid();
           expect(ngModel.$error.step).toBe(true);
-          expect($rootScope.value).toBeUndefined();
+          expect($rootScope.value).toBe(10);
 
           helper.changeInputValueTo('15');
           expect(inputElm).toBeValid();

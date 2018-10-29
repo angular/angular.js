@@ -230,6 +230,31 @@ describe('validators', function() {
       expect(ctrl.$error.pattern).toBe(true);
       expect(ctrlNg.$error.pattern).toBe(true);
     }));
+
+    it('should only validate once after compilation when inside ngRepeat', function() {
+
+      $rootScope.pattern = /\d{4}/;
+
+      helper.compileInput(
+         '<div ng-repeat="input in [0]">' +
+           '<input type="text" ng-model="value" pattern="\\d{4}" validation-spy="pattern" />' +
+         '</div>');
+
+      $rootScope.$digest();
+
+      expect(helper.validationCounter.pattern).toBe(1);
+
+      helper.validationCounter = {};
+
+      helper.compileInput(
+         '<div ng-repeat="input in [0]">' +
+           '<input type="text" ng-model="value" ng-pattern="pattern" validation-spy="pattern" />' +
+         '</div>');
+
+      $rootScope.$digest();
+
+      expect(helper.validationCounter.pattern).toBe(1);
+    });
   });
 
 
@@ -312,8 +337,32 @@ describe('validators', function() {
       expect(ctrl.$error.minlength).toBe(true);
       expect(ctrlNg.$error.minlength).toBe(true);
     }));
-  });
 
+
+    it('should only validate once after compilation when inside ngRepeat', function() {
+      $rootScope.minlength = 5;
+
+      var element = helper.compileInput(
+         '<div ng-repeat="input in [0]">' +
+           '<input type="text" ng-model="value" minlength="{{minlength}}" validation-spy="minlength" />' +
+         '</div>');
+
+      $rootScope.$digest();
+
+      expect(helper.validationCounter.minlength).toBe(1);
+
+      helper.validationCounter = {};
+
+      element = helper.compileInput(
+         '<div ng-repeat="input in [0]">' +
+           '<input type="text" ng-model="value" ng-minlength="minlength" validation-spy="minlength" />' +
+         '</div>');
+
+      $rootScope.$digest();
+
+      expect(helper.validationCounter.minlength).toBe(1);
+    });
+  });
 
   describe('maxlength', function() {
 
@@ -500,6 +549,32 @@ describe('validators', function() {
       expect(ctrl.$error.maxlength).toBe(true);
       expect(ctrlNg.$error.maxlength).toBe(true);
     }));
+
+
+    it('does not validate twice after compilation when inside ngRepeat', function() {
+      $rootScope.inputs = ['Jamie'];
+      $rootScope.maxlength = 5;
+
+      var element = helper.compileInput(
+         '<div ng-repeat="input in inputs">' +
+           '<input type="text" ng-model="inputs[$index]" maxlength="{{maxlength}}" validation-spy="maxlength" />' +
+         '</div>');
+
+      $rootScope.$digest();
+
+      expect(helper.validationCounter.maxlength).toBe(1);
+
+      helper.validationCounter = {};
+
+      element = helper.compileInput(
+         '<div ng-repeat="input in inputs">' +
+           '<input type="text" ng-model="inputs[$index]" ng-maxlength="maxlength" validation-spy="maxlength" />' +
+         '</div>');
+
+      $rootScope.$digest();
+
+      expect(helper.validationCounter.maxlength).toBe(1);
+    });
   });
 
 
@@ -626,5 +701,43 @@ describe('validators', function() {
       expect(ctrl.$error.required).toBe(true);
       expect(ctrlNg.$error.required).toBe(true);
     }));
+
+
+    it('should validate only once after compilation when inside ngRepeat', function() {
+      helper.compileInput(
+         '<div ng-repeat="input in [0]">' +
+           '<input type="text" ng-model="value" required validation-spy="required" />' +
+         '</div>');
+
+      $rootScope.$digest();
+
+      expect(helper.validationCounter.required).toBe(1);
+
+      helper.validationCounter = {};
+    });
+
+
+    it('should validate only once after compilation when inside ngRepeat and ngRequired is true', function() {
+      $rootScope.isRequired = true;
+
+      helper.compileInput(
+         '<div ng-repeat="input in [0]">' +
+           '<input type="text" ng-model="value" ng-required="isRequired" validation-spy="required" />' +
+         '</div>');
+
+      expect(helper.validationCounter.required).toBe(1);
+    });
+
+
+    it('should validate only once after compilation when inside ngRepeat and ngRequired is false', function() {
+      $rootScope.isRequired = false;
+
+      helper.compileInput(
+         '<div ng-repeat="input in [0]">' +
+           '<input type="text" ng-model="value" ng-required="isRequired" validation-spy="required" />' +
+         '</div>');
+
+      expect(helper.validationCounter.required).toBe(1);
+    });
   });
 });

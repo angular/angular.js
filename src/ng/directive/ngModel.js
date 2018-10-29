@@ -562,8 +562,10 @@ NgModelController.prototype = {
    * `$modelValue`, i.e. either the last parsed value or the last value set from the scope.
    */
   $validate: function() {
+
     // ignore $validate before model is initialized
     if (isNumberNaN(this.$modelValue)) {
+      // console.log('dont validate yet');
       return;
     }
 
@@ -1050,6 +1052,7 @@ NgModelController.prototype = {
    * This method is called internally when the bound scope value changes.
    */
   $$setModelValue: function(modelValue) {
+    // console.log('$$setModelValue', modelValue);
     this.$modelValue = this.$$rawModelValue = modelValue;
     this.$$parserValid = undefined;
     this.$processModelValue();
@@ -1081,6 +1084,7 @@ function setupModelWatcher(ctrl) {
   //       ng-change executes in apply phase
   // 4. view should be changed back to 'a'
   ctrl.$$scope.$watch(function ngModelWatch(scope) {
+    // console.log('ngModelWatch exp');
     var modelValue = ctrl.$$ngModelGet(scope);
 
     // if scope model value and ngModel value are out of sync

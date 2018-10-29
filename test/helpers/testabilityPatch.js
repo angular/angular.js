@@ -312,7 +312,28 @@ window.dump = function() {
 
 function generateInputCompilerHelper(helper) {
   beforeEach(function() {
+    helper.validationCounter = {};
+
     module(function($compileProvider) {
+      $compileProvider.directive('validationSpy', function() {
+        return {
+          priority: 1,
+          require: 'ngModel',
+          link: function(scope, element, attrs, ctrl) {
+            var validationName = attrs.validationSpy;
+
+            var originalValidator = ctrl.$validators[validationName];
+            helper.validationCounter[validationName] = 0;
+
+            ctrl.$validators[validationName] = function(modelValue, viewValue) {
+              helper.validationCounter[validationName]++;
+
+              return originalValidator(modelValue, viewValue);
+            };
+          }
+        };
+      });
+
       $compileProvider.directive('attrCapture', function() {
         return function(scope, element, $attrs) {
           helper.attrs = $attrs;

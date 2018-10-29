@@ -62,20 +62,26 @@
  *   </file>
  * </example>
  */
-var requiredDirective = function() {
+var requiredDirective = function($parse) {
   return {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
       if (!ctrl) return;
+      var oldVal = attr.required || $parse(attr.ngRequired)(scope);
+
       attr.required = true; // force truthy in case we are on non input element
 
       ctrl.$validators.required = function(modelValue, viewValue) {
         return !attr.required || !ctrl.$isEmpty(viewValue);
       };
 
-      attr.$observe('required', function() {
-        ctrl.$validate();
+      attr.$observe('required', function(val) {
+        if (oldVal !== val) {
+          ctrl.$validate();
+        }
+
+        oldVal = val;
       });
     }
   };
@@ -162,27 +168,43 @@ var requiredDirective = function() {
  *   </file>
  * </example>
  */
-var patternDirective = function() {
+var patternDirective = function($parse) {
   return {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
       if (!ctrl) return;
 
-      var regexp, patternExp = attr.ngPattern || attr.pattern;
-      attr.$observe('pattern', function(regex) {
-        if (isString(regex) && regex.length > 0) {
-          regex = new RegExp('^' + regex + '$');
-        }
+      var attrVal = attr.pattern;
+      var patternExp;
 
-        if (regex && !regex.test) {
-          throw minErr('ngPattern')('noregexp',
-            'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
-            regex, startingTag(elm));
-        }
+      if (attr.ngPattern) {
+        patternExp = attr.ngPattern;
 
-        regexp = regex || undefined;
-        ctrl.$validate();
+        // ngPattern might be a scope expressions, or an inlined regex, which is not parsable.
+        // We get value of the attribute here, so we can compare the old and the new value
+        // in the observer to avoid unnessecary validations
+        try {
+          attrVal = $parse(attr.ngPattern)(scope);
+        } catch (e) {
+          if (/^\[\$parse:lexerr\]/.test(e.message)) {
+            attrVal = attr.ngPattern;
+          } else {
+            throw e;
+          }
+        }
+      }
+
+      var regexp = parsePatternAttr(attrVal, patternExp, elm);
+
+      attr.$observe('pattern', function(newVal) {
+        var oldRegexp = regexp;
+
+        regexp = parsePatternAttr(newVal, patternExp, elm);
+
+        if ((oldRegexp && oldRegexp.toString()) !== (regexp && regexp.toString())) {
+          ctrl.$validate();
+        }
       });
 
       ctrl.$validators.pattern = function(modelValue, viewValue) {
@@ -264,21 +286,25 @@ var patternDirective = function() {
  *   </file>
  * </example>
  */
-var maxlengthDirective = function() {
+var maxlengthDirective = function($parse) {
   return {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
       if (!ctrl) return;
 
-      var maxlength = -1;
+      var maxlength = attr.maxlength || $parse(attr.ngMaxlength)(scope);
+      var maxlengthParsed = parseLength(maxlength);
+
       attr.$observe('maxlength', function(value) {
-        var intVal = toInt(value);
-        maxlength = isNumberNaN(intVal) ? -1 : intVal;
-        ctrl.$validate();
+        if (maxlength !== value) {
+          maxlengthParsed = parseLength(value);
+          ctrl.$validate();
+        }
+        maxlength = value;
       });
       ctrl.$validators.maxlength = function(modelValue, viewValue) {
-        return (maxlength < 0) || ctrl.$isEmpty(viewValue) || (viewValue.length <= maxlength);
+        return (maxlengthParsed < 0) || ctrl.$isEmpty(viewValue) || (viewValue.length <= maxlengthParsed);
       };
     }
   };
@@ -353,21 +379,48 @@ var maxlengthDirective = function() {
  *   </file>
  * </example>
  */
-var minlengthDirective = function() {
+var minlengthDirective = function($parse) {
   return {
     restrict: 'A',
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
       if (!ctrl) return;
 
-      var minlength = 0;
+      var minlength = attr.minlength || $parse(attr.ngMinlength)(scope);
+      var minlengthParsed = toInt(minlength) || 0;
+
       attr.$observe('minlength', function(value) {
-        minlength = toInt(value) || 0;
-        ctrl.$validate();
+        if (minlength !== value) {
+          minlengthParsed = toInt(value) || 0;
+          ctrl.$validate();
+        }
+        minlength = value;
+
       });
       ctrl.$validators.minlength = function(modelValue, viewValue) {
-        return ctrl.$isEmpty(viewValue) || viewValue.length >= minlength;
+        return ctrl.$isEmpty(viewValue) || viewValue.length >= minlengthParsed;
       };
     }
   };
 };
+
+
+function parsePatternAttr(regex, patternExp, elm) {
+
+  if (isString(regex) && regex.length > 0) {
+    regex = new RegExp('^' + regex + '$');
+  }
+
+  if (regex && !regex.test) {
+    throw minErr('ngPattern')('noregexp',
+      'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
+      regex, startingTag(elm));
+  }
+
+  return regex || undefined;
+}
+
+function parseLength(val) {
+  var intVal = toInt(val);
+  return isNumberNaN(intVal) ? -1 : intVal;
+}

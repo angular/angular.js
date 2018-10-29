@@ -1,4 +1,4 @@
-'use strict';
+  'use strict';
 
 /* exported ngRepeatDirective */
 
@@ -531,6 +531,8 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
 
         //watch props
         $scope.$watchCollection(rhs, function ngRepeatAction(collection) {
+          // console.log('ngRepeat action')
+
           var index, length,
               previousNode = $element[0],     // node that cloned nodes should be inserted after
                                               // initialized to the comment node anchor
