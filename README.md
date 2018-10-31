@@ -32,13 +32,6 @@ piece of cake. Best of all? It makes development fun!
 Documentation
 --------------------
 Go to https://docs.angularjs.org
-
-Contribute
---------------------
-
-We've set up a separate document for our
-[contribution guidelines](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md).
-
 Develop
 --------------------
 
