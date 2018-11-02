@@ -281,6 +281,18 @@ It is good to run the E2E tests whenever you make changes to the HTML views or w
 the application as a whole is executing correctly. It is very common to run E2E tests before pushing
 a new commit of changes to a remote repository.
 
+<div class="alert alert-warning">
+  <p>
+    Each version of Protractor is compatible with specific browser versions. If you are reading this
+    some time in the future, it is possible that the specified Protractor version is no longer
+    compatible with the latest version of Chrome that you are using.
+  </p>
+  <p>
+    If that is the case, you can try upgrading Protractor to newer version. For instructions on how
+    to upgrade dependencies see [Updating dependencies](tutorial/#updating-dependencies).
+  </p>
+</div>
+
 
 ### Updating dependencies
 
