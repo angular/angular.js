@@ -120,7 +120,7 @@ acquired skill.
 <html ng-app="phonecatApp">
 <head>
   ...
-  <script src="bower_components/angular/angular.js"></script>
+  <script src="lib/angular/angular.js"></script>
   <script src="app.js"></script>
   <script src="phone-list.component.js"></script>
 </head>

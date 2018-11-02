@@ -8,8 +8,8 @@
 
 Enough of building an app with three phones in a hard-coded dataset! Let's fetch a larger dataset
 from our server using one of AngularJS's built-in {@link guide/services services} called
-{@link ng.$http $http}. We will use AngularJS's {@link guide/di dependency injection (DI)} to provide
-the service to the `phoneList` component's controller.
+{@link ng.$http $http}. We will use AngularJS's {@link guide/di dependency injection (DI)} to
+provide the service to the `phoneList` component's controller.
 
 * There is now a list of 20 phones, loaded from the server.
 
