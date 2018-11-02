@@ -64,7 +64,7 @@ a few git commands.
 
 ### Install Git
 
-You can download and install Git from http://git-scm.com/download. Once installed, you should have
+You can download and install Git from https://git-scm.com/download. Once installed, you should have
 access to the `git` command line tool. The main commands that you will need to use are:
 
 * `git clone ...`: Clone a remote repository onto your local machine.
@@ -324,14 +324,14 @@ Now that you have set up your local machine, let's get started with the tutorial
 
 
 [angular-phonecat]: https://github.com/angular/angular-phonecat
-[bower]: http://bower.io/
-[git]: http://git-scm.com/
+[bower]: https://bower.io/
+[git]: https://git-scm.com/
 [http-server]: https://github.com/nodeapps/http-server
 [jdk]: https://en.wikipedia.org/wiki/Java_Development_Kit
-[jdk-download]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
+[jdk-download]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
 [karma]: https://karma-runner.github.io/
-[node]: http://nodejs.org/
+[node]: https://nodejs.org/
 [nvm]: https://github.com/creationix/nvm
 [nvm-windows]: https://github.com/coreybutler/nvm-windows
 [protractor]: https://github.com/angular/protractor
-[selenium]: http://docs.seleniumhq.org/
+[selenium]: https://docs.seleniumhq.org/
