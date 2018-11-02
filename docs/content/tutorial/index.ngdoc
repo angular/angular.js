@@ -99,8 +99,8 @@ The tutorial instructions, from now on, assume you are running all commands from
 
 ### Install Node.js
 
-If you want to run the preconfigured local web server and the test tools then you will also need
-[Node.js v4+][node].
+In order to install dependencies (such as the test tools and AngularJS itself) and run the
+preconfigured local web server, you will also need [Node.js v6+][node].
 
 You can download a Node.js installer for your operating system from https://nodejs.org/en/download/.
 
@@ -125,22 +125,25 @@ npm --version
   [Node Version Manager (nvm)][nvm] or [Node Version Manager (nvm) for Windows][nvm-windows].
 </div>
 
-Once you have Node.js installed on your machine, you can download the tool dependencies by running:
+By installing Node.js, you also get [npm][npm], which is a command line executable for downloading
+and managing Node.js packages. We use it to download the AngularJS framework as well as development
+and testing tools.
+
+Once you have Node.js installed on your machine, you can download these dependencies by running:
 
 ```
 npm install
 ```
 
-This command reads angular-phonecat's `package.json` file and downloads the following tools into the
-`node_modules` directory:
+This command reads angular-phonecat's `package.json` file and downloads the following dependencies
+into the `node_modules` directory:
 
-* [Bower][bower] - client-side code package manager
 * [Http-Server][http-server] - simple local static web server
 * [Karma][karma] - unit test runner
 * [Protractor][protractor] - end-to-end (E2E) test runner
 
-Running `npm install` will also automatically use bower to download the AngularJS framework into the
-`app/bower_components` directory.
+Running `npm install` will also automatically copy the AngularJS framework and other dependencies
+necessary for our app to work into the `app/lib/` directory.
 
 <div class="alert alert-info">
   Note the angular-phonecat project is setup to install and run these utilities via npm scripts.
@@ -160,23 +163,23 @@ tasks that you will need while developing:
 
 ### Install Helper Tools (optional)
 
-The Bower, Http-Server, Karma and Protractor modules are also executables, which can be installed
-globally and run directly from a terminal/command prompt. You don't need to do this to follow the
-tutorial, but if you decide you do want to run them directly, you can install these modules globally
-using, `sudo npm install -g ...`.
+The Http-Server, Karma and Protractor modules are also executables, which can be installed globally
+and run directly from a terminal/command prompt. You don't need to do this to follow the tutorial,
+but if you decide you do want to run them directly, you can install these modules globally using,
+`sudo npm install --global ...`.
 
-For instance, to install the Bower command line executable you would do:
-
-```
-sudo npm install -g bower
-```
-
-_(Omit the sudo if running on Windows)_
-
-Then you can run the bower tool directly, such as:
+For instance, to install the `http-server` command line executable you would do:
 
 ```
-bower install
+sudo npm install --global http-server
+```
+
+_(Omit the sudo if running on Windows.)_
+
+Then you can run the `http-server` tool directly, such as:
+
+```
+http-server ./app
 ```
 
 
@@ -324,13 +327,13 @@ Now that you have set up your local machine, let's get started with the tutorial
 
 
 [angular-phonecat]: https://github.com/angular/angular-phonecat
-[bower]: https://bower.io/
 [git]: https://git-scm.com/
 [http-server]: https://github.com/nodeapps/http-server
 [jdk]: https://en.wikipedia.org/wiki/Java_Development_Kit
 [jdk-download]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
 [karma]: https://karma-runner.github.io/
 [node]: https://nodejs.org/
+[npm]: https://www.npmjs.com/
 [nvm]: https://github.com/creationix/nvm
 [nvm-windows]: https://github.com/coreybutler/nvm-windows
 [protractor]: https://github.com/angular/protractor
