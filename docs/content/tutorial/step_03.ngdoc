@@ -277,7 +277,7 @@ files, so it remains easy to locate as our application grows.
 
 
 [case-styles]: https://en.wikipedia.org/wiki/Letter_case#Special_case_styles
-[jasmine-docs]: http://jasmine.github.io/2.4/introduction.html
-[jasmine-home]: http://jasmine.github.io/
+[jasmine-docs]: https://jasmine.github.io/api/3.3/global
+[jasmine-home]: https://jasmine.github.io/
 [karma]: https://karma-runner.github.io/
-[mvc-pattern]: http://en.wikipedia.org/wiki/Model–View–Controller
+[mvc-pattern]: https://en.wikipedia.org/wiki/Model–View–Controller
