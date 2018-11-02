@@ -746,7 +746,7 @@ If you rely on the $modelValue validation, you can overwrite the `min`/`max` val
   link: function(scope, element, attrs, ctrl) {
     var maxValidator = ctrl.$validators.max;
 
-    ctrk.$validators.max = function(modelValue, viewValue) {
+    ctrl.$validators.max = function(modelValue, viewValue) {
       return maxValidator(modelValue, modelValue);
     };
   }
@@ -1579,7 +1579,7 @@ If you rely on the $modelValue validation, you can overwrite the `min`/`max` val
   link: function(scope, element, attrs, ctrl) {
     var maxValidator = ctrl.$validators.max;
 
-    ctrk.$validators.max = function(modelValue, viewValue) {
+    ctrl.$validators.max = function(modelValue, viewValue) {
       return maxValidator(modelValue, modelValue);
     };
   }
