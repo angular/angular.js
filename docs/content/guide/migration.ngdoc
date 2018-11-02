@@ -148,7 +148,7 @@ custom directive, as seen in the following example directive definition object:
   link: function(scope, element, attrs, ctrl) {
     var maxValidator = ctrl.$validators.max;
 
-    ctrk.$validators.max = function(modelValue, viewValue) {
+    ctrl.$validators.max = function(modelValue, viewValue) {
       return maxValidator(modelValue, modelValue);
     };
   }
