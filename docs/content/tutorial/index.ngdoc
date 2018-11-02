@@ -77,7 +77,7 @@ Clone the [angular-phonecat repository][angular-phonecat] located at GitHub by r
 command:
 
 ```
-git clone --depth=16 https://github.com/angular/angular-phonecat.git
+git clone --depth=16 --branch=1.5-snapshot https://github.com/angular/angular-phonecat.git
 ```
 
 This command creates an `angular-phonecat` sub-directory in your current directory.
@@ -85,6 +85,11 @@ This command creates an `angular-phonecat` sub-directory in your current directo
 <div class="alert alert-info">
   The `--depth=16` option tells Git to pull down only the last 16 commits.
   This makes the download much smaller and faster.
+</div>
+
+<div class="alert alert-info">
+  The `--branch=1.5-snapshot` option tells Git to pull down the `1.5-snapshot` branch.
+  The code for this older version of the tutorial is on that branch.
 </div>
 
 Change your current directory to `angular-phonecat`.
@@ -199,7 +204,7 @@ You can now browse to the application at http://localhost:8000/index.html.
 
 <div class="alert alert-info">
   To serve the web app on a different IP address or port, edit the "start" script within
-  `package.json`. You can use `-a` to set the address and `-p` to set the port. You also need to 
+  `package.json`. You can use `-a` to set the address and `-p` to set the port. You also need to
   update the `baseUrl` configuration property in `e2e-test/protractor.conf.js`.
 </div>
 
@@ -284,9 +289,9 @@ a new commit of changes to a remote repository.
 <br />
 **Firewall / Proxy issues**
 
-Git and other tools, often use the `git:` protocol for accessing files in remote repositories. 
-Some firewall configurations are blocking `git://` URLs, which leads to errors when trying to clone 
-repositories or download dependencies. (For example corporate firewalls are "notorious" for blocking 
+Git and other tools, often use the `git:` protocol for accessing files in remote repositories.
+Some firewall configurations are blocking `git://` URLs, which leads to errors when trying to clone
+repositories or download dependencies. (For example corporate firewalls are "notorious" for blocking
 `git:`.)
 
 If you run into this issue, you can force the use of `https:` instead, by running the following
@@ -304,8 +309,8 @@ In that case, you can delete the `node_modules/` directory and run `npm install`
 <br />
 **Protractor dependencies**
 
-Under the hood, Protractor uses the [Selenium Standalone Server][selenium], which in turn requires 
-the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Check this by running 
+Under the hood, Protractor uses the [Selenium Standalone Server][selenium], which in turn requires
+the [Java Development Kit (JDK)][jdk] to be installed on your local machine. Check this by running
 `java -version` from the command line.
 
 If JDK is not already installed, you can download it [here][jdk-download].
@@ -313,8 +318,8 @@ If JDK is not already installed, you can download it [here][jdk-download].
 <br />
 **Error running the web server**
 
-The web server is configured to use port 8000. If the port is already in use (for example by another 
-instance of a running web server) you will get an `EADDRINUSE` error. Make sure the port is 
+The web server is configured to use port 8000. If the port is already in use (for example by another
+instance of a running web server) you will get an `EADDRINUSE` error. Make sure the port is
 available, before running `npm start`.
 
 <hr />
