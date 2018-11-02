@@ -556,9 +556,9 @@ There you have it! We have created a web application in a relatively short amoun
 <ul doc-tutorial-nav="14"></ul>
 
 
-[bower]: http://bower.io/
-[caniuse-css-animation]: http://caniuse.com/#feat=css-animation
-[caniuse-css-transitions]: http://caniuse.com/#feat=css-transitions
+[bower]: https://bower.io/
+[caniuse-css-animation]: https://caniuse.com/#feat=css-animation
+[caniuse-css-transitions]: https://caniuse.com/#feat=css-transitions
 [jquery]: https://jquery.com/
-[jquery-animate]: https://api.jquery.com/animate/
+[jquery-animate]: https://api.jquery.com/animate
 [mdn-animations]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations
