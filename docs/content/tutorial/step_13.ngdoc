@@ -319,6 +319,6 @@ Now that we have seen how to build a custom service as a RESTful client, we are 
 <ul doc-tutorial-nav="13"></ul>
 
 
-[bower]: http://bower.io/
+[bower]: https://bower.io/
 [jasmine-equality]: https://jasmine.github.io/2.4/custom_equality.html
 [restful]: https://en.wikipedia.org/wiki/Representational_State_Transfer

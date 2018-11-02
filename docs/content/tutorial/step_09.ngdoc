@@ -424,6 +424,6 @@ With the routing set up and the phone list view implemented, we are ready to go 
 <ul doc-tutorial-nav="9"></ul>
 
 
-[bower]: http://bower.io
+[bower]: https://bower.io/
 [deep-linking]: https://en.wikipedia.org/wiki/Deep_linking
 [wiki-di]: https://github.com/angular/angular.js/wiki/Understanding-Dependency-Injection
