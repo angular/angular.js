@@ -163,7 +163,7 @@ For the purposes of this tutorial, we modified the angular-seed with the followi
 * Removed unused dependencies.
 * Added phone images to `app/img/phones/`.
 * Added phone data files (JSON) to `app/phones/`.
-* Added a dependency on [Bootstrap](http://getbootstrap.com) in the `bower.json` file.
+* Added a dependency on [Bootstrap][bootstrap-3.3] in the `bower.json` file.
 
 
 ## Experiments
@@ -186,3 +186,4 @@ Now let's go to {@link step_01 step 1} and add some content to the web app.
 
 
 [angular-seed]: https://github.com/angular/angular-seed
+[bootstrap-3.3]: https://getbootstrap.com/docs/3.3
