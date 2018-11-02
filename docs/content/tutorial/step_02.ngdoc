@@ -33,7 +33,7 @@ The view is constructed by AngularJS from this template.
 <html ng-app="phonecatApp">
 <head>
   ...
-  <script src="bower_components/angular/angular.js"></script>
+  <script src="lib/angular/angular.js"></script>
   <script src="app.js"></script>
 </head>
 <body ng-controller="PhoneListController">
@@ -317,7 +317,7 @@ by utilizing components.
 <ul doc-tutorial-nav="2"></ul>
 
 
-[jasmine-docs]: https://jasmine.github.io/2.4/introduction.html
+[jasmine-docs]: https://jasmine.github.io/api/3.3/global
 [jasmine-home]: https://jasmine.github.io/
 [karma]: https://karma-runner.github.io/
 [mvc-pattern]: https://en.wikipedia.org/wiki/Model–View–Controller
