@@ -296,7 +296,7 @@ a new commit of changes to a remote repository.
 
 ### Updating dependencies
 
-In order to avoid surprizes, all dependencies listed in `package.json` are pinned to specific
+In order to avoid surprises, all dependencies listed in `package.json` are pinned to specific
 versions (this is what the [package-lock.json][package-lock] file is about). This ensures that the
 same version of a dependency is installed every time.
 
