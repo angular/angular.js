@@ -100,7 +100,7 @@ The tutorial instructions, from now on, assume you are running all commands from
 ### Install Node.js
 
 In order to install dependencies (such as the test tools and AngularJS itself) and run the
-preconfigured local web server, you will also need [Node.js v4+][node].
+preconfigured local web server, you will also need [Node.js v6+][node].
 
 You can download a Node.js installer for your operating system from https://nodejs.org/en/download/.
 
