@@ -202,6 +202,17 @@ describe('ngProp*', function() {
     });
   });
 
+  it('should clean up watchers when the element is destroyed', inject(function($compile, $rootScope) {
+    var element = $compile('<div><p><span ng-prop-test="name"></span></p></div>')($rootScope);
+    var p = element.find('p');
+
+    $rootScope.$digest();
+    expect($rootScope.$countWatchers()).toBe(1);
+
+    p.remove();
+    expect($rootScope.$countWatchers()).toBe(0);
+  }));
+
 
   ['img', 'audio', 'video'].forEach(function(tag) {
     // Support: IE 9 only

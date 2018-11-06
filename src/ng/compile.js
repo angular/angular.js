@@ -3832,7 +3832,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
               }
 
               applyPropValue();
-              scope.$watch(ngPropWatch, applyPropValue);
+              var unwatch = scope.$watch(ngPropWatch, applyPropValue);
+
+              $element.on('$destroy', unwatch);
             }
           };
         }
@@ -3893,7 +3895,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                 attr[name] = interpolateFn(scope);
 
                 ($$observers[name] || ($$observers[name] = [])).$$inter = true;
-                (attr.$$observers && attr.$$observers[name].$$scope || scope).
+                var unwatch = (attr.$$observers && attr.$$observers[name].$$scope || scope).
                   $watch(interpolateFn, function interpolateFnWatchAction(newValue, oldValue) {
                     //special case for class attribute addition + removal
                     //so that class changes can tap into the animation
@@ -3907,6 +3909,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
                       attr.$set(name, newValue);
                     }
                   });
+
+                element.on('$destroy', unwatch);
               }
             };
           }

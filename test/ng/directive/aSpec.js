@@ -71,19 +71,22 @@ describe('a', function() {
 
   it('should not link and hookup an event if href is present at compile', function() {
     var jq = jQuery || jqLite;
-    element = jq('<a href="//a.com">hello@you</a>');
+    element = jq('<a href="">hello@me</a><a href="//you.com">hello@you</a>');
     var linker = $compile(element);
 
-    spyOn(jq.prototype, 'on');
+    var calls = {'hello@me': 0, 'hello@you': 0};
+    spyOn(jq.prototype, 'on').and.callFake(function(eventName) {
+      if (eventName === 'click') {
+        ++calls[this.text()];
+      }
+    });
 
     linker($rootScope);
-
-    expect(jq.prototype.on).not.toHaveBeenCalled();
+    expect(calls).toEqual({'hello@me': 1, 'hello@you': 0});
   });
 
 
   it('should not preventDefault if anchor element is replaced with href-containing element', function() {
-    spyOn(jqLite.prototype, 'on').and.callThrough();
     element = $compile('<a link-to="https://www.google.com">')($rootScope);
     $rootScope.$digest();
 
@@ -100,7 +103,6 @@ describe('a', function() {
 
 
   it('should preventDefault if anchor element is replaced with element without href attribute', function() {
-    spyOn(jqLite.prototype, 'on').and.callThrough();
     element = $compile('<a link-not="https://www.google.com">')($rootScope);
     $rootScope.$digest();
 
@@ -146,14 +148,18 @@ describe('a', function() {
 
       it('should not link and hookup an event if xlink:href is present at compile', function() {
         var jq = jQuery || jqLite;
-        element = jq('<svg><a xlink:href="bobby">hello@you</a></svg>');
+        element = jq('<svg><a xlink:href="">hello@me</a><a xlink:href="you">hello@you</a></svg>');
         var linker = $compile(element);
 
-        spyOn(jq.prototype, 'on');
+        var calls = {'hello@me': 0, 'hello@you': 0};
+        spyOn(jq.prototype, 'on').and.callFake(function(eventName) {
+          if (eventName === 'click') {
+            ++calls[this.text()];
+          }
+        });
 
         linker($rootScope);
-
-        expect(jq.prototype.on).not.toHaveBeenCalled();
+        expect(calls).toEqual({'hello@me': 1, 'hello@you': 0});
       });
     });
   }
