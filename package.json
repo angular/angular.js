@@ -99,6 +99,11 @@
     "stringmap": "^0.2.2"
   },
   "dependencies": {},
+  "resolutions": {
+    "//1": "`natives@1.1.0` does not work with Node.js 10.x on Windows 10",
+    "//2": "(E.g. see https://github.com/gulpjs/gulp/issues/2162.)",
+    "natives": "1.1.3"
+  },
   "commitplease": {
     "style": "angular",
     "nohook": true
