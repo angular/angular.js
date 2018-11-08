@@ -147,11 +147,11 @@ describe('ngProp*', function() {
   it('should disallow property binding to onclick', inject(function($compile, $rootScope) {
     // All event prop bindings are disallowed.
     expect(function() {
-        $compile('<button ng-prop-onclick="onClickJs"></script>');
+        $compile('<button ng-prop-onclick="onClickJs"></button>');
       }).toThrowMinErr(
         '$compile', 'nodomevents', 'Property bindings for HTML DOM event properties are disallowed');
     expect(function() {
-        $compile('<button ng-prop-ONCLICK="onClickJs"></script>');
+        $compile('<button ng-prop-ONCLICK="onClickJs"></button>');
       }).toThrowMinErr(
         '$compile', 'nodomevents', 'Property bindings for HTML DOM event properties are disallowed');
   }));
