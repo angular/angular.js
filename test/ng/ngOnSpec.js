@@ -155,4 +155,34 @@ describe('ngOn* event binding', function() {
       expect(attrs.$attr.ngOnTitle).toBe('ng-on-title');
     });
   });
+
+  it('should correctly bind to kebab-cased event names', inject(function($compile, $rootScope) {
+    var element = $compile('<span ng-on-foo-bar="cb()"></span>')($rootScope);
+    var cb = $rootScope.cb = jasmine.createSpy('ng-on cb');
+    $rootScope.$digest();
+
+    element.triggerHandler('foobar');
+    element.triggerHandler('fooBar');
+    element.triggerHandler('foo_bar');
+    element.triggerHandler('foo:bar');
+    expect(cb).not.toHaveBeenCalled();
+
+    element.triggerHandler('foo-bar');
+    expect(cb).toHaveBeenCalled();
+  }));
+
+  it('should correctly bind to camelCased event names', inject(function($compile, $rootScope) {
+    var element = $compile('<span ng-on-foo_bar="cb()"></span>')($rootScope);
+    var cb = $rootScope.cb = jasmine.createSpy('ng-on cb');
+    $rootScope.$digest();
+
+    element.triggerHandler('foobar');
+    element.triggerHandler('foo-bar');
+    element.triggerHandler('foo_bar');
+    element.triggerHandler('foo:bar');
+    expect(cb).not.toHaveBeenCalled();
+
+    element.triggerHandler('fooBar');
+    expect(cb).toHaveBeenCalled();
+  }));
 });
