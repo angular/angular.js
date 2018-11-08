@@ -11703,37 +11703,37 @@ describe('$compile', function() {
       // All interpolations are disallowed.
       $rootScope.onClickJs = '';
       expect(function() {
-          $compile('<button onclick="{{onClickJs}}"></script>');
+          $compile('<button onclick="{{onClickJs}}"></button>');
         }).toThrowMinErr(
           '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
       expect(function() {
-          $compile('<button ONCLICK="{{onClickJs}}"></script>');
+          $compile('<button ONCLICK="{{onClickJs}}"></button>');
         }).toThrowMinErr(
           '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
       expect(function() {
-          $compile('<button ng-attr-onclick="{{onClickJs}}"></script>');
+          $compile('<button ng-attr-onclick="{{onClickJs}}"></button>');
         }).toThrowMinErr(
           '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
       expect(function() {
-          $compile('<button ng-attr-ONCLICK="{{onClickJs}}"></script>');
+          $compile('<button ng-attr-ONCLICK="{{onClickJs}}"></button>');
         }).toThrowMinErr(
           '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
     }));
 
     it('should pass through arbitrary values on onXYZ event attributes that contain a hyphen', inject(function($compile, $rootScope) {
-      element = $compile('<button on-click="{{onClickJs}}"></script>')($rootScope);
+      element = $compile('<button on-click="{{onClickJs}}"></button>')($rootScope);
       $rootScope.onClickJs = 'javascript:doSomething()';
       $rootScope.$apply();
       expect(element.attr('on-click')).toEqual('javascript:doSomething()');
     }));
 
     it('should pass through arbitrary values on "on" and "data-on" attributes', inject(function($compile, $rootScope) {
-      element = $compile('<button data-on="{{dataOnVar}}"></script>')($rootScope);
+      element = $compile('<button data-on="{{dataOnVar}}"></button>')($rootScope);
       $rootScope.dataOnVar = 'data-on text';
       $rootScope.$apply();
       expect(element.attr('data-on')).toEqual('data-on text');
 
-      element = $compile('<button on="{{onVar}}"></script>')($rootScope);
+      element = $compile('<button on="{{onVar}}"></button>')($rootScope);
       $rootScope.onVar = 'on text';
       $rootScope.$apply();
       expect(element.attr('on')).toEqual('on text');
