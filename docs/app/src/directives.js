@@ -98,7 +98,7 @@ directivesModule
   bindings: {
     items: '<'
   },
-  controller: ['$location', function($location) {
+  controller: ['$location', function TocTreeController($location) {
     this.path = $location.path().replace(/^\/?(.+?)(\/index)?\/?$/, '$1');
   }]
 })
