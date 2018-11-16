@@ -954,6 +954,115 @@ describe('$aria', function() {
       expect(clickEvents).toEqual(['div(true)', 'li(true)', 'div(true)', 'li(true)']);
     });
 
+    it('should trigger a click in browsers that provide `event.which` instead of `event.keyCode`',
+      function() {
+        compileElement(
+          '<section>' +
+            '<div ng-click="onClick($event)"></div>' +
+            '<ul><li ng-click="onClick($event)"></li></ul>' +
+          '</section>');
+
+        var divElement = element.find('div');
+        var liElement = element.find('li');
+
+        divElement.triggerHandler({type: 'keydown', which: 13});
+        liElement.triggerHandler({type: 'keydown', which: 13});
+        divElement.triggerHandler({type: 'keydown', which: 32});
+        liElement.triggerHandler({type: 'keydown', which: 32});
+
+        expect(clickEvents).toEqual(['div(true)', 'li(true)', 'div(true)', 'li(true)']);
+      }
+    );
+
+    it('should not prevent default keyboard action if the target element has editable content',
+      inject(function($document) {
+        // Note:
+        // `contenteditable` is an enumarated (not a boolean) attribute (see
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable).
+        // We need to check the following conditions:
+        //   - No attribute.
+        //   - Value: ""
+        //   - Value: "true"
+        //   - Value: "false"
+
+        function eventFor(keyCode) {
+          return {bubbles: true, cancelable: true, keyCode: keyCode};
+        }
+
+        compileElement(
+          '<section>' +
+            // No attribute.
+            '<div id="no-attribute">' +
+              '<div ng-click="onClick($event)"></div>' +
+              '<ul ng-click="onClick($event)"><li></li></ul>' +
+            '</div>' +
+
+            // Value: ""
+            '<div id="value-empty">' +
+              '<div ng-click="onClick($event)" contenteditable=""></div>' +
+              '<ul ng-click="onClick($event)"><li contenteditable=""></li></ul>' +
+            '</div>' +
+
+            // Value: "true"
+            '<div id="value-true">' +
+              '<div ng-click="onClick($event)" contenteditable="true"></div>' +
+              '<ul ng-click="onClick($event)"><li contenteditable="true"></li></ul>' +
+            '</div>' +
+
+            // Value: "false"
+            '<div id="value-false">' +
+              '<div ng-click="onClick($event)" contenteditable="false"></div>' +
+              '<ul ng-click="onClick($event)"><li contenteditable="false"></li></ul>' +
+            '</div>' +
+          '</section>');
+
+        // Support: Safari 11-12+
+        // Attach to DOM, because otherwise Safari will not update the `isContentEditable` property
+        // based on the `contenteditable` attribute.
+        $document.find('body').append(element);
+
+        var containers = element.children();
+        var container;
+
+        // Using `browserTrigger()`, because it supports event bubbling.
+
+        // No attribute | Elements are not editable.
+        container = containers.eq(0);
+        browserTrigger(container.find('div'), 'keydown', eventFor(13));
+        browserTrigger(container.find('ul'), 'keydown', eventFor(32));
+        browserTrigger(container.find('li'), 'keydown', eventFor(13));
+
+        expect(clickEvents).toEqual(['div(true)', 'ul(true)', 'li(true)']);
+
+        // Value: "" | Elements are editable.
+        clickEvents = [];
+        container = containers.eq(1);
+        browserTrigger(container.find('div'), 'keydown', eventFor(32));
+        browserTrigger(container.find('ul'), 'keydown', eventFor(13));
+        browserTrigger(container.find('li'), 'keydown', eventFor(32));
+
+        expect(clickEvents).toEqual(['div(false)', 'ul(true)', 'li(false)']);
+
+        // Value: "true" | Elements are editable.
+        clickEvents = [];
+        container = containers.eq(2);
+        browserTrigger(container.find('div'), 'keydown', eventFor(13));
+        browserTrigger(container.find('ul'), 'keydown', eventFor(32));
+        browserTrigger(container.find('li'), 'keydown', eventFor(13));
+
+        expect(clickEvents).toEqual(['div(false)', 'ul(true)', 'li(false)']);
+
+        // Value: "false" | Elements are not editable.
+        clickEvents = [];
+        container = containers.eq(3);
+        browserTrigger(container.find('div'), 'keydown', eventFor(32));
+        browserTrigger(container.find('ul'), 'keydown', eventFor(13));
+        browserTrigger(container.find('li'), 'keydown', eventFor(32));
+
+        expect(clickEvents).toEqual(['div(true)', 'ul(true)', 'li(true)']);
+      })
+    );
+
     they('should not prevent default keyboard action if an interactive $type element' +
       'is nested inside ng-click', nodeBlackList, function(elementType) {
         function createHTML(type) {
@@ -978,26 +1087,6 @@ describe('$aria', function() {
         // 32 Space
         browserTrigger(interactiveElement, 'keydown', {cancelable: true, bubbles: true, keyCode: 32});
         expect(clickEvents).toEqual([elementType.toLowerCase() + '(false)']);
-      }
-    );
-
-    it('should trigger a click in browsers that provide `event.which` instead of `event.keyCode`',
-      function() {
-        compileElement(
-          '<section>' +
-            '<div ng-click="onClick($event)"></div>' +
-            '<ul><li ng-click="onClick($event)"></li></ul>' +
-          '</section>');
-
-        var divElement = element.find('div');
-        var liElement = element.find('li');
-
-        divElement.triggerHandler({type: 'keydown', which: 13});
-        liElement.triggerHandler({type: 'keydown', which: 13});
-        divElement.triggerHandler({type: 'keydown', which: 32});
-        liElement.triggerHandler({type: 'keydown', which: 32});
-
-        expect(clickEvents).toEqual(['div(true)', 'li(true)', 'div(true)', 'li(true)']);
       }
     );
 
