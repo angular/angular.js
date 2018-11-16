@@ -390,7 +390,7 @@ ngAriaModule.directive('ngShow', ['$aria', function($aria) {
 
               if (keyCode === 13 || keyCode === 32) {
                 // If the event is triggered on a non-interactive element ...
-                if (nodeBlackList.indexOf(event.target.nodeName) === -1) {
+                if (nodeBlackList.indexOf(event.target.nodeName) === -1 && !event.target.isContentEditable) {
                   // ... prevent the default browser behavior (e.g. scrolling when pressing spacebar)
                   // See https://github.com/angular/angular.js/issues/16664
                   event.preventDefault();
