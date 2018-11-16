@@ -1,8 +1,0 @@
-@ngdoc error
-@name $route:norout
-@fullName Tried updating route with no current route
-@description
-
-Occurs when an attempt is made to update the parameters on the current route when
-there is no current route. This can happen if you try to call `$route.updateParams();`
-before the first route transition has completed.

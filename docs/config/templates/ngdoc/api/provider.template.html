@@ -1,9 +1,0 @@
-{% extends "api/object.template.html" %}
-
-{% block related_components %}
-  {% if doc.serviceDoc -%}
-  <li>
-    <a href="{$ doc.serviceDoc.path $}">- {$ doc.serviceDoc.name $}</a>
-  </li>
-  {%- endif %}
-{% endblock %}

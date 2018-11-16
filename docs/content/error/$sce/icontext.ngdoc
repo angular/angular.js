@@ -1,8 +1,0 @@
-@ngdoc error
-@name $sce:icontext
-@fullName Invalid / Unknown SCE context
-@description
-
-The context enum passed to {@link ng.$sce#trustAs $sce.trustAs} was not recognized.
-
-Please consult the list of {@link ng.$sce#contexts supported Strict Contextual Escaping (SCE) contexts}.

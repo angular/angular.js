@@ -1,6 +1,0 @@
-@ngdoc error
-@name $animate:notcsel
-@fullName Not class CSS selector
-@description
-
-Expecting a CSS selector for class. Class selectors must start with `.`, for example: `.my-class-name`.

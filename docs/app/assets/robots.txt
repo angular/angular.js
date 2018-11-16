@@ -1,4 +1,0 @@
-User-agent: *
-
-# The map files are not required by the app
-Disallow: /*.map$

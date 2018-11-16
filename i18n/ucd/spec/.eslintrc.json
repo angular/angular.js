@@ -1,8 +1,0 @@
-{
-  "env": {
-    "jasmine": true
-  },
-  "rules": {
-    "no-multi-str": "off"
-  }
-}

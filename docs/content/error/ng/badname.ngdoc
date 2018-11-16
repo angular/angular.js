@@ -1,8 +1,0 @@
-@ngdoc error
-@name ng:badname
-@fullName Bad `hasOwnProperty` Name
-@description
-
-Occurs when you try to use the name `hasOwnProperty` in a context where it is not allowed.
-Generally, a name cannot be `hasOwnProperty` because it is used, internally, on a object
-and allowing such a name would break lookups on this object.

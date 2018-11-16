@@ -1,7 +1,0 @@
-@ngdoc error
-@name jqLite:offargs
-@fullName Invalid jqLite#off() parameter
-@description
-
-This error occurs when trying to pass too many arguments to `jqLite#off`. Note
-that `jqLite#off` does not support namespaces or selectors like jQuery.

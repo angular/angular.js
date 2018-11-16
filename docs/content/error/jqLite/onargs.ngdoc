@@ -1,8 +1,0 @@
-@ngdoc error
-@name jqLite:onargs
-@fullName Invalid jqLite#on() Parameters
-@description
-
-This error occurs when trying to pass too many arguments to `jqLite#on`. Note
-that `jqLite#on` does not support the `selector` or `eventData` parameters as
-jQuery does.
