@@ -1878,6 +1878,10 @@ describe('angular', function() {
       expect(isDate(23)).toBe(false);
       expect(isDate({})).toBe(false);
     });
+
+    it('should return true for Date Proxy', function() {
+      expect(isDate(new window.Proxy(new Date(), {}))).toBe(true);
+    });
   });
 
   describe('isError', function() {

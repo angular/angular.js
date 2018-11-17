@@ -597,7 +597,7 @@ function isNumber(value) {return typeof value === 'number';}
  * @returns {boolean} True if `value` is a `Date`.
  */
 function isDate(value) {
-  return toString.call(value) === '[object Date]';
+  return toString.call(value) === '[object Date]' || value instanceof Date;
 }
 
 
