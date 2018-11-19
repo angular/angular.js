@@ -551,13 +551,12 @@ describe('validators', function() {
     }));
 
 
-    it('does not validate twice after compilation when inside ngRepeat', function() {
-      $rootScope.inputs = ['Jamie'];
+    it('should only validate once after compilation when inside ngRepeat', function() {
       $rootScope.maxlength = 5;
 
       var element = helper.compileInput(
-         '<div ng-repeat="input in inputs">' +
-           '<input type="text" ng-model="inputs[$index]" maxlength="{{maxlength}}" validation-spy="maxlength" />' +
+         '<div ng-repeat="input in [0]">' +
+           '<input type="text" ng-model="value" maxlength="{{maxlength}}" validation-spy="maxlength" />' +
          '</div>');
 
       $rootScope.$digest();
@@ -567,8 +566,8 @@ describe('validators', function() {
       helper.validationCounter = {};
 
       element = helper.compileInput(
-         '<div ng-repeat="input in inputs">' +
-           '<input type="text" ng-model="inputs[$index]" ng-maxlength="maxlength" validation-spy="maxlength" />' +
+         '<div ng-repeat="input in [0]">' +
+           '<input type="text" ng-model="value" ng-maxlength="maxlength" validation-spy="maxlength" />' +
          '</div>');
 
       $rootScope.$digest();

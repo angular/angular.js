@@ -1549,9 +1549,9 @@ function createDateInputType(type, regexp, parseDate, format) {
       attr.$observe('min', function(val) {
         if (val !== minVal) {
           parsedMinVal = parseObservedDateValue(val);
+          minVal = val;
           ctrl.$validate();
         }
-        minVal = val;
       });
     }
 
@@ -1565,10 +1565,9 @@ function createDateInputType(type, regexp, parseDate, format) {
       attr.$observe('max', function(val) {
         if (val !== maxVal) {
           parsedMaxVal = parseObservedDateValue(val);
+          maxVal = val;
           ctrl.$validate();
         }
-
-        maxVal = val;
       });
     }
 
@@ -1738,10 +1737,10 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter
     attr.$observe('min', function(val) {
       if (val !== minVal) {
         parsedMinVal = parseNumberAttrVal(val);
+        minVal = val;
         // TODO(matsko): implement validateLater to reduce number of validations
         ctrl.$validate();
       }
-      minVal = val;
     });
   }
 
@@ -1756,10 +1755,10 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter
     attr.$observe('max', function(val) {
       if (val !== maxVal) {
         parsedMaxVal = parseNumberAttrVal(val);
+        maxVal = val;
         // TODO(matsko): implement validateLater to reduce number of validations
         ctrl.$validate();
       }
-      maxVal = val;
     });
   }
 
@@ -1776,10 +1775,10 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter
       // TODO(matsko): implement validateLater to reduce number of validations
       if (stepVal !== val) {
         parsedStepVal = parseNumberAttrVal(val);
+        stepVal = val;
         ctrl.$validate();
       }
 
-      stepVal = val;
     });
 
   }
@@ -1865,9 +1864,9 @@ function rangeInputType(scope, element, attr, ctrl, $sniffer, $browser) {
     var oldVal = attr[htmlAttrName];
     attr.$observe(htmlAttrName, function wrappedObserver(val) {
       if (val !== oldVal) {
+        oldVal = val;
         changeFn(val);
       }
-      oldVal = val;
     });
   }
 

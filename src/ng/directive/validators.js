@@ -78,10 +78,9 @@ var requiredDirective = function($parse) {
 
       attr.$observe('required', function(val) {
         if (oldVal !== val) {
+          oldVal = val;
           ctrl.$validate();
         }
-
-        oldVal = val;
       });
     }
   };
@@ -172,46 +171,55 @@ var patternDirective = function($parse) {
   return {
     restrict: 'A',
     require: '?ngModel',
-    link: function(scope, elm, attr, ctrl) {
-      if (!ctrl) return;
-
-      var attrVal = attr.pattern;
+    compile: function(tElm, tAttr) {
       var patternExp;
+      var parseFn;
 
-      if (attr.ngPattern) {
-        patternExp = attr.ngPattern;
+      if (tAttr.ngPattern) {
+        patternExp = tAttr.ngPattern;
 
         // ngPattern might be a scope expressions, or an inlined regex, which is not parsable.
         // We get value of the attribute here, so we can compare the old and the new value
-        // in the observer to avoid unnessecary validations
+        // in the observer to avoid unnecessary validations
         try {
-          attrVal = $parse(attr.ngPattern)(scope);
+          parseFn = $parse(tAttr.ngPattern);
         } catch (e) {
           if (/^\[\$parse:lexerr\]/.test(e.message)) {
-            attrVal = attr.ngPattern;
+            parseFn = function() { return tAttr.ngPattern; };
           } else {
             throw e;
           }
         }
       }
 
-      var regexp = parsePatternAttr(attrVal, patternExp, elm);
+      return function(scope, elm, attr, ctrl) {
+        if (!ctrl) return;
 
-      attr.$observe('pattern', function(newVal) {
-        var oldRegexp = regexp;
+        var attrVal = attr.pattern;
 
-        regexp = parsePatternAttr(newVal, patternExp, elm);
-
-        if ((oldRegexp && oldRegexp.toString()) !== (regexp && regexp.toString())) {
-          ctrl.$validate();
+        if (attr.ngPattern) {
+          attrVal = parseFn(scope);
         }
-      });
 
-      ctrl.$validators.pattern = function(modelValue, viewValue) {
-        // HTML5 pattern constraint validates the input value, so we validate the viewValue
-        return ctrl.$isEmpty(viewValue) || isUndefined(regexp) || regexp.test(viewValue);
+        var regexp = parsePatternAttr(attrVal, patternExp, elm);
+
+        attr.$observe('pattern', function(newVal) {
+          var oldRegexp = regexp;
+
+          regexp = parsePatternAttr(newVal, patternExp, elm);
+
+          if ((oldRegexp && oldRegexp.toString()) !== (regexp && regexp.toString())) {
+            ctrl.$validate();
+          }
+        });
+
+        ctrl.$validators.pattern = function(modelValue, viewValue) {
+          // HTML5 pattern constraint validates the input value, so we validate the viewValue
+          return ctrl.$isEmpty(viewValue) || isUndefined(regexp) || regexp.test(viewValue);
+        };
       };
     }
+
   };
 };
 
@@ -299,9 +307,9 @@ var maxlengthDirective = function($parse) {
       attr.$observe('maxlength', function(value) {
         if (maxlength !== value) {
           maxlengthParsed = parseLength(value);
+          maxlength = value;
           ctrl.$validate();
         }
-        maxlength = value;
       });
       ctrl.$validators.maxlength = function(modelValue, viewValue) {
         return (maxlengthParsed < 0) || ctrl.$isEmpty(viewValue) || (viewValue.length <= maxlengthParsed);
@@ -392,9 +400,9 @@ var minlengthDirective = function($parse) {
       attr.$observe('minlength', function(value) {
         if (minlength !== value) {
           minlengthParsed = toInt(value) || 0;
+          minlength = value;
           ctrl.$validate();
         }
-        minlength = value;
 
       });
       ctrl.$validators.minlength = function(modelValue, viewValue) {
@@ -406,18 +414,19 @@ var minlengthDirective = function($parse) {
 
 
 function parsePatternAttr(regex, patternExp, elm) {
+  if (!regex) return undefined;
 
   if (isString(regex) && regex.length > 0) {
     regex = new RegExp('^' + regex + '$');
   }
 
-  if (regex && !regex.test) {
+  if (!(regex instanceof RegExp)) {
     throw minErr('ngPattern')('noregexp',
       'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
       regex, startingTag(elm));
   }
 
-  return regex || undefined;
+  return regex;
 }
 
 function parseLength(val) {

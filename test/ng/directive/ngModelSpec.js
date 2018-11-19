@@ -1245,7 +1245,6 @@ describe('ngModel', function() {
         dealoc(element);
       }));
 
-
       it('should re-evaluate the form validity state once the asynchronous promise has been delivered',
         inject(function($compile, $rootScope, $q) {
 

@@ -395,7 +395,6 @@ function $RootScopeProvider() {
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $watch: function(watchExp, listener, objectEquality, prettyPrintExpression) {
-        // console.log('setup watchExpression', watchExp);
         var get = $parse(watchExp);
         var fn = isFunction(listener) ? listener : noop;
 
@@ -770,7 +769,6 @@ function $RootScopeProvider() {
        *
        */
       $digest: function() {
-        // console.log('digest');
         var watch, value, last, fn, get,
             watchers,
             dirty, ttl = TTL,
@@ -830,7 +828,6 @@ function $RootScopeProvider() {
                       lastDirtyWatch = watch;
                       watch.last = watch.eq ? copy(value, null) : value;
                       fn = watch.fn;
-                      // console.log('call watch fn', watch.exp, fn);
                       fn(value, ((last === initWatchVal) ? value : last), current);
                       if (ttl < 5) {
                         logIdx = 4 - ttl;
