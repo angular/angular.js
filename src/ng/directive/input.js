@@ -1773,7 +1773,7 @@ function numberInputType(scope, element, attr, ctrl, $sniffer, $browser, $filter
 
     attr.$observe('step', function(val) {
       // TODO(matsko): implement validateLater to reduce number of validations
-      if (stepVal !== val) {
+      if (val !== stepVal) {
         parsedStepVal = parseNumberAttrVal(val);
         stepVal = val;
         ctrl.$validate();

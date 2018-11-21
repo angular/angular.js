@@ -178,7 +178,7 @@ var patternDirective = function($parse) {
       if (tAttr.ngPattern) {
         patternExp = tAttr.ngPattern;
 
-        // ngPattern might be a scope expressions, or an inlined regex, which is not parsable.
+        // ngPattern might be a scope expression, or an inlined regex, which is not parsable.
         // We get value of the attribute here, so we can compare the old and the new value
         // in the observer to avoid unnecessary validations
         try {
@@ -395,11 +395,11 @@ var minlengthDirective = function($parse) {
       if (!ctrl) return;
 
       var minlength = attr.minlength || $parse(attr.ngMinlength)(scope);
-      var minlengthParsed = toInt(minlength) || 0;
+      var minlengthParsed = parseLength(minlength) || -1;
 
       attr.$observe('minlength', function(value) {
         if (minlength !== value) {
-          minlengthParsed = toInt(value) || 0;
+          minlengthParsed = parseLength(value) || -1;
           minlength = value;
           ctrl.$validate();
         }
@@ -416,7 +416,7 @@ var minlengthDirective = function($parse) {
 function parsePatternAttr(regex, patternExp, elm) {
   if (!regex) return undefined;
 
-  if (isString(regex) && regex.length > 0) {
+  if (isString(regex)) {
     regex = new RegExp('^' + regex + '$');
   }
 
