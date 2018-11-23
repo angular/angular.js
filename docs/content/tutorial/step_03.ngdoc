@@ -88,6 +88,21 @@ Let's see an example:
     });
 ```
 
+```html
+<html ng-app="myApp">
+<head>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="app.js"></script>
+</head>
+<body>
+
+  <!-- The following line is how to use the greetUser angular.js controller/directive above in your html-->
+  <greet-user></greet-user>
+
+</body>
+</html>
+
+```
 Now, every time we include `<greet-user></greet-user>` in our view, AngularJS will expand it into a
 DOM sub-tree constructed using the provided `template` and managed by an instance of the specified
 controller.
@@ -127,7 +142,7 @@ acquired skill.
 <body>
 
   <!-- Use a custom component to render a list of phones -->
-  <phone-list></phone-list>
+  <phone-list></phone-list>         //This is what calls the phoneList angular.js component
 
 </body>
 </html>
@@ -148,7 +163,7 @@ angular.module('phonecatApp', []);
 // Register `phoneList` component, along with its associated controller and template
 angular.
   module('phonecatApp').
-  component('phoneList', {
+  component('phoneList', {          // This is what defines the html element <phone-list>
     template:
         '<ul>' +
           '<li ng-repeat="phone in $ctrl.phones">' +
