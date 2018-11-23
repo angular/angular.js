@@ -197,14 +197,6 @@ Voilà! The resulting output should look the same, but let's see what we have ga
   inside our component, stays inside our component.
 * It's easier to test our component in isolation.
 
-<div class="alert alert-info">
-  <p>
-    The mapping of the HTML `<phone-list>` Tag to the AngularJS Controller is done on the
-    `component('phoneList', {` statement.  AngularJS maps the CamelCase of the phoneList component
-    name to the kebab-case of the HTML Tag.
-  </p>
-</div>
-
 <img class="diagram" src="img/tutorial/tutorial_03.png">
 
 <div class="alert alert-info">
