@@ -181,14 +181,10 @@ var patternDirective = function($parse) {
         // ngPattern might be a scope expression, or an inlined regex, which is not parsable.
         // We get value of the attribute here, so we can compare the old and the new value
         // in the observer to avoid unnecessary validations
-        try {
+        if (tAttr.ngPattern.charAt(0) === '/' && REGEX_STRING_REGEXP.test(tAttr.ngPattern)) {
+          parseFn = function() { return tAttr.ngPattern; };
+        } else {
           parseFn = $parse(tAttr.ngPattern);
-        } catch (e) {
-          if (/^\[\$parse:lexerr\]/.test(e.message)) {
-            parseFn = function() { return tAttr.ngPattern; };
-          } else {
-            throw e;
-          }
         }
       }
 
@@ -199,6 +195,8 @@ var patternDirective = function($parse) {
 
         if (attr.ngPattern) {
           attrVal = parseFn(scope);
+        } else {
+          patternExp = attr.pattern;
         }
 
         var regexp = parsePatternAttr(attrVal, patternExp, elm);
@@ -420,7 +418,7 @@ function parsePatternAttr(regex, patternExp, elm) {
     regex = new RegExp('^' + regex + '$');
   }
 
-  if (!(regex instanceof RegExp)) {
+  if (!regex.test) {
     throw minErr('ngPattern')('noregexp',
       'Expected {0} to be a RegExp but was {1}. Element: {2}', patternExp,
       regex, startingTag(elm));

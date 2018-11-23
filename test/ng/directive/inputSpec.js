@@ -848,8 +848,6 @@ describe('input', function() {
 
         expect(helper.validationCounter.min).toBe(1);
 
-        helper.validationCounter = {};
-
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="month" ng-model="value" validation-spy="min" ng-min="minVal" />' +
           '</div>');
@@ -924,8 +922,6 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect(helper.validationCounter.max).toBe(1);
-
-        helper.validationCounter = {};
 
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="month" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
@@ -1159,8 +1155,6 @@ describe('input', function() {
 
         expect(helper.validationCounter.min).toBe(1);
 
-        helper.validationCounter = {};
-
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="week" ng-model="value" validation-spy="min" ng-min="minVal" />' +
           '</div>');
@@ -1238,8 +1232,6 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect(helper.validationCounter.max).toBe(1);
-
-        helper.validationCounter = {};
 
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="week" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
@@ -1587,8 +1579,6 @@ describe('input', function() {
 
         expect(helper.validationCounter.min).toBe(1);
 
-        helper.validationCounter = {};
-
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="datetime-local" ng-model="value" validation-spy="min" ng-min="minVal" />' +
           '</div>');
@@ -1664,8 +1654,6 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect(helper.validationCounter.max).toBe(1);
-
-        helper.validationCounter = {};
 
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="datetime-local" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
@@ -2090,8 +2078,6 @@ describe('input', function() {
 
         expect(helper.validationCounter.min).toBe(1);
 
-        helper.validationCounter = {};
-
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="time" ng-model="value" validation-spy="min" ng-min="minVal" />' +
           '</div>');
@@ -2154,8 +2140,6 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect(helper.validationCounter.max).toBe(1);
-
-        helper.validationCounter = {};
 
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="time" ng-model="value" validation-spy="max" ng-max="maxVal" />' +
@@ -2518,8 +2502,6 @@ describe('input', function() {
 
         expect(helper.validationCounter.min).toBe(1);
 
-        helper.validationCounter = {};
-
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="date" ng-model="value" validation-spy="min" ng-min="minVal" />' +
           '</div>');
@@ -2606,8 +2588,6 @@ describe('input', function() {
         $rootScope.$digest();
 
         expect(helper.validationCounter.max).toBe(1);
-
-        helper.validationCounter = {};
 
         inputElm = helper.compileInput('<div ng-repeat="input in [0]">' +
           '<input type="date" ng-model="value" validation-spy="max" ng-max="maxVal" />' +

@@ -244,8 +244,6 @@ describe('validators', function() {
 
       expect(helper.validationCounter.pattern).toBe(1);
 
-      helper.validationCounter = {};
-
       helper.compileInput(
          '<div ng-repeat="input in [0]">' +
            '<input type="text" ng-model="value" ng-pattern="pattern" validation-spy="pattern" />' +
@@ -350,8 +348,6 @@ describe('validators', function() {
       $rootScope.$digest();
 
       expect(helper.validationCounter.minlength).toBe(1);
-
-      helper.validationCounter = {};
 
       element = helper.compileInput(
          '<div ng-repeat="input in [0]">' +
@@ -563,8 +559,6 @@ describe('validators', function() {
 
       expect(helper.validationCounter.maxlength).toBe(1);
 
-      helper.validationCounter = {};
-
       element = helper.compileInput(
          '<div ng-repeat="input in [0]">' +
            '<input type="text" ng-model="value" ng-maxlength="maxlength" validation-spy="maxlength" />' +
@@ -711,8 +705,6 @@ describe('validators', function() {
       $rootScope.$digest();
 
       expect(helper.validationCounter.required).toBe(1);
-
-      helper.validationCounter = {};
     });
 
 
