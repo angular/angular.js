@@ -1,7 +1,9 @@
 'use strict';
 
 describe('ngMock', function() {
+
   var noop = angular.noop;
+  var extend = angular.extend;
 
   describe('TzDate', function() {
 
@@ -1107,11 +1109,13 @@ describe('ngMock', function() {
         var mock = { log: 'module' };
 
         beforeEach(function() {
+          angular.module('stringRefModule', []).service('stringRef', function() {});
+
           module({
               'service': mock,
               'other': { some: 'replacement'}
             },
-            'ngResource',
+            'stringRefModule',
             function($provide) { $provide.value('example', 'win'); }
           );
         });
@@ -1130,9 +1134,9 @@ describe('ngMock', function() {
         });
 
         it('should integrate with string and function', function() {
-          inject(function(service, $resource, example) {
+          inject(function(service, stringRef, example) {
             expect(service).toEqual(mock);
-            expect($resource).toBeDefined();
+            expect(stringRef).toBeDefined();
             expect(example).toEqual('win');
           });
         });
@@ -2251,7 +2255,7 @@ describe('ngMock', function() {
           }
         );
         they('should ignore query params when matching in ' + routeShortcut + ' $prop method', methods,
-          function() {
+          function(method) {
             angular.forEach([
               {route: '/route1/:id', url: '/route1/Alpha', expectedParams: {id: 'Alpha'}},
               {route: '/route2/:id', url: '/route2/Bravo/?', expectedParams: {id: 'Bravo'}},
@@ -2268,14 +2272,14 @@ describe('ngMock', function() {
             ], function(testDataEntry) {
               callback.calls.reset();
               var paramsSpy = jasmine.createSpy('params');
-              hb[routeShortcut](this, testDataEntry.route).respond(
+              hb[routeShortcut](method, testDataEntry.route).respond(
                 function(method, url, data, headers, params) {
                   paramsSpy(params);
                   // status, response, headers, statusText, xhrStatus
                   return [200, 'path', { 'x-header': 'foo' }, 'OK', 'complete'];
                 }
               );
-              hb(this, testDataEntry.url, undefined, callback);
+              hb(method, testDataEntry.url, undefined, callback);
               hb.flush();
               expect(callback).toHaveBeenCalledOnceWith(200, 'path', 'x-header: foo', 'OK', 'complete');
               expect(paramsSpy).toHaveBeenCalledOnceWith(testDataEntry.expectedParams);
@@ -2833,6 +2837,10 @@ describe('ngMock', function() {
 
 
 describe('ngMockE2E', function() {
+
+  var noop = angular.noop;
+  var extend = angular.extend;
+
   describe('$httpBackend', function() {
     var hb, realHttpBackend, realHttpBackendBrowser, $http, callback;
 
@@ -3175,7 +3183,7 @@ describe('ngMockE2E', function() {
 
         if (!browserSupportsCssAnimations()) return;
 
-        var element = jqLite('<div></div>');
+        var element = angular.element('<div></div>');
         $rootElement.append(element);
 
         // Make sure the animation has valid $animateCss options

@@ -25,6 +25,7 @@ describe('ngAnimate integration tests', function() {
     ss.destroy();
   });
 
+
  it('should cancel a running and started removeClass animation when a follow-up addClass animation adds the same class',
     inject(function($animate, $rootScope, $$rAF, $document, $rootElement) {
 
@@ -362,6 +363,7 @@ describe('ngAnimate integration tests', function() {
       });
     });
 
+
     it('should add the preparation class for an enter animation before a parent class-based animation is applied', function() {
       module('ngAnimateMock');
       inject(function($animate, $compile, $rootScope, $rootElement, $document) {
@@ -396,6 +398,7 @@ describe('ngAnimate integration tests', function() {
         expect(child).not.toHaveClass('ng-enter-prepare');
       });
     });
+
 
     it('should avoid adding the ng-enter-prepare method to a parent structural animation that contains child animations', function() {
       module('ngAnimateMock');
@@ -467,6 +470,84 @@ describe('ngAnimate integration tests', function() {
         expect(child).not.toHaveClass('ng-enter-prepare');
       });
     });
+
+
+    it('should remove the prepare classes when different structural animations happen in the same digest', function() {
+      module('ngAnimateMock');
+      inject(function($animate, $compile, $rootScope, $rootElement, $document, $$animateCache) {
+        element = jqLite(
+           // Class animation on parent element is neeeded so the child elements get the prepare class
+          '<div id="outer" ng-class="{blue: cond}" ng-switch="cond">' +
+            '<div id="default" ng-switch-default></div>' +
+            '<div id="truthy" ng-switch-when="true"></div>' +
+          '</div>'
+        );
+
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $compile(element)($rootScope);
+        $rootScope.cond = false;
+        $rootScope.$digest();
+
+        $rootScope.cond = true;
+        $rootScope.$digest();
+
+        var parent = element;
+        var truthySwitch = jqLite(parent[0].querySelector('#truthy'));
+        var defaultSwitch = jqLite(parent[0].querySelector('#default'));
+
+        expect(parent).not.toHaveClass('blue');
+        expect(parent).toHaveClass('blue-add');
+        expect(truthySwitch).toHaveClass('ng-enter-prepare');
+        expect(defaultSwitch).toHaveClass('ng-leave-prepare');
+
+        $animate.flush();
+
+        expect(parent).toHaveClass('blue');
+        expect(parent).not.toHaveClass('blue-add');
+        expect(truthySwitch).not.toHaveClass('ng-enter-prepare');
+        expect(defaultSwitch).not.toHaveClass('ng-leave-prepare');
+      });
+    });
+
+    it('should respect the element node for caching when animations with the same type happen in the same digest', function() {
+      module('ngAnimateMock');
+      inject(function($animate, $compile, $rootScope, $rootElement, $document, $$animateCache) {
+        ss.addRule('.animate.ng-enter', 'transition:2s linear all;');
+
+        element = jqLite(
+          '<div>' +
+            '<div>' +
+              '<div id="noanimate" ng-if="cond"></div>' +
+            '</div>' +
+            '<div>' +
+              '<div id="animate" class="animate" ng-if="cond"></div>' +
+            '</div>' +
+          '</div>'
+        );
+
+        $rootElement.append(element);
+        jqLite($document[0].body).append($rootElement);
+
+        $compile(element)($rootScope);
+        $rootScope.cond = true;
+        $rootScope.$digest();
+
+        var parent = element;
+        var noanimate = jqLite(parent[0].querySelector('#noanimate'));
+        var animate = jqLite(parent[0].querySelector('#animate'));
+
+        expect(noanimate).not.toHaveClass('ng-enter');
+        expect(animate).toHaveClass('ng-enter');
+
+        $animate.closeAndFlush();
+
+        expect(noanimate).not.toHaveClass('ng-enter');
+        expect(animate).not.toHaveClass('ng-enter');
+      });
+    });
+
 
     it('should pack level elements into their own RAF flush', function() {
       module('ngAnimateMock');

@@ -3,15 +3,16 @@
 /* global routeToRegExp: true */
 
 /**
- * @param path {string} path
- * @param opts {Object} options
- * @return {?Object}
+ * @param {string} path - The path to parse. (It is assumed to have query and hash stripped off.)
+ * @param {Object} opts - Options.
+ * @return {Object} - An object containing an array of path parameter names (`keys`) and a regular
+ *     expression (`regexp`) that can be used to identify a matching URL and extract the path
+ *     parameter values.
  *
  * @description
- * Normalizes the given path, returning a regular expression
- * and the original path.
+ * Parses the given path, extracting path parameter names and a regular expression to match URLs.
  *
- * Inspired by pathRexp in visionmedia/express/lib/utils.js.
+ * Originally inspired by `pathRexp` in `visionmedia/express/lib/utils.js`.
  */
 function routeToRegExp(path, opts) {
   var keys = [];
@@ -21,11 +22,11 @@ function routeToRegExp(path, opts) {
     .replace(/(\/)?:(\w+)(\*\?|[?*])?/g, function(_, slash, key, option) {
       var optional = option === '?' || option === '*?';
       var star = option === '*' || option === '*?';
-      keys.push({ name: key, optional: optional });
+      keys.push({name: key, optional: optional});
       slash = slash || '';
       return (
         (optional ? '(?:' + slash : slash + '(?:') +
-        (star ? '([^?#]+?)' : '([^/?#]+)') +
+        (star ? '(.+?)' : '([^/]+)') +
         (optional ? '?)?' : ')')
       );
     })
@@ -36,7 +37,6 @@ function routeToRegExp(path, opts) {
   }
 
   return {
-    originalPath: path,
     keys: keys,
     regexp: new RegExp(
       '^' + pattern + '(?:[?#]|$)',

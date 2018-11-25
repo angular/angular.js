@@ -3577,6 +3577,15 @@ describe('$compile', function() {
       })
     );
 
+    it('should support non-interpolated `src` and `data-src` on the same element',
+      inject(function($rootScope, $compile) {
+        var element = $compile('<img src="abc" data-src="123">')($rootScope);
+        expect(element.attr('src')).toEqual('abc');
+        expect(element.attr('data-src')).toEqual('123');
+        $rootScope.$digest();
+        expect(element.attr('src')).toEqual('abc');
+        expect(element.attr('data-src')).toEqual('123');
+    }));
 
     it('should call observer only when the attribute value changes', function() {
       module(function() {
@@ -11703,37 +11712,37 @@ describe('$compile', function() {
       // All interpolations are disallowed.
       $rootScope.onClickJs = '';
       expect(function() {
-          $compile('<button onclick="{{onClickJs}}"></script>');
+          $compile('<button onclick="{{onClickJs}}"></button>');
         }).toThrowMinErr(
           '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
       expect(function() {
-          $compile('<button ONCLICK="{{onClickJs}}"></script>');
+          $compile('<button ONCLICK="{{onClickJs}}"></button>');
         }).toThrowMinErr(
           '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
       expect(function() {
-          $compile('<button ng-attr-onclick="{{onClickJs}}"></script>');
+          $compile('<button ng-attr-onclick="{{onClickJs}}"></button>');
         }).toThrowMinErr(
           '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
       expect(function() {
-          $compile('<button ng-attr-ONCLICK="{{onClickJs}}"></script>');
+          $compile('<button ng-attr-ONCLICK="{{onClickJs}}"></button>');
         }).toThrowMinErr(
           '$compile', 'nodomevents', 'Interpolations for HTML DOM event attributes are disallowed');
     }));
 
     it('should pass through arbitrary values on onXYZ event attributes that contain a hyphen', inject(function($compile, $rootScope) {
-      element = $compile('<button on-click="{{onClickJs}}"></script>')($rootScope);
+      element = $compile('<button on-click="{{onClickJs}}"></button>')($rootScope);
       $rootScope.onClickJs = 'javascript:doSomething()';
       $rootScope.$apply();
       expect(element.attr('on-click')).toEqual('javascript:doSomething()');
     }));
 
     it('should pass through arbitrary values on "on" and "data-on" attributes', inject(function($compile, $rootScope) {
-      element = $compile('<button data-on="{{dataOnVar}}"></script>')($rootScope);
+      element = $compile('<button data-on="{{dataOnVar}}"></button>')($rootScope);
       $rootScope.dataOnVar = 'data-on text';
       $rootScope.$apply();
       expect(element.attr('data-on')).toEqual('data-on text');
 
-      element = $compile('<button on="{{onVar}}"></script>')($rootScope);
+      element = $compile('<button on="{{onVar}}"></button>')($rootScope);
       $rootScope.onVar = 'on text';
       $rootScope.$apply();
       expect(element.attr('on')).toEqual('on text');
@@ -12083,6 +12092,49 @@ describe('$compile', function() {
       expect(element.attr('test5')).toBe('Misko');
       expect(element.attr('test6')).toBe('Misko');
     }));
+
+    describe('with media url attributes', function() {
+      it('should work with interpolated ng-attr-src', inject(function() {
+        $rootScope.name = 'some-image.png';
+        element = $compile('<img ng-attr-src="{{name}}">')($rootScope);
+        expect(element.attr('src')).toBeUndefined();
+
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('some-image.png');
+
+        $rootScope.name = 'other-image.png';
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('other-image.png');
+      }));
+
+      it('should work with interpolated ng-attr-data-src', inject(function() {
+        $rootScope.name = 'some-image.png';
+        element = $compile('<img ng-attr-data-src="{{name}}">')($rootScope);
+        expect(element.attr('data-src')).toBeUndefined();
+
+        $rootScope.$digest();
+        expect(element.attr('data-src')).toBe('some-image.png');
+
+        $rootScope.name = 'other-image.png';
+        $rootScope.$digest();
+        expect(element.attr('data-src')).toBe('other-image.png');
+      }));
+
+      it('should work alongside constant [src]-attribute and [ng-attr-data-src] attributes', inject(function() {
+        $rootScope.name = 'some-image.png';
+        element = $compile('<img src="constant.png" ng-attr-data-src="{{name}}">')($rootScope);
+        expect(element.attr('data-src')).toBeUndefined();
+
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('constant.png');
+        expect(element.attr('data-src')).toBe('some-image.png');
+
+        $rootScope.name = 'other-image.png';
+        $rootScope.$digest();
+        expect(element.attr('src')).toBe('constant.png');
+        expect(element.attr('data-src')).toBe('other-image.png');
+      }));
+    });
 
     describe('when an attribute has a dash-separated name', function() {
       it('should work with different prefixes', inject(function() {

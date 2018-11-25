@@ -20,7 +20,7 @@ function main() {
     } catch (e) {
       fs.mkdirSync(__dirname + '/../../../src/ngParseExt');
     }
-    fs.writeFile(__dirname + '/../../../src/ngParseExt/ucd.js', code);
+    fs.writeFileSync(__dirname + '/../../../src/ngParseExt/ucd.js', code);
   }
 }
 

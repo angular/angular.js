@@ -64,7 +64,7 @@ a few git commands.
 
 ### Install Git
 
-You can download and install Git from http://git-scm.com/download. Once installed, you should have
+You can download and install Git from https://git-scm.com/download. Once installed, you should have
 access to the `git` command line tool. The main commands that you will need to use are:
 
 * `git clone ...`: Clone a remote repository onto your local machine.
@@ -99,8 +99,8 @@ The tutorial instructions, from now on, assume you are running all commands from
 
 ### Install Node.js
 
-If you want to run the preconfigured local web server and the test tools then you will also need
-[Node.js v4+][node].
+In order to install dependencies (such as the test tools and AngularJS itself) and run the
+preconfigured local web server, you will also need [Node.js v6+][node].
 
 You can download a Node.js installer for your operating system from https://nodejs.org/en/download/.
 
@@ -125,22 +125,25 @@ npm --version
   [Node Version Manager (nvm)][nvm] or [Node Version Manager (nvm) for Windows][nvm-windows].
 </div>
 
-Once you have Node.js installed on your machine, you can download the tool dependencies by running:
+By installing Node.js, you also get [npm][npm], which is a command line executable for downloading
+and managing Node.js packages. We use it to download the AngularJS framework as well as development
+and testing tools.
+
+Once you have Node.js installed on your machine, you can download these dependencies by running:
 
 ```
 npm install
 ```
 
-This command reads angular-phonecat's `package.json` file and downloads the following tools into the
-`node_modules` directory:
+This command reads angular-phonecat's `package.json` file and downloads the following dependencies
+into the `node_modules` directory:
 
-* [Bower][bower] - client-side code package manager
 * [Http-Server][http-server] - simple local static web server
 * [Karma][karma] - unit test runner
 * [Protractor][protractor] - end-to-end (E2E) test runner
 
-Running `npm install` will also automatically use bower to download the AngularJS framework into the
-`app/bower_components` directory.
+Running `npm install` will also automatically copy the AngularJS framework and other dependencies
+necessary for our app to work into the `app/lib/` directory.
 
 <div class="alert alert-info">
   Note the angular-phonecat project is setup to install and run these utilities via npm scripts.
@@ -160,23 +163,23 @@ tasks that you will need while developing:
 
 ### Install Helper Tools (optional)
 
-The Bower, Http-Server, Karma and Protractor modules are also executables, which can be installed
-globally and run directly from a terminal/command prompt. You don't need to do this to follow the
-tutorial, but if you decide you do want to run them directly, you can install these modules globally
-using, `sudo npm install -g ...`.
+The Http-Server, Karma and Protractor modules are also executables, which can be installed globally
+and run directly from a terminal/command prompt. You don't need to do this to follow the tutorial,
+but if you decide you do want to run them directly, you can install these modules globally using,
+`sudo npm install --global ...`.
 
-For instance, to install the Bower command line executable you would do:
-
-```
-sudo npm install -g bower
-```
-
-_(Omit the sudo if running on Windows)_
-
-Then you can run the bower tool directly, such as:
+For instance, to install the `http-server` command line executable you would do:
 
 ```
-bower install
+sudo npm install --global http-server
+```
+
+_(Omit the sudo if running on Windows.)_
+
+Then you can run the `http-server` tool directly, such as:
+
+```
+http-server ./app
 ```
 
 
@@ -278,6 +281,45 @@ It is good to run the E2E tests whenever you make changes to the HTML views or w
 the application as a whole is executing correctly. It is very common to run E2E tests before pushing
 a new commit of changes to a remote repository.
 
+<div class="alert alert-warning">
+  <p>
+    Each version of Protractor is compatible with specific browser versions. If you are reading this
+    some time in the future, it is possible that the specified Protractor version is no longer
+    compatible with the latest version of Chrome that you are using.
+  </p>
+  <p>
+    If that is the case, you can try upgrading Protractor to newer version. For instructions on how
+    to upgrade dependencies see [Updating dependencies](tutorial/#updating-dependencies).
+  </p>
+</div>
+
+
+### Updating dependencies
+
+In order to avoid surprises, all dependencies listed in `package.json` are pinned to specific
+versions (this is what the [package-lock.json][package-lock] file is about). This ensures that the
+same version of a dependency is installed every time.
+
+Since all dependencies are acquired via npm, you can use the same tool to easily update them as
+well (although you probably don't need to for the purpose of this tutorial). Simply run the
+preconfigured script:
+
+```
+npm run update-deps
+```
+
+This will update all packages to the latest version that satisfy their version ranges (as specified
+in `package.json`) and also copy the necessary files into `app/lib/`. For example, if `package.json`
+contains `"some-package": "1.2.x"`, it will be updated to the latest 1.2.x version (e.g. 1.2.99),
+but not to 1.3.x (e.g. 1.3.0).
+
+If you want to update a dependency to a version newer than what the specificed range would permit,
+you can change the version range in `package.json` and then run `npm run update-deps` as usual.
+
+<div class="alert alert-info">
+  See [here][semver-ranges] for more info on the various version range formats.
+</div>
+
 
 ### Common Issues
 
@@ -324,14 +366,16 @@ Now that you have set up your local machine, let's get started with the tutorial
 
 
 [angular-phonecat]: https://github.com/angular/angular-phonecat
-[bower]: http://bower.io/
-[git]: http://git-scm.com/
+[git]: https://git-scm.com/
 [http-server]: https://github.com/nodeapps/http-server
 [jdk]: https://en.wikipedia.org/wiki/Java_Development_Kit
-[jdk-download]: http://www.oracle.com/technetwork/java/javase/downloads/index.html
+[jdk-download]: https://www.oracle.com/technetwork/java/javase/downloads/index.html
 [karma]: https://karma-runner.github.io/
-[node]: http://nodejs.org/
+[node]: https://nodejs.org/
+[npm]: https://www.npmjs.com/
 [nvm]: https://github.com/creationix/nvm
 [nvm-windows]: https://github.com/coreybutler/nvm-windows
+[package-lock]: https://docs.npmjs.com/files/package-lock.json
 [protractor]: https://github.com/angular/protractor
-[selenium]: http://docs.seleniumhq.org/
+[selenium]: https://docs.seleniumhq.org/
+[semver-ranges]: https://docs.npmjs.com/misc/semver#ranges

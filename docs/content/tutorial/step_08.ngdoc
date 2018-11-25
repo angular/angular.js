@@ -47,10 +47,10 @@ URLs point to the `app/img/phones/` directory.
 ...
 <ul class="phones">
   <li ng-repeat="phone in $ctrl.phones | filter:$ctrl.query | orderBy:$ctrl.orderProp" class="thumbnail">
-    <a href="#/phones/{{phone.id}}" class="thumb">
+    <a href="#!/phones/{{phone.id}}" class="thumb">
       <img ng-src="{{phone.imageUrl}}" alt="{{phone.name}}" />
     </a>
-    <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+    <a href="#!/phones/{{phone.id}}">{{phone.name}}</a>
     <p>{{phone.snippet}}</p>
   </li>
 </ul>
@@ -83,7 +83,7 @@ HTTP request to an invalid location.
       query.sendKeys('nexus');
 
       element.all(by.css('.phones li a')).first().click();
-      expect(browser.getLocationAbsUrl()).toBe('/phones/nexus-s');
+      expect(browser.getCurrentUrl()).toContain('index.html#!/phones/nexus-s');
     });
 
     ...
@@ -110,8 +110,9 @@ You can now rerun `npm run protractor` to see the tests run.
 
 ## Summary
 
-Now that you have added phone images and links, go to {@link step_09 step 9} to learn about AngularJS
-layout templates and how AngularJS makes it easy to create applications that have multiple views.
+Now that you have added phone images and links, go to {@link step_09 step 9} to learn about
+AngularJS layout templates and how AngularJS makes it easy to create applications that have
+multiple views.
 
 
 <ul doc-tutorial-nav="8"></ul>

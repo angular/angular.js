@@ -16,7 +16,7 @@ SAUCE_ACCESS_KEY=$(echo "$SAUCE_ACCESS_KEY" | rev)
 BROWSERS="SL_Chrome,SL_Chrome-1,\
 SL_Firefox,SL_Firefox-1,\
 SL_Safari,SL_Safari-1,\
-SL_iOS_10,SL_iOS_11,\
+SL_iOS,SL_iOS-1,\
 SL_IE_9,SL_IE_10,SL_IE_11,\
 SL_EDGE"
 
@@ -29,18 +29,20 @@ case "$JOB" in
       # convert commit range to 2 dots, as commitplease uses `git log`.
       # See https://github.com/travis-ci/travis-ci/issues/4596 for more info
       echo "Validate commit messages in PR:"
-      yarn run commitplease -- "${TRAVIS_COMMIT_RANGE/.../..}"
+      yarn run commitplease "${TRAVIS_COMMIT_RANGE/.../..}"
     fi
     ;;
   "unit-core")
     grunt test:promises-aplus
     grunt test:jqlite --browsers="$BROWSERS" --reporters=spec
-    grunt test:modules --browsers="$BROWSERS" --reporters=spec
     ;;
   "unit-jquery")
     grunt test:jquery --browsers="$BROWSERS" --reporters=spec
     grunt test:jquery-2.2 --browsers="$BROWSERS" --reporters=spec
     grunt test:jquery-2.1 --browsers="$BROWSERS" --reporters=spec
+    ;;
+  "unit-modules")
+    grunt test:modules --browsers="$BROWSERS" --reporters=spec
     ;;
   "docs-app")
     grunt tests:docs --browsers="$BROWSERS" --reporters=spec
@@ -102,6 +104,7 @@ case "$JOB" in
       'ci-checks',\
       'unit-core',\
       'unit-jquery',\
+      'unit-modules',\
       'docs-app',\
       'e2e',\
       or\

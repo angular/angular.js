@@ -21,49 +21,33 @@ In this step, we will change the way our application fetches data.
 The RESTful functionality is provided by AngularJS in the {@link ngResource ngResource} module, which
 is distributed separately from the core AngularJS framework.
 
-Since we are using [Bower][bower] to install client-side dependencies, this step updates the
-`bower.json` configuration file to include the new dependency:
+Since we are using [npm][npm] to install client-side dependencies, this step updates the
+`package.json` configuration file to include the new dependency:
 
 <br />
-**`bower.json`:**
+**`package.json`:**
 
-```
+```json
 {
   "name": "angular-phonecat",
-  "description": "A starter project for AngularJS",
-  "version": "0.0.0",
-  "homepage": "https://github.com/angular/angular-phonecat",
-  "license": "MIT",
-  "private": true,
+  ...
   "dependencies": {
-    "angular": "1.5.x",
-    "angular-mocks": "1.5.x",
-    "angular-resource": "1.5.x",
-    "angular-route": "1.5.x",
+    "angular": "1.7.x",
+    "angular-resource": "1.7.x",
+    "angular-route": "1.7.x",
     "bootstrap": "3.3.x"
-  }
+  },
+  ...
 }
 ```
 
-The new dependency `"angular-resource": "1.5.x"` tells bower to install a version of the
-angular-resource module that is compatible with version 1.5.x of AngularJS. We must tell bower to
+The new dependency `"angular-resource": "1.7.x"` tells npm to install a version of the
+angular-resource module that is compatible with version 1.7.x of AngularJS. We must tell npm to
 download and install this dependency.
 
 ```
 npm install
 ```
-
-<div class="alert alert-info">
-  **Note:** If you have bower installed globally, you can run `bower install`, but for this project
-  we have preconfigured `npm install` to run bower for us.
-</div>
-
-<div class="alert alert-warning">
-  **Warning:** If a new version of AngularJS has been released since you last ran `npm install`, then
-  you may have a problem with the `bower install` due to a conflict between the versions of
-  angular.js that need to be installed. If you run into this issue, simply delete your
-  `app/bower_components` directory and then run `npm install`.
-</div>
 
 
 ## Service
@@ -129,7 +113,7 @@ need to load the `angular-resource.js` file, which contains the `ngResource` mod
 ```html
 <head>
   ...
-  <script src="bower_components/angular-resource/angular-resource.js"></script>
+  <script src="lib/angular-resource/angular-resource.js"></script>
   ...
   <script src="core/phone/phone.module.js"></script>
   <script src="core/phone/phone.service.js"></script>
@@ -141,9 +125,10 @@ need to load the `angular-resource.js` file, which contains the `ngResource` mod
 ## Component Controllers
 
 We can now simplify our component controllers (`PhoneListController` and `PhoneDetailController`) by
-factoring out the lower-level `$http` service, replacing it with the new `Phone` service. AngularJS's
-`$resource` service is easier to use than `$http` for interacting with data sources exposed as
-RESTful resources. It is also easier now to understand what the code in our controllers is doing.
+factoring out the lower-level `$http` service, replacing it with the new `Phone` service.
+AngularJS's `$resource` service is easier to use than `$http` for interacting with data sources
+exposed as RESTful resources. It is also easier now to understand what the code in our controllers
+is doing.
 
 <br />
 **`app/phone-list/phone-list.module.js`:**
@@ -240,8 +225,8 @@ Karma configuration file with angular-resource.
 
 ```js
     files: [
-      'bower_components/angular/angular.js',
-      'bower_components/angular-resource/angular-resource.js',
+      'lib/angular/angular.js',
+      'lib/angular-resource/angular-resource.js',
       ...
     ],
 ```
@@ -319,6 +304,6 @@ Now that we have seen how to build a custom service as a RESTful client, we are 
 <ul doc-tutorial-nav="13"></ul>
 
 
-[bower]: http://bower.io/
 [jasmine-equality]: https://jasmine.github.io/2.4/custom_equality.html
+[npm]: https://www.npmjs.com/
 [restful]: https://en.wikipedia.org/wiki/Representational_State_Transfer

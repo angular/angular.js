@@ -51,8 +51,8 @@ The code contains some key AngularJS elements that we will need as we progress.
   <head>
     <meta charset="utf-8">
     <title>My HTML File</title>
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-    <script src="bower_components/angular/angular.js"></script>
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.css" />
+    <script src="lib/angular/angular.js"></script>
   </head>
   <body>
 
@@ -84,7 +84,7 @@ For more info on `ngApp`, check out the {@link ngApp API Reference}.
 **`angular.js` script tag:**
 
 ```html
-<script src="bower_components/angular/angular.js"></script>
+<script src="lib/angular/angular.js"></script>
 ```
 
 This code downloads the `angular.js` script which registers a callback that will be executed by the
@@ -154,8 +154,8 @@ and one static binding, and our model is empty. That will soon change!
 
 Most of the files in your working directory come from the [angular-seed project][angular-seed],
 which is typically used to bootstrap new AngularJS projects. The seed project is pre-configured to
-install the AngularJS framework (via `bower` into the `app/bower_components/` directory) and tools
-for developing and testing a typical web application (via `npm`).
+install the AngularJS framework (via `npm` into the `app/lib/` directory) and tools for developing
+and testing a typical web application (via `npm`).
 
 For the purposes of this tutorial, we modified the angular-seed with the following changes:
 
@@ -163,7 +163,7 @@ For the purposes of this tutorial, we modified the angular-seed with the followi
 * Removed unused dependencies.
 * Added phone images to `app/img/phones/`.
 * Added phone data files (JSON) to `app/phones/`.
-* Added a dependency on [Bootstrap](http://getbootstrap.com) in the `bower.json` file.
+* Added a dependency on [Bootstrap][bootstrap-3.3] in the `package.json` file.
 
 
 ## Experiments
@@ -186,3 +186,4 @@ Now let's go to {@link step_01 step 1} and add some content to the web app.
 
 
 [angular-seed]: https://github.com/angular/angular-seed
+[bootstrap-3.3]: https://getbootstrap.com/docs/3.3

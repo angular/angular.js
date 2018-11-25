@@ -113,8 +113,6 @@ var $$AnimationProvider = ['$animateProvider', /** @this */ function($animatePro
 
     // TODO(matsko): document the signature in a better way
     return function(element, event, options) {
-      var node = getDomNode(element);
-
       options = prepareAnimationOptions(options);
       var isStructural = ['enter', 'move', 'leave'].indexOf(event) >= 0;
 
@@ -186,8 +184,9 @@ var $$AnimationProvider = ['$animateProvider', /** @this */ function($animatePro
         forEach(groupedAnimations, function(animationEntry) {
           var element = animationEntry.from ? animationEntry.from.element : animationEntry.element;
           var extraClasses = options.addClass;
+
           extraClasses = (extraClasses ? (extraClasses + ' ') : '') + NG_ANIMATE_CLASSNAME;
-          var cacheKey = $$animateCache.cacheKey(node, event, extraClasses, options.removeClass);
+          var cacheKey = $$animateCache.cacheKey(element[0], animationEntry.event, extraClasses, options.removeClass);
 
           toBeSortedAnimations.push({
             element: element,

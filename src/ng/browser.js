@@ -108,6 +108,9 @@ function Browser(window, document, $log, $sniffer, $$taskTrackerFactory) {
     if (url) {
       var sameState = lastHistoryState === state;
 
+      // Normalize the inputted URL
+      url = urlResolve(url).href;
+
       // Don't change anything if previous and current URLs and states match. This also prevents
       // IE<10 from getting into redirect loop when in LocationHashbangInHtml5Url mode.
       // See https://github.com/angular/angular.js/commit/ffb2701

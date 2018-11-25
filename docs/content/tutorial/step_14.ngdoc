@@ -22,58 +22,42 @@ the template code we created earlier.
 ## Dependencies
 
 The animation functionality is provided by AngularJS in the `ngAnimate` module, which is distributed
-separately from the core AngularJS framework. In addition we will use [jQuery][jquery] in this project
-to do extra JavaScript animations.
+separately from the core AngularJS framework. In addition we will use [jQuery][jquery] in this
+project to do extra JavaScript animations.
 
-Since we are using [Bower][bower] to install client-side dependencies, this step updates the
-`bower.json` configuration file to include the new dependencies:
+Since we are using [npm][npm] to install client-side dependencies, this step updates the
+`package.json` configuration file to include the new dependencies:
 
 <br />
-**`bower.json`:**
+**`package.json`:**
 
-```
+```json
 {
   "name": "angular-phonecat",
-  "description": "A starter project for AngularJS",
-  "version": "0.0.0",
-  "homepage": "https://github.com/angular/angular-phonecat",
-  "license": "MIT",
-  "private": true,
+  ...
   "dependencies": {
-    "angular": "1.5.x",
-    "angular-animate": "1.5.x",
-    "angular-mocks": "1.5.x",
-    "angular-resource": "1.5.x",
-    "angular-route": "1.5.x",
+    "angular": "1.7.x",
+    "angular-animate": "1.7.x",
+    "angular-resource": "1.7.x",
+    "angular-route": "1.7.x",
     "bootstrap": "3.3.x",
-    "jquery": "3.2.x"
-  }
+    "jquery": "3.3.x"
+  },
+  ...
 }
 ```
 
-* `"angular-animate": "1.5.x"` tells bower to install a version of the angular-animate module that
-  is compatible with version 1.5.x of AngularJS.
-* `"jquery": "3.2.x"` tells bower to install the latest patch release of the 3.2 version of jQuery.
-  Note that this is not an AngularJS library; it is the standard jQuery library. We can use bower to
+* `"angular-animate": "1.7.x"` tells npm to install a version of the angular-animate module that
+  is compatible with version 1.7.x of AngularJS.
+* `"jquery": "3.3.x"` tells npm to install the latest patch release of the 3.3 version of jQuery.
+  Note that this is not an AngularJS library; it is the standard jQuery library. We can use npm to
   install a wide range of 3rd party libraries.
 
-Now, we must tell bower to download and install these dependencies.
+Now, we must tell npm to download and install these dependencies.
 
 ```
 npm install
 ```
-
-<div class="alert alert-info">
-  **Note:** If you have bower installed globally, you can run `bower install`, but for this project
-  we have preconfigured `npm install` to run bower for us.
-</div>
-
-<div class="alert alert-warning">
-  **Warning:** If a new version of AngularJS has been released since you last ran `npm install`, then
-  you may have a problem with the `bower install` due to a conflict between the versions of
-  angular.js that need to be installed. If you run into this issue, simply delete your
-  `app/bower_components` directory and then run `npm install`.
-</div>
 
 
 ## How Animations work with `ngAnimate`
@@ -101,12 +85,12 @@ code necessary to make your application "animation aware".
   ...
 
   <!-- Used for JavaScript animations (include this before angular.js) -->
-  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="lib/jquery/dist/jquery.js"></script>
 
   ...
 
   <!-- Adds animation support in AngularJS -->
-  <script src="bower_components/angular-animate/angular-animate.js"></script>
+  <script src="lib/angular-animate/angular-animate.js"></script>
 
   <!-- Defines JavaScript animations -->
   <script src="app.animations.js"></script>
@@ -115,8 +99,8 @@ code necessary to make your application "animation aware".
 ```
 
 <div class="alert alert-error">
-  **Important:** Be sure to use jQuery version 2.1 or newer, when using AngularJS 1.5 or newer; jQuery 1.x is
-  not officially supported.
+  **Important:** Be sure to use jQuery version 2.1 or newer, when using AngularJS 1.5 or newer;
+  jQuery 1.x is not officially supported.
   In order for AngularJS to detect jQuery and take advantage of it, make sure to include `jquery.js`
   before `angular.js`.
 </div>
@@ -556,9 +540,9 @@ There you have it! We have created a web application in a relatively short amoun
 <ul doc-tutorial-nav="14"></ul>
 
 
-[bower]: http://bower.io/
-[caniuse-css-animation]: http://caniuse.com/#feat=css-animation
-[caniuse-css-transitions]: http://caniuse.com/#feat=css-transitions
+[caniuse-css-animation]: https://caniuse.com/#feat=css-animation
+[caniuse-css-transitions]: https://caniuse.com/#feat=css-transitions
 [jquery]: https://jquery.com/
-[jquery-animate]: https://api.jquery.com/animate/
+[jquery-animate]: https://api.jquery.com/animate
 [mdn-animations]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Animations/Using_CSS_animations
+[npm]: https://www.npmjs.com/

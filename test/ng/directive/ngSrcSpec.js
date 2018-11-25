@@ -78,6 +78,20 @@ describe('ngSrc', function() {
         expect(element.prop('src')).toEqual('http://somewhere/abc');
       }));
     }
+
+    it('should work with `src` attribute on the same element', inject(function($rootScope, $compile) {
+      $rootScope.imageUrl = 'dynamic';
+      element = $compile('<img ng-src="{{imageUrl}}" src="static">')($rootScope);
+      expect(element.attr('src')).toBe('static');
+      $rootScope.$digest();
+      expect(element.attr('src')).toBe('dynamic');
+      dealoc(element);
+
+      element = $compile('<img src="static" ng-src="{{imageUrl}}">')($rootScope);
+      expect(element.attr('src')).toBe('static');
+      $rootScope.$digest();
+      expect(element.attr('src')).toBe('dynamic');
+    }));
   });
 
   describe('iframe[ng-src]', function() {

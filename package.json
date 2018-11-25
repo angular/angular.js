@@ -9,15 +9,14 @@
     "url": "https://github.com/angular/angular.js.git"
   },
   "engines": {
-    "node": "^8.9.1",
-    "yarn": ">=1.3.2",
-    "grunt": "^1.2.0"
+    "node": ">=8.12.0",
+    "yarn": ">=1.10.1",
+    "grunt-cli": "^1.2.0"
   },
   "scripts": {
     "commit": "git-cz",
     "test-i18n": "jasmine-node i18n/spec",
-    "test-i18n-ucd": "jasmine-node i18n/ucd/spec",
-    "grunt": "grunt"
+    "test-i18n-ucd": "jasmine-node i18n/ucd/spec"
   },
   "devDependencies": {
     "angular-benchpress": "0.x.x",
@@ -33,7 +32,7 @@
     "cross-spawn": "^4.0.0",
     "cz-conventional-changelog": "1.1.4",
     "dgeni": "^0.4.9",
-    "dgeni-packages": "^0.26.2",
+    "dgeni-packages": "^0.26.5",
     "eslint-plugin-promise": "^3.6.0",
     "event-stream": "~3.1.0",
     "glob": "^6.0.1",
@@ -63,7 +62,7 @@
     "jquery": "3.2.1",
     "jquery-2.1": "npm:jquery@2.1.4",
     "jquery-2.2": "npm:jquery@2.2.4",
-    "karma": "^2.0.4",
+    "karma": "3.1.1",
     "karma-browserstack-launcher": "^1.3.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-edge-launcher": "^0.4.2",
@@ -84,13 +83,13 @@
     "npm-run": "^4.1.0",
     "open-sans-fontface": "^1.4.0",
     "promises-aplus-tests": "~2.1.0",
-    "protractor": "^5.1.2",
+    "protractor": "^5.4.1",
     "q": "~1.0.0",
     "q-io": "^1.10.9",
     "qq": "^0.3.5",
     "rewire": "~2.1.0",
     "sax": "^1.1.1",
-    "selenium-webdriver": "^2.53.1",
+    "selenium-webdriver": "^4.0.0-alpha.1",
     "semver": "^5.4.1",
     "serve-favicon": "^2.3.0",
     "serve-index": "^1.8.0",
@@ -100,6 +99,11 @@
     "stringmap": "^0.2.2"
   },
   "dependencies": {},
+  "resolutions": {
+    "//1": "`natives@1.1.0` does not work with Node.js 10.x on Windows 10",
+    "//2": "(E.g. see https://github.com/gulpjs/gulp/issues/2162.)",
+    "natives": "1.1.3"
+  },
   "commitplease": {
     "style": "angular",
     "nohook": true
