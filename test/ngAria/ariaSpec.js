@@ -954,6 +954,59 @@ describe('$aria', function() {
       expect(clickEvents).toEqual(['div(true)', 'li(true)', 'div(true)', 'li(true)']);
     });
 
+    it('should trigger a click in browsers that provide `event.which` instead of `event.keyCode`',
+      function() {
+        compileElement(
+          '<section>' +
+            '<div ng-click="onClick($event)"></div>' +
+            '<ul><li ng-click="onClick($event)"></li></ul>' +
+          '</section>');
+
+        var divElement = element.find('div');
+        var liElement = element.find('li');
+
+        divElement.triggerHandler({type: 'keydown', which: 13});
+        liElement.triggerHandler({type: 'keydown', which: 13});
+        divElement.triggerHandler({type: 'keydown', which: 32});
+        liElement.triggerHandler({type: 'keydown', which: 32});
+
+        expect(clickEvents).toEqual(['div(true)', 'li(true)', 'div(true)', 'li(true)']);
+      }
+    );
+
+    it('should not prevent default keyboard action if the target element has editable content',
+      function() {
+        compileElement(
+          '<section>' +
+            '<div ng-click="onClick($event)" ng-attr-contenteditable="{{ edit }}"></div>' +
+            '<ul ng-click="onClick($event)"><li ng-attr-contenteditable="{{ edit }}"></li></ul>' +
+          '</section>');
+
+        var divElement = element.find('div');
+        var ulElement = element.find('ul');
+        var liElement = element.find('li');
+
+        // Using `browserTrigger()`, because it supports event bubbling.
+
+        // Element are not editable yet.
+        browserTrigger(divElement, 'keydown', {bubbles: true, cancelable: true, keyCode: 13});
+        browserTrigger(ulElement, 'keydown', {bubbles: true, cancelable: true, keyCode: 32});
+        browserTrigger(liElement, 'keydown', {bubbles: true, cancelable: true, keyCode: 13});
+
+        expect(clickEvents).toEqual(['div(true)', 'ul(true)', 'li(true)']);
+
+        clickEvents = [];
+        scope.$apply('edit = true');
+
+        // Element are now editable.
+        browserTrigger(divElement, 'keydown', {bubbles: true, cancelable: true, keyCode: 32});
+        browserTrigger(ulElement, 'keydown', {bubbles: true, cancelable: true, keyCode: 13});
+        browserTrigger(liElement, 'keydown', {bubbles: true, cancelable: true, keyCode: 32});
+
+        expect(clickEvents).toEqual(['div(false)', 'ul(true)', 'li(false)']);
+      }
+    );
+
     they('should not prevent default keyboard action if an interactive $type element' +
       'is nested inside ng-click', nodeBlackList, function(elementType) {
         function createHTML(type) {
@@ -978,26 +1031,6 @@ describe('$aria', function() {
         // 32 Space
         browserTrigger(interactiveElement, 'keydown', {cancelable: true, bubbles: true, keyCode: 32});
         expect(clickEvents).toEqual([elementType.toLowerCase() + '(false)']);
-      }
-    );
-
-    it('should trigger a click in browsers that provide `event.which` instead of `event.keyCode`',
-      function() {
-        compileElement(
-          '<section>' +
-            '<div ng-click="onClick($event)"></div>' +
-            '<ul><li ng-click="onClick($event)"></li></ul>' +
-          '</section>');
-
-        var divElement = element.find('div');
-        var liElement = element.find('li');
-
-        divElement.triggerHandler({type: 'keydown', which: 13});
-        liElement.triggerHandler({type: 'keydown', which: 13});
-        divElement.triggerHandler({type: 'keydown', which: 32});
-        liElement.triggerHandler({type: 'keydown', which: 32});
-
-        expect(clickEvents).toEqual(['div(true)', 'li(true)', 'div(true)', 'li(true)']);
       }
     );
 
