@@ -104,3 +104,11 @@ AngularJS has Dependency Injection, i.e. it takes care of providing all the nece
 to its controllers and services whenever required. This helps in making the AngularJS code ready for
 unit testing by making use of mock dependencies created and injected. This makes AngularJS more
 modular and easily testable thus in turn helping a team create more robust applications.
+
+This branch has conflicts that must be resolved
+ Use the command line to resolve conflicts before continuing.
+Conflicting files
+karma-shared.conf.js
+package.json
+test/ng/browserSpecs.js
+yarn.lock
