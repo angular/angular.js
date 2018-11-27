@@ -148,9 +148,7 @@ into the layout template. This makes it a perfect fit for our `index.html` templ
 We have added four new `<script>` tags in our `index.html` file to load some extra JavaScript files
 into our application:
 
-* `angular-route.js`: Defines the AngularJS `ngRoute` module, which provides us with routing.
-* `app.config.js`: Configures the providers available to our main module (see
-  [below](tutorial/step_09#configuring-a-module)).
+* `angular-config.js`: Defines the AngularJS `ngRoute` module, which provides us with routing.
 * `phone-detail.module.js`: Defines a new module containing a `phoneDetail` component.
 * `phone-detail.component.js`: Defines a dummy `phoneDetail` component (see
   [below](tutorial/step_09#the-phonedetail-component)).
