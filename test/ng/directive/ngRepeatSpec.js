@@ -400,6 +400,43 @@ describe('ngRepeat', function() {
       expect(element.find('input')[1].checked).toBe(true);
       expect(element.find('input')[2].checked).toBe(true);
     }));
+
+    it('should invoke track by with correct locals', function() {
+      scope.trackBy = jasmine.createSpy().and.callFake(function(k, v) {
+        return [k, v].join('');
+      });
+
+      element = $compile(
+        '<ul>' +
+          '<li ng-repeat="(k, v) in [1, 2] track by trackBy(k, v)"></li>' +
+        '</ul>')(scope);
+      scope.$digest();
+
+      expect(scope.trackBy).toHaveBeenCalledTimes(2);
+      expect(scope.trackBy.calls.argsFor(0)).toEqual([0, 1]);
+      expect(scope.trackBy.calls.argsFor(1)).toEqual([1, 2]);
+    });
+
+    // https://github.com/angular/angular.js/issues/16776
+    it('should invoke nested track by with correct locals', function() {
+      scope.trackBy = jasmine.createSpy().and.callFake(function(k1, v1, k2, v2) {
+        return [k1, v1, k2, v2].join('');
+      });
+
+      element = $compile(
+        '<ul>' +
+          '<li ng-repeat="(k1, v1) in [1, 2]">' +
+            '<div ng-repeat="(k2, v2) in [3, 4] track by trackBy(k1, v1, k2, v2)"></div>' +
+          '</li>' +
+        '</ul>')(scope);
+      scope.$digest();
+
+      expect(scope.trackBy).toHaveBeenCalledTimes(4);
+      expect(scope.trackBy.calls.argsFor(0)).toEqual([0, 1, 0, 3]);
+      expect(scope.trackBy.calls.argsFor(1)).toEqual([0, 1, 1, 4]);
+      expect(scope.trackBy.calls.argsFor(2)).toEqual([1, 2, 0, 3]);
+      expect(scope.trackBy.calls.argsFor(3)).toEqual([1, 2, 1, 4]);
+    });
   });
 
   describe('alias as', function() {
