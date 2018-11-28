@@ -181,7 +181,7 @@
       </file>
     </example>
  *
- * @element INPUT
+ * @element INPUT, BUTTON, SELECT
  * @param {expression} ngDisabled If the {@link guide/expression expression} is truthy,
  *     then the `disabled` attribute will be set on the element
  */
