@@ -62,7 +62,7 @@
  *   </file>
  * </example>
  */
-var requiredDirective = function($parse) {
+var requiredDirective = ['$parse', function($parse) {
   return {
     restrict: 'A',
     require: '?ngModel',
@@ -84,7 +84,7 @@ var requiredDirective = function($parse) {
       });
     }
   };
-};
+}];
 
 /**
  * @ngdoc directive
@@ -292,7 +292,7 @@ var patternDirective = function($parse) {
  *   </file>
  * </example>
  */
-var maxlengthDirective = function($parse) {
+var maxlengthDirective = ['$parse', function($parse) {
   return {
     restrict: 'A',
     require: '?ngModel',
@@ -314,7 +314,7 @@ var maxlengthDirective = function($parse) {
       };
     }
   };
-};
+}];
 
 /**
  * @ngdoc directive
@@ -385,7 +385,7 @@ var maxlengthDirective = function($parse) {
  *   </file>
  * </example>
  */
-var minlengthDirective = function($parse) {
+var minlengthDirective = ['$parse', function($parse) {
   return {
     restrict: 'A',
     require: '?ngModel',
@@ -408,7 +408,7 @@ var minlengthDirective = function($parse) {
       };
     }
   };
-};
+}];
 
 
 function parsePatternAttr(regex, patternExp, elm) {
