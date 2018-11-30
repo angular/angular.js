@@ -592,6 +592,12 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
             }
           }
 
+          // Clear the value property from the hashFnLocals object to prevent a reference to the last value
+          // being leaked into the ngRepeatCompile function scope
+          if (hashFnLocals) {
+            hashFnLocals[valueIdentifier] = undefined;
+          }
+
           // remove leftover items
           for (var blockKey in lastBlockMap) {
             block = lastBlockMap[blockKey];
