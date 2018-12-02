@@ -431,7 +431,6 @@
     </example>
  */
 var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $animate, $compile) {
-  var NG_REMOVED = '$$NG_REMOVED';
   var ngRepeatMinErr = minErr('ngRepeat');
 
   var updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength) {
@@ -446,14 +445,9 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
     scope.$odd = !(scope.$even = (index & 1) === 0);
   };
 
-  var getBlockStart = function(block) {
-    return block.clone[0];
-  };
-
   var getBlockEnd = function(block) {
     return block.clone[block.clone.length - 1];
   };
-
 
   return {
     restrict: 'A',
@@ -531,126 +525,124 @@ var ngRepeatDirective = ['$parse', '$animate', '$compile', function($parse, $ani
 
         //watch props
         $scope.$watchCollection(rhs, function ngRepeatAction(collection) {
-          var index, length,
-              previousNode = $element[0],     // node that cloned nodes should be inserted after
-                                              // initialized to the comment node anchor
-              nextNode,
-              // Same as lastBlockMap but it has the current state. It will become the
-              // lastBlockMap on the next iteration.
-              nextBlockMap = createMap(),
-              collectionLength,
-              key, value, // key/value of iteration
-              trackById,
-              trackByIdFn,
-              collectionKeys,
-              block,       // last object information {scope, element, id}
-              nextBlockOrder,
-              elementsToRemove;
+          var
+            block,                       // last object information {scope, element, id}
+            collectionIsLikeArray,
+            collectionKeys = [],
+            elementsToRemove,
+            index, key, value,
+            lastBlockOrder = [],
+            lastKey,
+            nextBlockMap = createMap(),
+            nextBlockOrder = [],
+            nextKey,
+            nextLength,
+            previousNode = $element[0],  // node that cloned nodes should be inserted after
+                                         // initialized to the comment node anchor
+            trackById,
+            trackByIdFn;
 
           if (aliasAs) {
             $scope[aliasAs] = collection;
           }
 
-          if (isArrayLike(collection)) {
-            collectionKeys = collection;
+          // get collectionKeys
+          collectionIsLikeArray = isArrayLike(collection);
+          if (collectionIsLikeArray) {
             trackByIdFn = trackByIdExpFn || trackByIdArrayFn;
           } else {
             trackByIdFn = trackByIdExpFn || trackByIdObjFn;
             // if object, extract keys, in enumeration order, unsorted
-            collectionKeys = [];
-            for (var itemKey in collection) {
-              if (hasOwnProperty.call(collection, itemKey) && itemKey.charAt(0) !== '$') {
-                collectionKeys.push(itemKey);
+            for (key in collection) {
+              if (hasOwnProperty.call(collection, key) && key.charAt(0) !== '$') {
+                collectionKeys.push(key);
               }
             }
           }
+          nextLength = collectionIsLikeArray ? collection.length : collectionKeys.length;
 
-          collectionLength = collectionKeys.length;
-          nextBlockOrder = new Array(collectionLength);
-
-          // locate existing items
-          for (index = 0; index < collectionLength; index++) {
-            key = (collection === collectionKeys) ? index : collectionKeys[index];
+          // setup nextBlockMap
+          for (index = 0; index < nextLength; index++) {
+            key = collectionIsLikeArray ? index : collectionKeys[index];
             value = collection[key];
             trackById = trackByIdFn(key, value, index);
-            if (lastBlockMap[trackById]) {
-              // found previously seen block
-              block = lastBlockMap[trackById];
-              delete lastBlockMap[trackById];
-              nextBlockMap[trackById] = block;
-              nextBlockOrder[index] = block;
-            } else if (nextBlockMap[trackById]) {
-              // if collision detected. restore lastBlockMap and throw an error
-              forEach(nextBlockOrder, function(block) {
-                if (block && block.scope) lastBlockMap[block.id] = block;
-              });
+
+            if (nextBlockMap[trackById]) {
+              // if collision detected, throw an error
               throw ngRepeatMinErr('dupes',
-                  'Duplicates in a repeater are not allowed. Use \'track by\' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}, Duplicate value: {2}',
-                  expression, trackById, value);
-            } else {
-              // new never before seen block
-              nextBlockOrder[index] = {id: trackById, scope: undefined, clone: undefined};
-              nextBlockMap[trackById] = true;
+                'Duplicates in a repeater are not allowed. Use \'track by\' expression to specify unique keys. Repeater: {0}, Duplicate key: {1}, Duplicate value: {2}',
+                expression, trackById, value);
             }
+
+            nextBlockMap[trackById] = {id: trackById, clone: undefined, scope: undefined, index: index};
+            nextBlockOrder[index] = trackById;
           }
 
-          // remove leftover items
-          for (var blockKey in lastBlockMap) {
-            block = lastBlockMap[blockKey];
-            elementsToRemove = getBlockNodes(block.clone);
-            $animate.leave(elementsToRemove);
-            if (elementsToRemove[0].parentNode) {
-              // if the element was not removed yet because of pending animation, mark it as deleted
-              // so that we can ignore it later
-              for (index = 0, length = elementsToRemove.length; index < length; index++) {
-                elementsToRemove[index][NG_REMOVED] = true;
-              }
-            }
-            block.scope.$destroy();
+          // Set up lastBlockOrder. Used to determine if a block moved.
+          for (key in lastBlockMap) {
+            lastBlockOrder[lastBlockMap[key].index] = key;
           }
 
-          // we are not using forEach for perf reasons (trying to avoid #call)
-          for (index = 0; index < collectionLength; index++) {
-            key = (collection === collectionKeys) ? index : collectionKeys[index];
-            value = collection[key];
-            block = nextBlockOrder[index];
+          for (index = 0; index < nextLength; index++) {
+            key = collectionIsLikeArray ? index : collectionKeys[index];
+            nextKey = nextBlockOrder[index];
 
-            if (block.scope) {
-              // if we have already seen this object, then we need to reuse the
-              // associated scope/element
+            if (lastBlockMap[nextKey]) {
+              // we have already seen this object and need to reuse the associated scope/element
+              block = lastBlockMap[nextKey];
 
-              nextNode = previousNode;
+              // move
+              if (lastBlockMap[nextKey].index !== nextBlockMap[nextKey].index) {
+                // If this block has moved because the last previous block was removed,
+                // then use the last previous block to set previousNode.
+                lastKey = lastBlockOrder[lastBlockMap[nextKey].index - 1];
+                if (lastKey && !nextBlockMap[lastKey]) {
+                  previousNode = getBlockEnd(lastBlockMap[lastKey]);
+                }
 
-              // skip nodes that are already pending removal via leave animation
-              do {
-                nextNode = nextNode.nextSibling;
-              } while (nextNode && nextNode[NG_REMOVED]);
-
-              if (getBlockStart(block) !== nextNode) {
-                // existing item which got moved
                 $animate.move(getBlockNodes(block.clone), null, previousNode);
+                block.index = nextBlockMap[nextKey].index;
               }
+
+              updateScope(block.scope, index,  valueIdentifier, collection[key], keyIdentifier, key, nextLength);
+
+              nextBlockMap[nextKey] = block;
               previousNode = getBlockEnd(block);
-              updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+
             } else {
+              // enter
               // new item which we don't know about
               $transclude(function ngRepeatTransclude(clone, scope) {
-                block.scope = scope;
+                nextBlockMap[nextKey].scope = scope;
                 // http://jsperf.com/clone-vs-createcomment
                 var endNode = ngRepeatEndComment.cloneNode(false);
                 clone[clone.length++] = endNode;
 
                 $animate.enter(clone, null, previousNode);
                 previousNode = endNode;
+
                 // Note: We only need the first/last node of the cloned nodes.
                 // However, we need to keep the reference to the jqlite wrapper as it might be changed later
                 // by a directive with templateUrl when its template arrives.
-                block.clone = clone;
-                nextBlockMap[block.id] = block;
-                updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
+                nextBlockMap[nextKey].clone = clone;
+                updateScope(scope, nextBlockMap[nextKey].index, valueIdentifier, collection[key], keyIdentifier, key, nextLength);
               });
             }
           }
+
+          // leave
+          // This must go after enter and move because leave prevents getting element's parent.
+          for (key in lastBlockMap) {
+            if (nextBlockMap[key]) {
+              continue;
+            }
+
+            block = lastBlockMap[key];
+            elementsToRemove = getBlockNodes(block.clone);
+            $animate.leave(elementsToRemove);
+            block.scope.$destroy();
+          }
+
           lastBlockMap = nextBlockMap;
         });
       };

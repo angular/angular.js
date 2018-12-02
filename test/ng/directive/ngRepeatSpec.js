@@ -1428,14 +1428,57 @@ describe('ngRepeat animations', function() {
     };
   }));
 
+  beforeEach(function() {
+    jasmine.addMatchers({
+      toContainQueueItem: function() {
+        return {
+          compare: generateCompare(false),
+          negativeCompare: generateCompare(true)
+        };
+        function generateCompare(isNot) {
+          /**
+           * Matcher that checks that the expected element text is in the actual Array of
+           * animation queue items and that the event matches.
+           * @param {array} actual
+           * @param {string} expectedElementText
+           * @param {string} expectedEvent optional if isNot = true
+           * @returns {{pass: boolean, message: message}}
+           */
+          return function(actual, expectedElementText, expectedEvent) {
+            if (expectedEvent === undefined) {
+              expectedEvent = '';
+            }
+            var actualLength = actual.length;
+            var i;
+            var item;
+            var message = valueFn(
+              'Expected animation queue to ' + (isNot ? 'not ' : '') + 'contain an item '
+              + 'where the element\'s text is "' + expectedElementText
+              + '"' + (isNot ? '' : ' and the event is "' + expectedEvent + '"')
+            );
+            var pass = isNot;
+
+            for (i = 0; i < actualLength; i++) {
+              item = actual[i];
+              if (item.element.text() === expectedElementText) {
+                pass = item.event === expectedEvent;
+                break;
+              }
+            }
+
+            return {'pass': pass, 'message': message};
+          };
+        }
+      }
+    });
+  });
+
   afterEach(function() {
     body.empty();
   });
 
   it('should fire off the enter animation',
     inject(function($compile, $rootScope, $animate) {
-
-    var item;
 
     element = $compile(html(
       '<div><div ' +
@@ -1449,23 +1492,14 @@ describe('ngRepeat animations', function() {
     $rootScope.items = ['1','2','3'];
     $rootScope.$digest();
 
-    item = $animate.queue.shift();
-    expect(item.event).toBe('enter');
-    expect(item.element.text()).toBe('1');
-
-    item = $animate.queue.shift();
-    expect(item.event).toBe('enter');
-    expect(item.element.text()).toBe('2');
-
-    item = $animate.queue.shift();
-    expect(item.event).toBe('enter');
-    expect(item.element.text()).toBe('3');
+    expect($animate.queue).toContainQueueItem('1', 'enter');
+    expect($animate.queue).toContainQueueItem('2', 'enter');
+    expect($animate.queue).toContainQueueItem('3', 'enter');
+    $animate.queue = [];
   }));
 
   it('should fire off the leave animation',
     inject(function($compile, $rootScope, $animate) {
-
-    var item;
 
     element = $compile(html(
       '<div><div ' +
@@ -1477,31 +1511,24 @@ describe('ngRepeat animations', function() {
     $rootScope.items = ['1','2','3'];
     $rootScope.$digest();
 
-    item = $animate.queue.shift();
-    expect(item.event).toBe('enter');
-    expect(item.element.text()).toBe('1');
-
-    item = $animate.queue.shift();
-    expect(item.event).toBe('enter');
-    expect(item.element.text()).toBe('2');
-
-    item = $animate.queue.shift();
-    expect(item.event).toBe('enter');
-    expect(item.element.text()).toBe('3');
+    expect($animate.queue).toContainQueueItem('1', 'enter');
+    expect($animate.queue).toContainQueueItem('2', 'enter');
+    expect($animate.queue).toContainQueueItem('3', 'enter');
+    $animate.queue = [];
 
     $rootScope.items = ['1','3'];
     $rootScope.$digest();
 
-    item = $animate.queue.shift();
-    expect(item.event).toBe('leave');
-    expect(item.element.text()).toBe('2');
+    expect($animate.queue).not.toContainQueueItem('1');
+    expect($animate.queue).toContainQueueItem('2', 'leave');
+    expect($animate.queue).toContainQueueItem('3', 'move');
+    $animate.queue = [];
   }));
 
   it('should not change the position of the block that is being animated away via a leave animation',
     inject(function($compile, $rootScope, $animate, $document, $sniffer, $timeout) {
       if (!$sniffer.transitions) return;
 
-      var item;
       var ss = createMockStyleSheet($document);
 
       try {
@@ -1535,8 +1562,6 @@ describe('ngRepeat animations', function() {
   it('should fire off the move animation',
     inject(function($compile, $rootScope, $animate) {
 
-      var item;
-
       element = $compile(html(
         '<div>' +
           '<div ng-repeat="item in items">' +
@@ -1548,28 +1573,99 @@ describe('ngRepeat animations', function() {
       $rootScope.items = ['1','2','3'];
       $rootScope.$digest();
 
-      item = $animate.queue.shift();
-      expect(item.event).toBe('enter');
-      expect(item.element.text()).toBe('1');
-
-      item = $animate.queue.shift();
-      expect(item.event).toBe('enter');
-      expect(item.element.text()).toBe('2');
-
-      item = $animate.queue.shift();
-      expect(item.event).toBe('enter');
-      expect(item.element.text()).toBe('3');
+      expect($animate.queue).toContainQueueItem('1', 'enter');
+      expect($animate.queue).toContainQueueItem('2', 'enter');
+      expect($animate.queue).toContainQueueItem('3', 'enter');
+      $animate.queue = [];
 
       $rootScope.items = ['2','3','1'];
       $rootScope.$digest();
 
-      item = $animate.queue.shift();
-      expect(item.event).toBe('move');
-      expect(item.element.text()).toBe('2');
+      expect($animate.queue).toContainQueueItem('1', 'move');
+      expect($animate.queue).toContainQueueItem('2', 'move');
+      expect($animate.queue).toContainQueueItem('3', 'move');
+      $animate.queue = [];
+    })
+  );
 
-      item = $animate.queue.shift();
-      expect(item.event).toBe('move');
-      expect(item.element.text()).toBe('3');
+  it('should fire off the move animation for items that change position when other items are filtered out',
+    inject(function($compile, $rootScope, $animate) {
+
+      element = $compile(html(
+        '<div>' +
+          '<div ng-repeat="item in items | filter:search">' +
+            '{{ item }}' +
+          '</div>' +
+        '</div>'
+      ))($rootScope);
+
+      $rootScope.items = ['1','2','3'];
+      $rootScope.search = '';
+      $rootScope.$digest();
+
+      expect($animate.queue).toContainQueueItem('1', 'enter');
+      expect($animate.queue).toContainQueueItem('2', 'enter');
+      expect($animate.queue).toContainQueueItem('3', 'enter');
+      $animate.queue = [];
+
+      $rootScope.search = '3';
+      $rootScope.$digest();
+
+      expect($animate.queue).toContainQueueItem('1', 'leave');
+      expect($animate.queue).toContainQueueItem('2', 'leave');
+      expect($animate.queue).toContainQueueItem('3', 'move');
+      $animate.queue = [];
+    })
+  );
+
+  it('should maintain the order when the track by expression evaluates to an integer',
+    inject(function($compile, $rootScope, $animate, $document, $sniffer, $timeout) {
+      if (!$sniffer.transitions) return;
+
+      var ss = createMockStyleSheet($document);
+
+      var items = [
+        {id: 1, name: 'A'},
+        {id: 2, name: 'B'},
+        {id: 4, name: 'C'},
+        {id: 3, name: 'D'}
+      ];
+
+      try {
+
+        $animate.enabled(true);
+
+        ss.addRule('.animate-me div',
+          'transition:1s linear all;');
+
+        element = $compile(html('<div class="animate-me">' +
+          '<div ng-repeat="item in items track by item.id">{{ item.name }}</div>' +
+          '</div>'))($rootScope);
+
+        $rootScope.items = [items[0], items[1], items[2]];
+        $rootScope.$digest();
+        expect(element.text()).toBe('ABC');
+
+        $rootScope.items.push(items[3]);
+        $rootScope.$digest();
+
+        expect(element.text()).toBe('ABCD'); // the original order should be preserved
+        $animate.flush();
+        $timeout.flush(1500); // 1s * 1.5 closing buffer
+        expect(element.text()).toBe('ABCD');
+
+        $rootScope.items = [items[0], items[1], items[3]];
+        $rootScope.$digest();
+
+        // The leaving item should maintain its position until it is removed
+        expect(element.text()).toBe('ABCD');
+        $animate.flush();
+        $timeout.flush(1500); // 1s * 1.5 closing buffer
+        expect(element.text()).toBe('ABD');
+
+      } finally {
+        ss.destroy();
+      }
     })
   );
 });
