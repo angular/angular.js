@@ -230,6 +230,9 @@ You can now rerun `npm run protractor` to see the tests run.
 
 * Reverse the sort order by adding a `-` symbol before the sorting value:
   `<option value="-age">Oldest</option>`
+  Upon refreshing the page, you'll see that the default selection of the "age" option in "Sort by" is blank again.
+  Try fixing this in **`app/phone-list/phone-list.component.js`:**
+  
 
 
 ## Summary
