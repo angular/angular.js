@@ -167,7 +167,7 @@ var requiredDirective = ['$parse', function($parse) {
  *   </file>
  * </example>
  */
-var patternDirective = function($parse) {
+var patternDirective = ['$parse', function($parse) {
   return {
     restrict: 'A',
     require: '?ngModel',
@@ -219,7 +219,7 @@ var patternDirective = function($parse) {
     }
 
   };
-};
+}];
 
 /**
  * @ngdoc directive
