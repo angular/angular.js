@@ -230,6 +230,8 @@ You can now rerun `npm run protractor` to see the tests run.
 
 * Reverse the sort order by adding a `-` symbol before the sorting value:
   `<option value="-age">Oldest</option>`
+  After making this change, you'll notice that the drop-down list has a blank option selected and does not default to age anymore.
+  Fix this by updating the `orderProp` value in `phone-list.component.js` to match the new value on the `<option>` element.
 
 
 ## Summary
