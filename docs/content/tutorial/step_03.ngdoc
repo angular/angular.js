@@ -90,8 +90,8 @@ Let's see an example:
 
 ```html
 <body>
-  <!-- The following line is how to use the greetUser angular.js component above in your html doc-->
-  <greet-user></greet-user>
+  <!-- The following line is how to use the `greetUser` component above in your html doc. -->
+  `<greet-user></greet-user>`
  </body>
 ```
  
@@ -134,7 +134,7 @@ acquired skill.
 <body>
 
   <!-- Use a custom component to render a list of phones -->
-  <phone-list></phone-list>  <!-- This tells AngularJS to instantiate a phoneList component here --!>
+  `<phone-list></phone-list>`  <!-- This tells AngularJS to instantiate a phoneList component here. -->
 
 </body>
 </html>
@@ -155,7 +155,7 @@ angular.module('phonecatApp', []);
 // Register `phoneList` component, along with its associated controller and template
 angular.
   module('phonecatApp').
-  component('phoneList', { . // This name is what AngularJS uses to match to the <phone-list> element.
+  component('phoneList', {  // This name is what AngularJS uses to match to the `<phone-list>` element.
     template:
         '<ul>' +
           '<li ng-repeat="phone in $ctrl.phones">' +
