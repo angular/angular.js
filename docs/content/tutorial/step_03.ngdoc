@@ -92,7 +92,7 @@ Let's see an example:
 <body>
   <!-- The following line is how to use the `greetUser` component above in your html doc. -->
   `<greet-user></greet-user>`
- </body>
+</body>
 ```
  
 Now, every time we include `<greet-user></greet-user>` in our view, AngularJS will expand it into a
