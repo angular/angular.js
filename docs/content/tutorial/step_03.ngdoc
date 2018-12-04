@@ -134,7 +134,7 @@ acquired skill.
 <body>
 
   <!-- Use a custom component to render a list of phones -->
-  `<phone-list></phone-list>`  <!-- This tells AngularJS to instantiate a phoneList component here. -->
+  <phone-list></phone-list>  <!-- This tells AngularJS to instantiate a `phoneList` component here. -->
 
 </body>
 </html>
