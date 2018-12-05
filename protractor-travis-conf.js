@@ -79,6 +79,8 @@ function capabilitiesForSauceLabs(capabilities) {
     'browserName': capabilities.browserName,
     'platform': capabilities.platform,
     'version': capabilities.version,
-    'elementScrollBehavior': 1
+    'elementScrollBehavior': 1,
+    // Allow e2e test sessions to run for a maximum of 35 minutes, instead of the default 30 minutes.
+    'maxDuration': 2100
   };
 }
