@@ -863,7 +863,6 @@ describe('ngModel', function() {
         });
       });
 
-
       describe('view -> model update', function() {
 
         it('should always perform validations using the parsed model value', function() {

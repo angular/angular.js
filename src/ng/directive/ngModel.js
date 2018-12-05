@@ -562,6 +562,7 @@ NgModelController.prototype = {
    * `$modelValue`, i.e. either the last parsed value or the last value set from the scope.
    */
   $validate: function() {
+
     // ignore $validate before model is initialized
     if (isNumberNaN(this.$modelValue)) {
       return;
