@@ -4222,6 +4222,40 @@ describe('$compile', function() {
         expect(element.attr('ng-my-attr')).toBeUndefined();
       });
 
+      it('should set the value to lowercased keys for boolean attrs', function() {
+        attr.$set('disabled', 'value');
+        expect(element.attr('disabled')).toEqual('disabled');
+
+        element.removeAttr('disabled');
+
+        attr.$set('dISaBlEd', 'VaLuE');
+        expect(element.attr('disabled')).toEqual('disabled');
+      });
+
+      it('should call removeAttr for boolean attrs when value is `false`', function() {
+        attr.$set('disabled', 'value');
+
+        spyOn(jqLite.prototype, 'attr').and.callThrough();
+        spyOn(jqLite.prototype, 'removeAttr').and.callThrough();
+
+        attr.$set('disabled', false);
+
+        expect(element.attr).not.toHaveBeenCalled();
+        expect(element.removeAttr).toHaveBeenCalledWith('disabled');
+        expect(element.attr('disabled')).toEqual(undefined);
+
+        attr.$set('disabled', 'value');
+
+        element.attr.calls.reset();
+        element.removeAttr.calls.reset();
+
+        attr.$set('dISaBlEd', false);
+
+        expect(element.attr).not.toHaveBeenCalled();
+        expect(element.removeAttr).toHaveBeenCalledWith('disabled');
+        expect(element.attr('disabled')).toEqual(undefined);
+      });
+
 
       it('should not set DOM element attr if writeAttr false', function() {
         attr.$set('test', 'value', false);
