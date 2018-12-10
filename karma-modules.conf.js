@@ -1,14 +1,20 @@
 'use strict';
 
-var angularFiles = require('./angularFiles');
 var sharedConfig = require('./karma-shared.conf');
 
 module.exports = function(config) {
-  var angularModule = process.env.KARMA_MODULE;
-
-  sharedConfig(config, {testName: 'AngularJS: module ' + angularModule, logFile: 'karma-modules-' + angularModule + '.log'});
+  sharedConfig(config, {testName: 'AngularJS: isolated module tests', logFile: 'karma-modules-isolated.log'});
 
   config.set({
-    files: angularFiles.mergeFilesFor('karmaModules-' + angularModule)
+    files: [
+      'build/angular.js',
+      'build/angular-mocks.js',
+      'test/modules/no_bootstrap.js',
+      'test/helpers/matchers.js',
+      'test/helpers/privateMocks.js',
+      'test/helpers/support.js',
+      'test/helpers/testabilityPatch.js',
+      'build/test-bundles/angular-*.js'
+    ]
   });
 };

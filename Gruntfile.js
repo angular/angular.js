@@ -4,6 +4,7 @@ var serveFavicon = require('serve-favicon');
 var serveStatic = require('serve-static');
 var serveIndex = require('serve-index');
 var files = require('./angularFiles').files;
+var mergeFilesFor = require('./angularFiles').mergeFilesFor;
 var util = require('./lib/grunt/utils.js');
 var versionInfo = require('./lib/versions/version-info');
 var path = require('path');
@@ -141,16 +142,9 @@ module.exports = function(grunt) {
       'jquery-2.2': 'karma-jquery-2.2.conf.js',
       'jquery-2.1': 'karma-jquery-2.1.conf.js',
       docs: 'karma-docs.conf.js',
-      'modules-ngAnimate': 'ngAnimate',
-      'modules-ngAria': 'ngAria',
-      'modules-ngCookies': 'ngCookies',
-      'modules-ngMessageFormat': 'ngMessageFormat',
-      'modules-ngMessages': 'ngMessages',
-      'modules-ngMock': 'ngMock',
-      'modules-ngResource': 'ngResource',
-      'modules-ngRoute': 'ngRoute',
-      'modules-ngSanitize': 'ngSanitize',
-      'modules-ngTouch': 'ngTouch'
+      modules: 'karma-modules.conf.js',
+      'modules-ngAnimate': 'karma-modules-ngAnimate.conf.js',
+      'modules-ngMock': 'karma-modules-ngMock.conf.js'
     },
 
 
@@ -220,6 +214,12 @@ module.exports = function(grunt) {
         dest: 'build/angular-touch.js',
         src: util.wrap(files['angularModules']['ngTouch'], 'module')
       },
+      touchModuleTestBundle: {
+        dest: 'build/test-bundles/angular-touch.js',
+        prefix: 'src/module.prefix',
+        src: mergeFilesFor('karmaModules-ngTouch'),
+        suffix: 'src/module.suffix'
+      },
       mocks: {
         dest: 'build/angular-mocks.js',
         src: util.wrap(files['angularModules']['ngMock'], 'module'),
@@ -229,17 +229,41 @@ module.exports = function(grunt) {
         dest: 'build/angular-sanitize.js',
         src: util.wrap(files['angularModules']['ngSanitize'], 'module')
       },
+      sanitizeModuleTestBundle: {
+        dest: 'build/test-bundles/angular-sanitize.js',
+        prefix: 'src/module.prefix',
+        src: mergeFilesFor('karmaModules-ngSanitize'),
+        suffix: 'src/module.suffix'
+      },
       resource: {
         dest: 'build/angular-resource.js',
         src: util.wrap(files['angularModules']['ngResource'], 'module')
+      },
+      resourceModuleTestBundle: {
+        dest: 'build/test-bundles/angular-resource.js',
+        prefix: 'src/module.prefix',
+        src: mergeFilesFor('karmaModules-ngResource'),
+        suffix: 'src/module.suffix'
       },
       messageformat: {
         dest: 'build/angular-message-format.js',
         src: util.wrap(files['angularModules']['ngMessageFormat'], 'module')
       },
+      messageformatModuleTestBundle: {
+        dest: 'build/test-bundles/angular-message-format.js',
+        prefix: 'src/module.prefix',
+        src: mergeFilesFor('karmaModules-ngMessageFormat'),
+        suffix: 'src/module.suffix'
+      },
       messages: {
         dest: 'build/angular-messages.js',
         src: util.wrap(files['angularModules']['ngMessages'], 'module')
+      },
+      messagesModuleTestBundle: {
+        dest: 'build/test-bundles/angular-messages.js',
+        prefix: 'src/module.prefix',
+        src: mergeFilesFor('karmaModules-ngMessages'),
+        suffix: 'src/module.suffix'
       },
       animate: {
         dest: 'build/angular-animate.js',
@@ -249,13 +273,31 @@ module.exports = function(grunt) {
         dest: 'build/angular-route.js',
         src: util.wrap(files['angularModules']['ngRoute'], 'module')
       },
+      routeModuleTestBundle: {
+        dest: 'build/test-bundles/angular-route.js',
+        prefix: 'src/module.prefix',
+        src: mergeFilesFor('karmaModules-ngRoute'),
+        suffix: 'src/module.suffix'
+      },
       cookies: {
         dest: 'build/angular-cookies.js',
         src: util.wrap(files['angularModules']['ngCookies'], 'module')
       },
+      cookiesModuleTestBundle: {
+        dest: 'build/test-bundles/angular-cookies.js',
+        prefix: 'src/module.prefix',
+        src: mergeFilesFor('karmaModules-ngCookies'),
+        suffix: 'src/module.suffix'
+      },
       aria: {
         dest: 'build/angular-aria.js',
         src: util.wrap(files['angularModules']['ngAria'], 'module')
+      },
+      ariaModuleTestBundle: {
+        dest: 'build/test-bundles/angular-aria.js',
+        prefix: 'src/module.prefix',
+        src: mergeFilesFor('karmaModules-ngAria'),
+        suffix: 'src/module.suffix'
       },
       parseext: {
         dest: 'build/angular-parse-ext.js',
@@ -439,16 +481,9 @@ module.exports = function(grunt) {
   grunt.registerTask('test:jquery-2.1', 'Run the jQuery 2.1 unit tests with Karma', ['tests:jquery-2.1']);
   grunt.registerTask('test:modules', 'Run the Karma module tests with Karma', [
     'build',
+    'tests:modules',
     'tests:modules-ngAnimate',
-    'tests:modules-ngAria',
-    'tests:modules-ngCookies',
-    'tests:modules-ngMessageFormat',
-    'tests:modules-ngMessages',
-    'tests:modules-ngMock',
-    'tests:modules-ngResource',
-    'tests:modules-ngRoute',
-    'tests:modules-ngSanitize',
-    'tests:modules-ngTouch'
+    'tests:modules-ngMock'
   ]);
   grunt.registerTask('test:docs', 'Run the doc-page tests with Karma', ['package', 'tests:docs']);
   grunt.registerTask('test:unit', 'Run unit, jQuery and Karma module tests with Karma', [
