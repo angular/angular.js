@@ -67,6 +67,7 @@ afterEach(function() {
         } else {
           dump('LEAK', key, angular.toJson(value));
         }
+        delete expando.data[key];
       });
     });
     if (count) {
