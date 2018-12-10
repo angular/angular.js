@@ -560,7 +560,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
       // that if there is no transition defined then nothing will happen and this will also allow
       // other transitions to be stacked on top of each other without any chopping them out.
       if (isFirst && !options.skipBlocking) {
-        blockTransitions(node, SAFE_FAST_FORWARD_DURATION_VALUE);
+        helpers.blockTransitions(node, SAFE_FAST_FORWARD_DURATION_VALUE);
       }
 
       var timings = computeTimings(node, fullClassName, cacheKey, !isStructural);
@@ -646,7 +646,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
       if (flags.blockTransition || flags.blockKeyframeAnimation) {
         applyBlocking(maxDuration);
       } else if (!options.skipBlocking) {
-        blockTransitions(node, false);
+        helpers.blockTransitions(node, false);
       }
 
       // TODO(matsko): for 1.5 change this code to have an animator object for better debugging
@@ -699,7 +699,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
         }
 
         blockKeyframeAnimations(node, false);
-        blockTransitions(node, false);
+        helpers.blockTransitions(node, false);
 
         forEach(temporaryStyles, function(entry) {
           // There is only one way to remove inline style properties entirely from elements.
@@ -750,7 +750,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
 
       function applyBlocking(duration) {
         if (flags.blockTransition) {
-          blockTransitions(node, duration);
+          helpers.blockTransitions(node, duration);
         }
 
         if (flags.blockKeyframeAnimation) {

@@ -4,6 +4,7 @@
   },
   "globals": {
     "getDomNode": false,
+    "helpers": false,
     "mergeAnimationDetails": false,
     "prepareAnimationOptions": false,
     "applyAnimationStyles": false,

@@ -329,15 +329,6 @@ function clearGeneratedClasses(element, options) {
   }
 }
 
-function blockTransitions(node, duration) {
-  // we use a negative delay value since it performs blocking
-  // yet it doesn't kill any existing transitions running on the
-  // same element which makes this safe for class-based animations
-  var value = duration ? '-' + duration + 's' : '';
-  applyInlineStyle(node, [TRANSITION_DELAY_PROP, value]);
-  return [TRANSITION_DELAY_PROP, value];
-}
-
 function blockKeyframeAnimations(node, applyBlock) {
   var value = applyBlock ? 'paused' : '';
   var key = ANIMATION_PROP + ANIMATION_PLAYSTATE_KEY;
@@ -356,3 +347,14 @@ function concatWithSpace(a,b) {
   if (!b) return a;
   return a + ' ' + b;
 }
+
+var helpers = {
+  blockTransitions: function(node, duration) {
+    // we use a negative delay value since it performs blocking
+    // yet it doesn't kill any existing transitions running on the
+    // same element which makes this safe for class-based animations
+    var value = duration ? '-' + duration + 's' : '';
+    applyInlineStyle(node, [TRANSITION_DELAY_PROP, value]);
+    return [TRANSITION_DELAY_PROP, value];
+  }
+};
