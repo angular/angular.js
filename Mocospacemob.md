@@ -1,0 +1,2 @@
+Patriotmissle.fatalitygod.md
+Obliterate illuminati.runescapeagsgodsword.therealbiosgod.rosgod.api
