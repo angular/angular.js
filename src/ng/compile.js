@@ -3837,7 +3837,7 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
             pre: function ngPropPreLinkFn(scope, $element) {
               function applyPropValue() {
                 var propValue = ngPropGetter(scope);
-                $element.prop(propName, sanitizer(propValue));
+                $element[0][propName] = sanitizer(propValue);
               }
 
               applyPropValue();

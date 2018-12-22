@@ -49,6 +49,48 @@ describe('ngProp*', function() {
     expect(element.prop('asdf')).toBe(true);
   }));
 
+  // https://github.com/angular/angular.js/issues/16797
+  it('should support falsy property values', inject(function($rootScope, $compile) {
+    var element = $compile('<span ng-prop-text="myText" />')($rootScope);
+    // Initialize to truthy value
+    $rootScope.myText = 'abc';
+    $rootScope.$digest();
+    expect(element.prop('text')).toBe('abc');
+
+    // Assert various falsey values get assigned to the property
+    $rootScope.myText = '';
+    $rootScope.$digest();
+    expect(element.prop('text')).toBe('');
+    $rootScope.myText = 0;
+    $rootScope.$digest();
+    expect(element.prop('text')).toBe(0);
+    $rootScope.myText = false;
+    $rootScope.$digest();
+    expect(element.prop('text')).toBe(false);
+    $rootScope.myText = undefined;
+    $rootScope.$digest();
+    expect(element.prop('text')).toBeUndefined();
+    $rootScope.myText = null;
+    $rootScope.$digest();
+    expect(element.prop('text')).toBe(null);
+  }));
+
+  it('should directly map special properties (class)', inject(function($rootScope, $compile) {
+    var element = $compile('<span ng-prop-class="myText" />')($rootScope);
+    $rootScope.myText = 'abc';
+    $rootScope.$digest();
+    expect(element[0].class).toBe('abc');
+    expect(element).not.toHaveClass('abc');
+  }));
+
+  it('should not use jQuery .prop() to avoid jQuery propFix/hooks', inject(function($rootScope, $compile) {
+    var element = $compile('<span ng-prop-class="myText" />')($rootScope);
+    spyOn(jqLite.prototype, 'prop');
+    $rootScope.myText = 'abc';
+    $rootScope.$digest();
+    expect(jqLite.prototype.prop).not.toHaveBeenCalled();
+  }));
+
   it('should support mixed case using underscore-separated names', inject(function($rootScope, $compile) {
     var element = $compile('<span ng-prop-a_bcd_e="value" />')($rootScope);
     $rootScope.value = 123;
