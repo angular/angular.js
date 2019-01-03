@@ -71,7 +71,7 @@
     "karma-jasmine": "^1.1.2",
     "karma-junit-reporter": "^1.2.0",
     "karma-safari-launcher": "^1.0.0",
-    "karma-sauce-launcher": "^1.2.0",
+    "karma-sauce-launcher": "^2.0.2",
     "karma-script-launcher": "^1.0.0",
     "karma-spec-reporter": "^0.0.32",
     "load-grunt-tasks": "^3.5.0",
