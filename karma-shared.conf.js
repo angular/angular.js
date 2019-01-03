@@ -23,12 +23,7 @@ module.exports = function(config, specificOptions) {
     // SauceLabs config for local development.
     sauceLabs: {
       testName: specificOptions.testName || 'AngularJS',
-      startConnect: true,
-      options: {
-        // We need selenium version +2.46 for Firefox 39 and the last selenium version for OS X is 2.45.
-        // TODO: Uncomment when there is a selenium 2.46 available for OS X.
-        // 'selenium-version': '2.46.0'
-      }
+      startConnect: true
     },
 
     // BrowserStack config for local development.
