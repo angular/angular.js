@@ -16,9 +16,9 @@ CONNECT_URL="https://saucelabs.com/downloads/sc-$SC_VERSION-linux.tar.gz"
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="sc-$SC_VERSION-linux.tar.gz"
 
-CONNECT_LOG="$LOGS_DIR/sauce-connect"
-CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
-CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
+# We don't want to create a log file because sauceconnect always logs in verbose mode. This seems
+# to be overwhelming Travis and causing flakes when we are cat-ing the log in "print_logs.sh"
+CONNECT_LOG="/dev/null"
 
 # Get Connect and start it
 mkdir -p $CONNECT_DIR
@@ -42,9 +42,6 @@ if [ ! -z "$BROWSER_PROVIDER_READY_FILE" ]; then
 fi
 
 
-echo "Starting Sauce Connect in the background, logging into:"
-echo "  $CONNECT_LOG"
-echo "  $CONNECT_STDOUT"
-echo "  $CONNECT_STDERR"
+echo "Starting Sauce Connect in the background"
 sauce-connect/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY $ARGS \
-  --logfile $CONNECT_LOG 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &
+  --logfile $CONNECT_LOG &
