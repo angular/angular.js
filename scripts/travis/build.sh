@@ -11,14 +11,12 @@ export SAUCE_ACCESS_KEY
 BROWSER_STACK_ACCESS_KEY=$(echo "$BROWSER_STACK_ACCESS_KEY" | rev)
 SAUCE_ACCESS_KEY=$(echo "$SAUCE_ACCESS_KEY" | rev)
 
-# TODO: restore "SL_EDGE-1" once Sauce Labs adds Edge 17 and "SL_EDGE-1" refers
-# to version 16. Edge 15 disconnects from Karma frequently causing extreme build instability.
 BROWSERS="SL_Chrome,SL_Chrome-1,\
 SL_Firefox,SL_Firefox-1,\
 SL_Safari,SL_Safari-1,\
 SL_iOS,SL_iOS-1,\
 SL_IE_9,SL_IE_10,SL_IE_11,\
-SL_EDGE"
+SL_EDGE,SL_EDGE-1"
 
 case "$JOB" in
   "ci-checks")
