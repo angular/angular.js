@@ -189,6 +189,9 @@ module.exports = function(config, specificOptions) {
     config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
     config.sauceLabs.recordScreenshots = true;
 
+    // Try 'websocket' for a faster transmission first. Fallback to 'polling' if necessary.
+    config.transports = ['websocket', 'polling'];
+
     // Debug logging into a file, that we print out at the end of the build.
     config.loggers.push({
       type: 'file',
