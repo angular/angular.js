@@ -1135,6 +1135,21 @@ describe('$aria', function() {
 
       expect(scope.onClick).not.toHaveBeenCalled();
     });
+
+    it('should not trigger ng-click if the mod key is pressed', function() {
+      compileElement('<div ng-click="onClick()">Click me</div>');
+
+      element.triggerHandler({type: 'keydown', keyCode: 13, metaKey: true});
+      element.triggerHandler({type: 'keydown', keyCode: 32, metaKey: true});
+
+      element.triggerHandler({type: 'keydown', keyCode: 13, ctrlKey: true});
+      element.triggerHandler({type: 'keydown', keyCode: 32, ctrlKey: true});
+
+      element.triggerHandler({type: 'keydown', keyCode: 13, altKey: true});
+      element.triggerHandler({type: 'keydown', keyCode: 32, altKey: true});
+
+      expect(scope.onClick).not.toHaveBeenCalled();
+    });
   });
 
   describe('actions when bindRoleForClick is set to false', function() {
