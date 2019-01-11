@@ -798,6 +798,11 @@ function arrayRemove(array, value) {
  *   and on `destination`) will be ignored.
  * </div>
  *
+ * <div class="alert alert-warning">
+ *   `angular.copy` does not check if destination and source are of the same type. It's the
+ *   developers responsibility to make sure they are compatible.
+ * </div>
+ *
  * @param {*} source The source that will be used to make a copy. Can be any type, including
  *     primitives, `null`, and `undefined`.
  * @param {(Object|Array)=} destination Destination into which the source is copied. If provided,
