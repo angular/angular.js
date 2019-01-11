@@ -6,6 +6,7 @@
  * @ngdoc module
  * @name ngParseExt
  * @packageName angular-parse-ext
+ *
  * @description
  *
  * The `ngParseExt` module provides functionality to allow Unicode characters in
@@ -15,6 +16,11 @@
  * to be used as an identifier in an AngularJS expression. ES6 delegates some of the identifier
  * rules definition to Unicode, this module uses ES6 and Unicode 8.0 identifiers convention.
  *
+ * <div class="alert alert-warning">
+ * You cannot use Unicode characters for variable names in the {@link ngRepeat} or {@link ngOptions}
+ * expressions (e.g. `ng-repeat="f in поля"`), because even with `ngParseExt` included, these
+ * special expressions are not parsed by the {@link $parse} service.
+ * </div>
  */
 
 /* global angularParseExtModule: true,
