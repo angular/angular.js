@@ -1,3 +1,62 @@
+<a name="1.7.6"></a>
+# 1.7.6 gravity-manipulation (2019-01-17)
+
+## Bug Fixes
+- **$compile:** fix ng-prop-* with undefined values
+  ([772440](https://github.com/angular/angular.js/commit/772440cdaf9a9bfa40de1675e20a5f0e356089ed),
+  [#16797](https://github.com/angular/angular.js/issues/16797),
+  [#16798](https://github.com/angular/angular.js/issues/16798))
+- **compile:** properly handle false value for boolean attrs with jQuery
+  ([27486b](https://github.com/angular/angular.js/commit/27486bd15e70946ece2ba713e4e8654b7f9bddad),
+  [#16778](https://github.com/angular/angular.js/issues/16778),
+  [#16779](https://github.com/angular/angular.js/issues/16779))
+- **ngRepeat:**
+  - fix reference to last collection value remaining across linkages
+  ([cf919a](https://github.com/angular/angular.js/commit/cf919a6fb7fc655f3fa37a74899a797ea5b8073e))
+  - fix trackBy function being invoked with incorrect scope
+  ([d4d103](https://github.com/angular/angular.js/commit/d4d1031bcd9b30ae6a58bd60a79bcc9d20f0f2b7),
+  [#16776](https://github.com/angular/angular.js/issues/16776),
+  [#16777](https://github.com/angular/angular.js/issues/16777))
+- **aria/ngClick:** check if element is `contenteditable` before blocking spacebar
+  ([289374](https://github.com/angular/angular.js/commit/289374a43c1b2fd715ddf7455db225b17afebbaf),
+  [#16762](https://github.com/angular/angular.js/issues/16762))
+- **input:** prevent browsers from autofilling hidden inputs
+  ([7cbb10](https://github.com/angular/angular.js/commit/7cbb1044fcb3576cdad791bd22ebea3dfd533ff8))
+- **Angular:** add workaround for Safari / Webdriver problem
+  ([eb49f6](https://github.com/angular/angular.js/commit/eb49f6b7555cfd7ab03fd35581adb6b4bd49044e))
+- **$browser:** normalize inputted URLs
+  ([2f72a6](https://github.com/angular/angular.js/commit/2f72a69ded53a122afad3ec28d91f9bd2f41eb4f),
+  [#16606](https://github.com/angular/angular.js/issues/16606))
+- **interpolate:** do not create directives for constant media URL attributes
+  ([90a41d](https://github.com/angular/angular.js/commit/90a41d415c83abdbf28317f49df0fd0a7e07db86),
+  [#16734](https://github.com/angular/angular.js/issues/16734))
+- **$q:** allow third-party promise libraries
+  ([eefaa7](https://github.com/angular/angular.js/commit/eefaa76a90dbef08fdc7d734a205cc2de50d9f91),
+  [#16164](https://github.com/angular/angular.js/issues/16164),
+  [#16471](https://github.com/angular/angular.js/issues/16471))
+- **urlUtils:** make IPv6 URL's hostname wrapped in square brackets in IE/Edge
+  ([0e1bd7](https://github.com/angular/angular.js/commit/0e1bd7822e61822a48b8fd7ba5913a8702e6dabf),
+  [#16692](https://github.com/angular/angular.js/issues/16692),
+  [#16715](https://github.com/angular/angular.js/issues/16715))
+- **ngAnimateSwap:** make it compatible with `ngIf` on the same element
+  ([b27080](https://github.com/angular/angular.js/commit/b27080d52546409fb4e483f212f03616e2ca8037),
+  [#16616](https://github.com/angular/angular.js/issues/16616),
+  [#16729](https://github.com/angular/angular.js/issues/16729))
+- **ngMock:** make matchLatestDefinitionEnabled work
+  ([3cdffc](https://github.com/angular/angular.js/commit/3cdffcecbae71189b4db69b57fadda6608a23b61),
+  [#16702](https://github.com/angular/angular.js/issues/16702))
+- **ngStyle:** skip setting empty value when new style has the property
+  ([d6098e](https://github.com/angular/angular.js/commit/d6098eeb1c9510d599e9bd3cfdba7dd21e7a55a5),
+  [#16709](https://github.com/angular/angular.js/issues/16709))
+
+## Performance Improvements
+- **input:** prevent multiple validations on initialization
+  ([692622](https://github.com/angular/angular.js/commit/69262239632027b373258e75c670b89132ad9edb),
+  [#14691](https://github.com/angular/angular.js/issues/14691),
+  [#16760](https://github.com/angular/angular.js/issues/16760))
+
+
+
 <a name="1.7.5"></a>
 # 1.7.5 anti-prettification (2018-10-04)
 
