@@ -69,6 +69,7 @@ var requiredDirective = ['$parse', function($parse) {
     link: function(scope, elm, attr, ctrl) {
       if (!ctrl) return;
       var oldVal = attr.required || $parse(attr.ngRequired)(scope);
+      var evaluated = false;
 
       attr.required = true; // force truthy in case we are on non input element
 
@@ -77,9 +78,10 @@ var requiredDirective = ['$parse', function($parse) {
       };
 
       attr.$observe('required', function(val) {
-        if (oldVal !== val) {
+        if (oldVal !== val || !evaluated) {
           oldVal = val;
           ctrl.$validate();
+          evaluated = true;
         }
       });
     }

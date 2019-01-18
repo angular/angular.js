@@ -707,6 +707,15 @@ describe('validators', function() {
       expect(helper.validationCounter.required).toBe(1);
     });
 
+    it('should validate once when inside ngRepeat and ngRequired is false as ngRequired sets a default required flag of true', function() {
+      $rootScope.isRequired = false;
+      helper.compileInput(
+        '<div ng-repeat="input in [0]">' +
+        '<input type="text" ng-model="value" ng-required="isRequired" validation-spy="required" />' +
+        '</div>');
+
+      expect(helper.validationCounter.required).toBe(1);
+    });
 
     it('should validate only once after compilation when inside ngRepeat and ngRequired is true', function() {
       $rootScope.isRequired = true;
