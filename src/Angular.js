@@ -812,10 +812,11 @@ function arrayRemove(array, value) {
  * `angular.copy`. Note that since this functions is used by the change detection code, this
  * means binding or watching objects of these types (or that include these types) might not work
  * correctly.
- * - [`ImageData`](https://developer.mozilla.org/docs/Web/API/File)
+ * - [`File`](https://developer.mozilla.org/docs/Web/API/File)
  * - [`Map`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map)
  * - [`ImageData`](https://developer.mozilla.org/docs/Web/API/ImageData)
  * - [`MediaStream`](https://developer.mozilla.org/docs/Web/API/MediaStream)
+ * - [`Set`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)
  * - [`WeakMap`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)
  * - ['getter'](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get)/
  *   [`setter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set)`
