@@ -1674,21 +1674,6 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       return ddo;
     }
 
-    // TODO(pete) remove the following `forEach` before we release 1.6.0
-    // The component-router@0.2.0 looks for the annotations on the controller constructor
-    // Nothing in AngularJS looks for annotations on the factory function but we can't remove
-    // it from 1.5.x yet.
-
-    // Copy any annotation properties (starting with $) over to the factory and controller constructor functions
-    // These could be used by libraries such as the new component router
-    forEach(options, function(val, key) {
-      if (key.charAt(0) === '$') {
-        factory[key] = val;
-        // Don't try to copy over annotations to named controller
-        if (isFunction(controller)) controller[key] = val;
-      }
-    });
-
     factory.$inject = ['$injector'];
 
     return this.directive(name, factory);
