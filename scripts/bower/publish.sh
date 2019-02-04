@@ -27,7 +27,7 @@ function prepare {
   for repo in "${REPOS[@]}"
   do
     echo "-- Cloning bower-$repo"
-    git clone git@github.com:angular/bower-$repo.git $TMP_DIR/bower-$repo --depth=1
+    git clone https://github.com/angular/bower-$repo.git $TMP_DIR/bower-$repo --depth=1
   done
 
 
