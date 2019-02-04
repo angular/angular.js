@@ -1,3 +1,13 @@
+<a name="1.7.7"></a>
+# 1.7.7 kingly-exiting (2019-02-04)
+
+## Bug Fixes
+- **ngRequired:** set error correctly when inside ngRepeat and false by default
+  ([5ad4f5](https://github.com/angular/angular.js/commit/5ad4f5562c37b1cb575e3e5fddd96e9dd10408e2),
+  [#16814](https://github.com/angular/angular.js/issues/16814),
+  [#16820](https://github.com/angular/angular.js/issues/16820))
+
+
 <a name="1.7.6"></a>
 # 1.7.6 gravity-manipulation (2019-01-17)
 
