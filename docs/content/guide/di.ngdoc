@@ -279,15 +279,20 @@ construction and lookup of dependencies.
 
 Here is an example of using the injector service:
 
+First create an AngularJS module that will hold the service definition. (The empty array passed as
+the second parameter means that this module does not depend on any other modules.)
+
 ```js
-// Provide the wiring information in a module
+// Create a module to hold the service definition
 var myModule = angular.module('myModule', []);
 ```
 
-Teach the injector how to build a `greeter` service. Notice that `greeter` is dependent on the
-`$window` service. The `greeter` service is an object that contains a `greet` method.
+Teach the injector how to build a `greeter` service, which is just an object that contains a `greet`
+method. Notice that `greeter` is dependent on the `$window` service, which will be provided
+(injected into `greeter`) by the injector.
 
 ```js
+// Define the `greeter` service
 myModule.factory('greeter', function($window) {
   return {
     greet: function(text) {
