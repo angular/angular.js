@@ -12,7 +12,7 @@ include the file with the defined module or that the file couldn't be loaded.
 ### Using `ngRoute`
 
 In AngularJS `1.2.0` and later, `ngRoute` has been moved to its own module.
-If you are getting this error after upgrading to `1.2.x` or later, be sure that you've
+If you are getting this error after upgrading to `1.2.x` or later, be sure that you have
 installed {@link ngRoute `ngRoute`}.
 
 ### Monkey-patching AngularJS's `ng` module
