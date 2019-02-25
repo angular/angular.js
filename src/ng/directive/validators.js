@@ -69,7 +69,7 @@ var requiredDirective = ['$parse', function($parse) {
     link: function(scope, elm, attr, ctrl) {
       if (!ctrl) return;
       // For boolean attributes like required, presence means true
-      var value = 'required' in attr || $parse(attr.ngRequired)(scope);
+      var value = attr.hasOwnProperty('required') || $parse(attr.ngRequired)(scope);
 
       if (!attr.ngRequired) {
         // force truthy in case we are on non input element

@@ -696,6 +696,13 @@ describe('validators', function() {
     }));
 
 
+    it('should override "required" when ng-required="false" is set', function() {
+      var inputElm = helper.compileInput('<input type="text" ng-model="notDefined" required ng-required="false" />');
+
+      expect(inputElm).toBeValid();
+    });
+
+
     it('should validate only once after compilation when inside ngRepeat', function() {
       helper.compileInput(
          '<div ng-repeat="input in [0]">' +
