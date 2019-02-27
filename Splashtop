@@ -1,0 +1,144 @@
+Skip to content
+Your account has been flagged.
+Because of that, your profile is hidden from the public. If you believe this is a mistake, contact support to have your account status reviewed.
+spec face ci
+Repositories0
+Code181K
+Commits78
+Issues1K
+Marketplace0
+Topics0
+Wikis66
+Users0
+Languages
+40,147 C
+24,825 HTML
+20,083 Python
+16,088 Text
+9,701 JavaScript
+6,774 C++
+5,190 Markdown
+4,210 CSV
+4,033 Emacs Lisp
+3,645 PHP
+Advanced search 
+181,147 code results
+@m-takeuchi
+m-takeuchi/dotfiles – magithub-ci.el
+Showing the top four matches Last indexed on Jul 4, 2018
+Emacs Lisp
+           (magithub-message . "ref not found on remote")))))))
+
+(defvar magithub-ci-status-alist
+  '((nil       . ((display . "None")    (face . magithub-ci-no-status)))
+    ("error"   . ((display . "Error")   (face . magithub-ci-error)))
+@m-takeuchi
+m-takeuchi/dotfiles – magithub-ci.el
+Showing the top four matches Last indexed on Jul 4, 2018
+Emacs Lisp
+           (magithub-message . "ref not found on remote")))))))
+
+(defvar magithub-ci-status-alist
+  '((nil       . ((display . "None")    (face . magithub-ci-no-status)))
+    ("error"   . ((display . "Error")   (face . magithub-ci-error)))
+@zamannoor
+zamannoor/ttv-algorithm – Exp_CBFs.m
+Showing the top three matches Last indexed on Jul 3, 2018
+MATLAB
+errorbar(CBFs,mean_sSVD(:,1), std_sSVD(:,1),spec{1},'MarkerSize',ms,'MarkerFaceColor',spec{1}(end),'LineWidth',lw);
+errorbar(CBFs,mean_bSVD(:,1), std_bSVD(:,1),spec{2},'MarkerSize',ms,'MarkerFaceColor',spec{2}(end),'LineWidth',lw);
+errorbar(CBFs,mean_TIPS_bSVD(:,1), std_TIPS_bSVD(:,1),spec{3},'MarkerFaceColor',spec{3}(end),'MarkerSize',ms,'LineWidth',lw);
+@Daskie
+Daskie/Geocracy – Terrain.java
+Showing the top five matches Last indexed 4 days ago
+Java
+                int ci = getTerritoryAdjacentLandContinentMajority(ti);
+                if (ci <= 0) {
+                    ContinentSpec cont = new ContinentSpec();
+            for (int ci = 1; ci < tempContinentSpecs.size(); ++ci) {
+                ContinentSpec cont = tempContinentSpecs.get(ci);
+                if (cont == null) {
+@jkitchin
+jkitchin/scimax-win-elpa – magithub-ci.el
+Showing the top four matches Last indexed on Jul 4, 2018
+Emacs Lisp
+           (magithub-message . "ref not found on remote")))))))
+
+(defvar magithub-ci-status-alist
+  '((nil       . ((display . "None")    (face . magithub-ci-no-status)))
+    ("error"   . ((display . "Error")   (face . magithub-ci-error)))
+@nil-is-lin
+nil-is-lin/.emacs.d – magithub-ci.el
+Showing the top four matches Last indexed on Jul 9, 2018
+Emacs Lisp
+           (magithub-message . "ref not found on remote")))))))
+
+(defvar magithub-ci-status-alist
+  '((nil       . ((display . "None")    (face . magithub-ci-no-status)))
+    ("error"   . ((display . "Error")   (face . magithub-ci-error)))
+@source-foundry
+source-foundry/freetype2-demos – ftoldmac.c
+Showing the top five matches Last indexed on Jul 10, 2018
+C
+  FT_Library  library;
+  FT_Face     face;
+  int         i, j;
+  FSSpec      spec;
+
+
+  printf( "*** check font file [%s]\n", font_file_path );
+  if ( 0 != FT_New_Face_From_FSSpec( library, &spec, 0, &face ) )
+  {
+    printf( "\tError: Could not open File (FreeType API)\n" );
+@gordeevso
+gordeevso/SlotMachine – ftoldmac.c
+Showing the top five matches Last indexed on Jul 9, 2018
+C
+  FT_Library  library;
+  FT_Face     face;
+  int         i, j;
+  FSSpec      spec;
+
+
+  printf( "*** check font file [%s]\n", font_file_path );
+  if ( 0 != FT_New_Face_From_FSSpec( library, &spec, 0, &face ) )
+  {
+    printf( "\tError: Could not open File (FreeType API)\n" );
+@ChasMeyer
+ChasMeyer/.emacs.d – magithub-ci.el
+Showing the top six matches Last indexed on Jul 12, 2018
+Emacs Lisp
+(defvar magithub-ci-status-alist
+  '((nil       . ((display . "None")    (face . magithub-ci-no-status)))
+    ("error"   . ((display . "Error")   (face . magithub-ci-error)))
+                     'face (alist-get 'face status-spec))))))
+
+(defun magithub-ci--status-spec (status-string)
+  (or (cdr (assoc-string status-string magithub-ci-status-alist))
+@Frankie-666
+Frankie-666/color-emoji.freetype2-demos – ftoldmac.c
+Showing the top five matches Last indexed on Jun 30, 2018
+C
+  FT_Library  library;
+  FT_Face     face;
+  int         i, j;
+  FSSpec      spec;
+
+
+  printf( "*** check font file [%s]\n", font_file_path );
+  if ( 0 != FT_New_Face_From_FSSpec( library, &spec, 0, &face ) )
+  {
+    printf( "\tError: Could not open File (FreeType API)\n" );
+© 2019 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
+Press h to open a hovercard with more details.
