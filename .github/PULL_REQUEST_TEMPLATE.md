@@ -1,6 +1,11 @@
-<!-- General PR submission guidelines https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#submit-pr -->
-**What kind of change does this PR introduce? (Bug fix, feature, docs update, ...)**
+# AngularJS is in LTS mode
+We are no longer accepting changes that are not critical bug fixes into this project.
+See https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c for more detail.
 
+<!-- General PR submission guidelines https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#submit-pr -->
+**Does this PR fix a regression since 1.7.0, a security flaw, or a problem caused by a new browser version?**
+
+<!-- If the answer is no, then we will not merge this PR -->
 
 
 **What is the current behavior? (You can also link to an open issue here)**
