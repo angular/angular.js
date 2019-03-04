@@ -14,8 +14,7 @@ and providing them to other components as requested.
 
 ## Using Dependency Injection
 
-Dependency Injection is pervasive throughout AngularJS. 
-You can use it when defining components
+Dependency Injection is pervasive throughout AngularJS. You can use it when defining components
 or when providing `run` and `config` blocks for a module.
 
 - {@link angular.Module#service Services}, {@link angular.Module#directive directives},
