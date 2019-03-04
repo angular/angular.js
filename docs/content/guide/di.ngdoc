@@ -284,7 +284,7 @@ Here is an example of using the injector service:
 // Provide the wiring information in a module
 var myModule = angular.module('myModule', []);
 ```
-Notice that `myModule`  depends upon no other modules as the second parameter is an empty array. 
+Notice that `myModule` depends upon no other modules as the second parameter is an empty array. 
 Dependent is always need dependency object to be injected inside it.
 
 Teach the injector how to build a `greeter` service. Notice that `greeter` is dependent on the
