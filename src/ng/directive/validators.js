@@ -68,9 +68,11 @@ var requiredDirective = ['$parse', function($parse) {
     require: '?ngModel',
     link: function(scope, elm, attr, ctrl) {
       if (!ctrl) return;
-      var value = attr.required || $parse(attr.ngRequired)(scope);
+      var value = 'required' in attr || $parse(attr.ngRequired)(scope);
 
-      attr.required = true; // force truthy in case we are on non input element
+      if (!attr.ngRequired) {
+        attr.required = true;
+      } // force truthy in case we are on non input element
 
       ctrl.$validators.required = function(modelValue, viewValue) {
         return !value || !ctrl.$isEmpty(viewValue);
