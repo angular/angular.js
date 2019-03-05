@@ -284,6 +284,7 @@ Here is an example of using the injector service:
 var myModule = angular.module('myModule', []);
 ```
 
+Notice that `myModule`  depends upon no other modules as the second parameter is an empty array.
 Teach the injector how to build a `greeter` service. Notice that `greeter` is dependent on the
 `$window` service. The `greeter` service is an object that contains a `greet` method.
 
