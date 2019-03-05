@@ -14,7 +14,8 @@ and providing them to other components as requested.
 
 ## Using Dependency Injection
 
-Dependency Injection is pervasive throughout AngularJS. You can use it when defining components
+Dependency Injection is pervasive throughout AngularJS. 
+You can use it when defining components
 or when providing `run` and `config` blocks for a module.
 
 - {@link angular.Module#service Services}, {@link angular.Module#directive directives},
@@ -283,10 +284,13 @@ Here is an example of using the injector service:
 // Provide the wiring information in a module
 var myModule = angular.module('myModule', []);
 ```
+Notice that `myModule` depends upon no other modules as the second parameter is an empty array. 
+Dependent is always need dependency object to be injected inside it.
 
 Notice that `myModule`  depends upon no other modules as the second parameter is an empty array.
 Teach the injector how to build a `greeter` service. Notice that `greeter` is dependent on the
 `$window` service. The `greeter` service is an object that contains a `greet` method.
+so, injector now injects `$window` dependency inside `greeter` service.
 
 ```js
 myModule.factory('greeter', function($window) {
