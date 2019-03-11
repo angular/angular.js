@@ -1,3 +1,14 @@
+<a name="1.7.8"></a>
+# 1.7.8 enthusiastic-oblation (2019-03-11)
+
+
+## Bug Fixes
+- **required:** correctly validate required on non-input element surrounded by ngIf
+  ([a4c7bd](https://github.com/angular/angular.js/commit/a4c7bdccd76c39c30e33f6215da9a00cc8acde2c),
+  [#16830](https://github.com/angular/angular.js/issues/16830),
+  [#16836](https://github.com/angular/angular.js/issues/16836))
+
+
 <a name="1.7.7"></a>
 # 1.7.7 kingly-exiting (2019-02-04)
 
