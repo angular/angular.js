@@ -257,7 +257,6 @@ If the commit reverts a previous commit, it should begin with `revert: `, follow
 of the reverted commit.
 In the body it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit
 being reverted.
-A commit with this format is automatically created by the [`git revert`][git-revert] command.
 
 ### Type
 Must be one of the following:
