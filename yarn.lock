@@ -13,9 +13,9 @@
   integrity sha1-vShOV8hPEyXacCur/IKlMoGQwMU=
 
 "@types/selenium-webdriver@^3.0.0":
-  version "3.0.13"
-  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-3.0.13.tgz#deb799c641773c5e367abafc92d1e733d62cddd7"
-  integrity sha512-rI0LGoMiZGUM+tjDakQpwZOvcmQoubiJ7hxqrYU12VRxBuGGvOThxrBOU/QmJKlKg1WG6FMzuvcEyLffvVSsmw==
+  version "3.0.12"
+  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-3.0.12.tgz#6affe5aed1ba379175075a889adbe2bc3aa62159"
+  integrity sha512-hYn+eoOehVUIdMwp5h34ZsGAO1ydja10GDup4BwyoFCdcH5MQ35nQq+AInSaBMEMopD5hEooFCyKo2Pajbe1ag==
 
 Base64@~0.2.0:
   version "0.2.1"
@@ -5836,9 +5836,9 @@ pako@~0.2.0:
   integrity sha1-8/dSL073gjSNqBYbrZ7P1Rv4OnU=
 
 pako@~1.0.2:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.7.tgz#2473439021b57f1516c82f58be7275ad8ef1bb27"
-  integrity sha512-3HNK5tW4x8o5mO8RuHZp3Ydw9icZXx0RANAOMzlMzx7LVXhMJ4mo3MOBpzyd7r/+RUu8BmndP47LXT+vzjtWcQ==
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.6.tgz#0101211baa70c4bca4a0f63f2206e97b7dfaf258"
+  integrity sha512-lQe48YPsMJAig+yngZ87Lus+NF+3mtu7DVOBu6b/gHO1YpKwIj5AWjZ/TOS7i46HD/UixzWb1zeWDZfGZ3iYcg==
 
 param-case@^2.1.0:
   version "2.1.0"
