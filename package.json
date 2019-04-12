@@ -59,7 +59,7 @@
     "jasmine-core": "^2.8.0",
     "jasmine-node": "^2.0.0",
     "jasmine-reporters": "^2.2.0",
-    "jquery": "3.2.1",
+    "jquery": "3.4.0",
     "jquery-2.1": "npm:jquery@2.1.4",
     "jquery-2.2": "npm:jquery@2.2.4",
     "karma": "^3.1.4",
