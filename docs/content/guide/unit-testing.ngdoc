@@ -475,7 +475,7 @@ describe("Deep Thought", function() {
     expect(DeepThought.absolutelySureItIsTheRightAnswer).toBe(true);
   }));
 
-});
+}); 
 ```
 
 ## Sample project
