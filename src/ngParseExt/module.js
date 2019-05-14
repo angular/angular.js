@@ -12,9 +12,9 @@
  * The `ngParseExt` module provides functionality to allow Unicode characters in
  * identifiers inside AngularJS expressions.
  *
- * This module allows the usage of any identifier that follows ES6 identifier naming convention
+ * This module allows any identifier that follows the ES6 identifier naming convention
  * to be used as an identifier in an AngularJS expression. ES6 delegates some of the identifier
- * rules definition to Unicode, this module uses ES6 and Unicode 8.0 identifiers convention.
+ * rules definition to Unicode, this module uses the ES6 and Unicode 8.0 identifiers convention.
  *
  * <div class="alert alert-warning">
  * You cannot use Unicode characters for variable names in the {@link ngRepeat} or {@link ngOptions}
