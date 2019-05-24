@@ -577,7 +577,7 @@ orderByFilter(['a', undefined, 'o', null, 'z']);
 
 
 <a name="migrate1.6to1.7-ng-misc"></a>
-### Core: _Misceallenous_
+### Core: _Miscellaneous_
 
 
 #### **jqLite**
