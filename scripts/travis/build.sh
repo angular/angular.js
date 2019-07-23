@@ -11,11 +11,12 @@ export SAUCE_ACCESS_KEY
 BROWSER_STACK_ACCESS_KEY=$(echo "$BROWSER_STACK_ACCESS_KEY" | rev)
 SAUCE_ACCESS_KEY=$(echo "$SAUCE_ACCESS_KEY" | rev)
 
-# The currently latest version of Safari on Saucelabs (v12) is unstable and disconnects frequently.
-# TODO: Add `SL_Safari` back, once/if it becomes more stable again.
+# The currently latest-1 version of desktop Safari on Saucelabs (v12.0) is unstable and disconnects
+# consistently. The latest version (v12.1) works fine.
+# TODO: Add `SL_Safari-1` back, once it no longer corresponds to v12.0.
 BROWSERS="SL_Chrome,SL_Chrome-1,\
 SL_Firefox,SL_Firefox-1,\
-SL_Safari-1,\
+SL_Safari,\
 SL_iOS,SL_iOS-1,\
 SL_IE_9,SL_IE_10,SL_IE_11,\
 SL_EDGE,SL_EDGE-1"
