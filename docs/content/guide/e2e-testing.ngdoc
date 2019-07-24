@@ -43,7 +43,7 @@ In addition to the above elements, tests may also contain helper functions to av
 code in the `it` blocks.
 
 Here is an example of a simple test:
-```js
+end to end test methods  js
 describe('TODO list', function() {
   it('should filter results', function() {
 
@@ -63,7 +63,7 @@ describe('TODO list', function() {
     expect(element.all(by.repeater('task in tasks')).count()).toEqual(1);
   });
 });
-```
+
 
 This test describes the requirements of a ToDo list, specifically, that it should be able to
 filter the list of items.
