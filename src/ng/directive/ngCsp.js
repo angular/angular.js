@@ -47,7 +47,7 @@
  * directive on an element of the HTML document that appears before the `<script>` tag that loads
  * the `angular.js` file.
  *
- * *Note: This directive is only available in the `ng-csp` and `data-ng-csp` attribute form.*
+ * *Note: This directive is only available in the `ng-csp` and `data-ng-csp` attribute form on the documentElement.*
  *
  * You can specify which of the CSP related AngularJS features should be deactivated by providing
  * a value for the `ng-csp` attribute. The options are as follows:
@@ -63,33 +63,34 @@
  * a runtime check for unsafe-eval. E.g. `<body>`. This is backwardly compatible with previous
  * versions of AngularJS.
  *
- * * A simple `ng-csp` (or `data-ng-csp`) attribute will tell AngularJS to deactivate both inline
- * styles and unsafe eval. E.g. `<body ng-csp>`. This is backwardly compatible with previous
+ * * A simple `ng-csp` (or `data-ng-csp`) attribute will tell AngularJS to behave as without the directive. 
+ * E.g. `<html ng-csp>`. with a value of `true` it will tell AngularJS to use neither inline styles, nor 
+ * unsafe-eval code. E.g. ``<html ng-csp="true">`` This is backwardly compatible with previous
  * versions of AngularJS.
  *
  * * Specifying only `no-unsafe-eval` tells AngularJS that we must not use eval, but that we can
- * inject inline styles. E.g. `<body ng-csp="no-unsafe-eval">`.
+ * inject inline styles. E.g. `<html ng-csp="no-unsafe-eval">`.
  *
  * * Specifying only `no-inline-style` tells AngularJS that we must not inject styles, but that we can
- * run eval - no automatic check for unsafe eval will occur. E.g. `<body ng-csp="no-inline-style">`
+ * run eval - no automatic check for unsafe eval will occur. E.g. `<html ng-csp="no-inline-style">`
  *
  * * Specifying both `no-unsafe-eval` and `no-inline-style` tells AngularJS that we must not inject
- * styles nor use eval, which is the same as an empty: ng-csp.
- * E.g.`<body ng-csp="no-inline-style;no-unsafe-eval">`
+ * styles nor use eval.: ng-csp.
+ * E.g.`<html ng-csp="no-inline-style;no-unsafe-eval">`
  *
  * @example
  *
  * This example shows how to apply the `ngCsp` directive to the `html` tag.
    ```html
      <!doctype html>
-     <html ng-app ng-csp>
+     <html ng-app ng-csp="no-unsafe-eval | no-inline-style">
      ...
      ...
      </html>
    ```
 
   <!-- Note: the `.csp` suffix in the example name triggers CSP mode in our http server! -->
-  <example name="example.csp" module="cspExample" ng-csp="true">
+  <example name="example.csp" module="cspExample" ng-csp="no-unsafe-eval | no-inline-style">
     <file name="index.html">
       <div ng-controller="MainController as ctrl">
         <div>
