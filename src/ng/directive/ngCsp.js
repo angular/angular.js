@@ -63,8 +63,8 @@
  * a runtime check for unsafe-eval. E.g. `<body>`. This is backwardly compatible with previous
  * versions of AngularJS.
  *
- * * A simple `ng-csp` (or `data-ng-csp`) attribute will tell AngularJS to behave as without the directive. 
- * E.g. `<html ng-csp>`. with a value of `true` it will tell AngularJS to use neither inline styles, nor 
+ * * A simple `ng-csp` (or `data-ng-csp`) attribute will tell AngularJS to behave as without the directive.
+ * E.g. `<html ng-csp>`. with a value of `true` it will tell AngularJS to use neither inline styles, nor
  * unsafe-eval code. E.g. ``<html ng-csp="true">`` This is backwardly compatible with previous
  * versions of AngularJS.
  *
