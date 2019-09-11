@@ -136,13 +136,13 @@ function currencyFilter($locale) {
 numberFilter.$inject = ['$locale'];
 function numberFilter($locale) {
   var formats = $locale.NUMBER_FORMATS;
-  return function(number, fractionSize) {
+  return function(number, fractionSize, maxFrac) {
 
     // if null or undefined pass it through
     return (number == null)
         ? number
         : formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP, formats.DECIMAL_SEP,
-                       fractionSize);
+                       fractionSize, maxFrac);
   };
 }
 
@@ -289,7 +289,7 @@ function roundNumber(parsedNumber, fractionSize, minFrac, maxFrac) {
  * @param  {[type]} fractionSize The size of the fractional part of the number
  * @return {string}              The number formatted as a string
  */
-function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
+function formatNumber(number, pattern, groupSep, decimalSep, fractionSize, maxFrac) {
 
   if (!(isString(number) || isNumber(number)) || isNaN(number)) return '';
 
@@ -304,7 +304,9 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   } else {
     parsedNumber = parse(numStr);
 
-    roundNumber(parsedNumber, fractionSize, pattern.minFrac, pattern.maxFrac);
+    if(isUndefined(maxFrac))
+      roundNumber(parsedNumber, fractionSize, pattern.minFrac, pattern.maxFrac);
+    else roundNumber(parsedNumber, undefined, fractionSize, maxFrac);
 
     var digits = parsedNumber.d;
     var integerLen = parsedNumber.i;
