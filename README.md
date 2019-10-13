@@ -1,4 +1,4 @@
-AngularJS [![Build Status](https://travis-ci.org/angular/angular.js.svg?branch=master)](https://travis-ci.org/angular/angular.js)
+﻿AngularJS [![Build  Status](https://travis-ci.org/angular/angular.js.svg?branch=master)](https://travis-ci.org/angular/angular.js)
 =========
 
 AngularJS lets you write client-side web applications as if you had a smarter browser.  It lets you
@@ -16,7 +16,7 @@ piece of cake. Best of all? It makes development fun!
 
 **On July 1, 2018 AngularJS entered a 3 year Long Term Support period:** [Find out more](https://docs.angularjs.org/misc/version-support-status)
 
-**Looking for the new Angular? Go here:** https://github.com/angular/angular
+**Looking for the new Angular ? Go here:* https://github.com/angular/angular
 
 --------------------
 
@@ -54,7 +54,7 @@ AngularJS is the next generation framework where each component is designed to w
 component in an interconnected way like a well-oiled machine. AngularJS is JavaScript MVC made easy
 and done right. (Well it is not really MVC, read on, to understand what this means.)
 
-#### MVC, no, MV* done the right way!
+#### MVC, no, MV* done the right way!!
 MVC, short for Model-View-Controller, is a design pattern, i.e. how the code should be organized and
 how the different parts of an application separated for proper readability and debugging. Model is
 the data and the database. View is the user interface and what the user sees. Controller is the main
@@ -81,11 +81,11 @@ gets loaded, but not "how". This declarative approach greatly simplifies app dev
 of WYSIWYG way. Rather than spending time on how the program flows and orchestrating the various
 moving parts, we simply define what we want and AngularJS will take care of the dependencies.
 
-#### Data Handling made simple
+#### "Data Handling made simple"
 Data and Data Models in AngularJS are plain JavaScript objects and one can add and change properties
 directly on it and loop over objects and arrays at will.
 
-#### Two-way Data Binding
+### "Two-way Data Binding"
 One of AngularJS's strongest features. Two-way Data Binding means that if something changes in the
 Model, the change gets reflected in the View instantaneously, and the same happens the other way
 around. This is also referred to as Reactive Programming, i.e. suppose `a = b + c` is being
@@ -93,13 +93,13 @@ programmed and after this, if the value of `b` and/or `c` is changed then the va
 automatically updated to reflect the change. AngularJS uses its "scopes" as a glue between the Model
 and View and makes these updates in one available for the other.
 
-#### Less Written Code and Easily Maintainable Code
+### "Less Written Code and Easily Maintainable Code"
 Everything in AngularJS is created to enable the programmer to end up writing less code that is
 easily maintainable and readable by any other new person on the team. Believe it or not, one can
 write a complete working two-way data binded application in less than 10 lines of code. Try and see
 for yourself!
 
-#### Testing Ready
+### "Testing Ready"
 AngularJS has Dependency Injection, i.e. it takes care of providing all the necessary dependencies
 to its controllers and services whenever required. This helps in making the AngularJS code ready for
 unit testing by making use of mock dependencies created and injected. This makes AngularJS more
