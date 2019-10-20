@@ -11,7 +11,7 @@
 }
 
 ng\:form {
-  display: block;
+  display: inline;
 }
 
 .ng-animate-shim {
