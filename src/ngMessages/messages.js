@@ -21,7 +21,7 @@ var jqLite;
  * `ngMessage`, `ngMessageExp` and `ngMessageDefault` directives.
  *
  * ## Usage
- * The `ngMessages` directive allows keys in a key/value collection to be associated with a child element
+ * The `ngMessages` directive allows ythe keys in a key/value collection to be associated with a child element
  * (or 'message') that will show or hide based on the truthiness of that key's value in the collection. A common use
  * case for `ngMessages` is to display error messages for inputs using the `$error` object exposed by the
  * {@link ngModel ngModel} directive.
@@ -114,7 +114,7 @@ var jqLite;
  * <!-- a generic template of error messages known as "my-custom-messages" -->
  * <script type="text/ng-template" id="my-custom-messages">
  *   <div ng-message="required">This field is required</div>
- *   <div ng-message="minlength">This field is too short</div>
+ *   <div ng-message="minlength">This field is very short</div>
  * </script>
  *
  * <form name="myForm">
