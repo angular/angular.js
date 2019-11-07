@@ -814,6 +814,19 @@ describe('angular', function() {
       expect(isElement(dst.jqObject)).toBeTruthy();
       expect(dst.jqObject.nodeName).toBeUndefined(); // i.e it is a jqLite/jQuery object
     });
+
+    it('should not merge the __proto__ property', function() {
+      var src = JSON.parse('{ "__proto__": { "xxx": "polluted" } }');
+      var dst = {};
+
+      merge(dst, src);
+
+      if (typeof dst.__proto__ !== 'undefined') { // eslint-disable-line
+        // Should not overwrite the __proto__ property or pollute the Object prototype
+        expect(dst.__proto__).toBe(Object.prototype); // eslint-disable-line
+      }
+      expect(({}).xxx).toBeUndefined();
+    });
   });
 
 
