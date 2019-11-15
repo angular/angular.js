@@ -9,8 +9,8 @@
     "url": "https://github.com/angular/angular.js.git"
   },
   "engines": {
-    "node": ">=8.12.0",
-    "yarn": ">=1.10.1",
+    "node": ">=12.14.1",
+    "yarn": ">=1.21.1",
     "grunt-cli": "^1.2.0"
   },
   "scripts": {
@@ -22,7 +22,7 @@
     "angular-benchpress": "0.x.x",
     "benchmark": "1.x.x",
     "bootstrap": "3.1.1",
-    "browserstacktunnel-wrapper": "2.0.0",
+    "browserstacktunnel-wrapper": "2.0.4",
     "canonical-path": "0.0.2",
     "changez": "^2.1.1",
     "changez-angular": "^2.1.2",
@@ -62,18 +62,18 @@
     "jquery": "3.5.1",
     "jquery-2.1": "npm:jquery@2.1.4",
     "jquery-2.2": "npm:jquery@2.2.4",
-    "karma": "^3.1.4",
-    "karma-browserstack-launcher": "^1.3.0",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-edge-launcher": "^0.4.2",
-    "karma-firefox-launcher": "^1.1.0",
-    "karma-ie-launcher": "^1.0.0",
+    "karma": "4.4.1",
+    "karma-browserstack-launcher": "1.5.1",
+    "karma-chrome-launcher": "3.1.0",
+    "karma-edge-launcher": "0.4.2",
+    "karma-firefox-launcher": "1.2.0",
+    "karma-ie-launcher": "1.0.0",
     "karma-jasmine": "^1.1.2",
-    "karma-junit-reporter": "^1.2.0",
-    "karma-safari-launcher": "^1.0.0",
-    "karma-sauce-launcher": "^2.0.2",
-    "karma-script-launcher": "^1.0.0",
-    "karma-spec-reporter": "^0.0.32",
+    "karma-junit-reporter": "2.0.1",
+    "karma-safari-launcher": "1.0.0",
+    "karma-sauce-launcher": "2.0.2",
+    "karma-script-launcher": "1.0.0",
+    "karma-spec-reporter": "0.0.32",
     "load-grunt-tasks": "^3.5.0",
     "lodash": "~2.4.1",
     "log4js": "^0.6.27",
@@ -102,7 +102,9 @@
   "resolutions": {
     "//1": "`natives@1.1.0` does not work with Node.js 10.x on Windows 10",
     "//2": "(E.g. see https://github.com/gulpjs/gulp/issues/2162 and https://github.com/nodejs/node/issues/25132.)",
-    "natives": "1.1.6"
+    "natives": "1.1.6",
+    "//3": "`graceful-fs` needs to be pinned to support gulp 3, on Node v12+",
+    "graceful-fs": "^4.2.3"
   },
   "commitplease": {
     "style": "angular",
