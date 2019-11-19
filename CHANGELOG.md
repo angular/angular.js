@@ -4,6 +4,7 @@
 ## Bug Fixes
 - **angular.merge:** do not merge __proto__ property
   ([726f49](https://github.com/angular/angular.js/commit/726f49dcf6c23106ddaf5cfd5e2e592841db743a))
+  ([Thanks to the Snyk Security Research Team](https://snyk.io/blog/snyk-research-team-discovers-severe-prototype-pollution-security-vulnerabilities-affecting-all-versions-of-lodash/) for identifyng this issue.)
 - **ngStyle:** correctly remove old style when new style value is invalid
   ([5edd25](https://github.com/angular/angular.js/commit/5edd25364f617083363dc2bd61f9230b38267578),
   [#16860](https://github.com/angular/angular.js/issues/16860),
