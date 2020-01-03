@@ -195,7 +195,7 @@ angular.module('phonecatApp', [
 
 Now, in addition to the core services and directives, we can also configure the `$route` service
 (using its provider) for our application. In order to be able to quickly locate the configuration
-code, we put it into a separate file and used the `.config` suffix.
+code, we put it into a separate file and used the `.config` suffix. Note: the code below is not the same as the GitHub reference.
 
 <br />
 **`app/app.config.js`:**
