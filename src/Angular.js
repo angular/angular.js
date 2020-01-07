@@ -820,8 +820,8 @@ function arrayRemove(array, value) {
  * - [`MediaStream`](https://developer.mozilla.org/docs/Web/API/MediaStream)
  * - [`Set`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Set)
  * - [`WeakMap`](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/WeakMap)
- * - ['getter'](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get)/
- *   [`setter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set)`
+ * - [`getter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get)/
+ *   [`setter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set)
  *
  * @param {*} source The source that will be used to make a copy. Can be any type, including
  *     primitives, `null`, and `undefined`.
