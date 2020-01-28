@@ -349,7 +349,7 @@ describe('select', function() {
     });
 
 
-    it('should only call selectCtrl.writeValue after a digest has occured', function() {
+    it('should only call selectCtrl.writeValue after a digest has occurred', function() {
       scope.mySelect = 'B';
       scope.$apply();
 
