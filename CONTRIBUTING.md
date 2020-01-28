@@ -172,7 +172,7 @@ restarted.
     git push origin my-fix-branch -f
     ```
 
-    This is generally easier to follow, but seperate commits are useful if the Pull Request contains
+    This is generally easier to follow, but separate commits are useful if the Pull Request contains
     iterations that might be interesting to see side-by-side.
 
 That's it! Thank you for your contribution!
