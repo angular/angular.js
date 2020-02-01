@@ -10,7 +10,11 @@ const BROWSER_CACHE_DURATION = 60 * 10;
 const CDN_CACHE_DURATION = 60 * 60 * 12;
 
 function sendStoredFile(request, response) {
-  const requestPath = request.path || '/';
+  // Request paths will be URI-encoded, so we need to decode them to match the file names in the
+  // storage bucket. Failing to do so will result in a 404 error from the bucket and `index.html`
+  // will be returned instead.
+  // Example of path requiring decoding: `.../input%5Btext%5D.html` --> `.../input[text].html`
+  const requestPath = decodeURI(request.path || '/');
   let filePathSegments = requestPath.split('/').filter((segment) => {
     // Remove empty leading or trailing path parts
     return segment !== '';
