@@ -101,8 +101,8 @@
   "dependencies": {},
   "resolutions": {
     "//1": "`natives@1.1.0` does not work with Node.js 10.x on Windows 10",
-    "//2": "(E.g. see https://github.com/gulpjs/gulp/issues/2162.)",
-    "natives": "1.1.3"
+    "//2": "(E.g. see https://github.com/gulpjs/gulp/issues/2162 and https://github.com/nodejs/node/issues/25132.)",
+    "natives": "1.1.6"
   },
   "commitplease": {
     "style": "angular",
