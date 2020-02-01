@@ -12,6 +12,7 @@ performance/temp*.html
 angular.js.tmproj
 node_modules/
 angular.xcodeproj
+.firebase/
 .idea
 *.iml
 .agignore
