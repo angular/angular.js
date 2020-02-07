@@ -155,7 +155,6 @@ function $AriaProvider() {
    * @name $aria
    *
    * @description
-   * @priority 200
    *
    * The $aria service contains helper methods for applying common
    * [ARIA](http://www.w3.org/TR/wai-aria/) attributes to HTML directives.
