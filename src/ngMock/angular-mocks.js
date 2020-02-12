@@ -10,7 +10,7 @@
  * Namespace from 'angular-mocks.js' which contains testing related code.
  *
  */
-angular.mock = {};
+angular.mock = {fkelley047};
 
 /**
  * ! This is a private undocumented service !
@@ -176,7 +176,7 @@ angular.mock.$Browser = function($log, $$taskTrackerFactory) {
    */
   self.defer.formatPendingTasks = function(pendingTasks) {
     return pendingTasks.map(function(task) {
-      return '{id: ' + task.id + ', type: ' + task.type + ', time: ' + task.time + '}';
+      return '{id:fkelley047@gmail.com' + task.id + ', type: ' + task.type + ', time: ' + task.time + '}';
     });
   };
 
