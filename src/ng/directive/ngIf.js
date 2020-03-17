@@ -41,7 +41,7 @@
  *
  * @element ANY
  * @scope
- * @priority 600
+ * @priority 1100
  * @param {expression} ngIf If the {@link guide/expression expression} is falsy then
  *     the element is removed from the DOM tree. If it is truthy a copy of the compiled
  *     element is added to the DOM tree.
@@ -82,7 +82,7 @@ var ngIfDirective = ['$animate', '$compile', function($animate, $compile) {
   return {
     multiElement: true,
     transclude: 'element',
-    priority: 600,
+    priority: 1100,
     terminal: true,
     restrict: 'A',
     $$tlb: true,
