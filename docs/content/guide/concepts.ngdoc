@@ -133,8 +133,7 @@ different currencies and also pay the invoice.
         </div>
         <div>
           Costs: <input type="number" min="0" ng-model="invoice.cost" required >
-          <select ng-model="invoice.inCurr">
-            <option ng-repeat="c in invoice.currencies">{{c}}</option>
+          <select ng-model="invoice.inCurr" ng-options="c for c in invoice.currencies">
           </select>
         </div>
         <div>
@@ -164,7 +163,7 @@ and save it in the variable `invoice` in the current scope.
 
 We also changed all expressions in the page to read and write variables within that
 controller instance by prefixing them with `invoice.` . The possible currencies are defined in the controller
-and added to the template using {@link ng.directive:ngRepeat `ng-repeat`}.
+and added to the template using {@link ng.directive:ngOptions `ng-options`}.
 As the controller contains a `total` function
 we are also able to bind the result of that function to the DOM using `{{ invoice.total(...) }}`.
 
@@ -234,8 +233,7 @@ Let's refactor our example and move the currency conversion into a service in an
         </div>
         <div>
           Costs: <input type="number" min="0" ng-model="invoice.cost" required >
-          <select ng-model="invoice.inCurr">
-            <option ng-repeat="c in invoice.currencies">{{c}}</option>
+          <select ng-model="invoice.inCurr" ng-options="c for c in invoice.currencies">
           </select>
         </div>
         <div>
@@ -354,8 +352,7 @@ The following example shows how this is done with AngularJS:
         </div>
         <div>
           Costs: <input type="number" min="0" ng-model="invoice.cost" required >
-          <select ng-model="invoice.inCurr">
-            <option ng-repeat="c in invoice.currencies">{{c}}</option>
+          <select ng-model="invoice.inCurr" ng-options="c for c in invoice.currencies">
           </select>
         </div>
         <div>
