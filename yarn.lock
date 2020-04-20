@@ -1721,9 +1721,9 @@ dateformat@^2.0.0:
   integrity sha1-J0Pjq7XD/CRi5SfcpEXgTp9N7hc=
 
 deap@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/deap/-/deap-1.0.0.tgz#b148bf82430a27699b7483a03eb6b67585bfc888"
-  integrity sha1-sUi/gkMKJ2mbdIOgPra2dYW/yIg=
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/deap/-/deap-1.0.1.tgz#0646e9e1a095ffe8a9e404d68d1f76dcf57e66fb"
+  integrity sha512-k75KYNZMvwAwes2xIPry/QTffXIchjD8QfABvvfTr80P85jv5ZcKqcoDo+vMe71nNnVnXYe8MA28weyqcf/DKw==
 
 debug-fabulous@0.0.X:
   version "0.0.4"
