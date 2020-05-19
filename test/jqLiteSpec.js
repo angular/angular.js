@@ -147,6 +147,13 @@ describe('jqLite', function() {
       expect(nodes[0].nodeName.toLowerCase()).toBe('option');
     });
 
+    it('should allow construction of multiple <option> elements', function() {
+      var nodes = jqLite('<option></option><option></option>');
+      expect(nodes.length).toBe(2);
+      expect(nodes[0].nodeName.toLowerCase()).toBe('option');
+      expect(nodes[1].nodeName.toLowerCase()).toBe('option');
+    });
+
 
     // Special tests for the construction of elements which are restricted (in the HTML5 spec) to
     // being children of specific nodes.
@@ -167,6 +174,95 @@ describe('jqLite', function() {
         var nodes = jqLite('<$NAME$>'.replace('$NAME$', name));
         expect(nodes.length).toBe(1);
         expect(nodes[0].nodeName.toLowerCase()).toBe(name);
+      });
+    });
+
+    describe('security', function() {
+      it('shouldn\'t crash at attempts to close the table wrapper', function() {
+        // jQuery doesn't pass this test yet.
+        if (!_jqLiteMode) return;
+
+        // Support: IE <10
+        // In IE 9 we still need to use the old-style innerHTML assignment
+        // as that's the only one that works.
+        if (msie < 10) return;
+
+        expect(function() {
+          // This test case attempts to close the tags which wrap input
+          // based on matching done in wrapMap, escaping the wrapper & thus
+          // triggering an error when descending.
+          var el = jqLite('<td></td></tr></tbody></table><td></td>');
+          expect(el.length).toBe(2);
+          expect(el[0].nodeName.toLowerCase()).toBe('td');
+          expect(el[1].nodeName.toLowerCase()).toBe('td');
+        }).not.toThrow();
+      });
+
+      it('shouldn\'t unsanitize sanitized code', function(done) {
+        // jQuery <3.5.0 fail those tests.
+        if (isJQuery2x()) {
+          done();
+          return;
+        }
+
+        var counter = 0,
+          assertCount = 13,
+          container = jqLite('<div></div>');
+
+        function donePartial() {
+          counter++;
+          if (counter === assertCount) {
+            container.remove();
+            delete window.xss;
+            done();
+          }
+        }
+
+        jqLite(document.body).append(container);
+        window.xss = jasmine.createSpy('xss');
+
+        // Thanks to Masato Kinugawa from Cure53 for providing the following test cases.
+        // Note: below test cases need to invoke the xss function with consecutive
+        // decimal parameters for the assertions to be correct.
+        forEach([
+          '<img alt="<x" title="/><img src=url404 onerror=xss(0)>">',
+          '<img alt="\n<x" title="/>\n<img src=url404 onerror=xss(1)>">',
+          '<style><style/><img src=url404 onerror=xss(2)>',
+          '<xmp><xmp/><img src=url404 onerror=xss(3)>',
+          '<title><title /><img src=url404 onerror=xss(4)>',
+          '<iframe><iframe/><img src=url404 onerror=xss(5)>',
+          '<noframes><noframes/><img src=url404 onerror=xss(6)>',
+          '<noscript><noscript/><img src=url404 onerror=xss(7)>',
+          '<foo" alt="" title="/><img src=url404 onerror=xss(8)>">',
+          '<img alt="<x" title="" src="/><img src=url404 onerror=xss(9)>">',
+          '<noscript/><img src=url404 onerror=xss(10)>',
+          '<noembed><noembed/><img src=url404 onerror=xss(11)>',
+
+          '<option><style></option></select><img src=url404 onerror=xss(12)></style>'
+        ], function(htmlString, index) {
+          var element = jqLite('<div></div>');
+
+          container.append(element);
+          element.append(jqLite(htmlString));
+
+          window.setTimeout(function() {
+            expect(window.xss).not.toHaveBeenCalledWith(index);
+            donePartial();
+          }, 1000);
+        });
+      });
+
+      it('should allow to restore legacy insecure behavior', function() {
+        // jQuery doesn't have this API.
+        if (!_jqLiteMode) return;
+
+        // eslint-disable-next-line new-cap
+        angular.UNSAFE_restoreLegacyJqLiteXHTMLReplacement();
+
+        var elem = jqLite('<div/><span/>');
+        expect(elem.length).toBe(2);
+        expect(elem[0].nodeName.toLowerCase()).toBe('div');
+        expect(elem[1].nodeName.toLowerCase()).toBe('span');
       });
     });
   });
