@@ -31,7 +31,7 @@ please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the 
 https://plnkr.co or similar (you can use this template as a starting point: http://plnkr.co/edit/tpl:yBpEi4).
 -->
 
-**AngularJS version:** 1.7.x
+**AngularJS version:** 1.8.x
 <!-- Check whether this is still an issue in the most recent stable or in the snapshot AngularJS
 version (https://code.angularjs.org/snapshot/) -->
 

@@ -34,16 +34,16 @@ Since we are using [npm][npm] to install client-side dependencies, this step upd
   "name": "angular-phonecat",
   ...
   "dependencies": {
-    "angular": "1.7.x",
-    "angular-route": "1.7.x",
+    "angular": "1.8.x",
+    "angular-route": "1.8.x",
     "bootstrap": "3.3.x"
   },
   ...
 }
 ```
 
-The new dependency `"angular-route": "1.7.x"` tells npm to install a version of the angular-route
-module that is compatible with version 1.7.x of AngularJS. We must tell npm to download and install
+The new dependency `"angular-route": "1.8.x"` tells npm to install a version of the angular-route
+module that is compatible with version 1.8.x of AngularJS. We must tell npm to download and install
 this dependency.
 
 ```

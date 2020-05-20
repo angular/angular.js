@@ -36,20 +36,20 @@ Since we are using [npm][npm] to install client-side dependencies, this step upd
   "name": "angular-phonecat",
   ...
   "dependencies": {
-    "angular": "1.7.x",
-    "angular-animate": "1.7.x",
-    "angular-resource": "1.7.x",
-    "angular-route": "1.7.x",
+    "angular": "1.8.x",
+    "angular-animate": "1.8.x",
+    "angular-resource": "1.8.x",
+    "angular-route": "1.8.x",
     "bootstrap": "3.3.x",
-    "jquery": "3.3.x"
+    "jquery": "^3.5.1"
   },
   ...
 }
 ```
 
-* `"angular-animate": "1.7.x"` tells npm to install a version of the angular-animate module that
-  is compatible with version 1.7.x of AngularJS.
-* `"jquery": "3.3.x"` tells npm to install the latest patch release of the 3.3 version of jQuery.
+* `"angular-animate": "1.8.x"` tells npm to install a version of the angular-animate module that
+  is compatible with version 1.8.x of AngularJS.
+* `"jquery": "^3.5.1"` tells npm to install a version of jQuery that is compatible with 3.5.x and at least 3.5.1.
   Note that this is not an AngularJS library; it is the standard jQuery library. We can use npm to
   install a wide range of 3rd party libraries.
 
