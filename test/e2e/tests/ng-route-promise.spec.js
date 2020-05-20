@@ -9,14 +9,12 @@ describe('ngRoute promises', function() {
     expect(element.all(by.tagName('li')).count()).toBe(5);
   });
 
-  it('should time out if the promise takes long enough', function() {
+  it('should time out if the promise takes long enough', function(done) {
     // Don't try this at home kids, I'm a protractor dev
     browser.manage().timeouts().setScriptTimeout(1000);
     browser.waitForAngular().then(function() {
       fail('waitForAngular() should have timed out, but didn\'t');
-    }, function(error) {
-      expect(error.message).toContain('Timed out waiting for asynchronous Angular tasks to finish');
-    });
+    }, done);
   });
 
   it('should wait for route promises when navigating to another route', function() {
