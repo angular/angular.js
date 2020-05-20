@@ -28,17 +28,18 @@ if (process.env.BROWSER_PROVIDER === 'browserstack') {
   config.multiCapabilities = [
     capabilitiesForSauceLabs({
       browserName: 'chrome',
-      platform: 'OS X 10.11',
-      version: '48'
+      platform: 'OS X 10.14',
+      version: '81'
     }),
     capabilitiesForSauceLabs({
       browserName: 'firefox',
-      version: '47'
+      platform: 'OS X 10.14',
+      version: '76'
     }),
     capabilitiesForSauceLabs({
       browserName: 'safari',
-      platform: 'OS X 10.11',
-      version: '9'
+      platform: 'OS X 10.14',
+      version: '12'
     })
   ];
 }
