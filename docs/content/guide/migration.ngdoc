@@ -15,6 +15,30 @@ which drives many of these changes.
 * Several new features, especially animations, would not be possible without a few changes.
 * Finally, some outstanding bugs were best fixed by changing an existing API.
 
+## Migrating from 1.7 to 1.8
+
+Generally updating to 1.8.0 from 1.7.x should be a straightforward process and is highly recommended.
+AngularJS 1.8 is a breaking change release from 1.7 to mitigate a security issue.
+
+JqLite no longer turns XHTML-like strings like `<div /><span />` to sibling elements when not in XHTML
+mode: `<div></div><span></span>`.
+Instead it will leave the elements alone. In non-XHTML mode the browser will convert these to nested
+elements: `<div><span></span></div>`.
+
+This is a security fix to avoid an XSS vulnerability if a new jqLite element is created from a
+user-controlled HTML string. If you must have this functionality and understand the risk involved
+then it is posible to restore the original behavior by calling
+
+```js
+angular.UNSAFE_restoreLegacyJqLiteXHTMLReplacement();
+```
+
+But you should adjust your code for this change and remove your use of this function as soon as
+possible.
+
+Note that this only patches jqLite. If you use jQuery 3.5.0 or newer, please read the
+[jQuery 3.5 upgrade guide](https://jquery.com/upgrade-guide/3.5/) for more details about the workarounds.
+
 
 ## Migrating from 1.6 to 1.7
 

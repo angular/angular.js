@@ -174,8 +174,9 @@ Yes, AngularJS can use [jQuery](http://jquery.com/) if it's present in your app 
 application is being bootstrapped. If jQuery is not present in your script path, AngularJS falls back
 to its own implementation of the subset of jQuery that we call {@link angular.element  jQLite}.
 
-AngularJS 1.3 only supports jQuery 2.1 or above. jQuery 1.7 and newer might work correctly with AngularJS
-but we don't guarantee that.
+For AngularJS 1.8 we support jQuery 2.1+ but we suggest jQuery 3.5.1 or above to avoid a potential
+security issue. Earlier versions of jQuery might work correctly with AngularJS but we don't guarantee
+that.
 
 
 ### What is testability like in AngularJS?
