@@ -88,6 +88,7 @@
     "q-io": "^1.10.9",
     "qq": "^0.3.5",
     "rewire": "~2.1.0",
+    "sauce-connect": "https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz",
     "sax": "^1.1.1",
     "selenium-webdriver": "^4.0.0-alpha.1",
     "semver": "^5.4.1",
@@ -98,7 +99,11 @@
     "sorted-object": "^1.0.0",
     "stringmap": "^0.2.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "firebase": "^7.14.4",
+    "firebase-tools": "^8.3.0",
+    "node-glob": "^1.2.0"
+  },
   "resolutions": {
     "//1": "`natives@1.1.0` does not work with Node.js 10.x on Windows 10",
     "//2": "(E.g. see https://github.com/gulpjs/gulp/issues/2162 and https://github.com/nodejs/node/issues/25132.)",

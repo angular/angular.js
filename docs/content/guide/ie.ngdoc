@@ -17,9 +17,8 @@ attributes and tags. Read this document if you are planning on deploying your An
 on IE.
 
 The project currently supports and will attempt to fix bugs for IE9 and above. The continuous
-integration server runs all the tests against IE9, IE10, and IE11. See
-[Travis CI](https://travis-ci.org/angular/angular.js) and
-[ci.angularjs.org](https://ci.angularjs.org).
+integration server runs all unit tests against IE9, IE10, and IE11. See
+[CircleCI](https://circleci.com/gh/angular/workflows/angular.js/tree/master).
 
 We do not run tests on IE8 and below. A subset of the AngularJS functionality may work on these
 browsers, but it is up to you to test and decide whether it works for your particular app.

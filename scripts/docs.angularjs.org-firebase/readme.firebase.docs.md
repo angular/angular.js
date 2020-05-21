@@ -3,12 +3,13 @@ Firebase for docs.angularjs.org
 
 # Continuous integration
 
-The docs are deployed to Google Firebase hosting via Travis deployment config, which expects
-firebase.json in the repository root, which is done by a Grunt task (firebaseDocsJsonForTravis)
-that modifies the paths in the firebase.json and copies it into the repository root.
+The docs are deployed to Google Firebase hosting via a CI deployment config, which expects
+firebase.json to be in the repository root, which is done by a Grunt task
+(`firebaseDocsJsonForCI` which is included in `prepareDeploy`).
+The `firebaseDocsJsonForCI` task modifies the paths in the `firebase.json` and copies it to the
+repository root.
 
-See travis.yml for the complete deployment config, and scripts/travis/build.sh for the full deployment
-build steps.
+See .circleci/config.yml for the complete deployment config and build steps.
 
 # Serving locally:
 

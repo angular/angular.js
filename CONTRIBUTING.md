@@ -125,8 +125,8 @@ Before you submit your pull request consider the following guidelines:
 * Follow our [Coding Rules][developers.rules].
 * If the changes affect public APIs, change or add relevant [documentation][developers.documentation].
 * Run the AngularJS [unit][developers.tests-unit] and [E2E test][developers.tests-e2e] suites, and ensure that all tests
-  pass. It is generally sufficient to run the tests only on Chrome, as our Travis integration will
-  run the tests on all supported browsers.
+  pass. It is generally sufficient to run the tests only on Chrome, as our continous integration test will
+  run the tests on additional browsers.
 * Run `yarn grunt eslint` to check that you have followed the automatically enforced coding rules
 * Commit your changes using a descriptive commit message that follows our
   [commit message conventions][developers.commits]. Adherence to the
@@ -151,9 +151,9 @@ Before you submit your pull request consider the following guidelines:
     ```
 
 * In GitHub, send a pull request to `angular.js:master`. This will trigger the check of the
-[Contributor License Agreement](#cla) and the Travis integration.
+[Contributor License Agreement](#cla) and the continuous integration tests.
 
-* If you find that the Travis integration has failed, look into the logs on Travis to find out
+* If you find that the continous integration tests have failed, look into the logs to find out
 if your changes caused test failures, the commit message was malformed etc. If you find that the
 tests failed or times out for unrelated reasons, you can ping a team member so that the build can be
 restarted.

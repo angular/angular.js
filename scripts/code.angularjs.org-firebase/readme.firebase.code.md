@@ -9,7 +9,7 @@ in functions/index.js that serves the docs from the Firebase Google Cloud Storag
 functions/index.js also contains a rule that deletes outdated build zip files
 from the snapshot and snapshot-stable folders when new zip files are uploaded.
 
-The deployment to the Google Cloud Storage bucket happens automatically via Travis. See the travis.yml
-file in the repository root.
+The deployment to the Google Cloud Storage bucket happens automatically via CI.
+See the .circleci/config.yml file in the repository root.
 
 See /readme.firebase.docs.md for the firebase deployment to docs.angularjs.org

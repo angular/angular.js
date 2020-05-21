@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Tags a release
-# so that travis can do the actual release.
 
 echo "#################################"
 echo "## Tag angular.js for a release #"

@@ -63,7 +63,7 @@ function _update_code() {
 
 function publish {
   # publish updates the code.angularjs.org Github repository
-  # the deployment to Firebase happens via Travis
+  # the deployment to Firebase happens via CI
   _update_code
 }
 

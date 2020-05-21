@@ -36,7 +36,7 @@ Usually this will be the commit containing the release notes, but it may also be
 ## Run "release" script
 
   ```bash
-  scripts/jenkins/release.sh --git-push-dryrun=false --commit-sha=8822a4f --version-number=1.7.6 --version-name=gravity-manipulation
+  scripts/release/release.sh --git-push-dryrun=false --commit-sha=8822a4f --version-number=1.7.6 --version-name=gravity-manipulation
   ```
 
   1) The SHA is of the commit to release (could be in the past).
@@ -67,10 +67,10 @@ If we want to make our files available, we need submit our CLs before this time 
 This is the version used to compute what version to link to in the CDN. If you update this too early then the CDN lookup fails and you end up with 'null, for the version, which breaks the docs.
 
 
-## Verify angularjs.org download modal has latest version (updates via Travis job)
+## Verify angularjs.org download modal has latest version (updates via CI job)
 
-The versions in the modal are updated (based on the versions available on CDN) as part of the Travis deploy stage: https://github.com/angular/angularjs.org/blob/a4d25c5abcd39e8ce19d31cb1c78073d13c4c974/.travis.yml#L26
-(You may need to explicitly trigger the Travis job. e.g. re-running the last job.)
+The versions in the modal are updated (based on the versions available on CDN) as part of the CI deploy stage.
+(You may need to explicitly trigger the CI job. e.g. re-running the last `deploy` job.)
 
 
 ## Announce the release (via official Google accounts)
