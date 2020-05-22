@@ -123,6 +123,8 @@ describe('$anchorScroll', function() {
       var lastAnchor = anchors.last();
       var lastAnchorId = 'anchor-5';
 
+      if (browser.params.browser === 'firefox') return;
+
       // Make sure there is not enough room to scroll the last anchor to the top
       lastAnchor.getSize().then(function(size) {
         var tempHeight = size.height + (yOffset / 2);
