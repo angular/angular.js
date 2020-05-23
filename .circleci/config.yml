@@ -305,7 +305,7 @@ jobs:
 
   deploy-code:
     executor:
-      name: default-executor
+      name: cloud-sdk
     steps:
       - run:
           name: Authenticate and configure Docker
