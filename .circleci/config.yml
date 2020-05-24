@@ -1,4 +1,4 @@
-# Configuration file for https://circleci.com/gh/angular/angular
+# Configuration file for https://circleci.com/gh/angular/angular.js
 
 # Note: YAML anchors allow an object to be re-used, reducing duplication.
 # The ampersand declares an alias for an object, then later the `<<: *name`
@@ -12,41 +12,15 @@
 # https://circleci.com/docs/2.0/reusing-config/#getting-started-with-config-reuse
 version: 2.1
 
-# Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
-# `build-ivy-npm-packages`.
+# Workspace persisted by the `setup` job to share build artifacts with other jobs.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
 # https://circleci.com/blog/deep-diving-into-circleci-workspaces/
 var_workspace_location: &workspace_location ~/
-
-# Filter to run a job on builds for pull requests only.
-var_only_on_pull_requests: &only_on_pull_requests
-  filters:
-    branches:
-      only:
-        - /pull\/\d+/
-
-# Filter to skip a job on builds for pull requests.
-var_skip_on_pull_requests: &skip_on_pull_requests
-  filters:
-    branches:
-      ignore:
-        - /pull\/\d+/
-
-# Filter to run a job on builds for the master branch only.
-var_only_on_master: &only_on_master
-  filters:
-    branches:
-      only:
-        - master
 
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
 # **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
 #             (Using the tag in not necessary when pinning by ID, but include it anyway for documentation purposes.)
-# **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
-# **NOTE 3**: If you change the version of the `*-browsers` docker image, make sure the
-#             `--versions.chrome` arg in `integration/bazel-schematics/test.sh` specifies a
-#             ChromeDriver version that is compatible with the Chrome version in the image.
 executors:
   default-executor:
     parameters:
@@ -54,13 +28,13 @@ executors:
         type: string
         default: medium
     docker:
-      - image: circleci/node:12.16.3
+      - image: circleci/node:12.16.3@sha256:8fe514dae7585bbee1c64bf5a6cd4dcdf393316b5c87565b47e31014872c8860
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
   cloud-sdk:
     description: The docker container to use when running gcp-gcs commands
     docker:
-      - image: google/cloud-sdk:alpine
+      - image: google/cloud-sdk:alpine@sha256:7d0cae28cb282b76f2d9babe278c63c910d54f0cceca7a65fdf6806e2b43882e
 
 
 # Command Definitions
@@ -72,21 +46,7 @@ commands:
       - attach_workspace:
           at: *workspace_location
 
-  # Install shared libs used by Chrome.
-  install_chrome_libs:
-    description: Install shared Chrome libs
-    steps:
-      - run:
-          name: Install shared Chrome libs
-          command: |
-            sudo apt-get update
-            # Install GTK+ graphical user interface (libgtk-3-0), advanced linux sound architecture (libasound2)
-            # and network security service libraries (libnss3) & X11 Screen Saver extension library (libssx1)
-            # which are dependendies of chrome & needed for karma & protractor headless chrome tests.
-            # This is a very small install which takes around 7s in comparing to using the full
-            # circleci/node:x.x.x-browsers image.
-            sudo apt-get -y install libgtk-3-0 libasound2 libnss3 libxss1
-
+  # Java is needed for running the Closure Compiler (during the `minall` task).
   install_java:
     description: Install java
     steps:
@@ -210,8 +170,8 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
-      - run: yarn -s grunt ci-checks
-      - run: yarn commitplease "${CI_COMMIT_RANGE/.../..}"
+      - run: yarn grunt ci-checks
+      - run: yarn commitplease "$CI_COMMIT_RANGE"
       - run: yarn grunt validate-angular-files
 
   unit-test:
