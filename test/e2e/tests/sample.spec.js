@@ -12,9 +12,10 @@ describe('Sample', function() {
 
   it('should insert the ng-cloak styles', function() {
     browser.executeScript(`
-    var span = document.createElement('span');
-    span.className = 'ng-cloak foo';
-    document.body.appendChild(span);`);
+      var span = document.createElement('span');
+      span.className = 'ng-cloak foo';
+      document.body.appendChild(span);
+    `);
     expect(element(by.className('foo')).isDisplayed()).toBe(false);
   });
 });
