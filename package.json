@@ -35,6 +35,7 @@
     "dgeni-packages": "^0.26.5",
     "eslint-plugin-promise": "^3.6.0",
     "event-stream": "~3.1.0",
+    "firebase-tools": "^8.3.0",
     "glob": "^6.0.1",
     "google-code-prettify": "1.0.1",
     "grunt": "^1.0.1",
@@ -99,11 +100,7 @@
     "sorted-object": "^1.0.0",
     "stringmap": "^0.2.2"
   },
-  "dependencies": {
-    "firebase": "^7.14.4",
-    "firebase-tools": "^8.3.0",
-    "node-glob": "^1.2.0"
-  },
+  "dependencies": {},
   "resolutions": {
     "//1": "`natives@1.1.0` does not work with Node.js 10.x on Windows 10",
     "//2": "(E.g. see https://github.com/gulpjs/gulp/issues/2162 and https://github.com/nodejs/node/issues/25132.)",

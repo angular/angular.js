@@ -428,7 +428,7 @@ if it is enclosed in &lt;pre&gt;...&lt;/pre&gt; tags and the code lines themselv
 It is possible to embed examples in the documentation along with appropriate e2e tests. These
 examples and scenarios will be converted to runnable code within the documentation.  So it is
 important that they work correctly.  To ensure this, all these e2e scenarios are run as part of the
-continous integration tests.
+continuous integration tests.
 
 If you are adding an example with an e2e test, you should [run the test locally](#e2e-tests) first
 to ensure it passes. You can change `it(...)` to `fit(...)` to run only your test,
