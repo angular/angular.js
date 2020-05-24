@@ -307,6 +307,8 @@ jobs:
     executor:
       name: cloud-sdk
     steps:
+      - custom_attach_workspace
+      - init_environment
       - run:
           name: Authenticate and configure Docker
           command: |
@@ -315,7 +317,7 @@ jobs:
       - run:
           name: Sync files to code.angularjs.org
           command: |
-            gsutil -m rsync $PROJECT_ROOT/deploy/code gs://code-angularjs-org-338b8.appspot.com
+            gsutil -m rsync -r ${PROJECT_ROOT}/deploy/code gs://code-angularjs-org-338b8.appspot.com
 
 workflows:
   version: 2
