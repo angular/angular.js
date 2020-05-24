@@ -1,3 +1,12 @@
+{# Macros #}
+{%- macro addTag(name, attributes) %}
+  <{$ name $}
+    {%- for attrName, attrValue in attributes -%}
+      {$ ' ' + attrName $}="{$ attrValue $}"
+    {%- endfor -%}
+    ></{$ name $}>
+{%- endmacro -%}
+
 <!doctype html>
 <html lang="en" ng-app="docsApp" ng-strict-di ng-controller="DocsController">
 <head>
@@ -24,50 +33,27 @@
     })();
   </script>
   <script type="text/javascript">
-    // dynamically add base tag as well as css and javascript files.
-    // we can't add css/js the usual way, because some browsers (FF) eagerly prefetch resources
-    // before the base attribute is added, causing 404 and terribly slow loading of the docs app.
+    // Dynamically add `<base>` tag.
     (function() {
-      var indexFile = (location.pathname.match(/\/(index[^\.]*\.html)/) || ['', ''])[1],
-          rUrl = /(#!\/|api|guide|misc|tutorial|error|index[^\.]*\.html).*$/,
+      var indexFile = (location.pathname.match(/\/(index[^.]*\.html)/) || ['', ''])[1],
+          rUrl = /(#!\/|api|guide|misc|tutorial|error|index[^.]*\.html).*$/,
           baseUrl = location.href.replace(rUrl, indexFile),
-          production = location.hostname === 'docs.angularjs.org',
           headEl = document.getElementsByTagName('head')[0],
-          sync = true;
+          baseEl = document.createElement('base');
 
-      addTag('base', {href: baseUrl});
-
-
-      {% for stylesheet in doc.stylesheets %}addTag('link', {rel: 'stylesheet', href: '{$ stylesheet $}', type: 'text/css'});
-      {% endfor %}
-
-      {% for script in doc.scripts %}addTag('script', {src: '{$ script $}' }, sync);
-      {% endfor %}
-
-      function addTag(name, attributes, sync) {
-        var el = document.createElement(name),
-            attrName;
-
-        for (attrName in attributes) {
-          el.setAttribute(attrName, attributes[attrName]);
-        }
-
-        sync ? document.write(outerHTML(el)) : headEl.appendChild(el);
-      }
-
-      function outerHTML(node){
-        // if IE, Chrome take the internal method otherwise build one
-        return node.outerHTML || (
-            function(n){
-                var div = document.createElement('div'), h;
-                div.appendChild(n);
-                h = div.innerHTML;
-                div = null;
-                return h;
-            })(node);
-      }
+      baseEl.setAttribute('href', baseUrl);
+      headEl.appendChild(baseEl);
     })();
+  </script>
 
+  {% for stylesheet in doc.stylesheets %}
+    {$- addTag('link', {rel: 'stylesheet', href: stylesheet, type: 'text/css'}) -$}
+  {% endfor %}
+  {% for script in doc.scripts %}
+    {$- addTag('script', {src: script}) -$}
+  {% endfor %}
+
+  <script type="text/javascript">
     // GA asynchronous tracker
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8594346-3']);
