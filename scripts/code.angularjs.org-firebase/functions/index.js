@@ -1,9 +1,10 @@
 'use strict';
 
 const functions = require('firebase-functions');
-const gcs = require('@google-cloud/storage')();
+const {Storage} = require('@google-cloud/storage');
 const path = require('path');
 
+const storage = new Storage();
 const gcsBucketId = `${process.env.GCLOUD_PROJECT}.appspot.com`;
 
 const BROWSER_CACHE_DURATION = 60 * 10;
@@ -23,7 +24,7 @@ function sendStoredFile(request, response) {
   const version = filePathSegments[0];
   const isDocsPath = filePathSegments[1] === 'docs';
   const lastSegment = filePathSegments[filePathSegments.length - 1];
-  const bucket = gcs.bucket(gcsBucketId);
+  const bucket = storage.bucket(gcsBucketId);
 
   let downloadSource;
   let fileName;
@@ -204,7 +205,7 @@ function deleteOldSnapshotZip(object, context) {
   const filePath = object.name;
   const contentType = object.contentType;
 
-  const bucket = gcs.bucket(bucketId);
+  const bucket = storage.bucket(bucketId);
 
   const snapshotFolderMatch = filePath.match(snapshotRegex);
 
