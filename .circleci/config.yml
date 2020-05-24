@@ -291,6 +291,19 @@ jobs:
       - run_e2e_tests_jquery:
           specs:  build/docs/ptore2e/!(example-ng*)/**/jquery_test.js
 
+  prepare-deployment:
+    executor:
+      name: default-executor
+    steps:
+      - custom_attach_workspace
+      - init_environment
+      - run: yarn grunt prepareDeploy
+      # Write the deployment files to the workspace to be used by deploy-docs and deploy-code
+      - persist_to_workspace:
+          root: *workspace_location
+          paths:
+            - ./ng/deploy
+
   deploy-docs:
     executor:
       name: default-executor
@@ -300,7 +313,7 @@ jobs:
       - run: yarn grunt prepareDeploy
         # Install dependencies for Firebase functions to prevent parsing errors during deployment
         # See https://github.com/angular/angular.js/pull/16453
-      - run: yarn -cwd $PROJECT_ROOT/scripts/docs.angularjs.org-firebase/functions
+      - run: yarn -cwd ~/ng/scripts/docs.angularjs.org-firebase/functions
       - run: yarn firebase deploy --token "$FIREBASE_TOKEN" --only hosting
 
   deploy-code:
@@ -308,7 +321,7 @@ jobs:
       name: cloud-sdk
     steps:
       - custom_attach_workspace
-      - init_environment
+      - run: ls ~/ng/deploy/code
       - run:
           name: Authenticate and configure Docker
           command: |
@@ -317,7 +330,7 @@ jobs:
       - run:
           name: Sync files to code.angularjs.org
           command: |
-            gsutil -m rsync -r ${PROJECT_ROOT}/deploy/code gs://code-angularjs-org-338b8.appspot.com
+            gsutil -m rsync -r ~/ng/deploy/code gs://code-angularjs-org-338b8.appspot.com
 
 workflows:
   version: 2
@@ -351,12 +364,14 @@ workflows:
       - e2e-test-jquery-2b:
           requires:
             - setup
-      - deploy-docs:
+      - prepare-deployment:
           filters:
             branches:
               only:
+                - master
                 - latest
           requires:
+             - setup
              - unit-test
              - unit-test-jquery
              - e2e-test-1
@@ -365,6 +380,14 @@ workflows:
              - e2e-test-jquery-1
              - e2e-test-jquery-2a
              - e2e-test-jquery-2b
+
+      - deploy-docs:
+          filters:
+            branches:
+              only:
+                - latest
+          requires:
+             - prepare-deployment
       - deploy-code:
           filters:
             branches:
@@ -372,11 +395,4 @@ workflows:
                 - master
                 - latest
           requires:
-             - unit-test
-             - unit-test-jquery
-             - e2e-test-1
-             - e2e-test-2a
-             - e2e-test-2b
-             - e2e-test-jquery-1
-             - e2e-test-jquery-2a
-             - e2e-test-jquery-2b
+             - prepare-deployment

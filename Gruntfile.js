@@ -369,10 +369,9 @@ module.exports = function(grunt) {
       },
       deployFirebaseCode: {
         files: [
-          // copy files that are not handled by compress
           {
             cwd: 'build',
-            src: '**/*.{zip,jpg,jpeg,png}',
+            src: '**',
             dest: 'deploy/code/' + deployVersion + '/',
             expand: true
           }
@@ -420,16 +419,6 @@ module.exports = function(grunt) {
         expand: true,
         dot: true,
         dest: dist + '/'
-      },
-      deployFirebaseCode: {
-        options: {
-          mode: 'gzip'
-        },
-        // Already compressed files should not be compressed again
-        src: ['**', '!**/*.{zip,png,jpeg,jpg}'],
-        cwd: 'build',
-        expand: true,
-        dest: 'deploy/code/' + deployVersion + '/'
       }
     },
 
@@ -527,8 +516,6 @@ module.exports = function(grunt) {
     'eslint'
   ]);
   grunt.registerTask('prepareDeploy', [
-    'package',
-    'compress:deployFirebaseCode',
     'copy:deployFirebaseCode',
     'firebaseDocsJsonForCI',
     'copy:deployFirebaseDocs'

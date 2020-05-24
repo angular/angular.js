@@ -200,7 +200,7 @@ const snapshotRegex = /^snapshot(-stable)?\//;
  * When a new zip file is uploaded into snapshot or snapshot-stable,
  * delete the previous zip file.
  */
-function deleteOldSnapshotZip(object, context) {
+function deleteOldSnapshotZip(object) {
   const bucketId = object.bucket;
   const filePath = object.name;
   const contentType = object.contentType;

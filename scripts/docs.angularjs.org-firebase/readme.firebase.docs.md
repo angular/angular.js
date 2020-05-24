@@ -13,9 +13,13 @@ See .circleci/config.yml for the complete deployment config and build steps.
 
 # Serving locally:
 
-- Run `grunt:prepareDeploy`.
+- Run `yarn grunt package`.
+  This builds the files that will be deployed.
+
+- Run `yarn grunt prepareDeploy`.
   This copies docs content files into deploy/docs and the partials for Search Engine AJAX
   Crawling into ./functions/content.
+  It also moves the firebase.json file to the root folder, where the firebase-cli expects it
 
 - Run `firebase serve --only functions,hosting`
   Creates a server at localhost:5000 that serves from deploy/docs and uses the local function
