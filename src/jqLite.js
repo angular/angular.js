@@ -96,7 +96,7 @@
  * ```js
  * angular.UNSAFE_restoreLegacyJqLiteXHTMLReplacement();
  * ```
- * Note that this only patches jqLite. If you use jQuery 3.5.0 or newer, please read
+ * Note that this only patches jqLite. If you use jQuery 3.5.0 or newer, please read the
  * [jQuery 3.5 upgrade guide](https://jquery.com/upgrade-guide/3.5/) for more details
  * about the workarounds.
  *
@@ -196,7 +196,7 @@ wrapMap.th = wrapMap.td;
 
 // Support: IE <10 only
 // IE 9 requires an option wrapper & it needs to have the whole table structure
-// set up up front; assigning `"<td></td>"` to `tr.innerHTML` doesn't work, etc.
+// set up in advance; assigning `"<td></td>"` to `tr.innerHTML` doesn't work, etc.
 var wrapMapIE9 = {
   option: [1, '<select multiple="multiple">', '</select>'],
   _default: [0, '', '']
