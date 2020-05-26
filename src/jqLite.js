@@ -90,9 +90,9 @@
  * - [`val()`](http://api.jquery.com/val/)
  * - [`wrap()`](http://api.jquery.com/wrap/)
  *
- * jqLite also provides a method restoring pre-1.8 insecure treatment of XHTML-like tags
- * that makes input like `<div /><span />` turned to `<div></div><span></span>` instead of
- * `<div><span></span></div>` like version 1.8 & newer do:
+ * jqLite also provides a method restoring pre-1.8 insecure treatment of XHTML-like tags.
+ * This legacy behavior turns input like `<div /><span />` to `<div></div><span></span>`
+ * instead of `<div><span></span></div>` like version 1.8 & newer do. To restore it, invoke:
  * ```js
  * angular.UNSAFE_restoreLegacyJqLiteXHTMLReplacement();
  * ```
