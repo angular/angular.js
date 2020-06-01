@@ -1,6 +1,9 @@
 {
   "name": "functions",
   "description": "Cloud Functions for Firebase",
+  "engines": {
+    "node": "10"
+  },  
   "scripts": {
     "lint": "eslint .",
     "serve": "firebase serve --only functions",
