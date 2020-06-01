@@ -1,3 +1,33 @@
+
+<a name="1.8.0"></a>
+# 1.8.0 nested-vaccination (2020-06-01)
+
+## Bug Fixes
+- **jqLite:**
+  - prevent possible XSS due to regex-based HTML replacement
+  ([2df43c](https://github.com/angular/angular.js/commit/2df43c07779137d1bddf7f3b282a1287a8634acd))
+
+## Breaking Changes
+
+### **jqLite** due to:
+  - **[2df43c](https://github.com/angular/angular.js/commit/2df43c07779137d1bddf7f3b282a1287a8634acd)**: prevent possible XSS due to regex-based HTML replacement
+
+JqLite no longer turns XHTML-like strings like `<div /><span />` to sibling elements `<div></div><span></span>`
+when not in XHTML mode. Instead it will leave them as-is. The browser, in non-XHTML mode, will convert these to:
+`<div><span></span></div>`.
+
+This is a security fix to avoid an XSS vulnerability if a new jqLite element is created from a user-controlled HTML string.
+If you must have this functionality and understand the risk involved then it is posible to restore the original behavior by calling
+
+```js
+angular.UNSAFE_restoreLegacyJqLiteXHTMLReplacement();
+```
+
+But you should adjust your code for this change and remove your use of this function as soon as possible.
+
+Note that this only patches jqLite. If you use jQuery 3.5.0 or newer, please read the [jQuery 3.5 upgrade guide](https://jquery.com/upgrade-guide/3.5/) for more details about the workarounds.
+
+
 <a name="1.7.9"></a>
 # 1.7.9 pollution-eradication (2019-11-19)
 
