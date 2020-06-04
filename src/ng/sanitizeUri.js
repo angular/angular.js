@@ -7,7 +7,7 @@
  */
 function $$SanitizeUriProvider() {
 
-  var aHrefSanitizationWhitelist = /^\s*(https?|s?ftp|mailto|tel|file):/,
+  var aHrefSanitizationWhitelist = /^\s*(https?|s?ftp|mailto|tel|file|geo):/,
     imgSrcSanitizationWhitelist = /^\s*((https?|ftp|file|blob):|data:image\/)/;
 
   /**

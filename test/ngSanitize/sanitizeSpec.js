@@ -589,6 +589,7 @@ describe('HTML', function() {
       expect('MAILTO:me@example.com').toBeValidUrl();
       expect('tel:123-123-1234').toBeValidUrl();
       expect('TEL:123-123-1234').toBeValidUrl();
+      expect('geo:12.34,56.78').toBeValidUrl();
       expect('#anchor').toBeValidUrl();
       expect('/page1.md').toBeValidUrl();
     });
