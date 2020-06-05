@@ -2,6 +2,11 @@
 <a name="1.8.0"></a>
 # 1.8.0 nested-vaccination (2020-06-01)
 
+_This release contains a breaking change to resolve a security issue which was discovered by
+Krzysztof Kotowicz(@koto); and independently by Esben Sparre Andreasen (@esbena) while
+performing a Variant Analysis of [CVE-2020-11022](https://github.com/advisories/GHSA-gxr4-xjj5-5px2)
+which itself was found and reported by Masato Kinugawa (@masatokinugawa)._
+
 ## Bug Fixes
 - **jqLite:**
   - prevent possible XSS due to regex-based HTML replacement
