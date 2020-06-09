@@ -12,6 +12,9 @@ It also helps with server-side communication, taming async callbacks with promis
 and it makes client-side navigation and deep linking with hashbang urls or HTML5 pushState a
 piece of cake. Best of all? It makes development fun!
 
+some key features: 
+ -DI
+ -Directive to help code reusablility
 --------------------
 
 **On July 1, 2018 AngularJS entered a 3 year Long Term Support period:** [Find out more](https://docs.angularjs.org/misc/version-support-status)
