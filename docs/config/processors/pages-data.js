@@ -224,7 +224,7 @@ module.exports = function generatePagesDataProcessor(log) {
         .map(function(doc) {
           return _.pick(doc, ['name', 'area', 'path']);
         })
-        .indexBy('path')
+        .keyBy('path')
         .value();
 
       docs.push({
