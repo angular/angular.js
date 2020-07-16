@@ -47,13 +47,13 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
       }
 
-      areasToSearch = _.indexBy(this.areasToSearch);
-      propertiesToIgnore = _.indexBy(this.propertiesToIgnore);
+      areasToSearch = _.keyBy(this.areasToSearch);
+      propertiesToIgnore = _.keyBy(this.propertiesToIgnore);
       log.debug('Properties to ignore', propertiesToIgnore);
-      docTypesToIgnore = _.indexBy(this.docTypesToIgnore);
+      docTypesToIgnore = _.keyBy(this.docTypesToIgnore);
       log.debug('Doc types to ignore', docTypesToIgnore);
 
-      var ignoreWordsMap = _.indexBy(wordsToIgnore);
+      var ignoreWordsMap = _.keyBy(wordsToIgnore);
 
       // If the title contains a name starting with ng, e.g. "ngController", then add the module name
       // without the ng to the title text, e.g. "controller".
