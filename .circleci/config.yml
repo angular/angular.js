@@ -37,9 +37,89 @@ executors:
       - image: google/cloud-sdk:alpine@sha256:7d0cae28cb282b76f2d9babe278c63c910d54f0cceca7a65fdf6806e2b43882e
 
 
+# Filter Definitions
+
+# Filter to run a job on all branches and any `v1.X.Y(-Z)` tags.
+# Since the jobs need to run on tagged builds too, a `tags` section has to be explicitly specified.
+# (The `branches` section could be omitted, since it defaults to all branches - just being explicit
+# here).
+# See also https://circleci.com/docs/2.0/workflows/#executing-workflows-for-a-git-tag.
+var-filter-run-always: &run-always
+  filters:
+    branches:
+      only: /.*/
+    tags:
+      only: /v1\.\d+\.\d.*/
+
+# Filter to run a job when code/docs might need to be deployed - i.e. on tagged builds and on builds
+# for master and `v1.*.x` branches.
+# (Further checks are needed to determine whether a deployment is actually needed, but these are not
+# possible via filters.)
+var-filter-run-on-tags-and-master-and-version-branches: &run-on-tags-and-master-and-version-branches
+  filters:
+    branches:
+      only:
+        - master
+        - /v1\.\d+\.x/
+    tags:
+      only: /v1\.\d+\.\d.*/
+
+# Filter to run a job when docs might need to be deployed - i.e. on builds for `v1.*.x` branches,
+# which might correspond to the stable branch.
+# (Further checks are needed to determine whether a deployment is actually needed, but these are not
+# possible via filters.)
+var-filter-run-on-version-branches: &run-on-version-branches
+  filters:
+    branches:
+      only:
+        - /v1\.\d+\.x/
+    tags:
+      ignore: /.*/
+
+
 # Command Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-commands
 commands:
+  skip_on_pr_and_fork_builds:
+    description: Skip a job on pull request and fork builds
+    steps:
+      - run:
+          name: Skip this job if this is a pull request or fork build
+          # Note: Using `CIRCLE_*` env variables (instead of those defined in `env.sh` so that this
+          #       step can be run before `init_environment`.
+          command: >
+            if [[ -n "$CIRCLE_PR_NUMBER" ]] ||
+                [[ "$CIRCLE_PROJECT_USERNAME" != "angular" ]] ||
+                [[ "$CIRCLE_PROJECT_REPONAME" != "angular.js" ]]; then
+              echo "Skipping this job, because this is either a pull request or a fork build."
+              circleci step halt
+            fi
+
+  skip_unless_stable_branch:
+    description: Skip a job unless this is the stable branch
+    steps:
+      - run:
+          name: Skip this job unless this is the stable branch
+          command: >
+            if [[ "$DIST_TAG" != "latest" ]]; then
+              echo "Skipping deployment, because this is not the stable branch."
+              circleci step halt
+            fi
+
+  skip_unless_tag_or_master_or_stable_branch:
+    description: Skip a job unless this is a tag or the master or stable branch
+    steps:
+      - run:
+          name: Skip this job unless this is a tag or the master or stable branch
+          command: >
+            if [[ "$CI_GIT_TAG" == "false" ]] &&
+                [[ "$CI_BRANCH" != "master" ]] &&
+                [[ "$DIST_TAG" != "latest" ]]; then
+              echo "Skipping this job, because this is neither a tag nor the master or stable branch."
+              circleci step halt
+            fi
+
+
   custom_attach_workspace:
     description: Attach workspace at a predefined location
     steps:
@@ -111,7 +191,6 @@ commands:
       - run:
           name: Stopping Saucelabs tunnel service
           command: ./lib/saucelabs/sauce-service.sh stop
-
 
   run_e2e_tests:
     parameters:
@@ -255,6 +334,7 @@ jobs:
     executor:
       name: default-executor
     steps:
+      - skip_on_pr_and_fork_builds
       - custom_attach_workspace
       - init_environment
       - run: yarn grunt prepareDeploy
@@ -264,23 +344,20 @@ jobs:
           paths:
             - ./ng/deploy
 
-  deploy-docs:
-    executor:
-      name: default-executor
-    steps:
-      - custom_attach_workspace
-      - init_environment
-      - run: yarn grunt prepareDeploy
-        # Install dependencies for Firebase functions to prevent parsing errors during deployment
-        # See https://github.com/angular/angular.js/pull/16453
-      - run: yarn -cwd ~/ng/scripts/docs.angularjs.org-firebase/functions
-      - run: yarn firebase deploy --token "$FIREBASE_TOKEN" --only hosting
-
+  # The `deploy-code` job should only run when all of these conditions are true for the build:
+  # - It is for the `angular/angular.js` repository (not a fork).
+  # - It is not for a pull request.
+  # - It is for a tag or the master branch or the stable branch(*).
+  #
+  # *: The stable branch is the one that has the value `latest` in `package.json > distTag`.
   deploy-code:
     executor:
       name: cloud-sdk
     steps:
+      - skip_on_pr_and_fork_builds
       - custom_attach_workspace
+      - init_environment
+      - skip_unless_tag_or_master_or_stable_branch
       - run: ls ~/ng/deploy/code
       - run:
           name: Authenticate and configure Docker
@@ -292,44 +369,70 @@ jobs:
           command: |
             gsutil -m rsync -r ~/ng/deploy/code gs://code-angularjs-org-338b8.appspot.com
 
+  # The `deploy-docs` job should only run when all of these conditions are true for the build:
+  # - It is for the `angular/angular.js` repository (not a fork).
+  # - It is not for a pull request.
+  # - It is for the stable branch(*).
+  #
+  # *: The stable branch is the one that has the value `latest` in `package.json > distTag`.
+  deploy-docs:
+    executor:
+      name: default-executor
+    steps:
+      - skip_on_pr_and_fork_builds
+      - custom_attach_workspace
+      - init_environment
+      - skip_unless_stable_branch
+      - run: yarn grunt prepareDeploy
+        # Install dependencies for Firebase functions to prevent parsing errors during deployment
+        # See https://github.com/angular/angular.js/pull/16453
+      - run: yarn -cwd ~/ng/scripts/docs.angularjs.org-firebase/functions
+      - run: yarn firebase deploy --token "$FIREBASE_TOKEN" --only hosting
+
 workflows:
   version: 2
   default_workflow:
     jobs:
-      - setup
+      - setup:
+          <<: *run-always
       - lint:
+          <<: *run-always
           requires:
             - setup
       - unit-test:
+          <<: *run-always
           requires:
             - setup
       - unit-test-jquery:
+          <<: *run-always
           requires:
             - setup
       - e2e-test-1:
+          <<: *run-always
           requires:
             - setup
       - e2e-test-2a:
+          <<: *run-always
           requires:
             - setup
       - e2e-test-2b:
+          <<: *run-always
           requires:
             - setup
       - e2e-test-jquery-1:
+          <<: *run-always
           requires:
             - setup
       - e2e-test-jquery-2a:
+          <<: *run-always
           requires:
             - setup
       - e2e-test-jquery-2b:
+          <<: *run-always
           requires:
             - setup
       - prepare-deployment:
-          filters:
-            branches:
-              only:
-                - master
-                - latest
+          <<: *run-on-tags-and-master-and-version-branches
           requires:
              - setup
              - unit-test
@@ -340,19 +443,11 @@ workflows:
              - e2e-test-jquery-1
              - e2e-test-jquery-2a
              - e2e-test-jquery-2b
-
-      - deploy-docs:
-          filters:
-            branches:
-              only:
-                - latest
+      - deploy-code:
+          <<: *run-on-tags-and-master-and-version-branches
           requires:
              - prepare-deployment
-      - deploy-code:
-          filters:
-            branches:
-              only:
-                - master
-                - latest
+      - deploy-docs:
+          <<: *run-on-version-branches
           requires:
              - prepare-deployment
