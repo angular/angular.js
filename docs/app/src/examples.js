@@ -55,7 +55,7 @@ angular.module('examples', [])
   return function(url, newWindow, fields) {
     /**
      * If the form posts to target="_blank", pop-up blockers can cause it not to work.
-     * If a user choses to bypass pop-up blocker one time and click the link, they will arrive at
+     * If a user chooses to bypass pop-up blocker one time and click the link, they will arrive at
      * a new default plnkr, not a plnkr with the desired template.  Given this undesired behavior,
      * some may still want to open the plnk in a new window by opting-in via ctrl+click.  The
      * newWindow param allows for this possibility.
@@ -74,7 +74,7 @@ angular.module('examples', [])
 }])
 
 .factory('createCopyrightNotice', function() {
-    var COPYRIGHT = 'Copyright ' + (new Date()).getFullYear() + ' Google Inc. All Rights Reserved.\n'
+    var COPYRIGHT = 'Copyright ' + (new Date()).getFullYear() + ' Google LLC. All Rights Reserved.\n'
      + 'Use of this source code is governed by an MIT-style license that\n'
      + 'can be found in the LICENSE file at http://angular.io/license';
     var COPYRIGHT_JS_CSS = '\n\n/*\n' + COPYRIGHT + '\n*/';
