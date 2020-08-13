@@ -342,7 +342,7 @@ jobs:
       - persist_to_workspace:
           root: *workspace_location
           paths:
-            - ./ng/deploy
+            - ./ng
 
   # The `deploy-code` job should only run when all of these conditions are true for the build:
   # - It is for the `angular/angular.js` repository (not a fork).
@@ -383,7 +383,6 @@ jobs:
       - custom_attach_workspace
       - init_environment
       - skip_unless_stable_branch
-      - run: yarn grunt prepareDeploy
         # Install dependencies for Firebase functions to prevent parsing errors during deployment
         # See https://github.com/angular/angular.js/pull/16453
       - run: yarn -cwd ~/ng/scripts/docs.angularjs.org-firebase/functions
