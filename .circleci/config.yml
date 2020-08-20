@@ -436,6 +436,7 @@ workflows:
           <<: *run-on-tags-and-master-and-version-branches
           requires:
              - setup
+             - lint
              - unit-test
              - unit-test-jquery
              - e2e-test-1
