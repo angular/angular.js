@@ -387,7 +387,7 @@ jobs:
       - skip_unless_stable_branch
         # Install dependencies for Firebase functions to prevent parsing errors during deployment
         # See https://github.com/angular/angular.js/pull/16453
-      - run: yarn -cwd ~/ng/scripts/docs.angularjs.org-firebase/functions
+      - run: yarn --cwd scripts/docs.angularjs.org-firebase/functions
       - run: yarn firebase deploy --token "$FIREBASE_TOKEN" --only hosting
 
 workflows:
