@@ -35,6 +35,7 @@ executors:
     description: The docker container to use when running gcp-gcs commands
     docker:
       - image: google/cloud-sdk:alpine@sha256:7d0cae28cb282b76f2d9babe278c63c910d54f0cceca7a65fdf6806e2b43882e
+    working_directory: ~/ng
 
 
 # Filter Definitions
@@ -157,7 +158,6 @@ commands:
             echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
             git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
             git config --global gc.auto 0 || true
-      - install_java
 
   init_saucelabs_environment:
     description: Sets up a domain that resolves to the local host.
@@ -231,6 +231,7 @@ jobs:
     steps:
       - checkout
       - init_environment
+      - install_java
       - run:
           name: Running Yarn install
           command: yarn install --frozen-lockfile --non-interactive
@@ -259,6 +260,7 @@ jobs:
     steps:
       - custom_attach_workspace
       - init_environment
+      - install_java
       - init_saucelabs_environment
       - run: yarn grunt test:promises-aplus
       - run:
@@ -358,7 +360,7 @@ jobs:
       - custom_attach_workspace
       - init_environment
       - skip_unless_tag_or_master_or_stable_branch
-      - run: ls ~/ng/deploy/code
+      - run: ls deploy/code
       - run:
           name: Authenticate and configure Docker
           command: |
@@ -367,7 +369,7 @@ jobs:
       - run:
           name: Sync files to code.angularjs.org
           command: |
-            gsutil -m rsync -r ~/ng/deploy/code gs://code-angularjs-org-338b8.appspot.com
+            gsutil -m rsync -r deploy/code gs://code-angularjs-org-338b8.appspot.com
 
   # The `deploy-docs` job should only run when all of these conditions are true for the build:
   # - It is for the `angular/angular.js` repository (not a fork).
