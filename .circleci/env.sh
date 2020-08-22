@@ -56,7 +56,9 @@ setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 ####################################################################################################
 # Define additional environment variables
 ####################################################################################################
-setPublicVar DIST_TAG $( node --print "require('./package.json').distTag" )
+
+# NOTE: Make sure the tools used to compute this are available in all executors in `config.yml`.
+setPublicVar DIST_TAG $( cat package.json | grep distTag | sed -E 's/^\s*"distTag"\s*:\s*"([^"]+)"\s*,\s*$/\1/' )
 
 ####################################################################################################
 ####################################################################################################
