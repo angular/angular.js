@@ -56,12 +56,12 @@ setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 ####################################################################################################
 # Define additional environment variables
 ####################################################################################################
-setPublicVar DIST_TAG $( jq ".distTag" "package.json" | tr -d "\"[:space:]" )
+setPublicVar DIST_TAG $( node --print "require('./package.json').distTag" )
 
 ####################################################################################################
 ####################################################################################################
 ##                  Source `$BASH_ENV` to make the variables available immediately.               ##
-##                  ***NOTE: This must remain the the last action in this script***               ##
+##                  *** NOTE: This must remain the last command in this script. ***               ##
 ####################################################################################################
 ####################################################################################################
 source $BASH_ENV;
