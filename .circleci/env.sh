@@ -61,7 +61,7 @@ setPublicVar DIST_TAG $( node --print "require('./package.json').distTag" )
 ####################################################################################################
 ####################################################################################################
 ##                  Source `$BASH_ENV` to make the variables available immediately.               ##
-##                   ***NOTE: This must remain the last action in this script.***                 ##
+##                  *** NOTE: This must remain the last command in this script. ***               ##
 ####################################################################################################
 ####################################################################################################
 source $BASH_ENV;
