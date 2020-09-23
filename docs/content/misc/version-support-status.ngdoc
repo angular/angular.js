@@ -51,3 +51,11 @@ AngularJS 1.2.x will get a new version if and only if a new severe security issu
 ### Blog Post
 
 You can read more about these plans in our [blog post announcement](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c).
+
+### Extended Long Term Support
+
+If you need support for AngularJS beyond December 2021, you should consider:
+
+* [XLTS.dev](https://angularjs.xlts.dev)
+
+
