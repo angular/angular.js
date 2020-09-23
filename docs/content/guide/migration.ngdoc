@@ -283,8 +283,8 @@ break.
 
 To fix this you need to ensure that the values used for binding to the affected
 `xlink:href` contexts are considered safe URLs, e.g. by whitelisting them in
-`$compileProvider`'s `aHrefSanitizationWhitelist` (for `<a>` elements) or
-`imgSrcSanitizationWhitelist` (for `<image>` elements).
+`$compileProvider`'s `aHrefSanitizationTrustedUri` (for `<a>` elements) or
+`imgSrcSanitizationTrustedUri` (for `<image>` elements).
 
 <hr />
 

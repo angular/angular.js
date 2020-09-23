@@ -151,30 +151,30 @@ describe('$compile', function() {
 
   describe('configuration', function() {
 
-    it('should use $$sanitizeUriProvider for reconfiguration of the `aHrefSanitizationWhitelist`', function() {
+    it('should use $$sanitizeUriProvider for reconfiguration of the `aHrefSanitizationTrustedUri`', function() {
       module(function($compileProvider, $$sanitizeUriProvider) {
         var newRe = /safe:/, returnVal;
 
-        expect($compileProvider.aHrefSanitizationWhitelist()).toBe($$sanitizeUriProvider.aHrefSanitizationWhitelist());
-        returnVal = $compileProvider.aHrefSanitizationWhitelist(newRe);
+        expect($compileProvider.aHrefSanitizationTrustedUri()).toBe($$sanitizeUriProvider.aHrefSanitizationTrustedUri());
+        returnVal = $compileProvider.aHrefSanitizationTrustedUri(newRe);
         expect(returnVal).toBe($compileProvider);
-        expect($$sanitizeUriProvider.aHrefSanitizationWhitelist()).toBe(newRe);
-        expect($compileProvider.aHrefSanitizationWhitelist()).toBe(newRe);
+        expect($$sanitizeUriProvider.aHrefSanitizationTrustedUri()).toBe(newRe);
+        expect($compileProvider.aHrefSanitizationTrustedUri()).toBe(newRe);
       });
       inject(function() {
         // needed to the module definition above is run...
       });
     });
 
-    it('should use $$sanitizeUriProvider for reconfiguration of the `imgSrcSanitizationWhitelist`', function() {
+    it('should use $$sanitizeUriProvider for reconfiguration of the `imgSrcSanitizationTrustedUri`', function() {
       module(function($compileProvider, $$sanitizeUriProvider) {
         var newRe = /safe:/, returnVal;
 
-        expect($compileProvider.imgSrcSanitizationWhitelist()).toBe($$sanitizeUriProvider.imgSrcSanitizationWhitelist());
-        returnVal = $compileProvider.imgSrcSanitizationWhitelist(newRe);
+        expect($compileProvider.imgSrcSanitizationTrustedUri()).toBe($$sanitizeUriProvider.imgSrcSanitizationTrustedUri());
+        returnVal = $compileProvider.imgSrcSanitizationTrustedUri(newRe);
         expect(returnVal).toBe($compileProvider);
-        expect($$sanitizeUriProvider.imgSrcSanitizationWhitelist()).toBe(newRe);
-        expect($compileProvider.imgSrcSanitizationWhitelist()).toBe(newRe);
+        expect($$sanitizeUriProvider.imgSrcSanitizationTrustedUri()).toBe(newRe);
+        expect($compileProvider.imgSrcSanitizationTrustedUri()).toBe(newRe);
       });
       inject(function() {
         // needed to the module definition above is run...
@@ -11334,9 +11334,9 @@ describe('$compile', function() {
     // IE9 rejects the `video` / `audio` tags with "Error: Not implemented"
     if (msie !== 9 || tag === 'img') {
       describe(tag + '[src] context requirement', function() {
-        it('should NOT require trusted values for whitelisted URIs', inject(function($rootScope, $compile) {
+        it('should NOT require trusted values for trusted URIs', inject(function($rootScope, $compile) {
           element = $compile('<' + tag + ' src="{{testUrl}}"></' + tag + '>')($rootScope);
-          $rootScope.testUrl = 'http://example.com/image.mp4'; // `http` is whitelisted
+          $rootScope.testUrl = 'http://example.com/image.mp4'; // `http` is trusted
           $rootScope.$digest();
           expect(element.attr('src')).toEqual('http://example.com/image.mp4');
         }));
@@ -11372,9 +11372,9 @@ describe('$compile', function() {
   if (msie !== 9) {
     ['source', 'track'].forEach(function(tag) {
       describe(tag + '[src]', function() {
-        it('should NOT require trusted values for whitelisted URIs', inject(function($rootScope, $compile) {
+        it('should NOT require trusted values for trusted URIs', inject(function($rootScope, $compile) {
           element = $compile('<video><' + tag + ' src="{{testUrl}}"></' + tag + '></video>')($rootScope);
-          $rootScope.testUrl = 'http://example.com/image.mp4'; // `http` is whitelisted
+          $rootScope.testUrl = 'http://example.com/image.mp4'; // `http` is trusted
           $rootScope.$digest();
           expect(element.find(tag).attr('src')).toEqual('http://example.com/image.mp4');
         }));
@@ -11509,14 +11509,14 @@ describe('$compile', function() {
       });
     });
 
-    it('should NOT require trusted values for whitelisted values', inject(function($rootScope, $compile, $sce) {
+    it('should NOT require trusted values for trusted URI values', inject(function($rootScope, $compile, $sce) {
       element = $compile('<img srcset="{{testUrl}}"></img>')($rootScope);
-      $rootScope.testUrl = 'http://example.com/image.png'; // `http` is whitelisted
+      $rootScope.testUrl = 'http://example.com/image.png'; // `http` is trusted
       $rootScope.$digest();
       expect(element.attr('srcset')).toEqual('http://example.com/image.png');
     }));
 
-    it('should accept trusted values, if they are also whitelisted', inject(function($rootScope, $compile, $sce) {
+    it('should accept trusted values, if they are also trusted URIs', inject(function($rootScope, $compile, $sce) {
       element = $compile('<img srcset="{{testUrl}}"></img>')($rootScope);
       $rootScope.testUrl = $sce.trustAsUrl('http://example.com');
       $rootScope.$digest();
@@ -11602,8 +11602,8 @@ describe('$compile', function() {
   });
 
   describe('a[href] sanitization', function() {
-    it('should NOT require trusted values for whitelisted values', inject(function($rootScope, $compile) {
-      $rootScope.testUrl = 'http://example.com/image.png'; // `http` is whitelisted
+    it('should NOT require trusted values for trusted URI values', inject(function($rootScope, $compile) {
+      $rootScope.testUrl = 'http://example.com/image.png'; // `http` is trusted
       element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('href')).toEqual('http://example.com/image.png');
@@ -11613,8 +11613,8 @@ describe('$compile', function() {
       expect(element.attr('ng-href')).toEqual('http://example.com/image.png');
     }));
 
-    it('should accept trusted values for non-whitelisted values', inject(function($rootScope, $compile, $sce) {
-      $rootScope.testUrl = $sce.trustAsUrl('javascript:foo()'); // `javascript` is not whitelisted
+    it('should accept trusted values for non-trusted URI values', inject(function($rootScope, $compile, $sce) {
+      $rootScope.testUrl = $sce.trustAsUrl('javascript:foo()'); // `javascript` is not trusted
       element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('href')).toEqual('javascript:foo()');
@@ -11624,8 +11624,8 @@ describe('$compile', function() {
       expect(element.attr('ng-href')).toEqual('javascript:foo()');
     }));
 
-    it('should sanitize non-whitelisted values', inject(function($rootScope, $compile) {
-      $rootScope.testUrl = 'javascript:foo()'; // `javascript` is not whitelisted
+    it('should sanitize non-trusted values', inject(function($rootScope, $compile) {
+      $rootScope.testUrl = 'javascript:foo()'; // `javascript` is not trusted
       element = $compile('<a href="{{testUrl}}"></a>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('href')).toEqual('unsafe:javascript:foo()');
@@ -11678,7 +11678,7 @@ describe('$compile', function() {
         $provide.value('$$sanitizeUri', $$sanitizeUri);
       });
       inject(function($compile, $rootScope) {
-        // This URL would fail the RESOURCE_URL whitelist, but that test shouldn't be run
+        // This URL would fail the RESOURCE_URL trusted list, but that test shouldn't be run
         // because these interpolations will be resolved against the URL context instead
         $rootScope.testUrl = 'https://bad.example.org';
 
@@ -11700,7 +11700,7 @@ describe('$compile', function() {
         $provide.value('$$sanitizeUri', $$sanitizeUri);
       });
       inject(function($compile, $rootScope) {
-        // This URL would fail the RESOURCE_URL whitelist, but that test shouldn't be run
+        // This URL would fail the RESOURCE_URL trusted list, but that test shouldn't be run
         // because these interpolations will be resolved against the URL context instead
         $rootScope.testUrl = 'https://bad.example.org';
 
