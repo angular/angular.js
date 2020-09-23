@@ -1,6 +1,6 @@
 'use strict';
 
-/* globals nodeBlackList false */
+/* globals nativeAriaNodeNames false */
 
 describe('$aria', function() {
   var scope, $compile, element;
@@ -1064,7 +1064,7 @@ describe('$aria', function() {
     );
 
     they('should not prevent default keyboard action if an interactive $type element' +
-      'is nested inside ng-click', nodeBlackList, function(elementType) {
+      'is nested inside ng-click', nativeAriaNodeNames, function(elementType) {
         function createHTML(type) {
           return '<' + type + '></' + type + '>';
         }

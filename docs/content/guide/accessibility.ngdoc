@@ -327,7 +327,7 @@ The default CSS for `ngHide`, the inverse method to `ngShow`, makes ngAria redun
 
 <h2><span id="ngclick">ngClick</span> and <span id="ngdblclick">ngDblclick</span></h2>
 If `ng-click` or `ng-dblclick` is encountered, ngAria will add `tabindex="0"` to any element not in
-a node blacklist:
+the list of built in aria nodes:
 
  * Button
  * Anchor
@@ -337,7 +337,8 @@ a node blacklist:
  * Details/Summary
 
 To fix widespread accessibility problems with `ng-click` on `div` elements, ngAria will
-dynamically bind a keypress event by default as long as the element isn't in the node blacklist.
+dynamically bind a keypress event by default as long as the element isn't in a node from the list of
+built in aria nodes.
 You can turn this functionality on or off with the `bindKeypress` configuration option.
 
 ngAria will also add the `button` role to communicate to users of assistive technologies. This can

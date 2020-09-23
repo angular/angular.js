@@ -7,8 +7,8 @@
  */
 function $$SanitizeUriProvider() {
 
-  var aHrefSanitizationTrustedUri = /^\s*(https?|s?ftp|mailto|tel|file):/,
-    imgSrcSanitizationTrustedUri = /^\s*((https?|ftp|file|blob):|data:image\/)/;
+  var aHrefSanitizationTrustedUrlList = /^\s*(https?|s?ftp|mailto|tel|file):/,
+    imgSrcSanitizationTrustedUrlList = /^\s*((https?|ftp|file|blob):|data:image\/)/;
 
   /**
    * @description
@@ -21,7 +21,7 @@ function $$SanitizeUriProvider() {
    * the $sce.URL security context. When interpolation occurs a call is made to `$sce.trustAsUrl(url)`
    * which in turn may call `$$sanitizeUri(url, isMedia)` to sanitize the potentially malicious URL.
    *
-   * If the URL matches the `aHrefSanitizationTrustedUri` regular expression, it is returned unchanged.
+   * If the URL matches the `aHrefSanitizationTrustedUrlList` regular expression, it is returned unchanged.
    *
    * If there is no match the URL is returned prefixed with `'unsafe:'` to ensure that when it is written
    * to the DOM it is inactive and potentially malicious code will not be executed.
@@ -30,12 +30,12 @@ function $$SanitizeUriProvider() {
    * @returns {RegExp|ng.$compileProvider} Current RegExp if called without value or self for
    *    chaining otherwise.
    */
-  this.aHrefSanitizationTrustedUri = function(regexp) {
+  this.aHrefSanitizationTrustedUrlList = function(regexp) {
     if (isDefined(regexp)) {
-      aHrefSanitizationTrustedUri = regexp;
+      aHrefSanitizationTrustedUrlList = regexp;
       return this;
     }
-    return aHrefSanitizationTrustedUri;
+    return aHrefSanitizationTrustedUrlList;
   };
 
 
@@ -61,18 +61,18 @@ function $$SanitizeUriProvider() {
    * @returns {RegExp|ng.$compileProvider} Current RegExp if called without value or self for
    *    chaining otherwise.
    */
-  this.imgSrcSanitizationTrustedUri = function(regexp) {
+  this.imgSrcSanitizationTrustedUrlList = function(regexp) {
     if (isDefined(regexp)) {
-      imgSrcSanitizationTrustedUri = regexp;
+      imgSrcSanitizationTrustedUrlList = regexp;
       return this;
     }
-    return imgSrcSanitizationTrustedUri;
+    return imgSrcSanitizationTrustedUrlList;
   };
 
   this.$get = function() {
     return function sanitizeUri(uri, isMediaUrl) {
       // if (!uri) return uri;
-      var regex = isMediaUrl ? imgSrcSanitizationTrustedUri : aHrefSanitizationTrustedUri;
+      var regex = isMediaUrl ? imgSrcSanitizationTrustedUrlList : aHrefSanitizationTrustedUrlList;
       var normalizedVal = urlResolve(uri && uri.trim()).href;
       if (normalizedVal !== '' && !normalizedVal.match(regex)) {
         return 'unsafe:' + normalizedVal;

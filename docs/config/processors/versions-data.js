@@ -13,11 +13,11 @@ module.exports = function generateVersionDocProcessor(gitData) {
   return {
     $runAfter: ['generatePagesDataProcessor'],
     $runBefore: ['rendering-docs'],
-    // the blacklist is to remove rogue builds that are in the npm repository but not on code.angularjs.org
-    blacklist: ['1.3.4-build.3588'],
+    // Remove rogue builds that are in the npm repository but not on code.angularjs.org
+    ignoredBuilds: ['1.3.4-build.3588'],
     $process: function(docs) {
 
-      var blacklist = this.blacklist;
+      var ignoredBuilds = this.ignoredBuilds;
       var currentVersion = require('../../../build/version.json');
       var output = exec('yarn info angular versions --json', { silent: true }).stdout.split('\n')[0];
       var allVersions = processAllVersionsResponse(JSON.parse(output).data);
@@ -57,7 +57,7 @@ module.exports = function generateVersionDocProcessor(gitData) {
 
         versions = versions
             .filter(function(versionStr) {
-              return blacklist.indexOf(versionStr) === -1;
+              return ignoredBuilds.indexOf(versionStr) === -1;
             })
             .map(function(versionStr) {
               return semver.parse(versionStr);
