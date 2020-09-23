@@ -309,11 +309,11 @@ describe('SCE', function() {
     function runTest(cfg, testFn) {
       return function() {
         module(function($sceDelegateProvider) {
-          if (isDefined(cfg.whiteList)) {
-            $sceDelegateProvider.resourceUrlWhitelist(cfg.whiteList);
+          if (isDefined(cfg.trustedUrls)) {
+            $sceDelegateProvider.trustedResourceUrlList(cfg.trustedUrls);
           }
-          if (isDefined(cfg.blackList)) {
-            $sceDelegateProvider.resourceUrlBlacklist(cfg.blackList);
+          if (isDefined(cfg.bannedUrls)) {
+            $sceDelegateProvider.bannedResourceUrlList(cfg.bannedUrls);
           }
         });
         inject(testFn);
@@ -324,10 +324,10 @@ describe('SCE', function() {
       expect($sce.getTrustedResourceUrl('foo/bar')).toEqual('foo/bar');
     }));
 
-    it('should reject everything when whitelist is empty', runTest(
+    it('should reject everything when trusted resource URL list is empty', runTest(
       {
-        whiteList: [],
-        blackList: []
+        trustedUrls: [],
+        bannedUrls: []
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('#'); }).toThrowMinErr(
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: #');
@@ -336,8 +336,8 @@ describe('SCE', function() {
 
     it('should match against normalized urls', runTest(
       {
-        whiteList: [/^foo$/],
-        blackList: []
+        trustedUrls: [/^foo$/],
+        bannedUrls: []
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
@@ -346,7 +346,7 @@ describe('SCE', function() {
 
     it('should not accept unknown matcher type', function() {
       expect(function() {
-        runTest({whiteList: [{}]}, null)();
+        runTest({trustedUrls: [{}]}, null)();
       }).toThrowMinErr('$injector', 'modulerr', new RegExp(
           /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
           /[^[]*\[\$sce:imatcher] Matchers may only be "self", string patterns or RegExp objects/.source));
@@ -370,8 +370,8 @@ describe('SCE', function() {
     describe('regex matcher', function() {
       it('should support custom regex', runTest(
         {
-          whiteList: [/^http:\/\/example\.com\/.*/],
-          blackList: []
+          trustedUrls: [/^http:\/\/example\.com\/.*/],
+          bannedUrls: []
         }, function($sce) {
           expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
           // must match entire regex
@@ -385,8 +385,8 @@ describe('SCE', function() {
 
       it('should match entire regex', runTest(
         {
-          whiteList: [/https?:\/\/example\.com\/foo/],
-          blackList: []
+          trustedUrls: [/https?:\/\/example\.com\/foo/],
+          bannedUrls: []
         }, function($sce) {
           expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
           expect($sce.getTrustedResourceUrl('https://example.com/foo')).toEqual('https://example.com/foo');
@@ -405,8 +405,8 @@ describe('SCE', function() {
     describe('string matchers', function() {
       it('should support strings as matchers', runTest(
         {
-          whiteList: ['http://example.com/foo'],
-          blackList: []
+          trustedUrls: ['http://example.com/foo'],
+          bannedUrls: []
         }, function($sce) {
           expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
           // "." is not a special character like in a regex.
@@ -423,8 +423,8 @@ describe('SCE', function() {
 
       it('should support the * wildcard', runTest(
         {
-          whiteList: ['http://example.com/foo*'],
-          blackList: []
+          trustedUrls: ['http://example.com/foo*'],
+          bannedUrls: []
         }, function($sce) {
           expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
           // The * wildcard should match extra characters.
@@ -452,8 +452,8 @@ describe('SCE', function() {
 
       it('should support the ** wildcard', runTest(
         {
-          whiteList: ['http://example.com/foo**'],
-          blackList: []
+          trustedUrls: ['http://example.com/foo**'],
+          bannedUrls: []
         }, function($sce) {
           expect($sce.getTrustedResourceUrl('http://example.com/foo')).toEqual('http://example.com/foo');
           // The ** wildcard should match extra characters.
@@ -465,7 +465,7 @@ describe('SCE', function() {
 
       it('should not accept *** in the string', function() {
         expect(function() {
-          runTest({whiteList: ['http://***']}, null)();
+          runTest({trustedUrls: ['http://***']}, null)();
         }).toThrowMinErr('$injector', 'modulerr', new RegExp(
              /Failed to instantiate module function ?\(\$sceDelegateProvider\) due to:\n/.source +
              /[^[]*\[\$sce:iwcard] Illegal sequence \*\*\* in string matcher\. {2}String: http:\/\/\*\*\*/.source));
@@ -473,19 +473,19 @@ describe('SCE', function() {
     });
 
     describe('"self" matcher', function() {
-      it('should support the special string "self" in whitelist', runTest(
+      it('should support the special string "self" in trusted resource URL list', runTest(
         {
-          whiteList: ['self'],
-          blackList: []
+          trustedUrls: ['self'],
+          bannedUrls: []
         }, function($sce) {
           expect($sce.getTrustedResourceUrl('foo')).toEqual('foo');
         }
       ));
 
-      it('should support the special string "self" in blacklist', runTest(
+      it('should support the special string "self" in baneed resource URL list', runTest(
         {
-          whiteList: [/.*/],
-          blackList: ['self']
+          trustedUrls: [/.*/],
+          bannedUrls: ['self']
         }, function($sce) {
           expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
             '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
@@ -494,7 +494,7 @@ describe('SCE', function() {
 
       describe('when the document base URL has changed', function() {
         var baseElem;
-        var cfg = {whitelist: ['self'], blacklist: []};
+        var cfg = {trustedUrls: ['self'], bannedUrls: []};
 
         beforeEach(function() {
           baseElem = window.document.createElement('BASE');
@@ -526,10 +526,10 @@ describe('SCE', function() {
       });
     });
 
-    it('should have blacklist override the whitelist', runTest(
+    it('should have the banned resource URL list override the trusted resource URL list', runTest(
       {
-        whiteList: ['self'],
-        blackList: ['self']
+        trustedUrls: ['self'],
+        bannedUrls: ['self']
       }, function($sce) {
         expect(function() { $sce.getTrustedResourceUrl('foo'); }).toThrowMinErr(
           '$sce', 'insecurl', 'Blocked loading resource from url not allowed by $sceDelegate policy.  URL: foo');
@@ -538,8 +538,8 @@ describe('SCE', function() {
 
     it('should support multiple items in both lists', runTest(
       {
-        whiteList: [/^http:\/\/example.com\/1$/, /^http:\/\/example.com\/2$/, /^http:\/\/example.com\/3$/, 'self'],
-        blackList: [/^http:\/\/example.com\/3$/, /.*\/open_redirect/]
+        trustedUrls: [/^http:\/\/example.com\/1$/, /^http:\/\/example.com\/2$/, /^http:\/\/example.com\/3$/, 'self'],
+        bannedUrls: [/^http:\/\/example.com\/3$/, /.*\/open_redirect/]
       }, function($sce) {
         expect($sce.getTrustedResourceUrl('same_domain')).toEqual('same_domain');
         expect($sce.getTrustedResourceUrl('http://example.com/1')).toEqual('http://example.com/1');
@@ -553,12 +553,12 @@ describe('SCE', function() {
   });
 
   describe('URL-context sanitization', function() {
-    it('should sanitize values that are not whitelisted', inject(function($sce) {
+    it('should sanitize values that are not found in the trusted resource URL list', inject(function($sce) {
       expect($sce.getTrustedMediaUrl('javascript:foo')).toEqual('unsafe:javascript:foo');
       expect($sce.getTrustedUrl('javascript:foo')).toEqual('unsafe:javascript:foo');
     }));
 
-    it('should not sanitize values that are whitelisted', inject(function($sce) {
+    it('should not sanitize values that are found in the trusted resource URL list', inject(function($sce) {
       expect($sce.getTrustedMediaUrl('http://example.com')).toEqual('http://example.com');
       expect($sce.getTrustedUrl('http://example.com')).toEqual('http://example.com');
     }));
@@ -620,4 +620,3 @@ describe('SCE', function() {
     });
   });
 });
-

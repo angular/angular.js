@@ -288,8 +288,8 @@ describe('$http', function() {
     var $httpBackend, $http, $rootScope, $sce;
 
     beforeEach(module(function($sceDelegateProvider) {
-      // Setup a special whitelisted url that we can use in testing JSONP requests
-      $sceDelegateProvider.resourceUrlWhitelist(['http://special.whitelisted.resource.com/**']);
+      // Setup a special trusted url that we can use in testing JSONP requests
+      $sceDelegateProvider.trustedResourceUrlList(['http://special.trusted.resource.com/**']);
     }));
 
     beforeEach(inject(['$httpBackend', '$http', '$rootScope', '$sce', function($hb, $h, $rs, $sc) {

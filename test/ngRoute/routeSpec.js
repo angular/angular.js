@@ -803,7 +803,7 @@ describe('$route', function() {
     it('should load cross domain templates that are trusted', function() {
       module(function($routeProvider, $sceDelegateProvider) {
         $routeProvider.when('/foo', { templateUrl: 'http://example.com/foo.html' });
-        $sceDelegateProvider.resourceUrlWhitelist([/^http:\/\/example\.com\/foo\.html$/]);
+        $sceDelegateProvider.trustedResourceUrlList([/^http:\/\/example\.com\/foo\.html$/]);
       });
 
       inject(function($route, $location, $rootScope) {
