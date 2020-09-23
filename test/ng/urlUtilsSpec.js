@@ -97,7 +97,7 @@ describe('urlUtils', function() {
     });
 
 
-    it('should check against the list of whitelisted origins', function() {
+    it('should check against the list of trusted origins', function() {
       expect(urlIsAllowedOrigin('https://foo.com/path')).toBe(true);
       expect(urlIsAllowedOrigin(origin.protocol + '://bar.com:1337/path')).toBe(true);
       expect(urlIsAllowedOrigin('https://baz.com:1337/path')).toBe(false);

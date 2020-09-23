@@ -250,9 +250,9 @@ describe('ngProp*', function() {
     // IE9 rejects the `video` / `audio` tags with "Error: Not implemented"
     if (msie !== 9 || tag === 'img') {
       describe(tag + '[src] context requirement', function() {
-        it('should NOT require trusted values for whitelisted URIs', inject(function($rootScope, $compile) {
+        it('should NOT require trusted values for trusted URIs', inject(function($rootScope, $compile) {
           var element = $compile('<' + tag + ' ng-prop-src="testUrl"></' + tag + '>')($rootScope);
-          $rootScope.testUrl = 'http://example.com/image.mp4'; // `http` is whitelisted
+          $rootScope.testUrl = 'http://example.com/image.mp4'; // `http` is trusted
           $rootScope.$digest();
           expect(element.prop('src')).toEqual('http://example.com/image.mp4');
         }));
@@ -279,7 +279,7 @@ describe('ngProp*', function() {
           expect(element.prop('src')).toEqual('untrusted:foo()');
         }));
 
-        it('should sanitize non-whitelisted values', inject(function($rootScope, $compile, $sce) {
+        it('should sanitize non-trusted values', inject(function($rootScope, $compile, $sce) {
           // As a MEDIA_URL URL
           var element = $compile('<' + tag + ' ng-prop-src="testUrl"></' + tag + '>')($rootScope);
           // Some browsers complain if you try to write `javascript:` into an `img[src]`
@@ -308,9 +308,9 @@ describe('ngProp*', function() {
   if (msie !== 9) {
     ['source', 'track'].forEach(function(tag) {
       describe(tag + '[src]', function() {
-        it('should NOT require trusted values for whitelisted URIs', inject(function($rootScope, $compile) {
+        it('should NOT require trusted values for trusted URIs', inject(function($rootScope, $compile) {
           var element = $compile('<video><' + tag + ' ng-prop-src="testUrl"></' + tag + '></video>')($rootScope);
-          $rootScope.testUrl = 'http://example.com/image.mp4'; // `http` is whitelisted
+          $rootScope.testUrl = 'http://example.com/image.mp4'; // `http` is trusted
           $rootScope.$digest();
           expect(element.find(tag).prop('src')).toEqual('http://example.com/image.mp4');
         }));
@@ -335,7 +335,7 @@ describe('ngProp*', function() {
           expect(element.find(tag).prop('src')).toEqual('javascript:foo()');
         }));
 
-        it('should sanitize non-whitelisted values', inject(function($rootScope, $compile, $sce) {
+        it('should sanitize non-trusted values', inject(function($rootScope, $compile, $sce) {
           var element = $compile('<video><' + tag + ' ng-prop-src="testUrl"></' + tag + '></video>')($rootScope);
           $rootScope.testUrl = 'untrusted:foo()';
           $rootScope.$digest();
@@ -412,14 +412,14 @@ describe('ngProp*', function() {
           expect(element.prop('srcset')).toBe('');
         }));
 
-        it('should NOT require trusted values for whitelisted values', inject(function($rootScope, $compile, $sce) {
+        it('should NOT require trusted values for trusted URI values', inject(function($rootScope, $compile, $sce) {
           var element = $compile('<' + srcsetElement + ' ng-prop-srcset="testUrl"></' + srcsetElement + '>')($rootScope);
-          $rootScope.testUrl = 'http://example.com/image.png'; // `http` is whitelisted
+          $rootScope.testUrl = 'http://example.com/image.png'; // `http` is trusted
           $rootScope.$digest();
           expect(element.prop('srcset')).toEqual('http://example.com/image.png');
         }));
 
-        it('should accept trusted values, if they are also whitelisted', inject(function($rootScope, $compile, $sce) {
+        it('should accept trusted values, if they are also trusted URIs', inject(function($rootScope, $compile, $sce) {
           var element = $compile('<' + srcsetElement + ' ng-prop-srcset="testUrl"></' + srcsetElement + '>')($rootScope);
           $rootScope.testUrl = $sce.trustAsUrl('http://example.com');
           $rootScope.$digest();
@@ -506,8 +506,8 @@ describe('ngProp*', function() {
   });
 
   describe('a[href] sanitization', function() {
-    it('should NOT require trusted values for whitelisted values', inject(function($rootScope, $compile) {
-      $rootScope.testUrl = 'http://example.com/image.png'; // `http` is whitelisted
+    it('should NOT require trusted values for trusted URI values', inject(function($rootScope, $compile) {
+      $rootScope.testUrl = 'http://example.com/image.png'; // `http` is trusted
       var element = $compile('<a ng-prop-href="testUrl"></a>')($rootScope);
       $rootScope.$digest();
       expect(element.prop('href')).toEqual('http://example.com/image.png');
@@ -517,8 +517,8 @@ describe('ngProp*', function() {
       expect(element.prop('href')).toEqual('http://example.com/image.png');
     }));
 
-    it('should accept trusted values for non-whitelisted values', inject(function($rootScope, $compile, $sce) {
-      $rootScope.testUrl = $sce.trustAsUrl('javascript:foo()'); // `javascript` is not whitelisted
+    it('should accept trusted values for non-trusted URI values', inject(function($rootScope, $compile, $sce) {
+      $rootScope.testUrl = $sce.trustAsUrl('javascript:foo()'); // `javascript` is not trusted
       var element = $compile('<a ng-prop-href="testUrl"></a>')($rootScope);
       $rootScope.$digest();
       expect(element.prop('href')).toEqual('javascript:foo()');
@@ -528,8 +528,8 @@ describe('ngProp*', function() {
       expect(element.prop('href')).toEqual('javascript:foo()');
     }));
 
-    it('should sanitize non-whitelisted values', inject(function($rootScope, $compile) {
-      $rootScope.testUrl = 'javascript:foo()'; // `javascript` is not whitelisted
+    it('should sanitize non-trusted values', inject(function($rootScope, $compile) {
+      $rootScope.testUrl = 'javascript:foo()'; // `javascript` is not trusted
       var element = $compile('<a ng-prop-href="testUrl"></a>')($rootScope);
       $rootScope.$digest();
       expect(element.prop('href')).toEqual('unsafe:javascript:foo()');
