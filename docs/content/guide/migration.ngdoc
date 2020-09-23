@@ -2647,8 +2647,8 @@ $scope.findTemplate = function(templateName) {
 };
 ```
 
-To migrate, either cache the result of `trustAsResourceUrl()`, or put the template url in the resource
-whitelist in the `config()` function:
+To migrate, either cache the result of `trustAsResourceUrl()`, or put the template url in the trusted resource
+URL list in the `config()` function:
 
 After:
 

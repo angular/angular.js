@@ -388,7 +388,7 @@ function $HttpProvider() {
 
   /**
    * @ngdoc property
-   * @name $httpProvider#xsrfWhitelistedOrigins
+   * @name $httpProvider#xsrfTrustedOrigins
    * @description
    *
    * Array containing URLs whose origins are trusted to receive the XSRF token. See the
@@ -402,7 +402,7 @@ function $HttpProvider() {
    * Examples: `http://example.com`, `https://api.example.com:9876`
    *
    * <div class="alert alert-warning">
-   *   It is not possible to whitelist specific URLs/paths. The `path`, `query` and `fragment` parts
+   *   It is not possible to trust specific URLs/paths. The `path`, `query` and `fragment` parts
    *   of a URL will be ignored. For example, `https://foo.com/path/bar?query=baz#fragment` will be
    *   treated as `https://foo.com`, meaning that **all** requests to URLs starting with
    *   `https://foo.com/` will include the XSRF token.
@@ -413,9 +413,9 @@ function $HttpProvider() {
    * ```js
    * // App served from `https://example.com/`.
    * angular.
-   *   module('xsrfWhitelistedOriginsExample', []).
+   *   module('xsrfTrustedOriginsExample', []).
    *   config(['$httpProvider', function($httpProvider) {
-   *     $httpProvider.xsrfWhitelistedOrigins.push('https://api.example.com');
+   *     $httpProvider.xsrfTrustedOrigins.push('https://api.example.com');
    *   }]).
    *   run(['$http', function($http) {
    *     // The XSRF token will be sent.
@@ -426,7 +426,7 @@ function $HttpProvider() {
    *   }]);
    * ```
    */
-  var xsrfWhitelistedOrigins = this.xsrfWhitelistedOrigins = [];
+  var xsrfTrustedOrigins = this.xsrfWhitelistedOrigins = this.xsrfTrustedOrigins = [];
 
   this.$get = ['$browser', '$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector', '$sce',
       function($browser, $httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector, $sce) {
@@ -454,7 +454,7 @@ function $HttpProvider() {
     /**
      * A function to check request URLs against a list of allowed origins.
      */
-    var urlIsAllowedOrigin = urlIsAllowedOriginFactory(xsrfWhitelistedOrigins);
+    var urlIsAllowedOrigin = urlIsAllowedOriginFactory(xsrfTrustedOrigins);
 
     /**
      * @ngdoc service
@@ -828,16 +828,16 @@ function $HttpProvider() {
      * The header will &mdash; by default &mdash; **not** be set for cross-domain requests. This
      * prevents unauthorized servers (e.g. malicious or compromised 3rd-party APIs) from gaining
      * access to your users' XSRF tokens and exposing them to Cross Site Request Forgery. If you
-     * want to, you can whitelist additional origins to also receive the XSRF token, by adding them
-     * to {@link ng.$httpProvider#xsrfWhitelistedOrigins xsrfWhitelistedOrigins}. This might be
+     * want to, you can trust additional origins to also receive the XSRF token, by adding them
+     * to {@link ng.$httpProvider#xsrfTrustedOrigins xsrfTrustedOrigins}. This might be
      * useful, for example, if your application, served from `example.com`, needs to access your API
      * at `api.example.com`.
-     * See {@link ng.$httpProvider#xsrfWhitelistedOrigins $httpProvider.xsrfWhitelistedOrigins} for
+     * See {@link ng.$httpProvider#xsrfTrustedOrigins $httpProvider.xsrfTrustedOrigins} for
      * more details.
      *
      * <div class="alert alert-danger">
      *   **Warning**<br />
-     *   Only whitelist origins that you have control over and make sure you understand the
+     *   Only trusted origins that you have control over and make sure you understand the
      *   implications of doing so.
      * </div>
      *
@@ -964,7 +964,7 @@ function $HttpProvider() {
 <file name="script.js">
   angular.module('httpExample', [])
     .config(['$sceDelegateProvider', function($sceDelegateProvider) {
-      // We must whitelist the JSONP endpoint that we are using to show that we trust it
+      // We must add the JSONP endpoint that we are using to the trusted list to show that we trust it
       $sceDelegateProvider.trustedResourceUrlList([
         'self',
         'https://angularjs.org/**'
@@ -1222,7 +1222,7 @@ function $HttpProvider() {
      *
      * Note that, since JSONP requests are sensitive because the response is given full access to the browser,
      * the url must be declared, via {@link $sce} as a trusted resource URL.
-     * You can trust a URL by adding it to the whitelist via
+     * You can trust a URL by adding it to the trusted resource URL list via
      * {@link $sceDelegateProvider#trustedResourceUrlList  `$sceDelegateProvider.trustedResourceUrlList`} or
      * by explicitly trusting the URL via {@link $sce#trustAsResourceUrl `$sce.trustAsResourceUrl(url)`}.
      *
