@@ -1387,12 +1387,12 @@ $http.json('other/trusted/url', {jsonpCallbackParam: 'cb'});
 all JSONP requests now require the URL to be trusted as a resource URL. There are two approaches to
 trust a URL:
 
-1. **Whitelisting with the `$sceDelegateProvider.resourceUrlWhitelist()` method.**
+1. **Setting trusted resource URLs with the `$sceDelegateProvider.trustedResourceUrlList()` method.**
    You configure this list in a module configuration block:
 
     ```js
     appModule.config(['$sceDelegateProvider', function($sceDelegateProvider) {
-      $sceDelegateProvider.resourceUrlWhitelist([
+      $sceDelegateProvider.trustedResourceUrlList([
         // Allow same origin resource loads.
         'self',
         // Allow JSONP calls that match this pattern
@@ -2662,11 +2662,11 @@ $scope.findTemplate = function(templateName) {
   return templateCache[templateName];
 };
 
-// Alternatively, use `$sceDelegateProvider.resourceUrlWhitelist()`, which means you don't
+// Alternatively, use `$sceDelegateProvider.trustedResourceUrlList()`, which means you don't
 // have to use `$sce.trustAsResourceUrl()` at all:
 
 angular.module('myApp', []).config(function($sceDelegateProvider) {
-  $sceDelegateProvider.resourceUrlWhitelist(['self', 'https://example.com/templates/**'])
+  $sceDelegateProvider.trustedResourceUrlList(['self', 'https://example.com/templates/**'])
 });
 ```
 

@@ -3,7 +3,7 @@
 @fullName Invalid matcher (only string patterns and RegExp instances are supported)
 @description
 
-Please see {@link $sceDelegateProvider#resourceUrlWhitelist
-$sceDelegateProvider.resourceUrlWhitelist} and {@link
-$sceDelegateProvider#resourceUrlBlacklist $sceDelegateProvider.resourceUrlBlacklist} for the
+Please see {@link $sceDelegateProvider#trustedResourceUrlList
+$sceDelegateProvider.trustedResourceUrlList} and {@link
+$sceDelegateProvider#bannedResourceUrlList $sceDelegateProvider.bannedResourceUrlList} for the
 list of acceptable items.
