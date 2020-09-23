@@ -426,7 +426,27 @@ function $HttpProvider() {
    *   }]);
    * ```
    */
-  var xsrfTrustedOrigins = this.xsrfWhitelistedOrigins = this.xsrfTrustedOrigins = [];
+  var xsrfTrustedOrigins = this.xsrfTrustedOrigins = [];
+
+  /**
+   * @ngdoc property
+   * @name $httpProvider#xsrfWhitelistedOrigins
+   * @description
+   *
+   * @deprecated
+   * sinceVersion="1.8.1"
+   *
+   * This function is deprecated. Use {@link $httpProvider#xsrfTrustedOrigins xsrfTrustedOrigins}
+   * instead.
+   */
+  Object.defineProperty(this, 'xsrfWhitelistedOrigins', {
+    get: function() {
+      return this.xsrfTrustedOrigins;
+    },
+    set: function(origins) {
+      this.xsrfTrustedOrigins = origins;
+    }
+  });
 
   this.$get = ['$browser', '$httpBackend', '$$cookieReader', '$cacheFactory', '$rootScope', '$q', '$injector', '$sce',
       function($browser, $httpBackend, $$cookieReader, $cacheFactory, $rootScope, $q, $injector, $sce) {

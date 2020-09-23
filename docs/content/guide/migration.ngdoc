@@ -276,15 +276,16 @@ statement.
 **Due to [6ccbfa](https://github.com/angular/angular.js/commit/6ccbfa65d60a3dc396d0cf6da21b993ad74653fd)**,
 the `xlink:href` security context for SVG's `a` and `image` elements has been lowered.
 
-In the unlikely case that an app relied on `RESOURCE_URL` whitelisting for the
+In the unlikely case that an app relied on `RESOURCE_URL` trusted list for the
 purpose of binding to the `xlink:href` property of SVG's `<a>` or `<image>`
 elements and if the values do not pass the regular URL sanitization, they will
 break.
 
 To fix this you need to ensure that the values used for binding to the affected
-`xlink:href` contexts are considered safe URLs, e.g. by whitelisting them in
-`$compileProvider`'s `aHrefSanitizationTrustedUri` (for `<a>` elements) or
-`imgSrcSanitizationTrustedUri` (for `<image>` elements).
+`xlink:href` contexts are considered safe URLs, e.g. by trusting them in
+`$compileProvider`'s `aHrefSanitizationWhitelist` (called `aHrefSanitizationTrustedUrlList` form
+1.8.1 onwards) (for `<a>` elements) or `imgSrcSanitizationWhitelist` (called
+`imgSrcSanitizationTrustedUrlList` from 1.8.1 onwards) (for `<image>` elements).
 
 <hr />
 
@@ -1309,7 +1310,7 @@ running at `https://docs.angularjs.org` then the following will fail:
 
 By default, only URLs with the same domain and protocol as the application document are considered
 safe in the `RESOURCE_URL` context. To use URLs from other domains and/or protocols, you may either
-whitelist them or wrap them into a trusted value by calling `$sce.trustAsResourceUrl(url)`.
+add them to the trusted source URL list or wrap them into a trusted value by calling `$sce.trustAsResourceUrl(url)`.
 
 <hr />
 <minor />
@@ -1387,12 +1388,12 @@ $http.json('other/trusted/url', {jsonpCallbackParam: 'cb'});
 all JSONP requests now require the URL to be trusted as a resource URL. There are two approaches to
 trust a URL:
 
-1. **Setting trusted resource URLs with the `$sceDelegateProvider.trustedResourceUrlList()` method.**
+1. **Setting trusted resource URLs with the `$sceDelegateProvider.resourceUrlWhitelist()` (called `trustedResourceUrlList()` from 1.8.1 onwards) method.**
    You configure this list in a module configuration block:
 
     ```js
     appModule.config(['$sceDelegateProvider', function($sceDelegateProvider) {
-      $sceDelegateProvider.trustedResourceUrlList([
+      $sceDelegateProvider.resourceUrlWhitelist([
         // Allow same origin resource loads.
         'self',
         // Allow JSONP calls that match this pattern
@@ -2207,7 +2208,7 @@ service does not have access to the resource in order to sanitize it.
 Similarly, due to [234053fc](https://github.com/angular/angular.js/commit/234053fc9ad90e0d05be7e8359c6af66be94c094),
 the `$sanitize` service will now also remove instances of the `usemap` attribute from any elements
 passed to it. This attribute is used to reference another element by `name` or `id`. Since the
-`name` and `id` attributes are already blacklisted, a sanitized `usemap` attribute could only
+`name` and `id` attributes are already banned, a sanitized `usemap` attribute could only
 reference unsanitized content, which is a security risk.
 
 Due to [98c2db7f](https://github.com/angular/angular.js/commit/98c2db7f9c2d078a408576e722407d518c7ee10a),
@@ -2662,11 +2663,12 @@ $scope.findTemplate = function(templateName) {
   return templateCache[templateName];
 };
 
-// Alternatively, use `$sceDelegateProvider.trustedResourceUrlList()`, which means you don't
+// Alternatively, use `$sceDelegateProvider..resourceUrlWhitelist()` (called
+// `trustedResourceUrlList()` from 1.8.1 onwards), which means you don't
 // have to use `$sce.trustAsResourceUrl()` at all:
 
 angular.module('myApp', []).config(function($sceDelegateProvider) {
-  $sceDelegateProvider.trustedResourceUrlList(['self', 'https://example.com/templates/**'])
+  $sceDelegateProvider.resourceUrlWhitelist(['self', 'https://example.com/templates/**'])
 });
 ```
 
@@ -3353,7 +3355,7 @@ below should still apply, but you may want to consult the
   <li>{@link guide/migration#directive-priority Directive priority}</li>
   <li>{@link guide/migration#ngscenario ngScenario}</li>
   <li>{@link guide/migration#nginclude-and-ngview-replace-its-entire-element-on-update ngInclude and ngView replace its entire element on update}</li>
-  <li>{@link guide/migration#urls-are-now-sanitized-against-a-whitelist URLs are now sanitized against a whitelist}</li>
+  <li>{@link guide/migration#urls-are-now-sanitized-against-a-trusted-uri-matcher URLs are now sanitized against a trusted URI matcher}</li>
   <li>{@link guide/migration#isolate-scope-only-exposed-to-directives-with-scope-property Isolate scope only exposed to directives with <code>scope</code> property}</li>
   <li>{@link guide/migration#change-to-interpolation-priority Change to interpolation priority}</li>
   <li>{@link guide/migration#underscore-prefixed-suffixed-properties-are-non-bindable Underscore-prefixed/suffixed properties are non-bindable}</li>
@@ -3843,10 +3845,10 @@ See [7d69d52a](https://github.com/angular/angular.js/commit/7d69d52acff8578e0f7d
 [aa2133ad](https://github.com/angular/angular.js/commit/aa2133ad818d2e5c27cbd3933061797096356c8a).
 
 
-### URLs are now sanitized against a whitelist
+### URLs are now sanitized against a trusted URI matcher
 
-A whitelist configured via `$compileProvider` can be used to configure what URLs are considered safe.
-By default all common protocol prefixes are whitelisted including `data:` URIs with mime types `image/*`.
+A trusted URI matcher configured via `$compileProvider` can be used to configure what URLs are considered safe.
+By default all common protocol prefixes are trusted including `data:` URIs with mime types `image/*`.
 This change shouldn't impact apps that don't contain malicious image links.
 
 See [1adf29af](https://github.com/angular/angular.js/commit/1adf29af13890d61286840177607edd552a9df97),
