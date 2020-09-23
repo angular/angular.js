@@ -125,10 +125,10 @@ describe('sanitizeUri', function() {
       expect(sanitizeImg(testUrl)).toBe('data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
     });
 
-    it('should allow reconfiguration of the src whitelist', function() {
+    it('should allow reconfiguration of the src trusted URIs', function() {
       var returnVal;
-      expect(sanitizeUriProvider.imgSrcSanitizationWhitelist() instanceof RegExp).toBe(true);
-      returnVal = sanitizeUriProvider.imgSrcSanitizationWhitelist(/javascript:/);
+      expect(sanitizeUriProvider.imgSrcSanitizationTrustedUri() instanceof RegExp).toBe(true);
+      returnVal = sanitizeUriProvider.imgSrcSanitizationTrustedUri(/javascript:/);
       expect(returnVal).toBe(sanitizeUriProvider);
 
       testUrl = 'javascript:doEvilStuff()';
@@ -226,10 +226,10 @@ describe('sanitizeUri', function() {
       expect(sanitizeHref(testUrl)).toBe('file:///foo/bar.html');
     }));
 
-    it('should allow reconfiguration of the href whitelist', function() {
+    it('should allow reconfiguration of the href trusted URIs', function() {
       var returnVal;
-      expect(sanitizeUriProvider.aHrefSanitizationWhitelist() instanceof RegExp).toBe(true);
-      returnVal = sanitizeUriProvider.aHrefSanitizationWhitelist(/javascript:/);
+      expect(sanitizeUriProvider.aHrefSanitizationTrustedUri() instanceof RegExp).toBe(true);
+      returnVal = sanitizeUriProvider.aHrefSanitizationTrustedUri(/javascript:/);
       expect(returnVal).toBe(sanitizeUriProvider);
 
       testUrl = 'javascript:doEvilStuff()';
