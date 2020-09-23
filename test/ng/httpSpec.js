@@ -2213,9 +2213,9 @@ describe('$http', function() {
     var $httpBackend;
 
     beforeEach(module(function($httpProvider) {
-      $httpProvider.xsrfWhitelistedOrigins.push(
-          'https://whitelisted.example.com',
-          'https://whitelisted2.example.com:1337/ignored/path');
+      $httpProvider.xsrfTrustedOrigins.push(
+          'https://trusted.example.com',
+          'https://trusted2.example.com:1337/ignored/path');
     }));
 
     beforeEach(inject(function(_$http_, _$httpBackend_) {
@@ -2312,8 +2312,8 @@ describe('$http', function() {
       }
       var requestUrls = [
         'https://api.example.com/path',
-        'http://whitelisted.example.com',
-        'https://whitelisted2.example.com:1338'
+        'http://trusted.example.com',
+        'https://trusted2.example.com:1338'
       ];
 
       mockedCookies['XSRF-TOKEN'] = 'secret';
@@ -2326,15 +2326,15 @@ describe('$http', function() {
     });
 
 
-    it('should set an XSRF header for cross-domain requests to whitelisted origins',
+    it('should set an XSRF header for cross-domain requests to trusted origins',
       inject(function($browser) {
         function checkHeaders(headers) {
           return headers['X-XSRF-TOKEN'] === 'secret';
         }
         var currentUrl = 'https://example.com/path';
         var requestUrls = [
-          'https://whitelisted.example.com/path',
-          'https://whitelisted2.example.com:1337/path'
+          'https://trusted.example.com/path',
+          'https://trusted2.example.com:1337/path'
         ];
 
         $browser.url(currentUrl);
