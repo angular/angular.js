@@ -1724,7 +1724,27 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       return $$sanitizeUriProvider.aHrefSanitizationTrustedUrlList();
     }
   };
-  this.aHrefSanitizationWhitelist = this.aHrefSanitizationTrustedUrlList;
+
+
+  /**
+   * @ngdoc method
+   * @name $compileProvider#aHrefSanitizationWhitelist
+   * @kind function
+   *
+   * @deprecated
+   * sinceVersion="1.8.1"
+   *
+   * This function is deprecated. Use {@link $compileProvider#aHrefSanitizationTrustedUrlList
+   * aHrefSanitizationTrustedUrlList} instead.
+   */
+  Object.defineProperty(this, 'aHrefSanitizationWhitelist', {
+    get: function() {
+      return this.aHrefSanitizationTrustedUrlList;
+    },
+    set: function(regexp) {
+      this.aHrefSanitizationTrustedUrlList = regexp;
+    }
+  });
 
 
   /**
@@ -1755,7 +1775,27 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
       return $$sanitizeUriProvider.imgSrcSanitizationTrustedUrlList();
     }
   };
-  this.imgSrcSanitizationWhitelist = this.imgSrcSanitizationTrustedUrlList;
+
+
+  /**
+   * @ngdoc method
+   * @name $compileProvider#imgSrcSanitizationWhitelist
+   * @kind function
+   *
+   * @deprecated
+   * sinceVersion="1.8.1"
+   *
+   * This function is deprecated. Use {@link $compileProvider#imgSrcSanitizationTrustedUrlList
+    * imgSrcSanitizationTrustedUrlList} instead.
+    */
+  Object.defineProperty(this, 'imgSrcSanitizationWhitelist', {
+    get: function() {
+      return this.imgSrcSanitizationTrustedUrlList;
+    },
+    set: function(regexp) {
+      this.imgSrcSanitizationTrustedUrlList = regexp;
+    }
+  });
 
   /**
    * @ngdoc method
