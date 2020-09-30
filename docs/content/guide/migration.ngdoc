@@ -283,9 +283,9 @@ break.
 
 To fix this you need to ensure that the values used for binding to the affected
 `xlink:href` contexts are considered safe URLs, e.g. by trusting them in
-`$compileProvider`'s `aHrefSanitizationWhitelist` (called `aHrefSanitizationTrustedUrlList` in
-latest versions) (for `<a>` elements) or `imgSrcSanitizationWhitelist` (called
-`imgSrcSanitizationTrustedUrlList` in latest versions) (for `<image>` elements).
+`$compileProvider`'s `aHrefSanitizationWhitelist` (called `aHrefSanitizationTrustedUrlList` form
+1.8.1 onwards) (for `<a>` elements) or `imgSrcSanitizationWhitelist` (called
+`imgSrcSanitizationTrustedUrlList` from 1.8.1 onwards) (for `<image>` elements).
 
 <hr />
 
@@ -1388,7 +1388,7 @@ $http.json('other/trusted/url', {jsonpCallbackParam: 'cb'});
 all JSONP requests now require the URL to be trusted as a resource URL. There are two approaches to
 trust a URL:
 
-1. **Setting trusted resource URLs with the `$sceDelegateProvider.resourceUrlWhitelist()` (called `trustedResourceUrlList()` in latest versions) method.**
+1. **Setting trusted resource URLs with the `$sceDelegateProvider.resourceUrlWhitelist()` (called `trustedResourceUrlList()` from 1.8.1 onwards) method.**
    You configure this list in a module configuration block:
 
     ```js
@@ -2664,7 +2664,7 @@ $scope.findTemplate = function(templateName) {
 };
 
 // Alternatively, use `$sceDelegateProvider..resourceUrlWhitelist()` (called
-// `trustedResourceUrlList()` in latest versions), which means you don't
+// `trustedResourceUrlList()` from 1.8.1 onwards), which means you don't
 // have to use `$sce.trustAsResourceUrl()` at all:
 
 angular.module('myApp', []).config(function($sceDelegateProvider) {

@@ -1786,8 +1786,8 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * sinceVersion="1.8.1"
    *
    * This function is deprecated. Use {@link $compileProvider#imgSrcSanitizationTrustedUrlList
-    * imgSrcSanitizationTrustedUrlList} instead.
-    */
+   * imgSrcSanitizationTrustedUrlList} instead.
+   */
   Object.defineProperty(this, 'imgSrcSanitizationWhitelist', {
     get: function() {
       return this.imgSrcSanitizationTrustedUrlList;
