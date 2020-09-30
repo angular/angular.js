@@ -89,7 +89,7 @@
     "q-io": "^1.10.9",
     "qq": "^0.3.5",
     "rewire": "~2.1.0",
-    "sauce-connect": "https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz",
+    "sauce-connect": "https://saucelabs.com/downloads/sc-4.6.2-linux.tar.gz",
     "sax": "^1.1.1",
     "selenium-webdriver": "^4.0.0-alpha.1",
     "semver": "^5.4.1",
