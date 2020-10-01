@@ -20,13 +20,13 @@ piece of cake. Best of all? It makes development fun!
 
 --------------------
 
-* Web site: https://angularjs.org
-* Tutorial: https://docs.angularjs.org/tutorial
-* API Docs: https://docs.angularjs.org/api
-* Developer Guide: https://docs.angularjs.org/guide
-* Contribution guidelines: [CONTRIBUTING.md](CONTRIBUTING.md)
-* Core Development: [DEVELOPERS.md](DEVELOPERS.md)
-* Dashboard: https://dashboard.angularjs.org
+1. Web site: https://angularjs.org
+2. Tutorial: https://docs.angularjs.org/tutorial
+3. API Docs: https://docs.angularjs.org/api
+4. Developer Guide: https://docs.angularjs.org/guide
+5. Contribution guidelines: [CONTRIBUTING.md](CONTRIBUTING.md)
+6. Core Development: [DEVELOPERS.md](DEVELOPERS.md)
+7. Dashboard: https://dashboard.angularjs.org
 
 
 Documentation
