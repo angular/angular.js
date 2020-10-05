@@ -1,3 +1,29 @@
+<a name="1.8.1"></a>
+# 1.8.1 mutually-supporting (2020-09-30)
+
+## Bug Fixes
+- **$sanitize:** do not trigger CSP alert/report in Firefox and Chrome
+  ([2fab3d](https://github.com/angular/angular.js/commit/2fab3d4e00f4fe35bfa3cf255160cb97404baf24))
+
+## Refactorings
+
+- **SanitizeUriProvider:** remove usages of whitelist
+  ([76738102](https:github.com/angular/angular.js/commit/767381020d88bda2855ac87ca6f00748907e14ff))
+- **httpProvider:** remove usages of whitelist and blacklist
+  ([c953af6b](https:github.com/angular/angular.js/commit/c953af6b8cfeefe4acc0ca358550eed5da8cfe00))
+- **sceDelegateProvider:** remove usages of whitelist and blacklist
+  ([a206e267](https:github.com/angular/angular.js/commit/a206e2675c351c3cdcde3402978126774c1c5df9))
+
+## Deprecation Notices
+
+- Deprecated ~~`aHrefSanitizationWhitelist`~~. It is now `aHrefSanitizationTrustedUri`
+- Deprecated ~~`imgSrcSanitizationWhitelist`~~. It is now `imgSrcSanitizationTrustedUri`
+- Deprecated ~~`xsrfWhitelistedOrigins`~~. It is now `xsrfTrustedOrigins`
+- Deprecated ~~`resourceUrlWhitelist`~~. It is now `trustedResourceUrlList`
+- Deprecated ~~`resourceUrlBlacklist`~~. It is now `bannedResourceUrlList`
+
+For the purposes of backward compatibility, the previous symbols are aliased to their new symbol.
+
 
 <a name="1.8.0"></a>
 # 1.8.0 nested-vaccination (2020-06-01)
