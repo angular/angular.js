@@ -343,7 +343,7 @@ function baseExtend(dst, objs, deep) {
         } else if (isElement(src)) {
           dst[key] = src.clone();
         } else {
-          if (key !== '__proto__') {
+          if (key !== '__proto__' || key !== 'prototype' || key !== 'contructor') {
             if (!isObject(dst[key])) dst[key] = isArray(src) ? [] : {};
             baseExtend(dst[key], [src], true);
           }
