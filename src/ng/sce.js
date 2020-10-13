@@ -242,7 +242,6 @@ function $SceDelegateProvider() {
    * The **default value** when no trusted resource URL list has been explicitly set is the empty
    * array (i.e. there is no `bannedResourceUrlList`.)
    */
-
   this.bannedResourceUrlList = function(value) {
     if (arguments.length) {
       bannedResourceUrlList = adjustMatchers(value);
@@ -258,7 +257,7 @@ function $SceDelegateProvider() {
    * @deprecated
    * sinceVersion="1.8.1"
    *
-   * This function is deprecated. Use {@link $sceDelegateProvider#bannedResourceUrlList
+   * This method is deprecated. Use {@link $sceDelegateProvider#bannedResourceUrlList
    * bannedResourceUrlList} instead.
    */
   Object.defineProperty(this, 'resourceUrlBlacklist', {

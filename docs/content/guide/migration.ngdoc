@@ -2663,7 +2663,7 @@ $scope.findTemplate = function(templateName) {
   return templateCache[templateName];
 };
 
-// Alternatively, use `$sceDelegateProvider..resourceUrlWhitelist()` (called
+// Alternatively, use `$sceDelegateProvider.resourceUrlWhitelist()` (called
 // `trustedResourceUrlList()` from 1.8.1 onwards), which means you don't
 // have to use `$sce.trustAsResourceUrl()` at all:
 
