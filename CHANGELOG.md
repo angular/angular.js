@@ -8,11 +8,11 @@
 ## Refactorings
 
 - **SanitizeUriProvider:** remove usages of whitelist
-  ([76738102](https:github.com/angular/angular.js/commit/767381020d88bda2855ac87ca6f00748907e14ff))
+  ([76738102](https://github.com/angular/angular.js/commit/767381020d88bda2855ac87ca6f00748907e14ff))
 - **httpProvider:** remove usages of whitelist and blacklist
-  ([c953af6b](https:github.com/angular/angular.js/commit/c953af6b8cfeefe4acc0ca358550eed5da8cfe00))
+  ([c953af6b](https://github.com/angular/angular.js/commit/c953af6b8cfeefe4acc0ca358550eed5da8cfe00))
 - **sceDelegateProvider:** remove usages of whitelist and blacklist
-  ([a206e267](https:github.com/angular/angular.js/commit/a206e2675c351c3cdcde3402978126774c1c5df9))
+  ([a206e267](https://github.com/angular/angular.js/commit/a206e2675c351c3cdcde3402978126774c1c5df9))
 
 ## Deprecation Notices
 
