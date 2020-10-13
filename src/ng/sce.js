@@ -215,7 +215,26 @@ function $SceDelegateProvider() {
     }
     return trustedResourceUrlList;
   };
-  this.resourceUrlWhitelist = this.trustedResourceUrlList;
+
+  /**
+   * @ngdoc method
+   * @name $sceDelegateProvider#resourceUrlWhitelist
+   * @kind function
+   *
+   * @deprecated
+   * sinceVersion="1.8.1"
+   *
+   * This method is deprecated. Use {@link $sceDelegateProvider#trustedResourceUrlList
+   * trustedResourceUrlList} instead.
+   */
+  Object.defineProperty(this, 'resourceUrlWhitelist', {
+    get: function() {
+      return this.trustedResourceUrlList;
+    },
+    set: function(value) {
+      this.trustedResourceUrlList = value;
+    }
+  });
 
   /**
    * @ngdoc method
