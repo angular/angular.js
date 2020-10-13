@@ -1734,15 +1734,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * @deprecated
    * sinceVersion="1.8.1"
    *
-   * This function is deprecated. Use {@link $compileProvider#aHrefSanitizationTrustedUrlList
+   * This method is deprecated. Use {@link $compileProvider#aHrefSanitizationTrustedUrlList
    * aHrefSanitizationTrustedUrlList} instead.
    */
   Object.defineProperty(this, 'aHrefSanitizationWhitelist', {
     get: function() {
       return this.aHrefSanitizationTrustedUrlList;
     },
-    set: function(regexp) {
-      this.aHrefSanitizationTrustedUrlList = regexp;
+    set: function(value) {
+      this.aHrefSanitizationTrustedUrlList = value;
     }
   });
 
@@ -1785,15 +1785,15 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
    * @deprecated
    * sinceVersion="1.8.1"
    *
-   * This function is deprecated. Use {@link $compileProvider#imgSrcSanitizationTrustedUrlList
+   * This method is deprecated. Use {@link $compileProvider#imgSrcSanitizationTrustedUrlList
    * imgSrcSanitizationTrustedUrlList} instead.
    */
   Object.defineProperty(this, 'imgSrcSanitizationWhitelist', {
     get: function() {
       return this.imgSrcSanitizationTrustedUrlList;
     },
-    set: function(regexp) {
-      this.imgSrcSanitizationTrustedUrlList = regexp;
+    set: function(value) {
+      this.imgSrcSanitizationTrustedUrlList = value;
     }
   });
 

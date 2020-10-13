@@ -436,7 +436,7 @@ function $HttpProvider() {
    * @deprecated
    * sinceVersion="1.8.1"
    *
-   * This function is deprecated. Use {@link $httpProvider#xsrfTrustedOrigins xsrfTrustedOrigins}
+   * This property is deprecated. Use {@link $httpProvider#xsrfTrustedOrigins xsrfTrustedOrigins}
    * instead.
    */
   Object.defineProperty(this, 'xsrfWhitelistedOrigins', {
