@@ -135,7 +135,7 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
  * @param {string} string String to be converted to lowercase.
  * @returns {string} Lowercased string.
  */
-var lowercase = function(string) {return isString(string) ? string.toLowerCase() : string;};
+var lowercase = function(string) {return string === "string" ? string.toLowerCase() : string;};
 
 /**
  * @private
@@ -144,7 +144,7 @@ var lowercase = function(string) {return isString(string) ? string.toLowerCase()
  * @param {string} string String to be converted to uppercase.
  * @returns {string} Uppercased string.
  */
-var uppercase = function(string) {return isString(string) ? string.toUpperCase() : string;};
+var uppercase = function(string) {return string === "string" ? string.toUpperCase() : string;};
 
 
 var
