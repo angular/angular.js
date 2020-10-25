@@ -26,15 +26,15 @@
 ## Deprecation Notices
 
 - Deprecated ~~`$compileProvider.aHrefSanitizationWhitelist`~~.
-  It is now [aHrefSanitizationTrustedUrlList](https://docs.angularjs.org/api/ng/provider/$compileProvider#aHrefSanitizationTrustedUrlList).
+  It is now [`aHrefSanitizationTrustedUrlList`](https://docs.angularjs.org/api/ng/provider/$compileProvider#aHrefSanitizationTrustedUrlList).
 - Deprecated ~~`$compileProvider.imgSrcSanitizationWhitelist`~~.
-  It is now [imgSrcSanitizationTrustedUrlList](https://docs.angularjs.org/api/ng/provider/$compileProvider#imgSrcSanitizationTrustedUrlList).
+  It is now [`imgSrcSanitizationTrustedUrlList`](https://docs.angularjs.org/api/ng/provider/$compileProvider#imgSrcSanitizationTrustedUrlList).
 - Deprecated ~~`$httpProvider.xsrfWhitelistedOrigins`~~.
-  It is now [xsrfTrustedOrigins](https://docs.angularjs.org/api/ng/provider/$httpProvider#xsrfTrustedOrigins).
+  It is now [`xsrfTrustedOrigins`](https://docs.angularjs.org/api/ng/provider/$httpProvider#xsrfTrustedOrigins).
 - Deprecated ~~`$sceDelegateProvider.resourceUrlWhitelist`~~.
-  It is now [trustedResourceUrlList](https://docs.angularjs.org/api/ng/provider/$sceDelegateProvider#trustedResourceUrlList).
+  It is now [`trustedResourceUrlList`](https://docs.angularjs.org/api/ng/provider/$sceDelegateProvider#trustedResourceUrlList).
 - Deprecated ~~`$sceDelegateProvider.resourceUrlBlacklist`~~.
-  It is now [bannedResourceUrlList](https://docs.angularjs.org/api/ng/provider/$sceDelegateProvider#bannedResourceUrlList).
+  It is now [`bannedResourceUrlList`](https://docs.angularjs.org/api/ng/provider/$sceDelegateProvider#bannedResourceUrlList).
 
 For the purposes of backward compatibility, the previous symbols are aliased to their new symbol.
 
