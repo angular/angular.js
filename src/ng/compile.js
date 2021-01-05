@@ -3485,7 +3485,9 @@ function $CompileProvider($provide, $$sanitizeUriProvider) {
           $scope: directive === newIsolateScopeDirective || directive.$$isolateScope ? isolateScope : scope,
           $element: $element,
           $attrs: attrs,
-          $transclude: transcludeFn
+          $transclude: transcludeFn,
+
+          $directive: directive
         };
 
         var controller = directive.controller;
