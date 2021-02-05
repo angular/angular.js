@@ -385,10 +385,20 @@ jobs:
       - custom_attach_workspace
       - init_environment
       - skip_unless_stable_branch
-        # Install dependencies for Firebase functions to prevent parsing errors during deployment
-        # See https://github.com/angular/angular.js/pull/16453
-      - run: yarn --cwd scripts/docs.angularjs.org-firebase/functions --ignore-engines
-      - run: yarn firebase deploy --message  "Commit:\ $CI_COMMIT" --non-interactive --only hosting --project "docs-angularjs-org-9p2" --token "$FIREBASE_TOKEN"
+        # Install dependencies for Firebase functions to prevent parsing errors during deployment.
+        # See https://github.com/angular/angular.js/pull/16453.
+      - run:
+          name: Install dependencies in `scripts/docs.angularjs.org-firebase/functions/`.
+          working_directory: scripts/docs.angularjs.org-firebase/functions
+          command: yarn install --frozen-lockfile --ignore-engines --non-interactive
+      - run:
+          name: Deploy to Firebase from `scripts/docs.angularjs.org-firebase/`.
+          working_directory: scripts/docs.angularjs.org-firebase
+          command: |
+            # Do not use `yarn firebase` as that causes the Firebase CLI to look for `firebase.json`
+            # in the root directory, even if run from inside `scripts/docs.angularjs.org-firebase/`.
+            firebase=$(yarn bin)/firebase
+            $firebase deploy --message  "Commit:\ $CI_COMMIT" --non-interactive --only hosting --project "docs-angularjs-org-9p2" --token "$FIREBASE_TOKEN"
 
 workflows:
   version: 2
