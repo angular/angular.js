@@ -383,7 +383,8 @@ jobs:
             # Do not use `yarn firebase` as that causes the Firebase CLI to look for `firebase.json`
             # in the root directory, even if run from inside `scripts/code.angularjs.org-firebase/`.
             firebase=$(yarn bin)/firebase
-            $firebase deploy --message "Commit:\ $CI_COMMIT" --non-interactive --project "code-angularjs-org-338b8" --token "$FIREBASE_TOKEN"
+            $firebase use
+            $firebase deploy --message "Commit:\ $CI_COMMIT" --non-interactive --token "$FIREBASE_TOKEN"
 
   # The `deploy-docs` job should only run when all of these conditions are true for the build:
   # - It is for the `angular/angular.js` repository (not a fork).
@@ -412,7 +413,8 @@ jobs:
             # Do not use `yarn firebase` as that causes the Firebase CLI to look for `firebase.json`
             # in the root directory, even if run from inside `scripts/docs.angularjs.org-firebase/`.
             firebase=$(yarn bin)/firebase
-            $firebase deploy --message "Commit:\ $CI_COMMIT" --non-interactive --project "docs-angularjs-org-9p2" --token "$FIREBASE_TOKEN"
+            $firebase use
+            $firebase deploy --message "Commit:\ $CI_COMMIT" --non-interactive --token "$FIREBASE_TOKEN"
 
 workflows:
   version: 2
