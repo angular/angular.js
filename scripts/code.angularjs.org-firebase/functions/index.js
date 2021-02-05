@@ -2,7 +2,6 @@
 
 const functions = require('firebase-functions');
 const {Storage} = require('@google-cloud/storage');
-const path = require('path');
 
 const storage = new Storage();
 const gcsBucketId = `${process.env.GCLOUD_PROJECT}.appspot.com`;
@@ -41,13 +40,13 @@ function sendStoredFile(request, response) {
     return getDirectoryListing('/').catch(sendErrorResponse);
   }
 
-  downloadSource = path.join.apply(null, filePathSegments);
+  downloadSource = filePathSegments.join('/');
 
   downloadAndSend(downloadSource).catch(error => {
     if (isDocsPath && error.code === 404) {
       fileName = 'index.html';
       filePathSegments = [version, 'docs', fileName];
-      downloadSource = path.join.apply(null, filePathSegments);
+      downloadSource = filePathSegments.join('/');
 
       return downloadAndSend(downloadSource);
     }
