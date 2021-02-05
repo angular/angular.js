@@ -370,6 +370,20 @@ jobs:
           name: Sync files to code.angularjs.org
           command: |
             gsutil -m rsync -r scripts/code.angularjs.org-firebase/deploy gs://code-angularjs-org-338b8.appspot.com
+        # Install dependencies for Firebase functions to prevent parsing errors during deployment.
+        # See https://github.com/angular/angular.js/pull/16453.
+      - run:
+          name: Install dependencies in `scripts/code.angularjs.org-firebase/functions/`.
+          working_directory: scripts/code.angularjs.org-firebase/functions
+          command: yarn install --frozen-lockfile --ignore-engines --non-interactive
+      - run:
+          name: Deploy to Firebase from `scripts/code.angularjs.org-firebase/`.
+          working_directory: scripts/code.angularjs.org-firebase
+          command: |
+            # Do not use `yarn firebase` as that causes the Firebase CLI to look for `firebase.json`
+            # in the root directory, even if run from inside `scripts/code.angularjs.org-firebase/`.
+            firebase=$(yarn bin)/firebase
+            $firebase deploy --message "Commit:\ $CI_COMMIT" --non-interactive --project "code-angularjs-org-338b8" --token "$FIREBASE_TOKEN"
 
   # The `deploy-docs` job should only run when all of these conditions are true for the build:
   # - It is for the `angular/angular.js` repository (not a fork).
