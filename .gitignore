@@ -25,4 +25,3 @@ npm-debug.log
 scripts/code.angularjs.org-firebase/deploy
 scripts/docs.angularjs.org-firebase/deploy
 scripts/docs.angularjs.org-firebase/functions/content
-/firebase.json

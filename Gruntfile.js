@@ -518,7 +518,6 @@ module.exports = function(grunt) {
   ]);
   grunt.registerTask('prepareDeploy', [
     'copy:deployFirebaseCode',
-    'firebaseDocsJsonForCI',
     'copy:deployFirebaseDocs'
   ]);
   grunt.registerTask('default', ['package']);
