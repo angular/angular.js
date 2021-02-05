@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "../../deploy/docs",
+    "public": "deploy",
     "redirects": [
       {
         "source": "/error/:namespace\\::error*",

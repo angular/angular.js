@@ -360,7 +360,7 @@ jobs:
       - custom_attach_workspace
       - init_environment
       - skip_unless_tag_or_master_or_stable_branch
-      - run: ls deploy/code
+      - run: ls scripts/code.angularjs.org-firebase/deploy
       - run:
           name: Authenticate and configure Docker
           command: |
@@ -369,7 +369,7 @@ jobs:
       - run:
           name: Sync files to code.angularjs.org
           command: |
-            gsutil -m rsync -r deploy/code gs://code-angularjs-org-338b8.appspot.com
+            gsutil -m rsync -r scripts/code.angularjs.org-firebase/deploy gs://code-angularjs-org-338b8.appspot.com
 
   # The `deploy-docs` job should only run when all of these conditions are true for the build:
   # - It is for the `angular/angular.js` repository (not a fork).
