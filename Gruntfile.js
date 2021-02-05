@@ -14,6 +14,7 @@ var semver = require('semver');
 var exec = require('shelljs').exec;
 var pkg = require(__dirname + '/package.json');
 
+var codeScriptFolder = util.codeScriptFolder;
 var docsScriptFolder = util.docsScriptFolder;
 
 // Node.js version checks
@@ -166,9 +167,9 @@ module.exports = function(grunt) {
       build: ['build'],
       tmp: ['tmp'],
       deploy: [
-        'deploy/docs',
-        'deploy/code',
-        docsScriptFolder + '/functions/html'
+        codeScriptFolder + '/deploy',
+        docsScriptFolder + '/deploy',
+        docsScriptFolder + '/functions/content'
       ]
     },
 
@@ -372,7 +373,7 @@ module.exports = function(grunt) {
           {
             cwd: 'build',
             src: '**',
-            dest: 'deploy/code/' + deployVersion + '/',
+            dest: codeScriptFolder + '/deploy/' + deployVersion + '/',
             expand: true
           }
         ]
@@ -382,19 +383,19 @@ module.exports = function(grunt) {
           // The source files are needed by the embedded examples in the docs app.
           {
             src: ['build/angular*.{js,js.map,min.js}', 'build/sitemap.xml'],
-            dest: 'deploy/docs/',
+            dest: docsScriptFolder + '/deploy/',
             expand: true,
             flatten: true
           },
           {
             cwd: 'build/docs',
             src: ['**', '!ptore2e/**', '!index*.html'],
-            dest: 'deploy/docs/',
+            dest: docsScriptFolder + '/deploy/',
             expand: true
           },
           {
             src: 'build/docs/index-production.html',
-            dest: 'deploy/docs/index.html'
+            dest: docsScriptFolder + '/deploy/index.html'
           },
           {
             src: 'build/docs/index-production.html',
@@ -403,7 +404,7 @@ module.exports = function(grunt) {
           {
             cwd: 'build/docs',
             src: 'partials/**',
-            dest: docsScriptFolder + '/functions/content',
+            dest: docsScriptFolder + '/functions/content/',
             expand: true
           }
         ]
