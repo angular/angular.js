@@ -5,9 +5,9 @@
     "node": "12"
   },
   "dependencies": {
-    "@google-cloud/storage": "^4.7.0",
-    "firebase-admin": "^8.10.0",
-    "firebase-functions": "^3.6.0"
+    "@google-cloud/storage": "^5.7.4",
+    "firebase-admin": "^9.4.2",
+    "firebase-functions": "^3.13.1"
   },
   "private": true
 }
