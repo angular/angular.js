@@ -52,6 +52,17 @@ var-filter-run-always: &run-always
     tags:
       only: /v1\.\d+\.\d.*/
 
+# Filter to run a job when code might need to be deployed - i.e. on builds for the `master` branch.
+# (Further checks are needed to determine whether a deployment is actually needed, but these are not
+# possible via filters.)
+var-filter-run-on-master: &run-on-master
+  filters:
+    branches:
+      only:
+        - master
+    tags:
+      ignore: /.*/
+
 # Filter to run a job when code/docs might need to be deployed - i.e. on tagged builds and on builds
 # for master and `v1.*.x` branches.
 # (Further checks are needed to determine whether a deployment is actually needed, but these are not
@@ -222,13 +233,6 @@ commands:
           no_output_timeout: 30m
       - stop_saucelabs
 
-  deploy_code_prerequisites:
-    steps:
-      - skip_on_pr_and_fork_builds
-      - custom_attach_workspace
-      - init_environment
-      - skip_unless_tag_or_master_or_stable_branch
-
 # Job definitions
 # Jobs can include parameters that are passed in the workflow job invocation.
 # https://circleci.com/docs/2.0/reusing-config/#authoring-parameterized-jobs
@@ -363,7 +367,10 @@ jobs:
     executor:
       name: cloud-sdk
     steps:
-      - deploy_code_prerequisites
+      - skip_on_pr_and_fork_builds
+      - custom_attach_workspace
+      - init_environment
+      - skip_unless_tag_or_master_or_stable_branch
       - run: ls scripts/code.angularjs.org-firebase/deploy
       - run:
           name: Authenticate and configure Docker
@@ -378,14 +385,15 @@ jobs:
   # The `deploy-code-firebase` job should only run when all of these conditions are true for the build:
   # - It is for the `angular/angular.js` repository (not a fork).
   # - It is not for a pull request.
-  # - It is for a tag or the master branch or the stable branch(*).
-  #
-  # *: The stable branch is the one that has the value `latest` in `package.json > distTag`.
+  # - It is for the master branch.
+  #   (This is enforced via job filters, so we don't need to a step to check it here.)
   deploy-code-firebase:
     executor:
       name: default-executor
     steps:
-      - deploy_code_prerequisites
+      - skip_on_pr_and_fork_builds
+      - custom_attach_workspace
+      - init_environment
         # Install dependencies for Firebase functions to prevent parsing errors during deployment.
         # See https://github.com/angular/angular.js/pull/16453.
       - run:
@@ -492,7 +500,7 @@ workflows:
           requires:
              - prepare-deployment
       - deploy-code-firebase:
-          <<: *run-on-tags-and-master-and-version-branches
+          <<: *run-on-master
           requires:
              - prepare-deployment
       - deploy-docs:
