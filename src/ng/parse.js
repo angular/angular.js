@@ -1900,7 +1900,7 @@ function $ParseProvider() {
 
       var useInputs = parsedExpression.inputs && !exp.inputs;
 
-      // Propogate the literal/inputs/constant attributes
+      // Propagate the literal/inputs/constant attributes
       // ... but not oneTime since we are handling it
       oneTimeWatch.literal = parsedExpression.literal;
       oneTimeWatch.constant = parsedExpression.constant;
@@ -1987,7 +1987,7 @@ function $ParseProvider() {
       fn.$$intercepted = parsedExpression;
       fn.$$interceptor = interceptorFn;
 
-      // Propogate the literal/oneTime/constant attributes
+      // Propagate the literal/oneTime/constant attributes
       fn.literal = parsedExpression.literal;
       fn.oneTime = parsedExpression.oneTime;
       fn.constant = parsedExpression.constant;
