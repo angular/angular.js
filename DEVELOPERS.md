@@ -364,7 +364,7 @@ is interested in the following block tags:
   the deprecation: `sinceVersion="<version>"` and `removeVersion="<version>"`
 
 The `type` in `@param` and `@returns` must be wrapped in `{}` curly braces, e.g. `{Object|Array}`.
-Parameters can be made optional by *either* appending a `=` to the type, e.g. `{Object=}`, *or* by
+Parameters can  made optional by *either* appending a `=` to the type, e.g. `{Object=}`, *or* by
 putting the `[name]` in square brackets.
 Default values are only possible with the second syntax by appending `=<value>` to the parameter
 name, e.g. `@param {boolean} [ownPropsOnly=false]`.
