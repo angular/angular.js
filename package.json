@@ -79,7 +79,6 @@
     "lodash": "~4.17.21",
     "log4js": "^0.6.27",
     "lunr": "^0.7.2",
-    "marked": "~0.3.0",
     "node-html-encoder": "0.0.2",
     "npm-run": "^4.1.0",
     "open-sans-fontface": "^1.4.0",
@@ -106,7 +105,8 @@
     "//2": "(E.g. see https://github.com/gulpjs/gulp/issues/2162 and https://github.com/nodejs/node/issues/25132.)",
     "natives": "1.1.6",
     "//3": "`graceful-fs` needs to be pinned to support gulp 3, on Node v12+",
-    "graceful-fs": "^4.2.3"
+    "graceful-fs": "^4.2.3",
+    "marked": "0.3.6"
   },
   "commitplease": {
     "style": "angular",
