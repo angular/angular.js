@@ -15,8 +15,8 @@ config.multiCapabilities = [
   }),
   capabilitiesForSauceLabs({
     browserName: 'firefox',
-    platform: 'OS X 10.14',
-    version: '76'
+    platform: 'OS X 10.15',
+    version: '85'
   })
 ];
 
