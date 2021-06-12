@@ -7110,10 +7110,10 @@ marked-terminal@^3.3.0:
     node-emoji "^1.4.1"
     supports-hyperlinks "^1.0.1"
 
-marked@^0.3.2, marked@~0.3.0:
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.6.tgz#b2c6c618fccece4ef86c4fc6cb8a7cbf5aeda8d7"
-  integrity sha1-ssbGGPzOzk74bE/Gy4p8v1rtqNc=
+marked@^0.3.2, marked@~0.3.18:
+  version "0.3.18"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.18.tgz#3ef058cd926101849b92a7a7c15db18c7fc76b2f"
+  integrity sha512-49i2QYhfULqaXzNZpxC808PisuCTGT2fgG0zrzdCI9N3rIfAWfW0nggvbXr6zvpynZdOG5+9xNxdzP0kwZnERw==
 
 marked@^0.7.0:
   version "0.7.0"
