@@ -55,7 +55,7 @@ component in an interconnected way like a well-oiled machine. AngularJS is JavaS
 and done right. (Well it is not really MVC, read on, to understand what this means.)
 
 #### MVC, no, MV* done the right way!
-MVC, short for Model-View-Controller, is a design pattern, i.e. how the code should be organized and
+<a href="https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</a>, short for Model-View-Controller, is a design pattern, i.e. how the code should be organized and
 how the different parts of an application separated for proper readability and debugging. Model is
 the data and the database. View is the user interface and what the user sees. Controller is the main
 link between Model and View. These are the three pillars of major programming frameworks present on
