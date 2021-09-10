@@ -4727,8 +4727,8 @@ describe('input', function() {
         expect(EMAIL_REGEXP.test('a@|')).toBe(false);
         expect(EMAIL_REGEXP.test('a@}')).toBe(false);
         expect(EMAIL_REGEXP.test('a@~')).toBe(false);
-        expect(EMAIL_REGEXP.test('a@İ')).toBe(false);
-        expect(EMAIL_REGEXP.test('a@ı')).toBe(false);
+        expect(EMAIL_REGEXP.test('a@İ')).toBe(true);
+        expect(EMAIL_REGEXP.test('a@ı')).toBe(true);
         /* domain length, label and total */
         expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(true);
         expect(EMAIL_REGEXP.test('a@xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')).toBe(false);
@@ -4762,8 +4762,8 @@ describe('input', function() {
         expect(EMAIL_REGEXP.test('[@x')).toBe(false);
         expect(EMAIL_REGEXP.test('\\@x')).toBe(false);
         expect(EMAIL_REGEXP.test(']@x')).toBe(false);
-        expect(EMAIL_REGEXP.test('İ@x')).toBe(false);
-        expect(EMAIL_REGEXP.test('ı@x')).toBe(false);
+        expect(EMAIL_REGEXP.test('İ@x')).toBe(true);
+        expect(EMAIL_REGEXP.test('ı@x')).toBe(true);
         /* local-part size limit */
         expect(EMAIL_REGEXP.test('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@x')).toBe(true);
         expect(EMAIL_REGEXP.test('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@x')).toBe(false);
