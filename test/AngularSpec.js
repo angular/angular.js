@@ -1793,7 +1793,12 @@ describe('angular', function() {
           } else if (/Chrome\//.test(userAgent)) {
             protocol = 'chrome-extension:';
           } else if (/Safari\//.test(userAgent)) {
-            protocol = 'safari-extension:';
+            // On iOS, Safari versions <15 recognize `safari-extension:`, while versions >=15 only
+            // recognize `chrome-extension:`.
+            // (On macOS, Safari v15 recognizes both protocols, so it is fine to use either.)
+            var majorVersionMatch = /Version\/(\d+)/.exec(userAgent);
+            var majorVersion = majorVersionMatch ? parseInt(majorVersionMatch[1], 10) : 0;
+            protocol = (majorVersion < 15) ? 'safari-extension:' : 'chrome-extension:';
           } else {
             protocol = 'browserext:';  // Upcoming standard scheme.
           }
