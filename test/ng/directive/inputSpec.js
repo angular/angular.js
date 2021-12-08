@@ -1271,10 +1271,10 @@ describe('input', function() {
       var inputElm = helper.compileInput('<input type="datetime-local" ng-model="breakMe"/>');
 
       $rootScope.$apply(function() {
-        $rootScope.breakMe = new Date(2009, 0, 6, 16, 25, 0);
+        $rootScope.breakMe = new Date(2009, 0, 6, 16, 25, 1, 337);
       });
 
-      expect(inputElm.val()).toBe('2009-01-06T16:25:00.000');
+      expect(inputElm.val()).toBe('2009-01-06T16:25:01.337');
 
       //set to text for browsers with datetime-local validation.
       inputElm[0].setAttribute('type', 'text');
@@ -1324,32 +1324,32 @@ describe('input', function() {
     it('should use UTC if specified in the options', function() {
       var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
 
-      helper.changeInputValueTo('2000-01-01T01:02');
-      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
+      helper.changeInputValueTo('2000-01-01T01:02:03.456');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 3, 456));
 
       $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
+        $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 3, 456));
       });
-      expect(inputElm.val()).toBe('2001-01-01T01:02:00.000');
+      expect(inputElm.val()).toBe('2001-01-01T01:02:03.456');
     });
 
 
     it('should be possible to override the timezone', function() {
       var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" ng-model-options="{timezone: \'UTC\'}" />');
 
-      helper.changeInputValueTo('2000-01-01T01:02');
-      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
+      helper.changeInputValueTo('2000-01-01T01:02:03.456');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 3, 456));
 
       inputElm.controller('ngModel').$overrideModelOptions({timezone: '+0500'});
       $rootScope.$apply(function() {
-        $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
+        $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 3, 456));
       });
-      expect(inputElm.val()).toBe('2001-01-01T06:02:00.000');
+      expect(inputElm.val()).toBe('2001-01-01T06:02:03.456');
 
       inputElm.controller('ngModel').$overrideModelOptions({timezone: 'UTC'});
 
-      helper.changeInputValueTo('2000-01-01T01:02');
-      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
+      helper.changeInputValueTo('2000-01-01T01:02:03.456');
+      expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 3, 456));
     });
 
 
@@ -1360,13 +1360,13 @@ describe('input', function() {
         var inputElm = helper.compileInput(
             '<input type="datetime-local" ng-model="value" ng-model-options="' + ngModelOptions + '" />');
 
-        helper.changeInputValueTo('2000-01-01T06:02');
-        expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 0));
+        helper.changeInputValueTo('2000-01-01T06:02:03.456');
+        expect(+$rootScope.value).toBe(Date.UTC(2000, 0, 1, 1, 2, 3, 456));
 
         $rootScope.$apply(function() {
-          $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 0));
+          $rootScope.value = new Date(Date.UTC(2001, 0, 1, 1, 2, 3, 456));
         });
-        expect(inputElm.val()).toBe('2001-01-01T06:02:00.000');
+        expect(inputElm.val()).toBe('2001-01-01T06:02:03.456');
       }
     );
 
@@ -1401,13 +1401,13 @@ describe('input', function() {
     it('should allow to specify the seconds', function() {
       var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value"" />');
 
-      helper.changeInputValueTo('2000-01-01T01:02:03');
-      expect(+$rootScope.value).toBe(+new Date(2000, 0, 1, 1, 2, 3));
+      helper.changeInputValueTo('2000-01-01T01:02:03.456');
+      expect(+$rootScope.value).toBe(+new Date(2000, 0, 1, 1, 2, 3, 456));
 
       $rootScope.$apply(function() {
-        $rootScope.value = new Date(2001, 0, 1, 1, 2, 3);
+        $rootScope.value = new Date(2001, 0, 1, 1, 2, 3, 456);
       });
-      expect(inputElm.val()).toBe('2001-01-01T01:02:03.000');
+      expect(inputElm.val()).toBe('2001-01-01T01:02:03.456');
     });
 
 
@@ -1425,13 +1425,13 @@ describe('input', function() {
       it('should allow four or more digits in year', function() {
         var inputElm = helper.compileInput('<input type="datetime-local" ng-model="value" />');
 
-          helper.changeInputValueTo('10123-01-01T01:02');
-          expect(+$rootScope.value).toBe(+new Date(10123, 0, 1, 1, 2, 0));
+          helper.changeInputValueTo('10123-01-01T01:02:03.456');
+          expect(+$rootScope.value).toBe(+new Date(10123, 0, 1, 1, 2, 3, 456));
 
           $rootScope.$apply(function() {
-            $rootScope.value = new Date(20456, 1, 1, 1, 2, 0);
+            $rootScope.value = new Date(20456, 1, 1, 1, 2, 3, 456);
           });
-          expect(inputElm.val()).toBe('20456-02-01T01:02:00.000');
+          expect(inputElm.val()).toBe('20456-02-01T01:02:03.456');
         }
       );
     }
