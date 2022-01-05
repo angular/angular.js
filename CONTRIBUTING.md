@@ -220,7 +220,7 @@ It's a quick process, we promise!
 
 [Closure guide to i18n changes]: https://github.com/google/closure-library/wiki/Internationalization-%28i18n%29-changes-in-Closure-Library
 [coc]: https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md
-[Common Locale Data Repository (CLDR)]: http://cldr.unicode.org
+[Common Locale Data Repository (CLDR)]: https://cldr.unicode.org
 [corporate-cla]: http://code.google.com/legal/corporate-cla-v1.0.html
 [developers]: DEVELOPERS.md
 [developers.commits]: DEVELOPERS.md#commits
