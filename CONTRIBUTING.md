@@ -244,4 +244,3 @@ It's a quick process, we promise!
 [stackoverflow]: http://stackoverflow.com/questions/tagged/angularjs
 
 [![Analytics](https://ga-beacon.appspot.com/UA-8594346-11/angular.js/CONTRIBUTING.md?pixel)](https://github.com/igrigorik/ga-beacon)
-
