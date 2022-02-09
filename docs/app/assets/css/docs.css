@@ -478,10 +478,10 @@ iframe.example {
 #navbar-sub {
   padding-top: 10px;
   padding-bottom: 5px;
-  background: rgba(245,245,245,0.88);
+  background: rgba(245,245,245,1);
   box-shadow: 0 0 2px #999;
   z-index: 1028;
-  top: 83px;
+  top: 57px;
 }
 
 .main-body-grid {
@@ -982,7 +982,7 @@ toc-container > div > toc-tree > ul > li > toc-tree > ul > li toc-tree > ul li {
 
   #navbar-sub {
     position: relative;
-    top: 17px;
+    top: 0;
     margin-top: 80px;
     padding-bottom: 0;
     margin-bottom: 0;

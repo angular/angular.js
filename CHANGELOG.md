@@ -1,3 +1,9 @@
+**AngularJS support has officially ended as of January 2022.
+[See what ending support means](https://docs.angularjs.org/misc/version-support-status)
+and [read the end of life announcement](https://goo.gle/angularjs-end-of-life).**
+
+**Visit [angular.io](https://angular.io) for the actively supported Angular.**
+
 <a name="1.8.2"></a>
 # 1.8.2 meteoric-mining (2020-10-21)
 

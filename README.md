@@ -14,9 +14,11 @@ piece of cake. Best of all? It makes development fun!
 
 --------------------
 
-**On July 1, 2018 AngularJS entered a 3 year Long Term Support period:** [Find out more](https://docs.angularjs.org/misc/version-support-status)
+**AngularJS support has officially ended as of January 2022.
+[See what ending support means](https://docs.angularjs.org/misc/version-support-status)
+and [read the end of life announcement](https://goo.gle/angularjs-end-of-life).**
 
-**Looking for the new Angular? Go here:** https://github.com/angular/angular
+**Visit [angular.io](https://angular.io) for the actively supported Angular.**
 
 --------------------
 
