@@ -4,58 +4,26 @@
 
 # Version Support Status
 
-This page describes the support status of the significant versions of AngularJS.
+**AngularJS support has officially ended as of January 2022.**
 
-<div class="alert alert-info">
-  On July 1, 2018 AngularJS entered a 3 year Long Term Support period.<br />
-  <br />
-  _**UPDATE (2020-07-27):**_<br />
-  _Due to COVID-19 affecting teams migrating from AngularJS, we are extending the LTS by six months
-  (until December 31, 2021)._
-</div>
+Visit [angular.io](https://angular.io) for the actively supported Angular.
 
-Any version branch not shown in the following table (e.g. 1.7.x) is no longer being developed.
+## What does end of support mean?
 
-<table class="dev-status table table-bordered">
-  <thead>
-    <tr><th>Version</th><th>Status</th><th>Comments</th></tr>
-  </thead>
-  <tbody>
-    <tr class="security">
-      <td><span>1.2.x</span></td>
-      <td>Security patches only</td>
-      <td>Last version to provide IE 8 support</td>
-    </tr>
-    <tr class="stable">
-      <td><span>1.8.x</span></td>
-      <td>Long Term Support</td>
-      <td>See {@link version-support-status#long-term-support Long Term Support} section below.</td>
-    </tr>
-  </tbody>
-</table>
+The code will remain accessible on [GitHub](https://github.com/angular/angular.js),
+[npm](https://www.npmjs.com/package/angular),
+[Bower](https://github.com/angular/bower-angular), and
+[Release archive](https://code.angularjs.org/1.8.2).
+This website will remain here indefinitely.
 
-### Long Term Support
+The GitHub repository will be in an archived state, meaning that no new issues or pull requests
+can be submitted.
 
-On July 1st 2018, AngularJS entered a Long Term Support period.
+See https://goo.gle/angularjs-end-of-life for the full details.
 
-We now focus exclusively on providing fixes to bugs that satisfy at least one of the following criteria:
+### Extended Long Term Support
 
-* A security flaw is detected in the 1.8.x branch of the framework
-* One of the major browsers releases a version that will cause current production applications using AngularJS 1.8.x to stop working
-* The jQuery library releases a version that will cause current production applications using AngularJS 1.8.x to stop working.
-
-AngularJS 1.2.x will get a new version if and only if a new severe security issue is discovered.
-
-
-
-### Blog Post
-
-You can read more about these plans in our [blog post announcement](https://blog.angular.io/stable-angularjs-and-long-term-support-7e077635ee9c).
-
-### Extended Long Term Support
-
-If you need support for AngularJS beyond December 2021, you should consider:
+If you need extended support for AngularJS, you should consider:
 
 * [XLTS.dev](https://xlts.dev/angularjs)
-
-
+* [OpenLogic](https://www.openlogic.com/solutions/angularjs-support-and-services)
