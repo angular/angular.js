@@ -5,7 +5,7 @@ and [read the end of life announcement](https://goo.gle/angularjs-end-of-life).*
 **Visit [angular.io](https://angular.io) for the actively supported Angular.**
 
 <a name="1.8.3"></a>
-# 1.8.3 ultimate-farewell (2020-10-21)
+# 1.8.3 ultimate-farewell (2022-04-07)
 
 One final release of AngularJS in order to update package README files on npm.
 
