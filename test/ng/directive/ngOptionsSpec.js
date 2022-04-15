@@ -1509,10 +1509,6 @@ describe('ngOptions', function() {
   });
 
 
-  /**
-   * This behavior is broken and should probably be cleaned up later as track by and select as
-   * aren't compatible.
-   */
   describe('selectAs+trackBy expression', function() {
     beforeEach(function() {
       scope.arr = [{subItem: {label: 'ten', id: 10}}, {subItem: {label: 'twenty', id: 20}}];
@@ -1520,11 +1516,11 @@ describe('ngOptions', function() {
     });
 
 
-    it('It should use the "value" variable to represent items in the array as well as for the ' +
+    it('It should use the "$value" variable to represent items in the array as well as for the ' +
         'selected values in track by expression (single&array)', function() {
       createSelect({
         'ng-model': 'selected',
-        'ng-options': 'item.subItem as item.subItem.label for item in arr track by (item.id || item.subItem.id)'
+        'ng-options': 'item.subItem as item.subItem.label for item in arr track by $value.id'
       });
 
       // First test model -> view
@@ -1558,12 +1554,12 @@ describe('ngOptions', function() {
     });
 
 
-    it('It should use the "value" variable to represent items in the array as well as for the ' +
+    it('It should use the "$value" variable to represent items in the array as well as for the ' +
         'selected values in track by expression (multiple&array)', function() {
       createSelect({
         'ng-model': 'selected',
         'multiple': true,
-        'ng-options': 'item.subItem as item.subItem.label for item in arr track by (item.id || item.subItem.id)'
+        'ng-options': 'item.subItem as item.subItem.label for item in arr track by $value.id'
       });
 
       // First test model -> view
@@ -1599,12 +1595,12 @@ describe('ngOptions', function() {
     });
 
 
-    it('It should use the "value" variable to represent items in the array as well as for the ' +
+    it('It should use the "$value" variable to represent items in the array as well as for the ' +
         'selected values in track by expression (multiple&object)', function() {
       createSelect({
         'ng-model': 'selected',
         'multiple': true,
-        'ng-options': 'val.subItem as val.subItem.label for (key, val) in obj track by (val.id || val.subItem.id)'
+        'ng-options': 'val.subItem as val.subItem.label for (key, val) in obj track by $value.id'
       });
 
       // First test model -> view
@@ -1644,11 +1640,11 @@ describe('ngOptions', function() {
     });
 
 
-    it('It should use the "value" variable to represent items in the array as well as for the ' +
+    it('It should use the "$value" variable to represent items in the array as well as for the ' +
         'selected values in track by expression (single&object)', function() {
       createSelect({
         'ng-model': 'selected',
-        'ng-options': 'val.subItem as val.subItem.label for (key, val) in obj track by (val.id || val.subItem.id)'
+        'ng-options': 'val.subItem as val.subItem.label for (key, val) in obj track by $value.id'
       });
 
       // First test model -> view
