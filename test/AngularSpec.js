@@ -2087,22 +2087,19 @@ describe('angular', function() {
 
 
     describe('deferred bootstrap', function() {
-      var originalName = window.name,
-          element;
+      var element;
 
       beforeEach(function() {
-        window.name = '';
         element = jqLite('<div>{{1+2}}</div>');
       });
 
       afterEach(function() {
         dealoc(element);
-        window.name = originalName;
       });
 
       it('should provide injector for deferred bootstrap', function() {
         var injector;
-        window.name = 'NG_DEFER_BOOTSTRAP!';
+        document.cookie = 'NG_DEFER_BOOTSTRAP!=true';
 
         injector = angular.bootstrap(element);
         expect(injector).toBeUndefined();
@@ -2113,7 +2110,7 @@ describe('angular', function() {
 
       it('should resume deferred bootstrap, if defined', function() {
         var injector;
-        window.name = 'NG_DEFER_BOOTSTRAP!';
+        document.cookie = 'NG_DEFER_BOOTSTRAP!=true';
 
         angular.resumeDeferredBootstrap = noop;
         var spy = spyOn(angular, 'resumeDeferredBootstrap');
@@ -2122,7 +2119,7 @@ describe('angular', function() {
       });
 
       it('should wait for extra modules', function() {
-        window.name = 'NG_DEFER_BOOTSTRAP!';
+        document.cookie = 'NG_DEFER_BOOTSTRAP!=true';
         angular.bootstrap(element);
 
         expect(element.html()).toBe('{{1+2}}');
@@ -2130,13 +2127,13 @@ describe('angular', function() {
         angular.resumeBootstrap();
 
         expect(element.html()).toBe('3');
-        expect(window.name).toEqual('');
+        expect(/\bNG_DEFER_BOOTSTRAP!=true\b/.test(document.cookie)).toBeFalsy();
       });
 
 
       it('should load extra modules', function() {
         element = jqLite('<div>{{1+2}}</div>');
-        window.name = 'NG_DEFER_BOOTSTRAP!';
+        document.cookie = 'NG_DEFER_BOOTSTRAP!=true';
 
         var bootstrapping = jasmine.createSpy('bootstrapping');
         angular.bootstrap(element, [bootstrapping]);
@@ -2164,8 +2161,8 @@ describe('angular', function() {
       });
 
 
-      it('should restore the original window.name after bootstrap', function() {
-        window.name = 'NG_DEFER_BOOTSTRAP!my custom name';
+      it('should remove the cookie after bootstrap', function() {
+        document.cookie = 'NG_DEFER_BOOTSTRAP!=true';
         angular.bootstrap(element);
 
         expect(element.html()).toBe('{{1+2}}');
@@ -2173,7 +2170,95 @@ describe('angular', function() {
         angular.resumeBootstrap();
 
         expect(element.html()).toBe('3');
-        expect(window.name).toEqual('my custom name');
+        expect(/\bNG_DEFER_BOOTSTRAP!=true\b/.test(document.cookie)).toBeFalsy();
+      });
+    });
+
+    describe('reloadWithDebugInfo', function() {
+      var element;
+
+      beforeEach(function() {
+        element = jqLite('<div>{{1+2}}</div>');
+      });
+
+      afterEach(function() {
+        dealoc(element);
+      });
+
+      it('should not change the configuration when the cookie is not set', function() {
+        var compileProvider = null;
+
+        bootstrap(element, [disableDebugAndGetProvider]);
+        expect(compileProvider.debugInfoEnabled()).toBeFalsy();
+
+        function disableDebugAndGetProvider($compileProvider) {
+          $compileProvider.debugInfoEnabled(false);
+          compileProvider = $compileProvider;
+        }
+      });
+
+      it('should enable debug if the cookie is set', function() {
+        var compileProvider = null;
+
+        document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
+        bootstrap(element, [getCompileProvider]);
+
+        expect(compileProvider.debugInfoEnabled()).toBeTruthy();
+
+        function getCompileProvider($compileProvider) {
+          compileProvider = $compileProvider;
+        }
+      });
+
+      it('should remove the cookie', function() {
+        document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
+        bootstrap(element);
+
+        expect(document.cookie).toEqual('');
+      });
+    });
+
+    describe('reloadWithDebugInfo', function() {
+      var element;
+
+      beforeEach(function() {
+        element = jqLite('<div>{{1+2}}</div>');
+      });
+
+      afterEach(function() {
+        dealoc(element);
+      });
+
+      it('should not change the configuration when the cookie is not set', function() {
+        var compileProvider = null;
+
+        bootstrap(element, [disableDebugAndGetProvider]);
+        expect(compileProvider.debugInfoEnabled()).toBeFalsy();
+
+        function disableDebugAndGetProvider($compileProvider) {
+          $compileProvider.debugInfoEnabled(false);
+          compileProvider = $compileProvider;
+        }
+      });
+
+      it('should enable debug if the cookie is set', function() {
+        var compileProvider = null;
+
+        document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
+        bootstrap(element, [getCompileProvider]);
+
+        expect(compileProvider.debugInfoEnabled()).toBeTruthy();
+
+        function getCompileProvider($compileProvider) {
+          compileProvider = $compileProvider;
+        }
+      });
+
+      it('should remove the cookie', function() {
+        document.cookie = 'NG_ENABLE_DEBUG_INFO!=true';
+        bootstrap(element);
+
+        expect(document.cookie).toEqual('');
       });
     });
   });
