@@ -79,7 +79,7 @@
     "lodash": "~4.17.21",
     "log4js": "^0.6.27",
     "lunr": "^0.7.2",
-    "marked": "~0.3.0",
+    "marked": "~4.0.10",
     "node-html-encoder": "0.0.2",
     "npm-run": "^4.1.0",
     "open-sans-fontface": "^1.4.0",
