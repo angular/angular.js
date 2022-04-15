@@ -900,9 +900,10 @@ function $LocationProvider() {
 
       var elm = jqLite(event.target);
 
-      // traverse the DOM up to find first A tag
-      while (nodeName_(elm[0]) !== 'a') {
-        // ignore rewriting if no A tag (reached root element, or no parent - removed from document)
+
+      // traverse the DOM up to find first A or AREA tag
+      while (nodeName_(elm[0]) !== 'a' && nodeName_(elm[0]) !== 'area') {
+        // ignore rewriting if no A or AREA tag (reached root element, or no parent - removed from document)
         if (elm[0] === $rootElement[0] || !(elm = elm.parent())[0]) return;
       }
 
