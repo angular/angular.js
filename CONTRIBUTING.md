@@ -235,7 +235,7 @@ It's a quick process, we promise!
 [gitter]: https://gitter.im/angular/angular.js
 [Google Closure I18N library]: https://github.com/google/closure-library/tree/master/closure/goog/i18n
 [groups]: https://groups.google.com/forum/?fromgroups#!forum/angular
-[individual-cla]: http://code.google.com/legal/individual-cla-v1.0.html
+[individual-cla]: https://code.google.com/legal/individual-cla-v1.0.html
 [irc]: http://webchat.freenode.net/?channels=angularjs&uio=d4
 [jsfiddle]: http://jsfiddle.net/
 [karma-browserstack]: https://github.com/karma-runner/karma-browserstack-launcher
