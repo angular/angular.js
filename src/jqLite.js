@@ -45,9 +45,9 @@
  * <div class="alert alert-info">**Note:** All element references in AngularJS are always wrapped with jQuery or
  * jqLite (such as the element argument in a directive's compile / link function). They are never raw DOM references.</div>
  *
- * <div class="alert alert-warning">**Note:** Keep in mind that this function will not find elements
- * by tag name / CSS selector. For lookups by tag name, try instead `angular.element(document).find(...)`
- * or `$document.find()`, or use the standard DOM APIs, e.g. `document.querySelectorAll()`.</div>
+ * <div class="alert alert-info">**Note:** This function will find elements
+ * by tag name / CSS selector and wrap it in a jQlite object, or in a jQuery object if it's available. You can also query the DOM like `angular.element(document).find(...)`
+ * or `$document.find()`, or use the standard DOM APIs, e.g. `document.querySelectorAll()`, without the wrapper.</div>
  *
  * ## AngularJS's jqLite
  * jqLite provides only the following jQuery methods:
@@ -328,7 +328,7 @@ function JQLite(element) {
   }
   if (!(this instanceof JQLite)) {
     if (argIsString && element.charAt(0) !== '<') {
-      throw jqLiteMinErr('nosel', 'Looking up elements via selectors is not supported by jqLite! See: http://docs.angularjs.org/api/angular.element');
+      return new JQLite(window.document.querySelector(element));
     }
     return new JQLite(element);
   }
