@@ -66,9 +66,7 @@ var ngOptionsMinErr = minErr('ngOptions');
  *
  * ### `select` **`as`** and **`track by`**
  *
- * <div class="alert alert-warning">
- * Be careful when using `select` **`as`** and **`track by`** in the same expression.
- * </div>
+ * When using `select` **`as`** and **`track by`** in the same expression use the `$value` variable.
  *
  * Given this array of items on the $scope:
  *
@@ -110,6 +108,15 @@ var ngOptionsMinErr = minErr('ngOptions');
  * expression evaluates to `items[0].subItem.id` (which is undefined). As a result, the model value
  * is not matched against any `<option>` and the `<select>` appears as having no selected value.
  *
+ * The solution is to use `$value` variable which provides uniform access to each `item` and
+ * `ngModel` value.  Here is the fixed version of the broken example above.
+ *
+ * ```html
+ * <select ng-options="item.subItem as item.label for item in items track by $value.id" ng-model="selected"></select>
+ * ```
+ * ```js
+ * $scope.selected = $scope.items[0].subItem;
+ * ```
  *
  * @param {string} ngModel Assignable AngularJS expression to data-bind to.
  * @param {comprehension_expression} ngOptions in one of the following forms:
@@ -285,7 +292,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
                               function(value, locals) { return trackByFn(scope, locals); } :
                               function getHashOfValue(value) { return hashKey(value); };
     var getTrackByValue = function(value, key) {
-      return getTrackByValueFn(value, getLocals(value, key));
+      return getTrackByValueFn(value, getLocals(value, key, true));
     };
 
     var displayFn = $parse(match[2] || match[1]);
@@ -294,12 +301,10 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
     var valuesFn = $parse(match[8]);
 
     var locals = {};
-    var getLocals = keyName ? function(value, key) {
-      locals[keyName] = key;
+    var getLocals = function(value, key, isViewValue) {
+      if (keyName) locals[keyName] = key;
       locals[valueName] = value;
-      return locals;
-    } : function(value) {
-      locals[valueName] = value;
+      locals['$value'] = isViewValue ? value : viewValueFn(value, locals);
       return locals;
     };
 
@@ -345,7 +350,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
           var key = (optionValues === optionValuesKeys) ? index : optionValuesKeys[index];
           var value = optionValues[key];
 
-          var locals = getLocals(value, key);
+          var locals = getLocals(value, key, true);
           var selectValue = getTrackByValueFn(value, locals);
           watchedArray.push(selectValue);
 
@@ -378,7 +383,7 @@ var ngOptionsDirective = ['$compile', '$document', '$parse', function($compile, 
         for (var index = 0; index < optionValuesLength; index++) {
           var key = (optionValues === optionValuesKeys) ? index : optionValuesKeys[index];
           var value = optionValues[key];
-          var locals = getLocals(value, key);
+          var locals = getLocals(value, key, false);
           var viewValue = viewValueFn(scope, locals);
           var selectValue = getTrackByValueFn(viewValue, locals);
           var label = displayFn(scope, locals);
