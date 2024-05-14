@@ -5,6 +5,11 @@
 
 # PhoneCat Tutorial App
 
+*** This tutorial assumes that the reader has a basic knowledge of HTML, CSS and Javascript. If you have no 
+experience coding or have not been introduced to Javascript, we highly suggest that you take some time
+to learn the basics of Javascript by going to https://www.javascript.com/learn/strings or 
+https://www.w3schools.com/js/. ***
+
 A great way to get introduced to AngularJS is to work through this tutorial, which walks you through
 the construction of an AngularJS web app. The app you will build is a catalog that displays a list
 of Android devices, lets you filter the list to see only devices that interest you, and then view
